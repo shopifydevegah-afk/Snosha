@@ -53,6 +53,21 @@ Root = the element that gets the class. "Static" = fixed blocks rendered by `con
 
 **Private blocks** (`_` prefix) belong to one parent: `_card` and `_slide` (accept `@theme`), `_content`, `_product-card` with `_product-card-gallery`/`_product-card-group`, `_product-details`, `_product-list-*`, `_header-*`, `_heading`, `_inline-text`, `_divider`, `_marquee`, `_accordion-row`, and others.
 
+## Native media capabilities (from schemas, 2026-11-08)
+
+| Component | Media settings |
+|---|---|
+| `hero` | `image_1`, `image_2`, `video_1`, `video_2` **plus mobile variants** `image_1_mobile`, `image_2_mobile`, `video_1_mobile`, `video_2_mobile` (the only native desktop/mobile media pair) |
+| `section`, `_blocks`, `group`, `_card`, `_product-card-group`, `_product-details`, `_product-list-content`, `password` | `background_image` (image_picker) + `video` (background) |
+| `_slide`, `_layered-slide` | `image_1`, `video_1` |
+| `image` block | `image` (+ `image_ratio`) |
+| `video` block | `video`, `video_url`, `cover_image` (poster) |
+| `_media-without-appearance` (media-with-content) | `image`, `video` |
+| `comparison-slider` | `before_image`, `after_image` |
+| `product-hotspots` | `image` (+ `_hotspot-product` → `product`) |
+| `icon`, `_accordion-row` | `image_upload` (custom image icon) |
+| Resource media | `product-list`/`featured-collection` → `collection`; `collection-list`/`collection-links` → `collection_list`; `collection-card`/`_collection-image` → `collection`; `product-card`, `featured-product`, `product-recommendations` → `product`; `featured-blog-posts` → `blog` |
+
 ## Shared rendering snippets and their callers (from `grep "render '<name>'"`)
 
 | Snippet | `class` param? | Callers |

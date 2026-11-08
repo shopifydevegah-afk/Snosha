@@ -34,14 +34,14 @@ Each tag goes in its numeric slot: after the nearest *lower-numbered* developer 
 3. **File missing?** Create it with only a header comment (`/* <Dev> — Shosha Figma CSS. Scoped per class; see figma-to-sections-workflow */`). **File exists?** Keep its content as it is.
 4. **Tag missing (count 0)?** Run `git status` / `git diff layout/theme.liquid`, claim `layout/theme.liquid` in the plan, and add **only your own** tag in its slot. **Count 1** means it's already done. **Count above 1** means a duplicate: stop and report it.
 5. **Verify:** the count is exactly 1, the Cairo line is unchanged, `shopify theme check` shows no new offenses, and if a preview is available, the file loads with no 404.
-6. **Record it:** set your row to "Initialized <date>", add your row to the plan's Ownership table, and release the claim on `theme.liquid`.
+6. **Record it:** set your row to "Initialized <date>", add your row to the plan's area C (Developer ownership), and release the claim on `theme.liquid`.
 
 This tag is the only `theme.liquid` edit allowed as routine work, and it isn't repeated afterwards. Never create or load another developer's file.
 
 ## Rules for owners
 
 - Edit only your own file. If you need a change in someone else's file, note it in the plan and ask that owner.
-- Every rule depends on a class you own (see the scoping rule in custom-class-policy.md §5). The plan's Ownership table lists who owns which classes. Avoid selectors that overlap with another owner's classes.
+- Every rule depends on a class you own (see the scoping rule in custom-class-policy.md §5). The plan's area C lists who owns which classes. Avoid selectors that overlap with another owner's classes.
 - Start each class block with a header comment (class, component, Figma nodes), then the base rules, then `@media` rules inside the same nesting.
 - Don't put Figma styling into native Horizon CSS (`base.css` or component `{% stylesheet %}` blocks).
 - Don't duplicate utilities. If two owners need the same helper, Main adds it to `main.css`, still scoped behind a class (for example `.sn-u-<name>`).
@@ -54,7 +54,7 @@ This tag is the only `theme.liquid` edit allowed as routine work, and it isn't r
 
 Before editing any shared or protected file:
 1. Run `git status` and `git diff <file>`. If the file has uncommitted changes you didn't make, stop and ask.
-2. Check the plan's Ownership table. If someone else has claimed the file, coordinate with them first. Otherwise, claim it there.
+2. Check the plan's area C (Developer ownership). If someone else has claimed the file, coordinate with them first. Otherwise, claim it there.
 3. Make the smallest possible edit and keep unrelated changes intact. The Theme Editor rewrites JSON templates and `settings_data.json`, so pull or confirm the latest version first and expect the editor to reformat them.
 4. Release the claim when you're done.
 

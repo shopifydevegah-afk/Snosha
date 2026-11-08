@@ -27,10 +27,34 @@ Add a setting only when Figma needs a control that doesn't exist yet and someone
 | Columns desktop/mobile | ✅ on product/collection lists | Reuse. Elsewhere use `group` flex wrap plus widths |
 | Width desktop/mobile | ✅ `width`, `custom_width`, `width_mobile`, `custom_width_mobile` on blocks | Reuse |
 | Device visibility (hide on mobile/desktop) | ❌ none | **Recommended addition, on demand**: `select` `visibility: all|desktop|mobile` with default `all`, using classes and the 749/750 breakpoint |
-| Separate mobile image | ❌ not on `image` block | Add on demand when Figma crops differ; render with `<picture>`/media queries, defaulting to the desktop image |
+| Separate mobile image | ✅ `hero` only (`image_1_mobile`, `video_1_mobile`, …). ❌ elsewhere | See "Media settings" below |
 | Image ratio / fit / position | ✅ `image_ratio`, `background_image_position`, `video_position` | Reuse |
 | Typography | ✅ presets plus custom font, size, line height, letter spacing, case | Reuse. Exact Figma sizes outside the presets go in class-scoped CSS with a comment |
 | Colors | ✅ palette, `background_color`, `text_color` | Reuse. Don't add color pickers that duplicate these |
+
+## Media settings (mandatory Theme Editor editability)
+
+**Rule:** merchants must be able to select or replace every piece of content media in a customized section or block from the Theme Editor, without editing Liquid, CSS, JS or JSON. That includes lifestyle and product photos, banner and hero images, desktop and mobile variants, videos and their posters, custom collection or card images, decorative *content* images, and image-based content icons. Code-managed UI assets (chevrons, close, cart, search, accessibility icons, native SVG icons) can stay in code.
+
+**Order of preference:**
+1. **Media from the resource.** If the media belongs to a product, collection, article or blog, use that resource's own image through the native `product`/`collection`/`blog`/`collection_list` setting. Don't add a picker that duplicates it.
+2. **A native media setting that already exists** on the component (see the registry's "Native media capabilities").
+3. **A native block that carries media.** Compose with `image`, `video`, `icon` (`image_upload`), `_media-without-appearance`, or a `background_image`/`video` on `section`/`group`/`_card`.
+4. **A new setting** (category B), added only to the component you're customizing:
+   - `image_picker` for images
+   - `video` for Shopify-hosted video
+   - `video_url` for YouTube/Vimeo, where the existing `video` block pattern supports it
+   - plus an `image_picker` poster when the design shows one
+
+   No `default` value, since `image_picker`/`video` can't hold a meaningful one. **Empty means native behavior.**
+
+**Desktop vs mobile media:** add a mobile setting only when Figma really uses different media or crops. Follow hero's naming (`<id>_mobile`). Render one element with a fallback (mobile → desktop → placeholder), using `<picture>`/`srcset` or Horizon's existing image snippets (`image`, `media`, `background-media`). Never duplicate the whole section's markup.
+
+**Rendering & fallback:**
+- Use Shopify filters (`image_url`, `image_tag` with `widths`/`sizes`, `video_tag`) or Horizon snippets.
+- Alt text comes from the media file's alt (or an existing alt setting). Decorative images get `alt=""`.
+- When nothing is selected: keep the native fallback, or show a placeholder in the editor only (`request.design_mode` + `placeholder_svg_tag`). On the live store, render nothing and let the layout collapse cleanly. No broken `<img>`.
+- Never hardcode asset paths, Figma export URLs, temporary CDN links, or stock images you inserted yourself. Don't download Figma media; the merchant uploads the final files.
 
 ## Not recommended
 

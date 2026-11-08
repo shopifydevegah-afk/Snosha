@@ -26,7 +26,7 @@ Run `shopify theme pull` before editing JSON templates or `config/settings_data.
 
 ## Figma → Shopify work
 
-All Figma implementation follows the project skill `.claude/skills/figma-to-sections-workflow/SKILL.md`: native-first reuse, an on-demand `custom_class` setting, class-scoped CSS in per-developer files, and the project plan at `.claude/shosha/project-plan.md`.
+All Figma implementation follows the project skill `.claude/skills/figma-to-sections-workflow/SKILL.md`: native-first reuse, an on-demand `custom_class` setting, class-scoped CSS in per-developer files, and the permanent project plan at `.claude/shosha/project-plan.md` (read it before work and update it incrementally; never recreate it).
 
 ## Snosha-specific customizations
 

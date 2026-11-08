@@ -18,6 +18,8 @@ We extend and adapt Horizon. We do not rebuild it.
 | Desktop | https://www.figma.com/design/1fqyznLFgS65tTjGvBYPBm/Snosha?node-id=190-3767 | `190:3767` |
 | Mobile | https://www.figma.com/design/1fqyznLFgS65tTjGvBYPBm/Snosha?node-id=190-4082 | `190:4082` |
 
+Frame widths are **1480px desktop** and **390px mobile**, not 1440/375. The section node map and design tokens are in `figma-analysis-and-qa.md`.
+
 These are the full-page project frames, used for context. Each section is built from its own child nodes, either found inside these frames or given in the task. A more specific node in a task takes priority for that task. Having these frames does **not** authorize building or changing any section: implement only the sections a task asks for.
 
 > **REUSE FIRST. EXTEND SECOND. CREATE LAST.**
@@ -33,7 +35,18 @@ These are the full-page project frames, used for context. Each section is built 
 | [references/schema-extension-policy.md](references/schema-extension-policy.md) | Before adding any schema setting |
 | [references/developer-css-ownership.md](references/developer-css-ownership.md) | Before writing CSS or touching shared files, and when several sessions are active |
 | [references/figma-analysis-and-qa.md](references/figma-analysis-and-qa.md) | Stage B (Figma extraction), Stage F (code checks) and Stage G (visual QA) |
-| [references/project-plan-template.md](references/project-plan-template.md) | Stage A/H: plan location, row format and status rules |
+| [references/project-plan-template.md](references/project-plan-template.md) | Stage A/H: plan lifecycle rules, structure (areas A–H), status vocabulary, audit format |
+
+## Project plan (permanent)
+
+`.claude/shosha/project-plan.md` is the **one permanent project plan**. The Skill says *how* to work; the plan records *what* has been decided and done.
+- It already exists. Create it only if it's missing, and never re-create it or make per-section or per-developer plans.
+- Read it at the start of every relevant task.
+- Update it only when something actually changes. Global changes go in the global areas; section work updates that section's existing entry.
+- After a Skill change, update the plan only if project decisions or tracked work are affected.
+- Keep history.
+
+Full rules: project-plan-template.md.
 
 ## Hard rules
 
@@ -46,7 +59,8 @@ These are the full-page project frames, used for context. Each section is built 
 7. **RTL is mandatory.** Use logical properties (`margin-inline-start`, `inset-inline-end`, …). Don't mirror icons blindly; Horizon already flips slideshow arrows and close buttons.
 8. **Approval:** routine edits inside an approved Figma task, and setting up your own developer CSS file, don't need extra approval. Ask first for: category E, category D changes to multi-caller shared snippets, protected files (`layout/theme.liquid`, `config/*`, `assets/base.css`, `custom-cairo.css.liquid`, locales), destructive or incompatible changes, anything outside the task, Horizon/CLI updates and dependencies. Don't commit, push, deploy or create worktrees.
 9. **No unverified claims.** A section is VERIFIED only when Theme Check shows no offenses beyond the baseline, and visual QA (desktop, mobile, RTL) plus the two-state test have screenshot or browser evidence. Without it, they stay `PENDING`.
-10. **Measured values only.** Never invent Figma measurements, file paths or theme capabilities. Write assumptions down.
+10. **Media is editable in the Theme Editor.** Merchants must be able to replace any content media (images, videos, posters, mobile variants, content icons) without touching code. Reuse native media/resource settings first, and add safe `image_picker`/`video` settings only where they're missing. The merchant supplies the final files; never hardcode Figma exports. UI icons can stay in code. Details: schema-extension-policy.md "Media settings".
+11. **Measured values only.** Never invent Figma measurements, file paths or theme capabilities. Write assumptions down.
 
 ## Implementation ladder (Native Reuse Audit → category)
 
@@ -62,7 +76,7 @@ Don't force reuse if it leads to fragile hacks. Pick the smallest *safe, maintai
 
 ## Workflow for every Figma task
 
-**A. Read context.** Read this file, the project plan (`.claude/shosha/project-plan.md`; create it from the template only if it's missing), the registry's extension log, and the CSS ownership map. Find out which developer you are (Main → `main.css`, Dev1–3 → `dev1`–`dev3.css`), and ask if that's unclear. If your file isn't set up yet, follow "Developer initialization" in `developer-css-ownership.md`; never set up another developer's file. Run `git status` to see uncommitted work by others.
+**A. Read context.** Read this file, the project plan (status, ownership, claims, dependencies, earlier decisions, pending decisions), the registry's extension log, and the CSS ownership map. Find the requested section's existing entry (S01…). Only add a new entry if the section truly isn't listed. Find out which developer you are (Main → `main.css`, Dev1–3 → `dev1`–`dev3.css`), and ask if that's unclear. If your file isn't set up yet, follow "Developer initialization" in `developer-css-ownership.md`; never set up another developer's file. Run `git status` to see uncommitted work by others.
 
 **B. Analyze Figma.** First check which Figma tools are available, and load any prerequisite skills they require (see `figma-analysis-and-qa.md`). Starting from the official frames above (or the nodes given in the task), find the requested section's Desktop and Mobile nodes. Inspect them separately and extract measurements using the checklist there. If there's no Figma access, say so and mark values `UNVERIFIED`. Never edit the Figma file.
 
@@ -74,9 +88,9 @@ Don't force reuse if it leads to fragile hacks. Pick the smallest *safe, maintai
 
 **F. Automated checks.** Run `shopify theme check` and compare with the 9-offense baseline in `horizon-architecture.md`. Nothing new and nothing worse is allowed. Also check schema JSON validity, asset references, JS syntax (`node --check`), CSS loading, and the browser console.
 
-**G. Visual QA.** Take preview screenshots and compare them with Figma at 1440 and 375 (or the actual frame widths) plus in-between widths, in Arabic RTL, with the class on (matches Figma) and off (native look). Use the `browser-automation` skill if a preview URL is available.
+**G. Visual QA.** Take preview screenshots and compare them with Figma at the frame widths (1480 and 390) plus in-between widths, in Arabic RTL, with the class on (matches Figma) and off (native look). Use the `browser-automation` skill if a preview URL is available.
 
-**H. Update progress.** Update the plan row and statuses. Append any `custom_class` or other schema additions to the registry's extension log, and record what's left to fix.
+**H. Update progress.** Update that section's existing entry in the plan (areas D/E/F), and log any project-level decision in area H. Append any `custom_class` or other schema additions to the registry's extension log, and record what's left to fix.
 
 ## Quick patterns
 
