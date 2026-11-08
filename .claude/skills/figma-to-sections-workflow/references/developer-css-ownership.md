@@ -8,7 +8,7 @@
 |---|---|---|
 | Main | `assets/main.css` | **Initialized 2026-11-08**: the file existed (`/* main css */`, content kept) and is loaded once in `layout/theme.liquid` |
 | Dev1 | `assets/dev1.css` | Not initialized (file absent, no tag) |
-| Dev2 | `assets/dev2.css` | Not initialized (file absent, no tag) |
+| Dev2 | `assets/dev2.css` | **Initialized 2026-11-08**: file created, loaded once in `layout/theme.liquid` after `main.css` |
 | Dev3 | `assets/dev3.css` | Not initialized (file absent, no tag) |
 
 None of these names clash with Horizon assets. Switch to `assets/shosha-<dev>.css` only if a real filename clash appears, and update this table if you do.

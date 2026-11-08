@@ -1,0 +1,198 @@
+/* Dev2 — Shosha Figma CSS. Scoped per class; see figma-to-sections-workflow */
+
+/* ==========================================================================
+   sn-home-collections — collection-list (carousel layout) on index (S04)
+   Figma desktop 190:3830 (1480 frame) · mobile 190:4133 (390 frame) · owner: dev2
+   Settings that carry the rest of the design live in templates/index.json:
+   columns_gap 24, gap 40, padding 50/100, chevron + circle arrows, square image,
+   image radius 12, card gap 18, title/heading color #12568d.
+   ========================================================================== */
+.sn-home-collections {
+  /* Heading "مجموعات SNOSHA": Figma Desktop/H2 = Cairo SemiBold 32/52 (no theme preset matches) */
+  .section-resource-list__content .text-block,
+  .section-resource-list__content .text-block > * {
+    font-size: 32px;
+    line-height: 52px;
+    font-weight: 600;
+  }
+
+  .section-resource-list__content .text-block > * {
+    margin-block: 0;
+  }
+
+  /* Card title: Figma Desktop/H3 = Cairo SemiBold 24/40 */
+  .collection-card .text-block,
+  .collection-card .text-block > * {
+    font-size: 24px;
+    line-height: 40px;
+    font-weight: 600;
+  }
+
+  /* Carousel start inset: Figma 72px from the frame edge = page margin (40) + 32 */
+  slideshow-slides {
+    --gutter-slide-width: calc(var(--util-page-margin-offset) + 32px);
+  }
+
+  /* Card width: 292px at the 1480 frame (4 cards + a peek of the 5th), scales down below that */
+  .resource-list__carousel .resource-list__slide {
+    --slide-width: clamp(220px, calc((100cqw - 72px - 4 * 24px) / 4.5), 292px);
+
+    /* Figma card frame is 368px tall vs 350px of content; keeps arrows centred like Figma */
+    padding-block-end: 18px;
+  }
+
+  /* Arrows: 44px white circles, 50px from the frame edges (page margin 40 + 10) */
+  slideshow-arrows {
+    padding-inline: calc(var(--util-page-margin-offset) + 10px);
+  }
+
+  slideshow-arrows .slideshow-control.slideshow-control--shape-circle {
+    inline-size: 44px;
+    block-size: 44px;
+    min-inline-size: 44px;
+    min-block-size: 44px;
+    padding: 0;
+    border: 1px solid #dcf2fb;
+    background-color: rgb(255 255 255 / 0.97);
+    box-shadow: 0 8px 18px 0 rgb(13 64 128 / 0.16);
+    color: #176bb0; /* Figma chevron stroke (= primary button colour) */
+
+    .svg-wrapper,
+    svg {
+      inline-size: 22px;
+      block-size: 22px;
+    }
+  }
+
+  /* Figma shows both arrows at rest; native hides them until hover and hides the disabled one */
+  @media (hover: hover) {
+    slideshow-arrows .slideshow-control {
+      opacity: 1;
+    }
+
+    .resource-list__carousel .slideshow-control[disabled] {
+      display: flex;
+      opacity: 0.5;
+      cursor: default;
+    }
+  }
+
+  /* Scroll progress bar (mobile/tablet only; desktop Figma has none) */
+  .resource-list > div {
+    timeline-scope: --sn-home-collections-scroll;
+  }
+
+  /* ---------- Tablet 750–989 (no Figma frame: interpolated between desktop and mobile) ---------- */
+  @media screen and (max-width: 989px) {
+    .section-resource-list__content .text-block,
+    .section-resource-list__content .text-block > * {
+      font-size: 28px;
+      line-height: 44px;
+    }
+
+    .collection-card .text-block,
+    .collection-card .text-block > * {
+      font-size: 18px;
+      line-height: 30px;
+    }
+
+    slideshow-slides {
+      --gutter-slide-width: var(--util-page-margin-offset);
+
+      scroll-timeline: --sn-home-collections-scroll x;
+    }
+
+    .resource-list {
+      --resource-list-column-gap: 16px;
+    }
+
+    .resource-list__carousel .resource-list__slide {
+      --slide-width: calc((100cqw - var(--page-margin) - 3 * 16px) / 3.5);
+
+      padding-block-end: 0;
+    }
+
+    slideshow-component.resource-list__carousel::after {
+      content: '';
+      display: block;
+      block-size: 4px;
+      margin-block-start: 28px;
+      margin-inline: var(--util-page-margin-offset);
+      border-radius: 999px;
+      background-color: #dcf2fb;
+      /* Fill grows from the inline start (right in RTL); Figma gradient light → dark toward the start */
+      background-image: linear-gradient(to right, #63cdff, #0f64a8);
+      background-repeat: no-repeat;
+      background-position: right center;
+      background-size: 40% 100%; /* Figma rest state; also the fallback without scroll timelines */
+
+      @supports (animation-timeline: scroll()) {
+        animation: sn-home-collections-progress linear both;
+        animation-timeline: --sn-home-collections-scroll;
+      }
+    }
+
+    [dir='ltr'] & slideshow-component.resource-list__carousel::after {
+      background-image: linear-gradient(to left, #63cdff, #0f64a8);
+      background-position: left center;
+    }
+  }
+
+  /* ---------- Mobile ≤749 (Figma 190:4133) ---------- */
+  @media screen and (max-width: 749px) {
+    /* Figma: 35px top (native scaling already gives 35), 9px bottom;
+       heading → cards 28px (20px gap + 8px carousel padding) */
+    &.spacing-style {
+      padding-block-end: 9px;
+    }
+
+    &.section-resource-list {
+      row-gap: 28px;
+    }
+
+    /* Mobile/H2 = Cairo SemiBold 24/38 */
+    .section-resource-list__content .text-block,
+    .section-resource-list__content .text-block > * {
+      font-size: 24px;
+      line-height: 38px;
+    }
+
+    /* Card title 11px on a 40px line box (Figma) */
+    .collection-card .text-block,
+    .collection-card .text-block > * {
+      font-size: 11px;
+      line-height: 40px;
+    }
+
+    slideshow-slides {
+      --gutter-slide-width: 20px;
+    }
+
+    .resource-list {
+      --resource-list-column-gap: 10px;
+    }
+
+    /* 97px cards at the 390 frame: 20px inset + 3.5 cards + 3 × 10px gaps */
+    .resource-list__carousel .resource-list__slide {
+      --slide-width: calc((100cqw - 20px - 3 * 10px) / 3.5);
+    }
+
+    slideshow-arrows {
+      display: none;
+    }
+
+    slideshow-component.resource-list__carousel::after {
+      margin-inline: 20px;
+    }
+  }
+}
+
+@keyframes sn-home-collections-progress {
+  from {
+    background-size: 40% 100%;
+  }
+
+  to {
+    background-size: 100% 100%;
+  }
+}

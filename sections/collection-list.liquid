@@ -33,10 +33,15 @@
     section-resource-list
     spacing-style
     gap-style
+    {%- render 'custom-class', value: section.settings.custom_class %}
   "
   style="
     {% render 'spacing-style', settings: section.settings %}
     {% render 'gap-style', value: section.settings.gap %}
+    {%- if section.settings.custom_class != blank %}
+      --sn-mobile-image-size: {{ section.settings.mobile_image_size }}px;
+      --sn-mobile-title-size: {{ section.settings.mobile_title_size }}px;
+    {%- endif %}
   "
   data-testid="collection-list"
 >
@@ -360,6 +365,39 @@
       "step": 1,
       "unit": "px",
       "default": 0
+    },
+    {
+      "type": "header",
+      "content": "Advanced"
+    },
+    {
+      "type": "text",
+      "id": "custom_class",
+      "label": "Custom CSS class",
+      "info": "Lowercase letters, numbers and hyphens, starting with a letter. Separate multiple classes with spaces."
+    },
+    {
+      "type": "range",
+      "id": "mobile_image_size",
+      "label": "Mobile collection image size",
+      "info": "Width of each collection card and image on phones. The image keeps its ratio. Applies when a custom class is set.",
+      "min": 80,
+      "max": 180,
+      "step": 1,
+      "unit": "px",
+      "default": 97,
+      "visible_if": "{{ section.settings.layout_type == 'carousel' }}"
+    },
+    {
+      "type": "range",
+      "id": "mobile_title_size",
+      "label": "Mobile collection title size",
+      "info": "Collection title size on phones. Desktop uses the title block's font size. Applies when a custom class is set.",
+      "min": 10,
+      "max": 20,
+      "step": 1,
+      "unit": "px",
+      "default": 11
     }
   ],
   "presets": [

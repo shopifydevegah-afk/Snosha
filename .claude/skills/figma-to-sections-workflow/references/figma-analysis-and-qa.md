@@ -90,6 +90,7 @@ If a value isn't available, write `ASSUMED: <value> (reason)`. Never invent one.
 | CSS loaded once | Grep `layout/theme.liquid` for the file | Exactly one `stylesheet_tag` per *initialized* developer file, none for uninitialized ones, and the Cairo line unchanged |
 | CSS scoping | Read every top-level rule you added or changed | Every selector depends on the owning custom class (custom-class-policy.md §5), and nothing nested escapes the instance. `:has()`/sibling forms are fine. A text search alone doesn't count; the browser check in Stage G is the proof |
 | Console / network | `browser-automation` skill on the preview URL | No new errors or 404s |
+| Native preset & naming (SKILL hard rule 12) | Read the section's `presets`; compare with the instance in the template JSON | (1) instance `type` = the chosen native section; (2) the native preset was inspected and its block hierarchy reused; (3) instance `"name"` = the preset's `t:names.*` key, not a heading, brand or nickname; (4) storefront heading lives in a content block, separate from the name; (5) no duplicate custom section was created |
 
 Previews need `shopify theme dev --store <store>.myshopify.com` (requires the user to be logged in) or a preview URL from the user. If neither is available, say so and leave visual QA `PENDING`.
 

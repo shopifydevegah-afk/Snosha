@@ -26,7 +26,7 @@ Root = the element that gets the class. "Static" = fixed blocks rendered by `con
 | `carousel` | Horizontal scroller of content cards | static `_carousel-content` + `group` | `.section` div |
 | `media-with-content` | Image/video next to text | static `_media-without-appearance` + `_content-without-appearance` | `.section` div |
 | `product-list` | Product grid / carousel / editorial from a collection (`layout_type`, `columns`, `mobile_columns`, `carousel_on_mobile`, `max_products`) | static `_product-list-content` header, `_product-card` per product | `.section.section-resource-list` |
-| `collection-list` / `main-collection-list` | Collection grids/carousels | `@theme`, text, image, button, group… / collection cards | `.section` div |
+| `collection-list` / `main-collection-list` | Collection grids/carousels. `collection-list` presets: `t:names.collections_bento`, `collections_grid`, **`collections_carousel`** ("Collection list: Carousel" / ar "قائمة المجموعات: عرض دائري": `group` "Header" > `text`, static `_collection-card` > `_collection-card-image` + `collection-title`, `layout_type` carousel), `collections_editorial` | `@theme`, text, image, button, group… / collection cards | `.section` div |
 | `collection-links` | Collection names list with image | static | `.section` div |
 | `featured-product` / `featured-product-information` | Single product spotlight | static `_featured-product`, media | check the file |
 | `product-hotspots` | Shoppable image | `_hotspot-product` | `.section` div |
@@ -94,4 +94,6 @@ Add a row for every schema setting added, structural change, or new component. N
 
 | Date | Component (file) | Change | Setting IDs | Category | Reversibility (`CLASS_ONLY` / `CLASS_PLUS_SETTINGS` / `OPT_IN_STRUCTURAL` / `NOT_FULLY_REVERSIBLE`) | Notes / limitations |
 |---|---|---|---|---|---|---|
-| — | — | — | — | — | — | No extensions yet. `snippets/custom-class.liquid` not created yet |
+| 2026-11-08 | `snippets/custom-class.liquid` (new, shared) | Sanitizing snippet created per custom-class-policy §3. Tested in preview: `␠␠a␠␠␠b␠␠` → `a b`; `SN-A` → `sn-a`; `sn_b` → `sn_b` (underscore kept); `sn-c"><x` → `sn-c-x` (no `"`/`<` output); `1abc` → `1abc`; Arabic `مرحبا` → `مرحبا` (kept); empty → nothing | — | B | n/a | Arabic and leading-digit tokens pass through unchanged, so §1 naming still matters |
+| 2026-11-08 | `collection-list` (`sections/collection-list.liquid`) | `custom_class` setting appended after an "Advanced" header; rendered on the `.section` div via `custom-class` | `custom_class` | B | `CLASS_PLUS_SETTINGS` (S04: see plan area E for settings changed) | Dev2 / S04 / `sn-home-collections`. Settings count 17 → 18 |
+| 2026-11-08 | `templates/index.json` S04 instance (no schema change) | Aligned with the native `collections_carousel` preset: instance `"name"` restored to `t:names.collections_carousel` (was the heading text), heading `text` wrapped in the preset's `group` "Header" block | — | B | `CLASS_PLUS_SETTINGS` (unchanged) | Section ID, `text_sn_heading` ID and all settings kept; no collections had been picked yet, so nothing was lost |

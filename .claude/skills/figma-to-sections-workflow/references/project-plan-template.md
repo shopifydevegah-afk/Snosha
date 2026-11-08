@@ -52,6 +52,7 @@ Never mark a section VERIFIED while any of its QA columns is `PENDING`, `FAIL` o
 ### S0X <Section name>
 - Figma: desktop <node>, mobile <node> (+ sub-nodes used)
 - Matching Horizon sections: …   Relevant blocks/snippets: …
+- Native preset reused: <section file> → preset `t:names.…` (<English label>); instance `"name"` = that key; preset block hierarchy kept: yes/no (why)
 - Native settings that cover it: …
 - Missing settings: …            (gate: schema-extension-policy.md)
 - Media: each item → resource | native setting | new setting (+ mobile fallback)
