@@ -4,12 +4,29 @@
   {% content_for 'blocks' %}
 {% endcapture %}
 
+{%- liquid
+  # Project extension (Snosha S03): optional custom class + floating position classes.
+  # Position classes are inert unless the group sits inside a styled Hero stage (assets/dev1.css).
+  capture group_class
+    render 'custom-class', value: block.settings.custom_class
+  endcapture
+  assign float_position = block.settings.float_position | default: 'none'
+  if float_position != 'none'
+    assign float_position_mobile = block.settings.float_position_mobile | default: 'same'
+    if float_position_mobile == 'same'
+      assign float_position_mobile = float_position
+    endif
+    assign group_class = group_class | append: ' sn-float sn-float--' | append: float_position | append: ' sn-float-m--' | append: float_position_mobile
+  endif
+-%}
+
 {% render 'group',
   children: children,
   settings: block.settings,
   shopify_attributes: block.shopify_attributes,
   background_color: block.settings.background_color,
-  block_id: block.id
+  block_id: block.id,
+  class: group_class
 %}
 
 {% schema %}
@@ -508,6 +525,50 @@
       "step": 1,
       "unit": "px",
       "default": 0
+    },
+    {
+      "type": "header",
+      "content": "Advanced"
+    },
+    {
+      "type": "text",
+      "id": "custom_class",
+      "label": "Custom CSS class",
+      "info": "Lowercase letters, numbers and hyphens, starting with a letter. Separate multiple classes with spaces."
+    },
+    {
+      "type": "select",
+      "id": "float_position",
+      "label": "Floating position (desktop)",
+      "info": "Only works for groups inside a Hero product stage group (class sn-home-hero-stage) that has a product image. Has no effect anywhere else.",
+      "options": [
+        { "value": "none", "label": "None (normal layout)" },
+        { "value": "top-start", "label": "Top – start side (right in Arabic)" },
+        { "value": "middle-start", "label": "Middle – start side (right in Arabic)" },
+        { "value": "bottom-start", "label": "Bottom – start side (right in Arabic)" },
+        { "value": "top-end", "label": "Top – end side (left in Arabic)" },
+        { "value": "middle-end", "label": "Middle – end side (left in Arabic)" },
+        { "value": "bottom-end", "label": "Bottom – end side (left in Arabic)" }
+      ],
+      "default": "none"
+    },
+    {
+      "type": "select",
+      "id": "float_position_mobile",
+      "label": "Floating position (mobile and tablet)",
+      "info": "Below 990px.",
+      "options": [
+        { "value": "same", "label": "Same as desktop" },
+        { "value": "none", "label": "None (normal layout)" },
+        { "value": "top-start", "label": "Top – start side (right in Arabic)" },
+        { "value": "middle-start", "label": "Middle – start side (right in Arabic)" },
+        { "value": "bottom-start", "label": "Bottom – start side (right in Arabic)" },
+        { "value": "top-end", "label": "Top – end side (left in Arabic)" },
+        { "value": "middle-end", "label": "Middle – end side (left in Arabic)" },
+        { "value": "bottom-end", "label": "Bottom – end side (left in Arabic)" }
+      ],
+      "default": "same",
+      "visible_if": "{{ block.settings.float_position != 'none' }}"
     }
   ],
   "presets": [

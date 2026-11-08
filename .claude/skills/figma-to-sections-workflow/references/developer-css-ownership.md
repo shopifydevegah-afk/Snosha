@@ -7,7 +7,7 @@
 | Developer | CSS file | Status |
 |---|---|---|
 | Main | `assets/main.css` | **Initialized 2026-11-08**: the file existed (`/* main css */`, content kept) and is loaded once in `layout/theme.liquid` |
-| Dev1 | `assets/dev1.css` | Not initialized (file absent, no tag) |
+| Dev1 | `assets/dev1.css` | **Initialized 2026-11-08** (S03): file created, loaded once after `main.css` |
 | Dev2 | `assets/dev2.css` | Not initialized (file absent, no tag) |
 | Dev3 | `assets/dev3.css` | Not initialized (file absent, no tag) |
 

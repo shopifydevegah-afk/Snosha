@@ -1,0 +1,697 @@
+/* Dev1 — Shosha Figma CSS. Scoped per class; see figma-to-sections-workflow */
+
+/* ==========================================================================
+   S03 Hero — .sn-home-hero (sections/hero.liquid, root .hero)
+   Figma desktop 190:3789 (1480), mobile 335:3959 (390) | owner: Dev1
+   Parts (group block custom_class): .sn-home-hero-content, .sn-home-hero-overline,
+   .sn-home-hero-stage, .sn-home-hero-chip (+ inert .sn-float* position classes from group settings)
+   Breakpoints: ≤989 stacked (mobile composition, approved D3), ≥990 side by side.
+   ========================================================================== */
+.sn-home-hero {
+  /* Bottom space kept free for an overlapping Trust Strip (set below, only when one follows). */
+  --sn-hero-overlap: 0px;
+
+  /* Figma container: 1376px (52px margins at 1480). Class-scoped container override. */
+  --page-content-width: 1376px;
+  --page-width: calc(var(--page-content-width) + var(--page-margin) * 2);
+
+  @media screen and (max-width: 749px) {
+    /* Figma mobile gutter 24px (Horizon default 16px) */
+    --page-margin: max(24px, var(--safe-area-inset-left, 0px), var(--safe-area-inset-right, 0px));
+  }
+
+  /* Background fallback: Figma gradient when no merchant colour is set. Merchant media renders above it. */
+  &:not([class*='color-custom-']) .hero__media-grid {
+    background-image: linear-gradient(57.82deg, #63cdff 7.84%, #176bb0 50%, #0f64a8 92.16%);
+
+    @media screen and (max-width: 749px) {
+      background-image: linear-gradient(83.14deg, #63cdff 7.84%, #176bb0 50%, #0f64a8 92.16%);
+    }
+  }
+
+  /* With blocks, the gradient replaces the "no media" placeholder (only rendered when no media is selected).
+     A hero without blocks keeps the native placeholder so the empty image-only state stays visible. */
+  &:has(> .hero__container > .hero__content-wrapper > *) .hero__media-grid > svg.hero__media {
+    display: none;
+  }
+
+  > .hero__container > .hero__content-wrapper {
+    @media screen and (min-width: 990px) {
+      /* Figma Hero Container inner padding */
+      padding-inline: 20px;
+      flex-wrap: nowrap;
+    }
+
+    @media screen and (max-width: 989px) {
+      flex-direction: column;
+      flex-wrap: nowrap;
+      align-items: center;
+      justify-content: flex-start;
+      gap: 12px;
+      /* Figma mobile: 6px top; 87px bottom = 38px + 49px Trust overlap */
+      padding-block: 6px calc(38px + var(--sn-hero-overlap));
+    }
+  }
+}
+
+/* --- Content column ------------------------------------------------------ */
+.sn-home-hero-content {
+  > .group-block-content > .text-block {
+    color: #fff;
+
+    :is(h1, h2, h3, p) {
+      margin: 0;
+      color: inherit;
+    }
+
+    /* Figma Desktop/Display Hero 56/84 Bold; scales down from 1480 to 990 */
+    h1 {
+      font-family: var(--font-heading--family);
+      font-size: clamp(2.25rem, 3.784vw, 3.5rem);
+      line-height: 1.5;
+      font-weight: 700;
+      letter-spacing: 0;
+    }
+
+    /* Accent word: <em> in the rich text */
+    em {
+      font-style: normal;
+      color: #63cdff;
+    }
+
+    /* Figma Desktop/Body Large 18/32 */
+    p {
+      font-size: 18px;
+      line-height: 32px;
+      font-weight: 400;
+      color: rgb(255 255 255 / 0.86);
+    }
+
+    &:not(:has(h1)) {
+      max-inline-size: 500px;
+    }
+  }
+
+  /* CTA: white button with brand-gradient label (Figma 122×48, radius 10, 16/26 SemiBold) */
+  :is(.button, .button-secondary, .button-custom) {
+    position: relative;
+    isolation: isolate;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-block-size: 48px;
+    padding-block: 0;
+    padding-inline: 28px;
+    border-radius: 10px;
+    font-size: 16px;
+    line-height: 26px;
+    font-weight: 600;
+    background-color: #fff;
+    color: #176bb0;
+    box-shadow: inset 0 0 0 1px rgb(255 255 255 / 0.86);
+  }
+
+  @supports (background-clip: text) or (-webkit-background-clip: text) {
+    :is(.button, .button-secondary, .button-custom) {
+      background-color: transparent;
+      background-image: linear-gradient(160.14deg, #63cdff 0%, #0f64a8 70.71%);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+
+      &::before {
+        content: '';
+        position: absolute;
+        inset: 0;
+        z-index: -1;
+        border-radius: inherit;
+        background-color: #fff;
+        box-shadow: inset 0 0 0 1px rgb(255 255 255 / 0.86);
+      }
+    }
+  }
+
+  @media screen and (max-width: 989px) {
+    inline-size: 100%;
+    max-inline-size: 600px;
+    /* The group's own padding (desktop values from the editor) is not used when stacked */
+    padding: 0;
+
+    > .group-block-content {
+      align-items: center;
+      gap: 12px;
+      text-align: center;
+    }
+
+    > .group-block-content > .text-block {
+      --text-align: center;
+
+      text-align: center;
+
+      /* Figma Mobile/H1 28/44 */
+      h1 {
+        font-size: 28px;
+        line-height: 44px;
+      }
+
+      /* Figma mobile subtitle 14/24 */
+      p {
+        font-size: 14px;
+        line-height: 24px;
+      }
+    }
+  }
+}
+
+/* Overline pill (group: icon + text). Figma 275×34, padding 5 / 10 (icon side) / 5 / 14, gap 8 */
+.sn-home-hero-overline {
+  padding-block: 5px;
+  padding-inline: 10px 14px;
+  border-radius: 999px;
+  background-color: rgb(255 255 255 / 0.1);
+
+  > .group-block-content {
+    flex-direction: row;
+    flex-wrap: nowrap;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .icon-block {
+    color: #fff;
+  }
+
+  .icon-block__media {
+    inline-size: 24px;
+    block-size: 24px;
+  }
+
+  .text-block {
+    color: #fff;
+
+    :is(p, h1, h2, h3) {
+      margin: 0;
+      font-size: 12px;
+      line-height: 18px;
+      font-weight: 600;
+      color: inherit;
+    }
+  }
+}
+
+/* --- Product stage --------------------------------------------------------
+   Flow mode (no image block): chips wrap in a centred row, no decor.
+   Stage mode (has an image block): fixed Figma aspect, absolute product + floating chips + decor. */
+.sn-home-hero-stage {
+  > .group-block-content {
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+    gap: 8px;
+  }
+
+  &:has(> .group-block-content > .image-block) {
+    /* Desktop: Figma stage 749×500 out of the 1336px inner row */
+    --sn-stage-ratio: 749 / 500;
+    /* Decor ring radii (fractions of the outer ring) and geometry, Figma 190:3792–3795 */
+    --sn-r2: 78.95%;
+    --sn-r3: 57.89%;
+
+    position: relative;
+    isolation: isolate;
+    aspect-ratio: var(--sn-stage-ratio);
+    padding: 0;
+
+    @media screen and (min-width: 990px) {
+      flex: 0 0 56.06%;
+      inline-size: 56.06%;
+    }
+
+    @media screen and (max-width: 989px) {
+      /* Mobile: Figma stage 342×330 (full container width); tablet capped (ASSUMED 480px) */
+      --sn-stage-ratio: 342 / 330;
+      --sn-r2: 76.32%;
+      --sn-r3: 52.63%;
+
+      inline-size: 100%;
+      max-inline-size: 480px;
+      order: -1;
+    }
+
+    > .group-block-content {
+      position: absolute;
+      inset: 0;
+      z-index: 1;
+      align-content: flex-end;
+      padding-block-end: 4%;
+    }
+
+    /* Highlight: white 35%, blur 55 (Figma Highlight ellipse) */
+    &::before {
+      content: '';
+      position: absolute;
+      z-index: -1;
+      inset-inline-start: 41.25%;
+      inset-block-start: 8%;
+      inline-size: 50.73%;
+      block-size: 60%;
+      border-radius: 50%;
+      background-color: rgb(255 255 255 / 0.35);
+      filter: blur(55px);
+      pointer-events: none;
+
+      @media screen and (max-width: 989px) {
+        inset-inline-start: 14.91%;
+        inset-block-start: 23.94%;
+        inline-size: 70.18%;
+        block-size: 54.55%;
+      }
+    }
+
+    /* Three concentric rings: 1.5px white at 18% / 12% / 8% (Figma Ring ellipses) */
+    &::after {
+      content: '';
+      position: absolute;
+      z-index: -1;
+      inset-inline-start: 6.01%;
+      inset-block-start: 50%;
+      inline-size: 101.47%;
+      aspect-ratio: 1;
+      margin-block-start: -50.735%;
+      border-radius: 50%;
+      background-image: radial-gradient(
+        circle closest-side,
+        transparent calc(var(--sn-r3) - 1.5px),
+        rgb(255 255 255 / 0.18) calc(var(--sn-r3) - 1.5px) var(--sn-r3),
+        transparent var(--sn-r3) calc(var(--sn-r2) - 1.5px),
+        rgb(255 255 255 / 0.12) calc(var(--sn-r2) - 1.5px) var(--sn-r2),
+        transparent var(--sn-r2) calc(100% - 1.5px),
+        rgb(255 255 255 / 0.08) calc(100% - 1.5px) 100%,
+        transparent 100%
+      );
+      pointer-events: none;
+
+      @media screen and (max-width: 989px) {
+        inset-inline-start: -16.67%;
+        inset-block-start: 53.03%;
+        inline-size: 133.33%;
+        margin-block-start: -66.67%;
+      }
+    }
+
+    /* Product image (Figma photo frame 728×594 at -9,-50; mobile 348×284 at -3,37) */
+    .image-block {
+      position: absolute;
+      inset-inline-start: 4.01%;
+      inset-block-start: -10%;
+      inline-size: 97.2%;
+      block-size: 118.8%;
+      margin: 0;
+      padding: 0;
+
+      @media screen and (max-width: 989px) {
+        inset-inline-start: -0.88%;
+        inset-block-start: 11.21%;
+        inline-size: 101.75%;
+        block-size: 86.18%;
+      }
+    }
+
+    .image-block__image,
+    .image-block .placeholder-image {
+      inline-size: 100%;
+      block-size: 100%;
+      aspect-ratio: auto;
+      object-fit: contain;
+    }
+
+    .image-block__image {
+      filter: drop-shadow(0 30px 50px rgb(8 51 115 / 0.35));
+    }
+
+    .image-block__placeholder {
+      inline-size: 100%;
+      block-size: 100%;
+    }
+
+    /* Floating chips. Outer-edge anchoring keeps chips inside the stage edge whatever the label length.
+       Exact Figma slots: top-start, middle-start, top-end, bottom-end (desktop); top-start, middle-start,
+       middle-end, bottom-end (mobile). Other slots are ASSUMED mirrored values. */
+    @media screen and (min-width: 990px) {
+      .sn-float {
+        position: absolute;
+        margin: 0;
+      }
+
+      .sn-float--top-start { inset-inline-start: 18.56%; inset-block-start: 24.4%; }
+      .sn-float--middle-start { inset-inline-start: 24.3%; inset-block-start: 51.4%; }
+      .sn-float--bottom-start { inset-inline-start: 21.4%; inset-block-start: 70%; }
+      .sn-float--top-end { inset-inline-end: -3.87%; inset-block-start: 31.2%; }
+      .sn-float--middle-end { inset-inline-end: -3.1%; inset-block-start: 47.2%; }
+      .sn-float--bottom-end { inset-inline-end: -2.4%; inset-block-start: 63.2%; }
+    }
+
+    @media screen and (max-width: 989px) {
+      .sn-float {
+        position: absolute;
+        margin: 0;
+      }
+
+      .sn-float-m--none { position: static; }
+      .sn-float-m--top-start { inset-inline-start: 0; inset-block-start: 11.21%; }
+      .sn-float-m--middle-start { inset-inline-start: -0.88%; inset-block-start: 46.97%; }
+      .sn-float-m--bottom-start { inset-inline-start: -0.88%; inset-block-start: 86.97%; }
+      .sn-float-m--top-end { inset-inline-end: -5.56%; inset-block-start: 11.21%; }
+      .sn-float-m--middle-end { inset-inline-end: -5.56%; inset-block-start: 45.45%; }
+      .sn-float-m--bottom-end { inset-inline-end: -2.05%; inset-block-start: 86.97%; }
+    }
+  }
+}
+
+/* Spec chip (group: icon badge + text label). Figma 190:3797 */
+.sn-home-hero-chip {
+  > .group-block-content {
+    flex-direction: row;
+    flex-wrap: nowrap;
+    align-items: center;
+    gap: 0;
+  }
+
+  /* Badge: 32px circle, brand gradient, 1.5px white border, pulse ring 44px */
+  .icon-block {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    box-sizing: border-box;
+    inline-size: 32px;
+    block-size: 32px;
+    border: 1.5px solid rgb(255 255 255 / 0.9);
+    border-radius: 50%;
+    background-image: linear-gradient(to bottom, #63cdff, #0f64a8);
+    color: #fff;
+    filter: drop-shadow(0 6px 7px rgb(15 100 168 / 0.35));
+
+    &::after {
+      content: '';
+      position: absolute;
+      inset: -7.5px;
+      border: 1.5px solid rgb(99 205 255 / 0.55);
+      border-radius: 50%;
+      pointer-events: none;
+    }
+  }
+
+  .icon-block__media {
+    inline-size: 17px;
+    block-size: 17px;
+  }
+
+  /* Label pill: translucent white, blur 9, 1px inner stroke, overlapped 9px by the badge */
+  .text-block {
+    margin-inline-start: -9px;
+    padding-block: 7px;
+    padding-inline: 20px 14px;
+    border-radius: 999px;
+    background-color: rgb(255 255 255 / 0.78);
+    box-shadow: inset 0 0 0 1px rgb(255 255 255 / 0.95);
+    -webkit-backdrop-filter: blur(9px);
+    backdrop-filter: blur(9px);
+    color: #12568d;
+    white-space: nowrap;
+
+    :is(p, h1, h2, h3) {
+      margin: 0;
+      font-size: 12px;
+      line-height: 20px;
+      font-weight: 600;
+      color: inherit;
+    }
+  }
+}
+
+/* ==========================================================================
+   S03 Trust Strip — .sn-home-trust-card (group in a native `section`), items .sn-home-trust-item
+   Figma desktop 190:4081 (card 1236×102), mobile 335:4229 (346×100) | owner: Dev1
+   ========================================================================== */
+.sn-home-trust-card {
+  position: relative;
+  inline-size: 100%;
+  max-inline-size: 1236px;
+  margin-block: 3px;
+  margin-inline: auto;
+  padding: 22px 36px;
+  border-radius: 22px;
+  background-color: #fff;
+  /* Figma: 1.5px inside stroke + drop shadow on the ring wrapper */
+  box-shadow: inset 0 0 0 1.5px rgb(99 205 255 / 0.4);
+  filter: drop-shadow(0 14px 16px rgb(15 100 168 / 0.1));
+
+  > .group-block-content {
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    gap: 0;
+  }
+
+  /* Glint on the top edge (Figma Glint 170×22, #63cdff 90%, blur 7), visible only in the 3px strip above the card */
+  &::before {
+    content: '';
+    position: absolute;
+    inset-inline-end: 61.33%;
+    inset-block-start: -13px;
+    inline-size: 170px;
+    block-size: 22px;
+    border-radius: 50%;
+    background-color: rgb(99 205 255 / 0.9);
+    filter: blur(7px);
+    clip-path: inset(10px -40px 9px -40px);
+    pointer-events: none;
+  }
+
+  @media screen and (max-width: 989px) {
+    max-inline-size: none;
+    margin-block: 0;
+    padding: 10px;
+    border: 2px solid transparent;
+    border-radius: 20px;
+    /* Static "border beam" ring (Figma Beam Disk conic gradient; no motion in Figma) */
+    background:
+      linear-gradient(#fff, #fff) padding-box,
+      conic-gradient(
+          from 90deg at 50% calc(50% + 6px),
+          rgb(99 205 255 / 0) 0% 42%,
+          rgb(99 205 255 / 0.65) 46.5%,
+          #fff 50%,
+          rgb(99 205 255 / 0.65) 53.5%,
+          rgb(99 205 255 / 0) 58% 100%
+        )
+        border-box;
+    box-shadow: none;
+    filter: none;
+
+    > .group-block-content {
+      flex-wrap: wrap;
+      align-items: flex-start;
+      gap: 2px;
+    }
+
+    &::before {
+      display: none;
+    }
+  }
+
+  @media screen and (max-width: 749px) {
+    /* Figma mobile: 24px visual-left gutter, 20px visual-right (page margin is 16px) */
+    margin-inline: 4px 8px;
+    inline-size: auto;
+  }
+}
+
+.sn-home-trust-item {
+  position: relative;
+  flex: 1 1 0;
+  min-inline-size: 220px;
+
+  > .group-block-content {
+    flex-direction: row;
+    flex-wrap: nowrap;
+    align-items: center;
+    justify-content: center;
+    gap: 14px;
+  }
+
+  /* Divider before every item except the first (Figma 1×52 #dcf2fb); adapts to any item count */
+  & + &::before {
+    content: '';
+    position: absolute;
+    inset-inline-start: 0;
+    inset-block-start: 50%;
+    inline-size: 1px;
+    block-size: 52px;
+    background-color: #dcf2fb;
+    translate: 0 -50%;
+  }
+
+  /* Icon tile 58px, radius 17, white → #f0fafe, 1px #dcf2fb, soft shadow; icon 30px */
+  .icon-block {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    box-sizing: border-box;
+    inline-size: 58px;
+    block-size: 58px;
+    border: 1px solid #dcf2fb;
+    border-radius: 17px;
+    background-image: linear-gradient(to bottom, #fff, #f0fafe);
+    color: #176bb0;
+    filter: drop-shadow(0 8px 9px rgb(15 100 168 / 0.1));
+  }
+
+  .icon-block__media {
+    inline-size: 30px;
+    block-size: 30px;
+  }
+
+  .group-block > .group-block-content {
+    align-items: flex-start;
+    gap: 2px;
+  }
+
+  .text-block {
+    :is(h1, h2, h3, h4, p) {
+      margin: 0;
+      text-align: start;
+    }
+
+    /* Figma Product name 16/27 SemiBold #131311 */
+    :is(h1, h2, h3, h4) {
+      font-family: var(--font-body--family);
+      font-size: 16px;
+      line-height: 27px;
+      font-weight: 600;
+      color: #131311;
+    }
+
+    /* Figma Body Small 14/24 #5a5a59 */
+    p {
+      font-size: 14px;
+      line-height: 24px;
+      font-weight: 400;
+      color: #5a5a59;
+    }
+  }
+
+  @media screen and (max-width: 989px) {
+    flex: 1 1 0;
+    /* Four per row; extra items wrap to a new row (no slider) */
+    min-inline-size: calc(25% - 2px);
+
+    > .group-block-content {
+      flex-direction: column;
+      align-items: center;
+      gap: 3px;
+    }
+
+    & + &::before {
+      display: none;
+    }
+
+    .group-block > .group-block-content {
+      align-items: center;
+      gap: 0;
+    }
+
+    .text-block :is(h1, h2, h3, h4, p) {
+      text-align: center;
+    }
+
+    /* Tablet sizes (ASSUMED, no Figma tablet frame) */
+    .icon-block {
+      inline-size: 48px;
+      block-size: 48px;
+      border-radius: 14px;
+    }
+
+    .icon-block__media {
+      inline-size: 24px;
+      block-size: 24px;
+    }
+
+    .text-block {
+      :is(h1, h2, h3, h4) {
+        font-size: 14px;
+        line-height: 22px;
+      }
+
+      p {
+        font-size: 12px;
+        line-height: 18px;
+      }
+    }
+  }
+
+  @media screen and (max-width: 749px) {
+    /* Figma mobile: tile 38 radius 12, icon 20, title 10/19 SemiBold, desc 8/19 */
+    .icon-block {
+      inline-size: 38px;
+      block-size: 38px;
+      border-radius: 12px;
+    }
+
+    .icon-block__media {
+      inline-size: 20px;
+      block-size: 20px;
+    }
+
+    .text-block {
+      :is(h1, h2, h3, h4) {
+        font-size: 10px;
+        line-height: 19px;
+      }
+
+      p {
+        font-size: 8px;
+        line-height: 19px;
+      }
+    }
+  }
+}
+
+/* ==========================================================================
+   S03 Hero + Trust overlap — only when a Trust Strip section directly follows a classed hero WITH blocks.
+   Image-only heroes (no blocks) and Trust Strips anywhere else are unaffected.
+   ========================================================================== */
+.shopify-section:has(.sn-home-hero > .hero__container > .hero__content-wrapper > *) {
+  &:has(+ .shopify-section .sn-home-trust-card) .sn-home-hero {
+    @media screen and (max-width: 989px) {
+      --sn-hero-overlap: 49px;
+    }
+  }
+
+  + .shopify-section:has(.sn-home-trust-card) {
+    position: relative;
+    z-index: 1;
+    /* Figma desktop: Trust wrapper starts 58px above the hero bottom */
+    margin-block-start: -58px;
+
+    @media screen and (max-width: 989px) {
+      /* Figma mobile: 49px */
+      margin-block-start: -49px;
+    }
+
+    /* Keep the Trust section's own background from painting over the hero */
+    > .section-background {
+      inset-block-start: 58px;
+
+      @media screen and (max-width: 989px) {
+        inset-block-start: 49px;
+      }
+    }
+  }
+}
