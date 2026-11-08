@@ -3,7 +3,18 @@
 {% assign button_collection = closest.collection %}
 {% assign button_url = button_collection.url %}
 
-{% if button_collection.products_count > section.settings.max_products %}
+{% liquid
+  # Native: only when the collection has more products than the list shows.
+  # Opt-in `show_always`: whenever a collection is selected.
+  assign show_button = false
+  if button_collection.products_count > section.settings.max_products
+    assign show_button = true
+  elsif block.settings.show_always and button_collection != blank
+    assign show_button = true
+  endif
+%}
+
+{% if show_button %}
   {% render 'button', link: button_url %}
 {% endif %}
 
@@ -21,6 +32,13 @@
       "id": "label",
       "label": "t:settings.label",
       "default": "t:text_defaults.button_label"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_always",
+      "label": "Show even when all products are displayed",
+      "info": "Shows the link whenever a collection is selected.",
+      "default": false
     },
     {
       "type": "checkbox",

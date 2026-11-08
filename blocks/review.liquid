@@ -112,6 +112,10 @@
         {%- endif -%}
       </p>
     {%- endif -%}
+    {%- if block_settings.label != blank -%}
+      {%- comment -%} Opt-in label; only reachable when real rating data exists. {%- endcomment -%}
+      <span class="rating-label {{ block_settings.type_preset }}">{{ block_settings.label | escape }}</span>
+    {%- endif -%}
   </div>
 {%- endif -%}
 
@@ -201,6 +205,12 @@
       "id": "show_number",
       "label": "t:settings.review_count",
       "default": true
+    },
+    {
+      "type": "text",
+      "id": "label",
+      "label": "Label",
+      "info": "Shown next to the stars only when the product has rating data. Leave blank to hide."
     },
     {
       "type": "color",

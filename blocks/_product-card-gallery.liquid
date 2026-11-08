@@ -27,7 +27,19 @@
       </div>
     {%- endif -%}
     {% if product.available and settings.quick_add or settings.mobile_quick_add %}
-      {% render 'quick-add', product: product, section_id: section.id %}
+      {% render 'quick-add', product: product, section_id: section.id, add_label: block.settings.quick_add_label %}
+      {%- if block.settings.quick_add_mobile and settings.quick_add -%}
+        {%- comment -%}
+          Opt-in: shows the existing quick add button on mobile for this block only, by overriding the two
+          variables product-card.liquid sets from the global mobile_quick_add setting. No markup or JS change.
+        {%- endcomment -%}
+        {% style %}
+          #shopify-section-{{ section.id }} .card-gallery-{{ block.id }} {
+            --quick-add-mobile-display: flex;
+            --quick-add-mobile-opacity: 1;
+          }
+        {% endstyle %}
+      {%- endif -%}
     {% endif %}
   {% endunless %}
 {% endcapture %}
@@ -182,6 +194,23 @@
       "step": 1,
       "unit": "px",
       "default": 0
+    },
+    {
+      "type": "header",
+      "content": "Quick add"
+    },
+    {
+      "type": "checkbox",
+      "id": "quick_add_mobile",
+      "label": "Show quick add on mobile",
+      "info": "Only for these product cards. Requires Quick add to be on in theme settings.",
+      "default": false
+    },
+    {
+      "type": "text",
+      "id": "quick_add_label",
+      "label": "Add button label",
+      "info": "Used only for products that can be added directly. Leave blank for the default text."
     }
   ],
   "presets": [

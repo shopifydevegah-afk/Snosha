@@ -1,0 +1,20 @@
+{%- doc -%}
+  Outputs sanitized custom classes from a `custom_class` setting, each prefixed with a space, or nothing when blank.
+
+  @param {string} [value] - Raw `custom_class` setting value
+
+  @example
+  class="section section--page-width{% render 'custom-class', value: section.settings.custom_class %}"
+{%- enddoc -%}
+{%- liquid
+  if value != blank
+    assign parts = value | strip | split: ' '
+    for part in parts
+      assign clean = part | handleize | escape
+      if clean != blank
+        echo ' '
+        echo clean
+      endif
+    endfor
+  endif
+-%}

@@ -59,6 +59,35 @@
     show_sale_price_first: block_settings.show_sale_price_first
   %}
 
+  {%- if block_settings.show_discount_badge and selected_variant != blank -%}
+    {%- liquid
+      # Opt-in discount badge. Uses the same variant as the price above (selected or first available).
+      # Note: product-price.js refreshes only the price container on a live variant change.
+      assign discount_percent = 0
+      assign variant_compare_at = selected_variant.compare_at_price
+      assign variant_price = selected_variant.price
+      if variant_compare_at > variant_price
+        assign discount_percent = variant_compare_at | minus: variant_price | times: 100.0 | divided_by: variant_compare_at | round
+      endif
+    -%}
+    {%- if discount_percent >= 1 -%}
+      {%- liquid
+        assign discount_label_format = block_settings.discount_badge_label | default: '-[percent]%'
+        unless discount_label_format contains '[percent]'
+          assign discount_label_format = discount_label_format | append: ' [percent]%'
+        endunless
+        assign discount_percent_text = discount_percent | append: ''
+        assign discount_label = discount_label_format | escape | replace: '[percent]', discount_percent_text
+      -%}
+      <span
+        class="price-discount-badge"
+        ref="discountBadge"
+      >
+        {{- discount_label -}}
+      </span>
+    {%- endif -%}
+  {%- endif -%}
+
   {% if block_settings.show_tax_info %}
     <div class="tax-note">
       {%- if cart.duties_included and cart.taxes_included -%}
@@ -123,6 +152,21 @@
       "id": "show_tax_info",
       "label": "t:settings.show_tax_info",
       "default": false
+    },
+    {
+      "type": "checkbox",
+      "id": "show_discount_badge",
+      "label": "Show discount badge",
+      "info": "Calculated from the price and compare-at price. Hidden when there is no discount.",
+      "default": false
+    },
+    {
+      "type": "text",
+      "id": "discount_badge_label",
+      "label": "Discount badge text",
+      "info": "[percent] is replaced with the discount, for example: Save [percent]%",
+      "default": "-[percent]%",
+      "visible_if": "{{ block.settings.show_discount_badge }}"
     },
     {
       "type": "header",

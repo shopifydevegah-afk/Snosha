@@ -4,11 +4,15 @@
   @param {object} product - The product object
   @param {string} section_id - The section ID
   @param {object} [block] - The block object
+  @param {string} [add_label] - Optional text for the direct "Add" button only. Blank keeps the translated default. The "Choose" button is never affected.
 {%- enddoc -%}
 
 {% liquid
   assign product_form_id = 'QuickAdd-ProductForm-' | append: product.id | append: '-' | append: block.id
   assign add_to_cart_text = 'actions.add' | t
+  if add_label != blank
+    assign add_to_cart_text = add_label | strip | escape
+  endif
   assign choose_options_text = 'actions.choose' | t
   # Logic to determine which variant to use (matching swatch selection logic from product-card)
   assign variant = product.selected_or_first_available_variant
