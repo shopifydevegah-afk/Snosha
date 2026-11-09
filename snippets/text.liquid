@@ -61,6 +61,10 @@
     if has_mobile_text
       echo ' text-block--desktop-text '
     endif
+    # Optional mobile alignment (project extension, Snosha S03). Only the text block defines it.
+    if block_settings.mobile_alignment != blank and block_settings.mobile_alignment != 'same'
+      echo ' text-block--m-align-' | append: block_settings.mobile_alignment | append: ' '
+    endif
   endcapture
 %}
 
@@ -142,6 +146,21 @@
   @media screen and (min-width: 750px) {
     .text-block.text-block--mobile-text {
       display: none;
+    }
+  }
+
+  /* Optional mobile alignment (text block `mobile_alignment`); overrides the inline --text-align. */
+  @media screen and (max-width: 749px) {
+    .text-block.text-block--m-align-start > * {
+      text-align: start;
+    }
+
+    .text-block.text-block--m-align-center > * {
+      text-align: center;
+    }
+
+    .text-block.text-block--m-align-end > * {
+      text-align: end;
     }
   }
 

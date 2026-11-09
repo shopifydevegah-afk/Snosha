@@ -66,6 +66,19 @@
       "visible_if": "{{ block.settings.width == '100%' }}"
     },
     {
+      "type": "select",
+      "id": "mobile_alignment",
+      "label": "Text alignment (mobile)",
+      "info": "Below 750px.",
+      "options": [
+        { "value": "same", "label": "Same as desktop" },
+        { "value": "start", "label": "Start (right in Arabic)" },
+        { "value": "center", "label": "Center" },
+        { "value": "end", "label": "End (left in Arabic)" }
+      ],
+      "default": "same"
+    },
+    {
       "type": "header",
       "content": "t:content.typography"
     },

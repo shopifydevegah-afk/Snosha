@@ -51,6 +51,7 @@
             "padding-inline-start": 40,
             "padding-inline-end": 48,
             "custom_class": "sn-home-hero-content",
+            "mobile_content_alignment": "center",
             "float_position": "none",
             "float_position_mobile": "same"
           },
@@ -115,6 +116,7 @@
                   "settings": {
                     "text": "<p>عناية ذكية بالفم تكنولوجيا وتصميم مدروس</p>",
                     "mobile_text": "",
+                    "mobile_alignment": "center",
                     "width": "fit-content",
                     "max_width": "normal",
                     "alignment": "left",
@@ -147,6 +149,7 @@
               "settings": {
                 "text": "<h1>العناية <em>الذكية</em> بصحة<br/>الفم والأسنان</h1>",
                 "mobile_text": "",
+                "mobile_alignment": "center",
                 "width": "100%",
                 "max_width": "none",
                 "alignment": "left",
@@ -173,6 +176,7 @@
               "settings": {
                 "text": "<p>حلول ذكية للعناية بالفم تجمع بين التكنولوجيا والتصميم العملي لتجعل روتينك اليومي أسهل.</p>",
                 "mobile_text": "",
+                "mobile_alignment": "center",
                 "width": "100%",
                 "max_width": "none",
                 "alignment": "left",
@@ -334,7 +338,7 @@
                   "settings": {
                     "icon": "lightning_bolt",
                     "image_upload": "shopify://shop_images/sonic.svg",
-                    "width": 200,
+                    "width": 24,
                     "link": "",
                     "open_in_new_tab": false,
                     "icon_color": "#ffffff"
@@ -420,7 +424,7 @@
                   "settings": {
                     "icon": "stopwatch",
                     "image_upload": "shopify://shop_images/battery.svg",
-                    "width": 200,
+                    "width": 24,
                     "link": "",
                     "open_in_new_tab": false,
                     "icon_color": "#ffffff"
@@ -506,7 +510,7 @@
                   "settings": {
                     "icon": "check_box",
                     "image_upload": "shopify://shop_images/vector_1b715f9f-fc54-4010-a53f-60444ef01aca.svg",
-                    "width": 200,
+                    "width": 24,
                     "link": "",
                     "open_in_new_tab": false,
                     "icon_color": "#ffffff"
@@ -592,7 +596,7 @@
                   "settings": {
                     "icon": "none",
                     "image_upload": "shopify://shop_images/brush-head_5d8e2d1e-150c-46fc-861c-cd7e19d1e1db.png",
-                    "width": 22,
+                    "width": 24,
                     "link": "",
                     "open_in_new_tab": false,
                     "icon_color": "#ffffff"

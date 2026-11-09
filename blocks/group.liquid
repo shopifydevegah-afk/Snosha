@@ -18,6 +18,12 @@
     endif
     assign group_class = group_class | append: ' sn-float sn-float--' | append: float_position | append: ' sn-float-m--' | append: float_position_mobile
   endif
+
+  # Optional mobile alignment (below 750px). 'same' (default) adds nothing, so the native layout is unchanged.
+  assign mobile_content_alignment = block.settings.mobile_content_alignment | default: 'same'
+  if mobile_content_alignment != 'same'
+    assign group_class = group_class | append: ' sn-m-place--' | append: mobile_content_alignment
+  endif
 -%}
 
 {% render 'group',
@@ -28,6 +34,36 @@
   block_id: block.id,
   class: group_class
 %}
+
+{% stylesheet %}
+  /* Project extension (Snosha S03): optional mobile content position. Inline layout variables win over
+     stylesheet variables, so the flex properties are set directly. Direct children only. */
+  @media screen and (max-width: 749px) {
+    .group-block.sn-m-place--start > :is(.layout-panel-flex--column, .mobile-column) {
+      align-items: flex-start;
+    }
+
+    .group-block.sn-m-place--center > :is(.layout-panel-flex--column, .mobile-column) {
+      align-items: center;
+    }
+
+    .group-block.sn-m-place--end > :is(.layout-panel-flex--column, .mobile-column) {
+      align-items: flex-end;
+    }
+
+    .group-block.sn-m-place--start > .layout-panel-flex--row:not(.mobile-column) {
+      justify-content: flex-start;
+    }
+
+    .group-block.sn-m-place--center > .layout-panel-flex--row:not(.mobile-column) {
+      justify-content: center;
+    }
+
+    .group-block.sn-m-place--end > .layout-panel-flex--row:not(.mobile-column) {
+      justify-content: flex-end;
+    }
+  }
+{% endstylesheet %}
 
 {% schema %}
 {
@@ -525,6 +561,23 @@
       "step": 1,
       "unit": "px",
       "default": 0
+    },
+    {
+      "type": "header",
+      "content": "Mobile alignment"
+    },
+    {
+      "type": "select",
+      "id": "mobile_content_alignment",
+      "label": "Content position (mobile)",
+      "info": "Below 750px. Moves the blocks inside this group, including buttons. For a full-width button, set the button's Mobile width to Custom 100%.",
+      "options": [
+        { "value": "same", "label": "Same as desktop" },
+        { "value": "start", "label": "Start (right in Arabic)" },
+        { "value": "center", "label": "Center" },
+        { "value": "end", "label": "End (left in Arabic)" }
+      ],
+      "default": "same"
     },
     {
       "type": "header",
