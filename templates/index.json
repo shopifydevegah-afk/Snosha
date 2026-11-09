@@ -147,7 +147,10 @@
             "padding-inline-start": 0,
             "padding-inline-end": 0,
             "border_radius_mobile_custom": true,
-            "border_radius_mobile": 20
+            "border_radius_mobile": 20,
+            "badge_font_size": 12,
+            "product_card_gap_mobile": 7,
+            "badge_font_size_mobile": 10
           },
           "blocks": {
             "product_card_gallery_677WP3": {
@@ -232,7 +235,11 @@
                 "padding-block-start": 0,
                 "padding-block-end": 32,
                 "padding-inline-start": 12,
-                "padding-inline-end": 12
+                "padding-inline-end": 12,
+                "mobile_spacing_custom": true,
+                "gap_mobile": 4,
+                "padding_inline_mobile": 7,
+                "padding_block_end_mobile": 16
               },
               "blocks": {
                 "product_title_YXxMTj": {
@@ -283,7 +290,11 @@
                     "padding-block-end": 0,
                     "padding-inline-start": 0,
                     "padding-inline-end": 0,
-                    "custom_class": "sn-home-bestsellers-desc"
+                    "custom_class": "sn-home-bestsellers-desc",
+                    "max_lines": 2,
+                    "max_lines_mobile": 2,
+                    "font_size_mobile": 11,
+                    "line_height_mobile": 17
                   },
                   "blocks": {}
                 },
@@ -328,7 +339,10 @@
                     "discount_badge_border_color": "#dcf2fb",
                     "discount_badge_radius": 8,
                     "price_row_gap": 10,
-                    "price_row_gap_mobile": 6
+                    "price_row_gap_mobile": 5,
+                    "discount_badge_font_size": 12,
+                    "discount_badge_font_size_mobile": 10,
+                    "price_font_size_mobile": 13
                   },
                   "blocks": {}
                 },
@@ -368,7 +382,11 @@
                     "padding-block-start": 0,
                     "padding-block-end": 0,
                     "padding-inline-start": 0,
-                    "padding-inline-end": 0
+                    "padding-inline-end": 0,
+                    "mobile_spacing_custom": true,
+                    "gap_mobile": 5,
+                    "padding_inline_mobile": 0,
+                    "padding_block_end_mobile": 0
                   },
                   "blocks": {
                     "text_sn5cta": {
@@ -412,8 +430,8 @@
                     }
                   },
                   "block_order": [
-                    "text_sn5cta",
-                    "icon_sn5arrow"
+                    "icon_sn5arrow",
+                    "text_sn5cta"
                   ]
                 }
               },

@@ -273,14 +273,23 @@
     }
   }
 
-  /* Shape, padding and font come from the theme's badge settings (product-badges-styles) */
+  /* Font family, transform and corner radius come from the theme's badge settings (product-badges-styles).
+     Text size is a product card setting; padding and radius scale with it (Figma 12px text → 4/12 padding). */
   .product-badges__badge.product-badges__badge--custom {
     display: block;
+    font-size: var(--custom-badge-font-size, var(--badge-font-size));
+    line-height: 1.5;
+    padding: 0.333em 1em;
     background: var(--custom-badge-background, var(--color-background));
     color: var(--custom-badge-color, var(--color-foreground));
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+
+    @media screen and (max-width: 749px) {
+      font-size: var(--custom-badge-font-size-mobile, var(--custom-badge-font-size, var(--badge-font-size)));
+      border-radius: calc(var(--badge-border-radius) * var(--custom-badge-radius-scale-mobile, 1));
+    }
   }
 {% endstylesheet %}
 

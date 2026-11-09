@@ -375,11 +375,58 @@ Verified in code and docs on 2026-11-08 before deciding:
   - Bar icon and label; the mobile FAB not clipped and the icon centered; the trolley icon mask renders (Safari included).
   - Collection page and other product cards unchanged.
 
+#### S05 final visual alignment — 2026-11-09 (Dev3) — IMPLEMENTED, visual QA PENDING USER REVIEW
+
+- **Figma re-read:** hover card `190:3850` design context, mobile card `387:4634` design context, `190:4149` metadata.
+  - **Desktop:** price row gap 10, `pt` 4; price 18/28 Bold; compare 14/22; discount badge 12/18 SemiBold, padding 4/12, radius 8; text padding 0 12 12, gap 6; card gap 14; bottom spacer 6.
+  - **Mobile:** card 165 × 283, gap 7.31; text padding 6.27 (bottom 6.27 + spacer 3.13), text gap 3.13; price row gap 5.22.
+    - Mobile type sizes: price 9.4/14.62, compare 7.31/11.49, discount badge 6.27/9.4 with padding 2.09/6.27 and radius 4.18; description 7.31/12.53; Best Seller badge 6.27/9.4 with padding 2.09/6.27 and radius 4.18 at top 8.93 / right 7.83.
+    - Carousel: track at x 24, gap 12, 11px vertical padding. Progress 342 × 4. Link 18px icon, gap 10.
+  - Badge padding and radius are exactly 0.333em / 1em / 0.667em of the text size on both breakpoints, so they are now em-based.
+- **Desktop discount badge root cause:** `snippets/text.liquid` CSS `.text-block > * { width: var(--width, 100%) }`. The price block width is "Fill" (100%), so every direct child of `<product-price>` (the badge span) was 100% wide, and the row change alone could not fit it.
+  - **Fix (price block stylesheet, opt-in class only):** `product-price.price--inline-badge > * { width: auto }`. No markup or JS change.
+- **CTA icon order (user request, deviates from Figma):** arrow BEFORE the text, visually on the right in RTL. Done with native block order (`icon_sn5arrow` before `text_sn5cta` in `product_card_group_sn5cta`), reordering is the native Theme Editor control. The arrow keeps the Figma `arrow-left` direction (Horizon arrow mirrored in RTL in the CTA group).
+- **New / changed settings:**
+  - `price`: `discount_badge_font_size`, `discount_badge_font_size_mobile`, `price_font_size_mobile` (0 = same; class `price--mobile-size`).
+    - Badge padding is now `0.333em 1em` with line-height 1.5; the mobile radius scales with the mobile text size.
+    - (25 → 28 inputs.)
+  - `text`: `max_lines`, `max_lines_mobile`, `font_size_mobile`, `line_height_mobile` (all 0 = native, no CSS output).
+    - Clamping turns rich text into one inline excerpt, and the text alignment is kept.
+    - Scoped `#shopify-section-… .text-block--<id>`. (20 → 24.)
+  - `_product-card`: `badge_font_size` (default 13 = theme badge size `--font-size--xs`).
+    - `border_radius_mobile_custom` relabeled "Customize mobile card" (same ID) and now also controls `product_card_gap_mobile` and `badge_font_size_mobile` (radius scale). (13 → 16.)
+  - `_product-card-group`: `mobile_spacing_custom`, `gap_mobile`, `padding_inline_mobile`, `padding_block_end_mobile`. The class `group-block--<id>` is passed to the `group` snippet only when enabled (its existing `class` param). (35 → 39.)
+  - `_product-card-gallery`: custom badge font size from the card variables, em padding, mobile radius scale. No new settings (still 40).
+- **Reused native controls:** group gap and padding (desktop), text padding (spacing below the title / above the price), text alignment, price alignment, icon block icon/size/color, block order for the icon side.
+- **`dev3.css`:** removed the description clamp and its mobile size, the badge and discount-pill sizes and padding, and the mobile card gap and group padding/gaps (now settings).
+  - Mobile prices are em-based (`.price` 1em/1.5, compare 0.8em ≈ the Figma 0.78 ratio), so the price block's mobile size drives them.
+  - Kept: Figma weights and colors, desktop typography, mobile title 13/20, mobile CTA text 13/20, mobile CTA icon 14 (the icon block has one size setting).
+- **`index.json` (S05):**
+  - **Card:** badge 12 / mobile 10, mobile gap 7, mobile radius 20.
+  - **Details group:** mobile gap 4, sides 7, bottom 16 (Figma 6.27 + 3.13 + 7.31).
+  - **Description:** 2 lines desktop/mobile, mobile 11/17.
+  - **Price:** badge 12 / mobile 10, mobile price 13, mobile gap 5.
+  - **CTA group:** icon first, mobile gap 5.
+- **Intentional readability deviations:**
+  - Mobile sizes are readable rather than the scaled Figma values: badge 10 (Figma 6.27), description 11/17 (7.31/12.53), price 13 (9.4) with compare ≈ 10.4, discount 10 (6.27), title 13/20 (8.35/14.1), CTA 13 (8.35).
+  - So the mobile price row may still wrap the discount pill onto a second line at 165px. It now wraps as a compact pill, not full width.
+  - The mobile card will be taller than 283 (estimated ~320–340 with real data). Cards stretch to equal height and the CTA stays at the bottom.
+- **Data-dependent:** stars and the "التقييمات" label render only with real `reviews.rating` data (none confirmed). Price format comes from the store's currency settings.
+- **Static validation:** Theme Check = 9 baseline offenses; 5 schemas parse with no duplicate IDs; settings ≤ 40; `index.json` parses; `dev3.css` braces balanced.
+- **Visual QA — PENDING USER REVIEW:**
+  - Desktop: price, compare and discount on one row.
+  - Mobile: price row grouping and wrap.
+  - Arrow on the right of "عرض المنتج".
+  - Mobile badge size vs the cart button (no overlap).
+  - Description 2 lines on both breakpoints.
+  - Mobile card height and spacing.
+  - Other product cards and text blocks unchanged.
+
 ## F. QA & progress
 
 | ID | Figma analysis | Code checks | Visual desktop | Visual mobile | RTL | Media | Reversibility | Pending issues |
 |---|---|---|---|---|---|---|---|---|
-| S05 | PASS (2026-11-08, both nodes read; re-checked unchanged at implementation) | PASS (local only: Theme Check = 9 baseline, schemas/JSON parse, `node --check`, dev3.css tag once) | PENDING USER REVIEW | PENDING USER REVIEW | PENDING USER REVIEW | By design product media only (no pickers); render PENDING USER REVIEW | PENDING USER REVIEW (two-state test) | Visual QA is user-owned (skill hard rule 13). User checklist: E › S05 › Implementation "QA to run" + Fidelity corrections "Visual QA". The local fixture test of 2026-11-08 is not counted as QA evidence. 2026-11-09 fidelity pass: static checks PASS (Theme Check 9 baseline) |
+| S05 | PASS (2026-11-08, both nodes read; re-checked unchanged at implementation) | PASS (local only: Theme Check = 9 baseline, schemas/JSON parse, `node --check`, dev3.css tag once) | PENDING USER REVIEW | PENDING USER REVIEW | PENDING USER REVIEW | By design product media only (no pickers); render PENDING USER REVIEW | PENDING USER REVIEW (two-state test) | Visual QA is user-owned (skill hard rule 13). User checklist: E › S05 › Implementation "QA to run" + Fidelity corrections "Visual QA". The local fixture test of 2026-11-08 is not counted as QA evidence. 2026-11-09 fidelity pass and final alignment pass: static checks PASS (Theme Check 9 baseline) |
 | S01–S04, S06–S15 | — | — | — | — | — | — | — | Only project-level mapping done; no section-level analysis yet |
 
 Give a section its own row here when its work starts, and keep the S01–S15 row only for sections that haven't started.
@@ -412,4 +459,5 @@ Give a section its own row here when its work starts, and keep the S01–S15 row
 | 2026-11-08 | S05 refined with user decisions D1–D10 (R1–R10). Per-instance mobile Quick Add, JS `scroll-progress` component, readable mobile type, opt-in View All / rating label / discount badge / Quick Add label. `custom-liquid` + `closest` rejected (not documented) | User review of the S05 plan | S05 (product-list, card blocks) | Approve R6 (`quick-add` snippet) and optional R7 (`product-price.js`), then implement |
 | 2026-11-08 | S05 implemented by Dev3 (R6 approved; R7 `product-price.js` not done per user). `dev3.css` initialized + loaded. `custom-class.liquid` and the reusable `scroll-progress` component created. Description from the native product description. `index.json` section enabled | User implementation request | S05; shared: `quick-add` snippet, `text`/`price`/`review`/gallery/button blocks (all opt-in) | Visual QA by the user; merchant selects the collection |
 | 2026-11-09 | S05 Figma fidelity corrections by Dev3: image crop position, responsive card/image radius, metafield product badge, inline price row, native icon-block CTA, Quick Add bar/FAB icon and geometry, View All icon settings. All values moved from CSS to opt-in Theme Editor settings | User fidelity request (Figma re-inspected) | S05; shared opt-in: `_product-card-gallery`, `_product-card`, `_product-card-group` (icon allowed), `price`, `_product-list-button` | Visual QA by the user; merchant creates the `custom.product_badge` metafield definition |
+| 2026-11-09 | S05 final visual alignment by Dev3: discount badge inline (root cause `.text-block > *` width 100%), CTA arrow before the text (user request), mobile badge/description/price/card spacing via new opt-in settings on `price`, `text`, `_product-card`, `_product-card-group` | User request + Figma re-read | S05; shared opt-in blocks | Visual QA by the user |
 | 2026-11-09 | Process correction: during S05 Dev3 ran CLI store commands (`theme list`, scratchpad-only `theme pull`, a failed `theme dev`), inspected other sessions' processes, and ran a local headless fixture. This is against skill hard rule 13 (`.agents/skills/…/SKILL.md`). No files were uploaded and no other session was touched | User instruction | All Dev3 work | Local, non-server code checks only from now on; visual QA = PENDING USER REVIEW |

@@ -166,12 +166,9 @@
     margin-block-start: auto;
   }
 
-  /* Product badge (image-block setting, text from the product metafield): Figma type and padding.
-     Position, offset, colors and radius are settings. */
+  /* Product badge (image-block setting, text from the product metafield). Text size (desktop/mobile) is a
+     product-card setting; position, offset and colors are image-block settings; padding/radius scale with the text. */
   .product-badges__badge--custom {
-    padding: 4px 12px;
-    font-size: 12px;
-    line-height: 18px;
     font-weight: 600;
   }
 
@@ -184,31 +181,18 @@
     color: var(--sn-bs-ink);
   }
 
-  /* Short description: product description (or a metafield) shown as an excerpt */
+  /* Short description: product description (or a metafield) shown as an excerpt.
+     Line limits and mobile size/line height are text-block settings. */
   .sn-home-bestsellers-desc {
-    display: -webkit-box;
-    -webkit-box-orient: vertical;
-    -webkit-line-clamp: 2;
-    line-clamp: 2;
-    overflow: hidden;
     font-size: 14px;
     line-height: 24px;
     font-weight: 400;
     color: var(--sn-bs-muted);
 
     * {
-      display: inline;
       margin: 0;
       font: inherit;
       color: inherit;
-    }
-
-    :is(img, picture, video, iframe, table, svg, hr, br) {
-      display: none;
-    }
-
-    :is(p, li, h1, h2, h3, h4, h5, h6, div)::after {
-      content: ' ';
     }
   }
 
@@ -251,10 +235,8 @@
     }
   }
 
+  /* Text size, padding ratio, radius and colors are price-block settings */
   .price-discount-badge {
-    padding: 4px 12px;
-    font-size: 12px;
-    line-height: 18px;
     font-weight: 600;
   }
 
@@ -294,38 +276,15 @@
 
   /* ---------- Mobile (≤749): readable card typography (approved, R3) ---------- */
   @media screen and (max-width: 749px) {
-    .product-card__content {
-      gap: 8px;
-    }
-
-    .product-card__content > .group-block {
-      padding: 0 8px 10px;
-
-      > .group-block-content {
-        gap: 4px;
-      }
-    }
+    /* Card gap, text padding and gaps are product-card / group settings (Customize mobile card / Mobile spacing) */
 
     .product-badges--custom {
       max-inline-size: calc(100% - 56px); /* keep clear of the cart button */
     }
 
-    .product-badges__badge--custom {
-      padding: 2px 8px;
-      font-size: 11px;
-      line-height: 16px;
-    }
-
     a[ref='productTitleLink'] :is(.text-block, p) {
       font-size: 13px;
       line-height: 20px;
-    }
-
-    .sn-home-bestsellers-desc {
-      -webkit-line-clamp: 3;
-      line-clamp: 3;
-      font-size: 12px;
-      line-height: 18px;
     }
 
     .rating-wrapper .stars {
@@ -337,22 +296,17 @@
       line-height: 16px;
     }
 
+    /* Price size follows the price block's Mobile price size; compare-at keeps the Figma 0.78 ratio */
     [ref='priceContainer'] {
       .price {
-        font-size: 14px;
-        line-height: 20px;
+        font-size: 1em;
+        line-height: 1.5;
       }
 
       .compare-at-price {
-        font-size: 12px;
-        line-height: 18px;
+        font-size: 0.8em;
+        line-height: 1.5;
       }
-    }
-
-    .price-discount-badge {
-      padding: 0 8px;
-      font-size: 11px;
-      line-height: 16px;
     }
 
     .sn-home-bestsellers-cta {
@@ -360,9 +314,8 @@
       line-height: 20px;
     }
 
+    /* Readable-scale arrow (Figma 9.4 scaled); the icon block has one size setting */
     .group-block-content:has(> .sn-home-bestsellers-cta) {
-      gap: 6px;
-
       .icon-block__media {
         inline-size: 14px;
         block-size: 14px;
