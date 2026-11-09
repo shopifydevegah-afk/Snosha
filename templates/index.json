@@ -179,7 +179,7 @@
                 "quick_add_label": "أضف إلى السلة",
                 "quick_add_style": "bar",
                 "quick_add_icon": "cart",
-                "quick_add_icon_position": "end",
+                "quick_add_icon_position": "start",
                 "quick_add_icon_size": 18,
                 "quick_add_radius": 12,
                 "quick_add_background": "#176bb0",
@@ -257,6 +257,8 @@
                     "letter_spacing": "normal",
                     "case": "none",
                     "wrap": "pretty",
+                    "font_size_mobile": 8.5,
+                    "line_height_mobile": 14,
                     "text_color": "#12568d",
                     "background": false,
                     "background_color": "#00000026",
@@ -264,9 +266,7 @@
                     "padding-block-start": 0,
                     "padding-block-end": 0,
                     "padding-inline-start": 0,
-                    "padding-inline-end": 0,
-                    "font_size_mobile": 8.5,
-                    "line_height_mobile": 14
+                    "padding-inline-end": 0
                   },
                   "blocks": {}
                 },
@@ -308,11 +308,11 @@
                     "stars_style": "shaded",
                     "show_number": false,
                     "label": "التقييمات",
+                    "font_size_mobile": 6.5,
                     "text_color": "#60c1e1",
                     "type_preset": "paragraph",
                     "width": "fit-content",
-                    "alignment": "left",
-                    "font_size_mobile": 6.5
+                    "alignment": "left"
                   },
                   "blocks": {}
                 },
@@ -326,7 +326,7 @@
                     "show_discount_badge": true,
                     "discount_badge_label": "خصم [percent]%",
                     "discount_badge_background": "#f0fafe",
-                    "discount_badge_text_color": "#176BB0",
+                    "discount_badge_text_color": "#176bb0",
                     "discount_badge_border_color": "#dcf2fb",
                     "discount_badge_radius": 8,
                     "discount_badge_font_size": 12,
@@ -400,10 +400,10 @@
                         "icon": "arrow",
                         "image_upload": "shopify://shop_images/arrow-left.svg",
                         "width": 18,
+                        "width_mobile": 9.5,
                         "link": "",
                         "open_in_new_tab": false,
-                        "icon_color": "#176bb0",
-                        "width_mobile": 9.5
+                        "icon_color": "#176bb0"
                       },
                       "blocks": {}
                     },
