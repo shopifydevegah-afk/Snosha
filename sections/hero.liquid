@@ -474,6 +474,12 @@
     {% else %}
       --hero-min-height: var(--section-height-{{ section.settings.section_height }});
     {% endif %}
+    {%- comment -%} Snosha (opt-in): product stage offsets, read only by the custom class's CSS (assets/dev1.css) {%- endcomment -%}
+    {% if section.settings.custom_class != blank %}
+      --stage-offset-x: {{ section.settings.stage_offset_x | default: 0 }}px;
+      --stage-offset-y: {{ section.settings.stage_offset_y | default: 0 }}px;
+      --stage-offset-y-mobile: {{ section.settings.stage_offset_y_mobile | default: 0 }}px;
+    {% endif %}
   "
   {% if request.visual_preview_mode %}
     data-shopify-visual-preview
@@ -1268,6 +1274,42 @@
       "id": "custom_class",
       "label": "Custom CSS class",
       "info": "Lowercase letters, numbers and hyphens, starting with a letter. Separate multiple classes with spaces."
+    },
+    {
+      "type": "range",
+      "id": "stage_offset_y",
+      "label": "Product stage vertical offset — Desktop",
+      "info": "Moves the product stage (image, chips, rings) as one unit. Positive = down.",
+      "min": -60,
+      "max": 60,
+      "step": 2,
+      "unit": "px",
+      "default": 0,
+      "visible_if": "{{ section.settings.custom_class != blank }}"
+    },
+    {
+      "type": "range",
+      "id": "stage_offset_x",
+      "label": "Product stage horizontal offset — Desktop",
+      "info": "Positive = right.",
+      "min": -60,
+      "max": 60,
+      "step": 2,
+      "unit": "px",
+      "default": 0,
+      "visible_if": "{{ section.settings.custom_class != blank }}"
+    },
+    {
+      "type": "range",
+      "id": "stage_offset_y_mobile",
+      "label": "Product stage vertical offset — Mobile",
+      "info": "Mobile & tablet (below 990px). Positive = down.",
+      "min": -60,
+      "max": 60,
+      "step": 2,
+      "unit": "px",
+      "default": 0,
+      "visible_if": "{{ section.settings.custom_class != blank }}"
     }
   ],
   "presets": [

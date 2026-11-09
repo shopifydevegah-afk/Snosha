@@ -235,6 +235,10 @@
          text column is taller than the stage (narrower desktops, the editor preview), the hero grows;
          a centred stage then left empty blue under the product and the card looked "below" the hero. */
       align-self: flex-end;
+      /* Hero settings "Product stage … offset — Desktop". translate moves the stage box with everything
+         inside it (image, chips, ::before glow, ::after rings) as one unit, without changing layout, so
+         chip slots stay stage-relative and the hero height / Trust overlap don't change. */
+      translate: var(--stage-offset-x, 0px) var(--stage-offset-y, 0px);
     }
 
     @media screen and (max-width: 989px) {
@@ -246,6 +250,9 @@
       inline-size: 100%;
       max-inline-size: 480px;
       order: -1;
+      /* Hero setting "Product stage vertical offset — Mobile". No horizontal offset on mobile: the stage
+         spans the full content width, so any sideways shift would push chips off the screen edge. */
+      translate: 0 var(--stage-offset-y-mobile, 0px);
     }
 
     > .group-block-content {
@@ -337,6 +344,10 @@
       block-size: 100%;
       aspect-ratio: auto;
       object-fit: contain;
+      /* Figma's product sits on the bottom of its image box (the box runs 9px past the hero edge). If the
+         uploaded file's proportions differ from the box, `contain` letterboxes it; centring split the spare
+         room above and below and lifted the product. Anchor it to the bottom instead. */
+      object-position: 50% 100%;
     }
 
     .image-block__image {
@@ -527,13 +538,15 @@
       grid-auto-flow: column;
       grid-auto-columns: minmax(0, 1fr);
       align-items: start;
-      gap: var(--card-gap-mobile, 2px);
+      /* Section setting "Trust item gap — Mobile" (Figma 2). Capped at 6% of the card's inner width
+         (≈19px at 390) so columns never get too narrow to read; grid columns never overflow. */
+      column-gap: min(var(--card-gap-mobile, 2px), 6%);
+      row-gap: 12px;
     }
 
     > .group-block-content:has(> .sn-home-trust-item:nth-child(5)) {
       grid-auto-flow: row;
       grid-template-columns: repeat(4, minmax(0, 1fr));
-      row-gap: 12px;
     }
   }
 
