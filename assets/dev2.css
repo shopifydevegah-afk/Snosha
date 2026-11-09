@@ -6,8 +6,8 @@
    Settings that carry the rest of the design live in templates/index.json:
    columns_gap 24, gap 40, padding 50/100, chevron + circle arrows, image radius 12,
    card gap 18, title/heading color #12568d, heading font size 2rem (desktop).
-   Phone-only section settings (CSS vars on the section): mobile heading size, image size,
-   image aspect ratio, title size, title length (first 2 words).
+   Phone-only settings: section → image size, image aspect ratio, title length (first 2 words);
+   heading text block + collection-title block → "Mobile size" (--sn-mobile-font-size on each block).
    ========================================================================== */
 .sn-home-collections {
   /* Heading "مجموعات SNOSHA": Figma Desktop/H2 = Cairo SemiBold 32/52.
@@ -28,7 +28,7 @@
      so the merchant controls it; only weight and the 40px line box are Figma overrides. */
   .collection-card .text-block,
   .collection-card .text-block > * {
-    line-height: 40px;
+    line-height: calc(40 / 24); /* Figma 24/40 as a ratio, so any desktop size keeps the proportion */
     font-weight: 600;
   }
 
@@ -94,7 +94,7 @@
     .collection-card .text-block,
     .collection-card .text-block > * {
       font-size: calc(var(--font-size, 1.5rem) * 0.75);
-      line-height: 30px;
+      line-height: calc(40 / 24);
     }
 
     slideshow-slides {
@@ -151,16 +151,16 @@
       row-gap: 28px;
     }
 
-    /* Mobile/H2 = Cairo SemiBold 24/38. Size = section setting "Mobile heading size" (default 24),
-       independent of the desktop text-block size; line height keeps Figma's 38/24 ratio. */
+    /* Mobile/H2 = Cairo SemiBold 24/38. Size = heading text block "Mobile size" (default 24),
+       independent of its desktop "Size"; line height keeps Figma's 38/24 ratio. */
     .section-resource-list__content .text-block,
     .section-resource-list__content .text-block > * {
-      font-size: var(--sn-mobile-heading-size, 24px);
+      font-size: var(--sn-mobile-font-size, 24px);
       line-height: calc(38 / 24);
     }
 
-    /* Card title: Figma 11px SemiBold in a 40px box. Size = section setting "Mobile collection
-       title size" (default 11). A one-line title fills the 40px box exactly like Figma; long names
+    /* Card title: Figma 11px SemiBold in a 40px box. Size = collection-title block
+       "Mobile size" (default 11). A one-line title fills the 40px box exactly like Figma; long names
        wrap onto compact lines (line-height 1.5) instead of 40px-tall lines with big gaps. */
     .collection-card .text-block {
       display: flex;
@@ -171,7 +171,7 @@
 
     .collection-card .text-block,
     .collection-card .text-block > * {
-      font-size: var(--sn-mobile-title-size, 11px);
+      font-size: var(--sn-mobile-font-size, 11px); /* collection-title block "Mobile size" */
       line-height: 1.5;
     }
 

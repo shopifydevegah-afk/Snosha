@@ -112,6 +112,28 @@ Category **B**: native section + on-demand `custom_class` setting. No Liquid/JS 
 - **Figma values set on the S04 instance:** `mobile_heading_size` 24, `mobile_image_size` 97, `mobile_image_ratio` square, `mobile_title_size` 11, `mobile_title_word_limit` two. The desktop image ratio stays portrait (merchant choice; Figma is square).
 - **Files changed:** `sections/collection-list.liquid` (3 settings + 3 schema headers, CSS vars), `blocks/collection-title.liquid`, `assets/dev2.css`, `templates/index.json`.
 
+**Four independent font sizes (2026-11-09, revised the same day: mobile controls moved into the blocks).**
+
+| Element | Desktop (≥750) | Mobile (≤749) |
+|---|---|---|
+| Heading | Native `text` block "Size" (`font_size`, 2rem = 32px) | Same block, new "Mobile size" right below it: `mobile_font_size` (12–64 px, step 1, default 24) |
+| Collection title | Native `collection-title` "Size" (`font_size`, 1.5rem = 24px) | Same block, new "Mobile size" right below it: `mobile_font_size` (10–32 px, step 1, default 11) |
+
+- **Blocks extended (category B + small D):** `blocks/text.liquid` and `blocks/collection-title.liquid` each get one `range` after `font_size`. `visible_if` = `type_preset == 'custom'` (same as the native Size; the section condition was dropped, see below). Each block outputs `{% style %} .text-block--<block.id> { --sn-mobile-font-size: Npx } {% endstyle %}` only under the same condition. Native output is unchanged everywhere else. The shared `text` snippet is not touched.
+- **Removed duplicates:** the section-level `mobile_heading_size` and `mobile_title_size` (and the `--sn-mobile-heading-size` / `--sn-mobile-title-size` vars) were removed from `collection-list` and from `index.json`. The "Mobile heading" schema header was removed.
+- **Values in `index.json`:** `text_sn_heading.mobile_font_size` 24, `collection-title.mobile_font_size` 11.
+- **CSS isolation (`dev2.css`, scoped to `.sn-home-collections`):** at ≤749, heading and title use `var(--sn-mobile-font-size, 24px / 11px)`, set on each block's own element, so the two can't affect each other. Desktop uses only the native `--font-size` from "Size". Tablet titles are 75% of the desktop size. Title line height is the Figma ratio `calc(40 / 24)`, not a fixed px value. Without the class, no rule reads the var, so the look is native.
+- **Likely cause of "desktop affects mobile" (not verified):** dev theme #190250942577 has another session's `theme.liquid`, which loads `dev1.css` but not `dev2.css`, and without `dev2.css` the native desktop size shows on phones. The branch theme Snosha/dev2 only gets what's committed and pushed.
+- **Checks:** Theme Check 9 = baseline (no `visible_if` offense); all three schemas parse; no leftover references to the removed settings. `index.json` was edited locally without pulling the remote first (pull is not allowed under rule 13).
+- **Theme Editor checks — `PENDING USER REVIEW` (hard rule 13):**
+  - two values per setting
+  - 390/1480
+  - heading vs title independence
+  - same size on every card
+  - RTL, scrolling, progress bar
+  - class on/off
+  - (resolved 2026-11-09: `section.settings` removed from the block `visible_if`, since theme blocks are not tied to one section; "Mobile size" now shows whenever the preset is Custom. The CSS var is still output only when the section has a custom class, so other sections stay native.)
+
 ## F. QA & progress
 
 | ID | Figma analysis | Code checks | Visual desktop | Visual mobile | RTL | Media | Reversibility | Pending issues |

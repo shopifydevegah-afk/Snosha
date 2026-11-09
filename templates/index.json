@@ -74,7 +74,8 @@
                 "padding-block-start": 0,
                 "padding-block-end": 0,
                 "padding-inline-start": 0,
-                "padding-inline-end": 0
+                "padding-inline-end": 0,
+                "mobile_font_size": 24
               },
               "blocks": {}
             }
@@ -121,7 +122,8 @@
                 "padding-block-start": 0,
                 "padding-block-end": 0,
                 "padding-inline-start": 4,
-                "padding-inline-end": 4
+                "padding-inline-end": 4,
+                "mobile_font_size": 11
               },
               "blocks": {}
             },
@@ -178,10 +180,8 @@
         "padding-block-start": 50,
         "padding-block-end": 100,
         "custom_class": "sn-home-collections",
-        "mobile_heading_size": 24,
         "mobile_image_size": 97,
         "mobile_image_ratio": "square",
-        "mobile_title_size": 11,
         "mobile_title_word_limit": "two"
       }
     }

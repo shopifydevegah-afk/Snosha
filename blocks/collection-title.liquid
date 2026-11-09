@@ -22,6 +22,12 @@
   {% endif %}
   {% render 'text', fallback_text: collection_title, block: block %}
 {% endif %}
+{%- comment -%} Snosha (opt-in): phone font size, passed as a CSS var only when the section has a custom class; consumed by that class's CSS at ≤749px. {%- endcomment -%}
+{%- if section.settings.custom_class != blank and block.settings.type_preset == 'custom' -%}
+  {% style %}
+    .text-block--{{ block.id }} { --sn-mobile-font-size: {{ block.settings.mobile_font_size }}px; }
+  {% endstyle %}
+{%- endif -%}
 
 {% schema %}
 {
@@ -228,6 +234,18 @@
         }
       ],
       "default": "1rem",
+      "visible_if": "{{ block.settings.type_preset == 'custom' }}"
+    },
+    {
+      "type": "range",
+      "id": "mobile_font_size",
+      "label": "Mobile size",
+      "info": "Phones only (≤749px), same on every card, in sections with a custom class. Size above = desktop.",
+      "min": 10,
+      "max": 32,
+      "step": 1,
+      "unit": "px",
+      "default": 11,
       "visible_if": "{{ block.settings.type_preset == 'custom' }}"
     },
     {
