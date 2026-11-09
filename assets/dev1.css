@@ -458,19 +458,19 @@
   max-inline-size: 1236px;
   margin-block: 3px;
   margin-inline: auto;
-  padding: 22px 36px;
+  /* Desktop padding = the card's native Padding settings (Figma 22 / 36). Mobile padding is fixed below. */
   border-radius: 22px;
   background-color: #fff;
   /* Figma: 1.5px inside stroke + drop shadow on the ring wrapper */
   box-shadow: inset 0 0 0 1.5px rgb(99 205 255 / 0.4);
   filter: drop-shadow(0 14px 16px rgb(15 100 168 / 0.1));
 
+  /* Space between items = the card's native Gap setting (Figma 0) */
   > .group-block-content {
     flex-direction: row;
     flex-wrap: wrap;
     align-items: center;
     justify-content: center;
-    gap: 0;
   }
 
   /* Glint on the top edge (Figma Glint 170×22, #63cdff 90%, blur 7), visible only in the 3px strip above the card */
@@ -535,12 +535,12 @@
   flex: 1 1 0;
   min-inline-size: 220px;
 
+  /* Icon ↔ text space = the item's native Gap setting (Figma 14) */
   > .group-block-content {
     flex-direction: row;
     flex-wrap: nowrap;
     align-items: center;
     justify-content: center;
-    gap: 14px;
   }
 
   /* Divider before every item except the first (Figma 1×52 #dcf2fb); adapts to any item count */
@@ -571,16 +571,17 @@
     filter: drop-shadow(0 8px 9px rgb(15 100 168 / 0.1));
   }
 
-  /* max-* also caps the inline width written by the icon block's Width setting */
+  /* Desktop icon size = the icon block's native Width setting (Figma 30), capped at 42px so it stays
+     inside the 58px tile. Tablet/mobile sizes are fixed below (no native mobile width). */
   .icon-block__media {
-    max-inline-size: 30px;
-    max-block-size: 30px;
+    max-inline-size: 42px;
+    max-block-size: 42px;
     object-fit: contain;
   }
 
+  /* Title ↔ description space = the text group's native Gap setting (Figma 2) */
   .group-block > .group-block-content {
     align-items: flex-start;
-    gap: 2px;
   }
 
   .text-block {
@@ -693,34 +694,17 @@
 }
 
 /* ==========================================================================
-   S03 Hero + Trust overlap — only when a Trust Strip section directly follows a classed hero WITH blocks.
-   Image-only heroes (no blocks) and Trust Strips anywhere else are unaffected.
+   S03 Hero + Trust overlap
+   The overlap itself is a Theme Editor setting on the Trust section (`section` → "Overlap previous
+   section": desktop 58 / mobile 49 = Figma), output by sections/section.liquid. Only the hero side lives
+   here: on mobile/tablet the hero keeps 49px free at the bottom so the card doesn't cover the CTA.
+   Applies only when a Trust Strip directly follows a classed hero WITH blocks.
    ========================================================================== */
-.shopify-section:has(.sn-home-hero > .hero__container > .hero__content-wrapper > *) {
-  &:has(+ .shopify-section .sn-home-trust-card) .sn-home-hero {
-    @media screen and (max-width: 989px) {
-      --sn-hero-overlap: 49px;
-    }
-  }
-
-  + .shopify-section:has(.sn-home-trust-card) {
-    position: relative;
-    z-index: 1;
-    /* Figma desktop: Trust wrapper starts 58px above the hero bottom */
-    margin-block-start: -58px;
-
-    @media screen and (max-width: 989px) {
-      /* Figma mobile: 49px */
-      margin-block-start: -49px;
-    }
-
-    /* Keep the Trust section's own background from painting over the hero */
-    > .section-background {
-      inset-block-start: 58px;
-
-      @media screen and (max-width: 989px) {
-        inset-block-start: 49px;
-      }
-    }
+.shopify-section:has(.sn-home-hero > .hero__container > .hero__content-wrapper > *):has(
+    + .shopify-section .sn-home-trust-card
+  )
+  .sn-home-hero {
+  @media screen and (max-width: 989px) {
+    --sn-hero-overlap: 49px;
   }
 }

@@ -19,6 +19,12 @@
       "label": "t:settings.text"
     },
     {
+      "type": "richtext",
+      "id": "mobile_text",
+      "label": "Mobile text",
+      "info": "Optional. Replaces the text above on mobile (below 750px). Leave empty to show the same text on all devices."
+    },
+    {
       "type": "header",
       "content": "t:content.layout"
     },
@@ -64,6 +70,19 @@
       "label": "t:settings.alignment",
       "default": "left",
       "visible_if": "{{ block.settings.width == '100%' }}"
+    },
+    {
+      "type": "select",
+      "id": "mobile_alignment",
+      "label": "Text alignment (mobile)",
+      "info": "Below 750px.",
+      "options": [
+        { "value": "same", "label": "Same as desktop" },
+        { "value": "start", "label": "Start (right in Arabic)" },
+        { "value": "center", "label": "Center" },
+        { "value": "end", "label": "End (left in Arabic)" }
+      ],
+      "default": "same"
     },
     {
       "type": "header",

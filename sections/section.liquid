@@ -11,6 +11,34 @@
   background_color: section.settings.background_color
 %}
 
+{%- comment -%}
+  Snosha (opt-in, S03): pull this section up over the previous one. Both settings default to 0, which
+  outputs nothing (native behaviour). The section's own background stays below the overlap, so only its
+  content (e.g. a Trust Strip card) sits over the previous section.
+{%- endcomment -%}
+{%- liquid
+  assign overlap_desktop = section.settings.overlap_desktop | default: 0
+  assign overlap_mobile = section.settings.overlap_mobile | default: 0
+-%}
+{%- if overlap_desktop > 0 or overlap_mobile > 0 -%}
+  {% style %}
+    #shopify-section-{{ section.id }} {
+      --section-overlap: {{ overlap_mobile }}px;
+      position: relative;
+      z-index: 1;
+      margin-block-start: calc(var(--section-overlap) * -1);
+    }
+    @media screen and (min-width: 990px) {
+      #shopify-section-{{ section.id }} {
+        --section-overlap: {{ overlap_desktop }}px;
+      }
+    }
+    #shopify-section-{{ section.id }} > .section-background {
+      inset-block-start: var(--section-overlap);
+    }
+  {% endstyle %}
+{%- endif -%}
+
 {% schema %}
 {
   "name": "t:names.section",
@@ -432,6 +460,32 @@
       "label": "t:settings.bottom",
       "min": 0,
       "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 0
+    },
+    {
+      "type": "header",
+      "content": "Overlap previous section"
+    },
+    {
+      "type": "range",
+      "id": "overlap_desktop",
+      "label": "Overlap (desktop)",
+      "info": "Moves this section's content up over the section above. 0 = off.",
+      "min": 0,
+      "max": 150,
+      "step": 1,
+      "unit": "px",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "overlap_mobile",
+      "label": "Overlap (mobile & tablet)",
+      "info": "Below 990px. 0 = off.",
+      "min": 0,
+      "max": 150,
       "step": 1,
       "unit": "px",
       "default": 0
