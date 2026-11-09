@@ -231,6 +231,10 @@
     @media screen and (min-width: 990px) {
       flex: 0 0 56.06%;
       inline-size: 56.06%;
+      /* Figma: the stage fills the hero to its bottom edge, where the Trust card overlaps it. When the
+         text column is taller than the stage (narrower desktops, the editor preview), the hero grows;
+         a centred stage then left empty blue under the product and the card looked "below" the hero. */
+      align-self: flex-end;
     }
 
     @media screen and (max-width: 989px) {
@@ -450,22 +454,37 @@
 
 /* ==========================================================================
    S03 Trust Strip — .sn-home-trust-card (group in a native `section`), items .sn-home-trust-item
-   Figma desktop 190:4081 (card 1236×102), mobile 335:4229 (346×100) | owner: Dev1
+   Figma desktop 190:4081 (wrapper 108 = 3 + card 1236×102 + 3), mobile 335:4229 (346×100) | owner: Dev1
+   DOM: section › .custom-section-content › .section-content-wrapper › .sn-home-trust-card (group)
+        › .group-block-content › .sn-home-trust-item (group) › .group-block-content › icon + copy group › text
+   Editor-driven (native): card padding / gap / radius / border / background, item gap, text-group gap,
+   icon Width, text alignment. Editor-driven (section "Card sizes"): tile sizes and the mobile padding,
+   gaps and icon size, via --card-* variables with the Figma values as fallbacks.
    ========================================================================== */
 .sn-home-trust-card {
+  --sn-card-bg: #fff;
+
   position: relative;
   inline-size: 100%;
-  max-inline-size: 1236px;
+  /* Figma 3px wrapper around the card (holds the glint) */
   margin-block: 3px;
   margin-inline: auto;
-  /* Desktop padding = the card's native Padding settings (Figma 22 / 36). Mobile padding is fixed below. */
-  border-radius: 22px;
-  background-color: #fff;
-  /* Figma: 1.5px inside stroke + drop shadow on the ring wrapper */
-  box-shadow: inset 0 0 0 1.5px rgb(99 205 255 / 0.4);
+  background-color: var(--sn-card-bg);
   filter: drop-shadow(0 14px 16px rgb(15 100 168 / 0.1));
+  /* A native corner radius adds an inline `overflow: clip`; keep the 3px glint band above the card visible */
+  overflow-clip-margin: 4px;
 
-  /* Space between items = the card's native Gap setting (Figma 0) */
+  /* Native Background colour wins over the Figma white */
+  &[class*='color-custom-'] {
+    --sn-card-bg: var(--color-background);
+  }
+
+  /* Native Border "none" → Figma 1.5px inside stroke #63cdff 40%. Any native border replaces it. */
+  &[style*='--border-style: none'] {
+    box-shadow: inset 0 0 0 1.5px rgb(99 205 255 / 0.4);
+  }
+
+  /* Desktop: items in one row; space between items = card Gap (Figma 0, dividers instead) */
   > .group-block-content {
     flex-direction: row;
     flex-wrap: wrap;
@@ -473,7 +492,7 @@
     justify-content: center;
   }
 
-  /* Glint on the top edge (Figma Glint 170×22, #63cdff 90%, blur 7), visible only in the 3px strip above the card */
+  /* Glint on the top edge (Figma Glint 170×22, #63cdff 90%, blur 7), visible only in the 3px band above */
   &::before {
     content: '';
     position: absolute;
@@ -489,14 +508,48 @@
   }
 
   @media screen and (max-width: 989px) {
-    max-inline-size: none;
     margin-block: 0;
-    padding: 10px;
+    padding-block: var(--card-padding-top-mobile, 10px) var(--card-padding-bottom-mobile, 4px);
+    padding-inline: var(--card-padding-inline-mobile, 10px);
+    /* Figma mobile 20 (desktop 22): 2px smaller than the native radius */
+    border-radius: max(0px, calc(var(--border-radius, 22px) - 2px));
+    filter: none;
+
+    &::before {
+      display: none;
+    }
+
+    /* Figma mobile 335:4229: equal columns (flex 1 / min-width 1px), one row, no slider.
+       Grid keeps every column the same width whatever the text length, so text wraps inside its
+       column instead of pushing an item to a new row. 5+ items: rows of four. */
+    > .group-block-content {
+      display: grid;
+      grid-auto-flow: column;
+      grid-auto-columns: minmax(0, 1fr);
+      align-items: start;
+      gap: var(--card-gap-mobile, 2px);
+    }
+
+    > .group-block-content:has(> .sn-home-trust-item:nth-child(5)) {
+      grid-auto-flow: row;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      row-gap: 12px;
+    }
+  }
+
+  @media screen and (max-width: 749px) {
+    /* 346 at 390: 24px visual-left / 20px visual-right gutter (page margin is 16px) */
+    margin-inline: 4px 8px;
+    inline-size: auto;
+  }
+}
+
+/* Mobile "border beam" ring (Figma Beam Disk conic gradient, static), only when no native border is set */
+@media screen and (max-width: 989px) {
+  .sn-home-trust-card[style*='--border-style: none'] {
     border: 2px solid transparent;
-    border-radius: 20px;
-    /* Static "border beam" ring (Figma Beam Disk conic gradient; no motion in Figma) */
     background:
-      linear-gradient(#fff, #fff) padding-box,
+      linear-gradient(var(--sn-card-bg), var(--sn-card-bg)) padding-box,
       conic-gradient(
           from 90deg at 50% calc(50% + 6px),
           rgb(99 205 255 / 0) 0% 42%,
@@ -507,26 +560,6 @@
         )
         border-box;
     box-shadow: none;
-    filter: none;
-
-    > .group-block-content {
-      flex-wrap: wrap;
-      align-items: flex-start;
-      gap: 2px;
-    }
-
-    &::before {
-      display: none;
-    }
-  }
-
-  @media screen and (max-width: 749px) {
-    /* Figma mobile (335:4229): 346×100 at 390 = 2px beam ring + 96px card, padding 10 (the Figma card
-       clips its 102px content to 96, so the effective bottom padding is 4px).
-       Gutter: 24px visual-left, 20px visual-right (page margin is 16px). */
-    margin-inline: 4px 8px;
-    inline-size: auto;
-    padding-block: 10px 4px;
   }
 }
 
@@ -535,7 +568,7 @@
   flex: 1 1 0;
   min-inline-size: 220px;
 
-  /* Icon ↔ text space = the item's native Gap setting (Figma 14) */
+  /* Desktop: tile + text in a row; space = the item's Gap (Figma 14) */
   > .group-block-content {
     flex-direction: row;
     flex-wrap: nowrap;
@@ -543,7 +576,7 @@
     justify-content: center;
   }
 
-  /* Divider before every item except the first (Figma 1×52 #dcf2fb); adapts to any item count */
+  /* Divider before every item except the first (Figma 1×52 #dcf2fb, centred); any item count */
   & + &::before {
     content: '';
     position: absolute;
@@ -555,39 +588,36 @@
     translate: 0 -50%;
   }
 
-  /* Icon tile 58px, radius 17, white → #f0fafe, 1px #dcf2fb, soft shadow; icon 30px */
+  /* Icon tile (Figma 58, radius 17, white → #f0fafe, 1px #dcf2fb, soft shadow) */
   .icon-block {
     display: flex;
     align-items: center;
     justify-content: center;
     flex-shrink: 0;
     box-sizing: border-box;
-    inline-size: 58px;
-    block-size: 58px;
+    inline-size: var(--card-tile-size, 58px);
+    block-size: var(--card-tile-size, 58px);
     border: 1px solid #dcf2fb;
-    border-radius: 17px;
+    border-radius: calc(var(--card-tile-size, 58px) * 0.293);
     background-image: linear-gradient(to bottom, #fff, #f0fafe);
     color: #176bb0;
     filter: drop-shadow(0 8px 9px rgb(15 100 168 / 0.1));
   }
 
-  /* Desktop icon size = the icon block's native Width setting (Figma 30), capped at 42px so it stays
-     inside the 58px tile. Tablet/mobile sizes are fixed below (no native mobile width). */
+  /* Desktop icon size = the icon block's Width (Figma 30); max-* only keeps it inside the tile */
   .icon-block__media {
-    max-inline-size: 42px;
-    max-block-size: 42px;
+    max-inline-size: calc(var(--card-tile-size, 58px) - 16px);
+    max-block-size: calc(var(--card-tile-size, 58px) - 16px);
     object-fit: contain;
   }
 
-  /* Title ↔ description space = the text group's native Gap setting (Figma 2) */
-  .group-block > .group-block-content {
-    align-items: flex-start;
-  }
-
+  /* Text alignment comes from the editor: copy group alignment (desktop) and the text blocks'
+     "Text alignment (mobile)". Only typography is fixed here. */
   .text-block {
     :is(h1, h2, h3, h4, p) {
       margin: 0;
-      text-align: start;
+      letter-spacing: 0;
+      text-transform: none;
     }
 
     /* Figma Product name 16/27 SemiBold #131311 */
@@ -599,8 +629,9 @@
       color: #131311;
     }
 
-    /* Figma Body Small 14/24 #5a5a59 */
+    /* Figma Body Small 14/24 Regular #5a5a59 */
     p {
+      font-family: var(--font-body--family);
       font-size: 14px;
       line-height: 24px;
       font-weight: 400;
@@ -609,39 +640,66 @@
   }
 
   @media screen and (max-width: 989px) {
-    flex: 1 1 0;
-    /* Four per row; extra items wrap to a new row (no slider) */
-    min-inline-size: calc(25% - 2px);
+    /* Grid cell: no flex sizing, may shrink below its text's min-content */
+    flex: none;
+    min-inline-size: 0;
+    inline-size: auto;
 
+    /* Figma cell: tile, 3, title, 3, description, centred */
     > .group-block-content {
       flex-direction: column;
       align-items: center;
-      gap: 3px;
+      gap: var(--card-item-gap-mobile, 3px);
     }
 
     & + &::before {
       display: none;
     }
 
+    /* Copy group fills the column so the text wraps at the column width, never wider */
+    .group-block {
+      inline-size: 100%;
+      min-inline-size: 0;
+    }
+
+    /* Alignment below 750px = the copy group's "Content position (mobile)" */
+    .group-block > .group-block-content {
+      gap: var(--card-item-gap-mobile, 3px);
+    }
+
+    .icon-block {
+      inline-size: var(--card-tile-size-mobile, 38px);
+      block-size: var(--card-tile-size-mobile, 38px);
+      border-radius: calc(var(--card-tile-size-mobile, 38px) * 0.316);
+    }
+
+    /* Mobile icon size is set exactly (min + max beat the inline Width of the icon block) */
+    .icon-block__media {
+      min-inline-size: var(--card-icon-size-mobile, 20px);
+      max-inline-size: var(--card-icon-size-mobile, 20px);
+      block-size: var(--card-icon-size-mobile, 20px);
+      max-block-size: var(--card-icon-size-mobile, 20px);
+    }
+
+    .text-block {
+      max-inline-size: 100%;
+
+      > * {
+        max-inline-size: 100%;
+        overflow-wrap: break-word;
+        text-wrap: balance;
+      }
+    }
+  }
+
+  /* Tablet 750–989 (no Figma tablet frame, ASSUMED): centred, slightly larger text */
+  @media screen and (min-width: 750px) and (max-width: 989px) {
     .group-block > .group-block-content {
       align-items: center;
-      gap: 0;
     }
 
-    .text-block :is(h1, h2, h3, h4, p) {
+    .text-block > * {
       text-align: center;
-    }
-
-    /* Tablet sizes (ASSUMED, no Figma tablet frame) */
-    .icon-block {
-      inline-size: 48px;
-      block-size: 48px;
-      border-radius: 14px;
-    }
-
-    .icon-block__media {
-      max-inline-size: 24px;
-      max-block-size: 24px;
     }
 
     .text-block {
@@ -658,36 +716,16 @@
   }
 
   @media screen and (max-width: 749px) {
-    /* Figma mobile: tile 38 radius 12, icon 20, title 10/19 SemiBold, desc 8/19 */
-    .icon-block {
-      inline-size: 38px;
-      block-size: 38px;
-      border-radius: 12px;
-    }
-
-    .icon-block__media {
-      max-inline-size: 20px;
-      max-block-size: 20px;
-    }
-
-    /* Figma cell: tile, 3px, title, 3px, description */
-    .group-block > .group-block-content {
-      gap: 3px;
-    }
-
+    /* Figma mobile: title 10/19 SemiBold, description 8/19 Regular */
     .text-block {
-      /* Short titles stay on one line (at 375px a cell is ~75px vs ~79px in the 390 frame);
-         descriptions may wrap and are balanced. */
       :is(h1, h2, h3, h4) {
         font-size: 10px;
         line-height: 19px;
-        white-space: nowrap;
       }
 
       p {
         font-size: 8px;
         line-height: 19px;
-        text-wrap: balance;
       }
     }
   }
@@ -695,9 +733,9 @@
 
 /* ==========================================================================
    S03 Hero + Trust overlap
-   The overlap itself is a Theme Editor setting on the Trust section (`section` → "Overlap previous
-   section": desktop 58 / mobile 49 = Figma), output by sections/section.liquid. Only the hero side lives
-   here: on mobile/tablet the hero keeps 49px free at the bottom so the card doesn't cover the CTA.
+   The overlap is a Theme Editor setting on the Trust section (`section` → "Overlap previous section":
+   desktop 58 / mobile 49 = Figma), output by sections/section.liquid, which also gives the previous
+   section --next-section-overlap. On mobile/tablet the hero keeps that much room under the CTA.
    Applies only when a Trust Strip directly follows a classed hero WITH blocks.
    ========================================================================== */
 .shopify-section:has(.sn-home-hero > .hero__container > .hero__content-wrapper > *):has(
@@ -705,6 +743,6 @@
   )
   .sn-home-hero {
   @media screen and (max-width: 989px) {
-    --sn-hero-overlap: 49px;
+    --sn-hero-overlap: var(--next-section-overlap, 49px);
   }
 }

@@ -12,30 +12,62 @@
 %}
 
 {%- comment -%}
-  Snosha (opt-in, S03): pull this section up over the previous one. Both settings default to 0, which
-  outputs nothing (native behaviour). The section's own background stays below the overlap, so only its
-  content (e.g. a Trust Strip card) sits over the previous section.
+  Snosha (opt-in, S03). All settings below output nothing at their defaults (native behaviour).
+  - Overlap: pulls this section up over the previous one. The section's own background stays below the
+    overlap, so only its content (e.g. a Trust Strip card) sits over the previous section. The value is
+    also exposed to the previous section as --next-section-overlap, so it can keep room for it.
+  - Content max width: limits the content column (centred).
+  - Card sizes: CSS variables only. Nothing native reads them; a card group styled with a custom class
+    (S03 Trust Strip, assets/dev1.css) uses them and falls back to its own defaults when they're absent.
 {%- endcomment -%}
 {%- liquid
   assign overlap_desktop = section.settings.overlap_desktop | default: 0
   assign overlap_mobile = section.settings.overlap_mobile | default: 0
+  assign content_max_width = section.settings.content_max_width | default: 0
 -%}
-{%- if overlap_desktop > 0 or overlap_mobile > 0 -%}
+{%- if overlap_desktop > 0 or overlap_mobile > 0 or content_max_width > 0 or section.settings.card_sizes -%}
   {% style %}
-    #shopify-section-{{ section.id }} {
-      --section-overlap: {{ overlap_mobile }}px;
-      position: relative;
-      z-index: 1;
-      margin-block-start: calc(var(--section-overlap) * -1);
-    }
-    @media screen and (min-width: 990px) {
-      #shopify-section-{{ section.id }} {
-        --section-overlap: {{ overlap_desktop }}px;
+    {%- if overlap_desktop > 0 or overlap_mobile > 0 -%}
+      #shopify-section-{{ section.id }},
+      .shopify-section:has(+ #shopify-section-{{ section.id }}) {
+        --section-overlap: {{ overlap_mobile }}px;
+        --next-section-overlap: {{ overlap_mobile }}px;
       }
-    }
-    #shopify-section-{{ section.id }} > .section-background {
-      inset-block-start: var(--section-overlap);
-    }
+      @media screen and (min-width: 990px) {
+        #shopify-section-{{ section.id }},
+        .shopify-section:has(+ #shopify-section-{{ section.id }}) {
+          --section-overlap: {{ overlap_desktop }}px;
+          --next-section-overlap: {{ overlap_desktop }}px;
+        }
+      }
+      #shopify-section-{{ section.id }} {
+        position: relative;
+        z-index: 1;
+        margin-block-start: calc(var(--section-overlap) * -1);
+      }
+      #shopify-section-{{ section.id }} > .section-background {
+        inset-block-start: var(--section-overlap);
+      }
+    {%- endif -%}
+    {%- if content_max_width > 0 -%}
+      #shopify-section-{{ section.id }} .section > .custom-section-content {
+        inline-size: 100%;
+        max-inline-size: {{ content_max_width }}px;
+        justify-self: center;
+      }
+    {%- endif -%}
+    {%- if section.settings.card_sizes -%}
+      #shopify-section-{{ section.id }} {
+        --card-tile-size: {{ section.settings.card_tile_size }}px;
+        --card-padding-top-mobile: {{ section.settings.card_padding_top_mobile }}px;
+        --card-padding-bottom-mobile: {{ section.settings.card_padding_bottom_mobile }}px;
+        --card-padding-inline-mobile: {{ section.settings.card_padding_inline_mobile }}px;
+        --card-gap-mobile: {{ section.settings.card_gap_mobile }}px;
+        --card-item-gap-mobile: {{ section.settings.card_item_gap_mobile }}px;
+        --card-tile-size-mobile: {{ section.settings.card_tile_size_mobile }}px;
+        --card-icon-size-mobile: {{ section.settings.card_icon_size_mobile }}px;
+      }
+    {%- endif -%}
   {% endstyle %}
 {%- endif -%}
 
@@ -474,7 +506,7 @@
       "label": "Overlap (desktop)",
       "info": "Moves this section's content up over the section above. 0 = off.",
       "min": 0,
-      "max": 150,
+      "max": 100,
       "step": 1,
       "unit": "px",
       "default": 0
@@ -485,10 +517,119 @@
       "label": "Overlap (mobile & tablet)",
       "info": "Below 990px. 0 = off.",
       "min": 0,
-      "max": 150,
+      "max": 100,
       "step": 1,
       "unit": "px",
       "default": 0
+    },
+    {
+      "type": "number",
+      "id": "content_max_width",
+      "label": "Content max width (px)",
+      "info": "Optional. Empty = normal page width."
+    },
+    {
+      "type": "header",
+      "content": "Card sizes"
+    },
+    {
+      "type": "checkbox",
+      "id": "card_sizes",
+      "label": "Card size controls",
+      "info": "For a card group with custom-class styling (e.g. the Trust Strip). Off = the card's built-in sizes.",
+      "default": false
+    },
+    {
+      "type": "range",
+      "id": "card_tile_size",
+      "label": "Icon tile size (desktop)",
+      "min": 24,
+      "max": 120,
+      "step": 1,
+      "unit": "px",
+      "default": 58,
+      "visible_if": "{{ section.settings.card_sizes }}"
+    },
+    {
+      "type": "range",
+      "id": "card_padding_top_mobile",
+      "label": "Card padding top (mobile)",
+      "info": "Mobile & tablet (below 990px). Desktop padding = the card group's Padding settings.",
+      "min": 0,
+      "max": 40,
+      "step": 1,
+      "unit": "px",
+      "default": 10,
+      "visible_if": "{{ section.settings.card_sizes }}"
+    },
+    {
+      "type": "range",
+      "id": "card_padding_bottom_mobile",
+      "label": "Card padding bottom (mobile)",
+      "min": 0,
+      "max": 40,
+      "step": 1,
+      "unit": "px",
+      "default": 4,
+      "visible_if": "{{ section.settings.card_sizes }}"
+    },
+    {
+      "type": "range",
+      "id": "card_padding_inline_mobile",
+      "label": "Card padding sides (mobile)",
+      "min": 0,
+      "max": 40,
+      "step": 1,
+      "unit": "px",
+      "default": 10,
+      "visible_if": "{{ section.settings.card_sizes }}"
+    },
+    {
+      "type": "range",
+      "id": "card_gap_mobile",
+      "label": "Space between items (mobile)",
+      "info": "Desktop = the card group's Gap setting.",
+      "min": 0,
+      "max": 24,
+      "step": 1,
+      "unit": "px",
+      "default": 2,
+      "visible_if": "{{ section.settings.card_sizes }}"
+    },
+    {
+      "type": "range",
+      "id": "card_item_gap_mobile",
+      "label": "Space inside items (mobile)",
+      "info": "Between icon, title and description. Desktop = each item's Gap setting.",
+      "min": 0,
+      "max": 24,
+      "step": 1,
+      "unit": "px",
+      "default": 3,
+      "visible_if": "{{ section.settings.card_sizes }}"
+    },
+    {
+      "type": "range",
+      "id": "card_tile_size_mobile",
+      "label": "Icon tile size (mobile)",
+      "min": 20,
+      "max": 80,
+      "step": 1,
+      "unit": "px",
+      "default": 38,
+      "visible_if": "{{ section.settings.card_sizes }}"
+    },
+    {
+      "type": "range",
+      "id": "card_icon_size_mobile",
+      "label": "Icon size (mobile)",
+      "info": "Desktop = the icon block's Width setting.",
+      "min": 10,
+      "max": 48,
+      "step": 1,
+      "unit": "px",
+      "default": 20,
+      "visible_if": "{{ section.settings.card_sizes }}"
     }
   ],
   "presets": [
