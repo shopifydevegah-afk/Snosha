@@ -33,10 +33,22 @@
     section-resource-list
     spacing-style
     gap-style
+    {%- render 'custom-class', value: section.settings.custom_class %}
   "
   style="
     {% render 'spacing-style', settings: section.settings %}
     {% render 'gap-style', value: section.settings.gap %}
+    {%- if section.settings.custom_class != blank %}
+      --sn-mobile-heading-size: {{ section.settings.mobile_heading_size }}px;
+      --sn-mobile-image-size: {{ section.settings.mobile_image_size }}px;
+      --sn-mobile-title-size: {{ section.settings.mobile_title_size }}px;
+      {%- case section.settings.mobile_image_ratio -%}
+        {%- when 'square' %} --sn-mobile-image-ratio: 1 / 1;
+        {%- when 'portrait' %} --sn-mobile-image-ratio: 4 / 5;
+        {%- when 'landscape' %} --sn-mobile-image-ratio: 16 / 9;
+        {%- when 'adapt' %} --sn-mobile-image-ratio: auto;
+      {%- endcase %}
+    {%- endif %}
   "
   data-testid="collection-list"
 >
@@ -360,6 +372,109 @@
       "step": 1,
       "unit": "px",
       "default": 0
+    },
+    {
+      "type": "header",
+      "content": "Advanced"
+    },
+    {
+      "type": "text",
+      "id": "custom_class",
+      "label": "Custom CSS class",
+      "info": "Lowercase letters, numbers and hyphens, starting with a letter. Separate multiple classes with spaces."
+    },
+    {
+      "type": "header",
+      "content": "Mobile heading",
+      "info": "Phone-only settings below apply when a custom class is set. Desktop heading size = the heading text block's Font size."
+    },
+    {
+      "type": "range",
+      "id": "mobile_heading_size",
+      "label": "Mobile heading font size",
+      "info": "Phones only. Desktop size = Header > Text block > Size.",
+      "min": 16,
+      "max": 40,
+      "step": 1,
+      "unit": "px",
+      "default": 24
+    },
+    {
+      "type": "header",
+      "content": "Mobile collection images"
+    },
+    {
+      "type": "range",
+      "id": "mobile_image_size",
+      "label": "Mobile collection image size",
+      "info": "Width of each collection card and image on phones. The image keeps its ratio. Applies when a custom class is set.",
+      "min": 80,
+      "max": 180,
+      "step": 1,
+      "unit": "px",
+      "default": 97,
+      "visible_if": "{{ section.settings.layout_type == 'carousel' }}"
+    },
+    {
+      "type": "select",
+      "id": "mobile_image_ratio",
+      "label": "Mobile image aspect ratio",
+      "info": "Desktop uses the Collection card image block's Aspect ratio.",
+      "options": [
+        {
+          "value": "desktop",
+          "label": "Same as desktop"
+        },
+        {
+          "value": "square",
+          "label": "Square (1:1)"
+        },
+        {
+          "value": "portrait",
+          "label": "Portrait (4:5)"
+        },
+        {
+          "value": "landscape",
+          "label": "Landscape (16:9)"
+        },
+        {
+          "value": "adapt",
+          "label": "Adapt to image"
+        }
+      ],
+      "default": "desktop"
+    },
+    {
+      "type": "header",
+      "content": "Mobile collection titles"
+    },
+    {
+      "type": "range",
+      "id": "mobile_title_size",
+      "label": "Mobile collection title font size",
+      "info": "Phones only, same size on every card. Desktop size = Collection card > Collection title > Size. Applies when a custom class is set.",
+      "min": 10,
+      "max": 20,
+      "step": 1,
+      "unit": "px",
+      "default": 11
+    },
+    {
+      "type": "select",
+      "id": "mobile_title_word_limit",
+      "label": "Mobile title length",
+      "info": "Shortens long collection names on phones only. Desktop and screen readers always get the full name.",
+      "options": [
+        {
+          "value": "full",
+          "label": "Full title"
+        },
+        {
+          "value": "two",
+          "label": "First 2 words"
+        }
+      ],
+      "default": "full"
     }
   ],
   "presets": [
