@@ -39,7 +39,7 @@
 %}
 
 <product-price
-  class="text-block {{ text_block_classes }} text-{{ block_settings.alignment }} {{ block_settings.type_preset | default: 'paragraph' }} spacing-style"
+  class="text-block {{ text_block_classes }} text-{{ block_settings.alignment }} {{ block_settings.type_preset | default: 'paragraph' }} spacing-style{% if block_settings.show_discount_badge %} price--inline-badge{% endif %}"
   data-block-id="{{ block.id }}"
   data-product-id="{{ product_resource.id }}"
   style="
@@ -50,6 +50,15 @@
       --color-rgb: {{ block_settings.text_color.rgb }};
     {% endif %}
     --width: {{ block_settings.width }};
+    {% if block_settings.show_discount_badge %}
+      --price-row-gap: {{ block_settings.price_row_gap }}px;
+      --price-row-gap-mobile: {{ block_settings.price_row_gap_mobile }}px;
+      --price-row-justify: {{ block_settings.alignment | replace: 'left', 'flex-start' | replace: 'right', 'flex-end' }};
+      --discount-badge-radius: {{ block_settings.discount_badge_radius }}px;
+      {% if block_settings.discount_badge_background != blank %}--discount-badge-background: {{ block_settings.discount_badge_background }};{% endif %}
+      {% if block_settings.discount_badge_text_color != blank %}--discount-badge-color: {{ block_settings.discount_badge_text_color }};{% endif %}
+      {% if block_settings.discount_badge_border_color != blank %}--discount-badge-border: {{ block_settings.discount_badge_border_color }};{% endif %}
+    {% endif %}
   "
   {{ block.shopify_attributes }}
 >
@@ -121,6 +130,41 @@
 
 {% render 'payment-terms-styles' %}
 
+{% stylesheet %}
+  /* Opt-in (show_discount_badge): prices and the discount badge share one wrapping row */
+  product-price.price--inline-badge {
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: var(--price-row-justify, flex-start);
+    gap: var(--gap-3xs, 4px) var(--price-row-gap);
+
+    @media screen and (max-width: 749px) {
+      column-gap: var(--price-row-gap-mobile);
+    }
+
+    /* The price container stays in the DOM for product-price.js; its items join the row */
+    > [ref='priceContainer'] {
+      display: contents;
+    }
+
+    > :is(.tax-note, .installments) {
+      flex-basis: 100%;
+    }
+  }
+
+  .price-discount-badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.25em 0.75em;
+    border: 1px solid var(--discount-badge-border, transparent);
+    border-radius: var(--discount-badge-radius, 0);
+    background: var(--discount-badge-background, rgb(var(--color-foreground-rgb) / var(--opacity-5)));
+    color: var(--discount-badge-color, currentColor);
+    white-space: nowrap;
+  }
+{% endstylesheet %}
+
 {% schema %}
 {
   "name": "t:names.product_price",
@@ -166,6 +210,57 @@
       "label": "Discount badge text",
       "info": "[percent] is replaced with the discount, for example: Save [percent]%",
       "default": "-[percent]%",
+      "visible_if": "{{ block.settings.show_discount_badge }}"
+    },
+    {
+      "type": "color",
+      "id": "discount_badge_background",
+      "label": "Discount badge background",
+      "visible_if": "{{ block.settings.show_discount_badge }}"
+    },
+    {
+      "type": "color",
+      "id": "discount_badge_text_color",
+      "label": "Discount badge text",
+      "visible_if": "{{ block.settings.show_discount_badge }}"
+    },
+    {
+      "type": "color",
+      "id": "discount_badge_border_color",
+      "label": "Discount badge border",
+      "visible_if": "{{ block.settings.show_discount_badge }}"
+    },
+    {
+      "type": "range",
+      "id": "discount_badge_radius",
+      "label": "Discount badge corner radius",
+      "min": 0,
+      "max": 30,
+      "step": 1,
+      "unit": "px",
+      "default": 8,
+      "visible_if": "{{ block.settings.show_discount_badge }}"
+    },
+    {
+      "type": "range",
+      "id": "price_row_gap",
+      "label": "Space between prices and badge",
+      "min": 0,
+      "max": 24,
+      "step": 1,
+      "unit": "px",
+      "default": 10,
+      "visible_if": "{{ block.settings.show_discount_badge }}"
+    },
+    {
+      "type": "range",
+      "id": "price_row_gap_mobile",
+      "label": "Mobile space between prices and badge",
+      "min": 0,
+      "max": 24,
+      "step": 1,
+      "unit": "px",
+      "default": 6,
       "visible_if": "{{ block.settings.show_discount_badge }}"
     },
     {

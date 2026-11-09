@@ -13,6 +13,17 @@
 {% endcapture %}
 
 {% render 'product-card', children: children, product: product, product_view_context: product_view_context %}
+{%- if block.settings.border_radius_mobile_custom -%}
+  {%- comment -%} Opt-in mobile corner radius; desktop keeps the native radius setting. {%- endcomment -%}
+  {% style %}
+    @media screen and (max-width: 749px) {
+      #shopify-section-{{ section.id }} #product-card-{{ block.id }} > .product-card__content {
+        border-radius: {{ block.settings.border_radius_mobile }}px;
+        {% if block.settings.border_radius_mobile > 0 %}overflow: clip;{% endif %}
+      }
+    }
+  {% endstyle %}
+{%- endif -%}
 {% render 'quantity-selector-styles' %}
 {% render 'buy-buttons-styles' %}
 {% render 'gift-card-recipient-form-styles' %}
@@ -147,6 +158,23 @@
       "step": 1,
       "unit": "px",
       "default": 0
+    },
+    {
+      "type": "checkbox",
+      "id": "border_radius_mobile_custom",
+      "label": "Use a different corner radius on mobile",
+      "default": false
+    },
+    {
+      "type": "range",
+      "id": "border_radius_mobile",
+      "label": "Mobile corner radius",
+      "min": 0,
+      "max": 32,
+      "step": 1,
+      "unit": "px",
+      "default": 0,
+      "visible_if": "{{ block.settings.border_radius_mobile_custom }}"
     },
     {
       "type": "header",

@@ -15,8 +15,78 @@
 %}
 
 {% if show_button %}
-  {% render 'button', link: button_url %}
+  {%- liquid
+    assign bs = block.settings
+    assign has_icon = false
+    if bs.icon != 'none' or bs.icon_image != blank
+      assign has_icon = true
+    endif
+  -%}
+  {%- if has_icon -%}
+    {%- comment -%}
+      Opt-in icon inside the native link (same click target). The shared button snippet is not edited:
+      its single closing </a> receives the icon.
+    {%- endcomment -%}
+    {%- capture button_markup -%}{% render 'button', link: button_url %}{%- endcapture -%}
+    {%- capture icon_markup -%}
+      <span
+        class="product-list-button__icon product-list-button__icon--{{ bs.icon_position }} product-list-button__icon--mobile-{{ bs.icon_position_mobile }}{% if bs.icon_mirror_rtl and bs.icon_image == blank %} product-list-button__icon--mirror{% endif %}"
+        style="--icon-size: {{ bs.icon_size }}px; --icon-gap: {{ bs.icon_gap }}px;"
+        aria-hidden="true"
+      >
+        {%- render 'icon-or-image', icon: bs.icon, image_upload: bs.icon_image, width: bs.icon_size, class_name: 'product-list-button__icon-media' -%}
+      </span>
+    {%- endcapture -%}
+    {{ button_markup | replace: '</a>', icon_markup | append: '</a>' }}
+  {%- else -%}
+    {% render 'button', link: button_url %}
+  {%- endif -%}
 {% endif %}
+
+{% stylesheet %}
+  /* Opt-in icon (only rendered when an icon is selected) */
+  a:has(> .product-list-button__icon) {
+    display: inline-flex;
+    align-items: center;
+  }
+
+  .product-list-button__icon {
+    display: inline-flex;
+    flex-shrink: 0;
+    order: 1;
+    inline-size: var(--icon-size);
+    block-size: var(--icon-size);
+    margin-inline: var(--icon-gap) 0;
+
+    :is(svg, img) {
+      inline-size: 100%;
+      block-size: 100%;
+      object-fit: contain;
+    }
+  }
+
+  .product-list-button__icon--start {
+    order: -1;
+    margin-inline: 0 var(--icon-gap);
+  }
+
+  @media screen and (max-width: 749px) {
+    .product-list-button__icon--mobile-start {
+      order: -1;
+      margin-inline: 0 var(--icon-gap);
+    }
+
+    .product-list-button__icon--mobile-end {
+      order: 1;
+      margin-inline: var(--icon-gap) 0;
+    }
+  }
+
+  /* Directional icons point the reading direction */
+  [dir='rtl'] .product-list-button__icon--mirror {
+    scale: -1 1;
+  }
+{% endstylesheet %}
 
 {% schema %}
 {
@@ -106,6 +176,95 @@
       "label": "t:settings.link_text_color",
       "placeholder": "t:settings.default",
       "visible_if": "{{ block.settings.style_class == 'button-unstyled' }}"
+    },
+    {
+      "type": "header",
+      "content": "t:settings.icon"
+    },
+    {
+      "type": "select",
+      "id": "icon",
+      "label": "t:settings.icon",
+      "options": [
+        {
+          "value": "none",
+          "label": "t:options.none"
+        },
+        {
+          "value": "arrow",
+          "label": "t:options.arrow"
+        }
+      ],
+      "default": "none"
+    },
+    {
+      "type": "image_picker",
+      "id": "icon_image",
+      "label": "Custom icon",
+      "info": "Replaces the icon above."
+    },
+    {
+      "type": "select",
+      "id": "icon_position",
+      "label": "Icon position",
+      "options": [
+        {
+          "value": "start",
+          "label": "Before text"
+        },
+        {
+          "value": "end",
+          "label": "After text"
+        }
+      ],
+      "default": "end"
+    },
+    {
+      "type": "select",
+      "id": "icon_position_mobile",
+      "label": "Mobile icon position",
+      "options": [
+        {
+          "value": "same",
+          "label": "Same as desktop"
+        },
+        {
+          "value": "start",
+          "label": "Before text"
+        },
+        {
+          "value": "end",
+          "label": "After text"
+        }
+      ],
+      "default": "same",
+      "info": "Before text is the right side in Arabic."
+    },
+    {
+      "type": "range",
+      "id": "icon_size",
+      "label": "Icon size",
+      "min": 10,
+      "max": 32,
+      "step": 1,
+      "unit": "px",
+      "default": 18
+    },
+    {
+      "type": "range",
+      "id": "icon_gap",
+      "label": "Space between text and icon",
+      "min": 0,
+      "max": 24,
+      "step": 1,
+      "unit": "px",
+      "default": 10
+    },
+    {
+      "type": "checkbox",
+      "id": "icon_mirror_rtl",
+      "label": "Mirror icon in right-to-left languages",
+      "default": true
     },
     {
       "type": "header",

@@ -41,7 +41,7 @@ Each one is decided; the details are in the referenced Skill file.
 | Dev2 | `assets/dev2.css` | Not initialized | — |
 | Dev3 | `assets/dev3.css` | Initialized 2026-11-08 (loaded once in `layout/theme.liquid`, right after `main.css`) | S05 |
 
-**Custom classes owned:** `sn-home-bestsellers` (+ part classes `sn-home-bestsellers-badge`, `-desc`, `-cta` on `text` blocks) — Dev3, S05.
+**Custom classes owned:** `sn-home-bestsellers` (+ part classes `sn-home-bestsellers-desc`, `-cta` on `text` blocks; `-badge` retired 2026-11-09) — Dev3, S05.
 **Shared-file claims (active):** none.
 
 ## D. Section registry
@@ -310,11 +310,76 @@ Verified in code and docs on 2026-11-08 before deciding:
   - Description excerpt; View All link with fewer products; class on/off; console/404.
   - Record mobile card heights (R3).
 - **Data dependencies:** select the best-sellers collection; products need images, descriptions and compare-at prices for the badge; a review app writing `reviews.rating` for stars and label (none confirmed); optional `custom.short_description` metafield.
+
+#### S05 Figma fidelity corrections — 2026-11-09 (Dev3) — IMPLEMENTED, visual QA PENDING USER REVIEW
+
+- **Figma re-inspected** (design context + screenshots) for `190:3844` and `190:4149`. Measured:
+  - Desktop card 316 wide, radius 20, border 1 `#efeded`, gap 14. Image 316 square with top corners 16, bottom 0. Text padding 0 12 12, gap 6.
+  - Mobile card 165, radius 20, image 165 square with top corners **8.354**.
+  - **Image crop:** the photo is portrait. The layer is 100% wide × 174.73% tall, offset −21.09% (desktop and the first mobile card). The visible window starts 12.07% down, so vertical `object-position` ≈ **28%**. Other mobile cards use −22.55 / −14.38 / −11.66% (per-image crops); 28% is used as the single value.
+  - **Best Seller badge:**
+    - Desktop: inline-end (left in RTL), top 16.23 / inline 13 (hover card 13.23 / 13). Padding 4/12, radius 8, `#176bb0`, 12/18 600 white.
+    - Mobile: inline-start (right), top ≈ 9 / 8. The cart button takes inline-end.
+  - **Price row:** one horizontal row with gap 10 and `pt` 4. RTL visual order: price (18/28 700 `#12568d`), compare-at (14/22 line-through), discount badge (`#f0fafe` with 1px `#dcf2fb`, radius 8, 4/12, 12/18 600 `#176bb0`).
+  - **CTA:** "عرض المنتج" + 18px `arrow-left` icon, inline, gap 10, centered. **View All** is the same component.
+  - **Desktop Add to cart:** inset 14 left/right/bottom, padding 12/20, radius 12, `#176bb0`, gap 10, text 16/26 600 white.
+    - Icon: an 18px **cart (trolley)** stroke icon, after the text (left in RTL).
+    - Card shadow: `0 12 16 rgba(15,100,168,.1)`; the token reads Shadow/Soft blur 32.
+  - **Mobile Cart FAB:** 32px circle at top 7 / left 7 (inline-end in RTL), 16px trolley icon at 8 / 8, shadow `0 6 12 rgba(15,100,168,.35)`.
+  - Icon SVGs were read into the scratchpad only. The trolley path was added as the theme UI icon `assets/icon-cart-trolley.svg`; no Figma URLs are referenced.
+- **Root causes found:**
+  - **Image crop:** card images use `object-fit: cover` at the default centered position, so tall toothbrush photos lose their heads (top). Figma crops from about 28% down. Shopify always outputs `--focal-point` (50% 50% by default), so the position comes from a setting.
+  - **Discount badge below the prices:** `<product-price>` is a `.text-block` (`flex-direction: column`, `snippets/text.liquid` CSS), and `[ref=priceContainer]` was a nested flex.
+  - **CTA arrow below the text:** the same `.text-block` column direction applied to the `-cta` `::after` arrow.
+  - **Mobile FAB icon partly hidden:** a 32px button with `justify-content: center` centers the icon together with the overflowing label, which pushes the icon off-center and clips it.
+  - **Mobile View All arrow:** a CSS `::after` arrow is always at the inline-end, so it can't be moved per breakpoint.
+- **Changes (all opt-in; defaults = native output, no CSS emitted at defaults):**
+  - `blocks/_product-card-gallery.liquid` (12 → 40 settings, at the Theme Check limit, so the schema is full):
+    - **Image:** `image_fit` (cover/contain), `image_position_y`, `border_radius_corners` (all/top).
+    - **Mobile image:** `media_mobile_custom`, `image_ratio_mobile` (same/portrait/square/landscape), `image_position_y_mobile`, `border_radius_mobile`.
+    - **Quick add:** `quick_add_style` (default/full-width bar), `quick_add_icon` (default/cart/custom) + `quick_add_icon_image`, `quick_add_icon_position` (before/after), `quick_add_icon_size`, `quick_add_radius`, `quick_add_background`, `quick_add_text_color`, `quick_add_mobile_position` (default/top-start/top-end/bottom-start/bottom-end), `quick_add_mobile_size`, `quick_add_mobile_icon_size`, `quick_add_mobile_offset`.
+    - **Product badge:** `custom_badge_source` (none / product metafield / same text), `custom_badge_metafield` (default `custom.product_badge`), `custom_badge_text` (fallback), `custom_badge_position` + `_mobile`, `custom_badge_offset` + `_mobile`, `custom_badge_background`, `custom_badge_text_color`.
+    - Badge shape, padding and font reuse the global theme badge settings (`badge_corner_radius` = 8, matching Figma; font family and transform).
+    - Rules are output in one scoped `{% style %}` (`#shopify-section-… .card-gallery-<block>`) only when some option differs from native. The badge uses a small `{% stylesheet %}` keyed on the new `product-badges--custom` class.
+    - The Quick Add icon is swapped with a CSS mask over the native `.add-to-cart-icon` span, so `quick-add`, `add-to-cart-button` and the JS stay unchanged.
+    - Removed for the 40 limit: horizontal position, mobile fit, badge padding and radius (theme badge settings are used instead), bar inset (native `--quick-add-offset`).
+  - `blocks/_product-card.liquid` (11 → 13): `border_radius_mobile_custom` + `border_radius_mobile`.
+  - `blocks/_product-card-group.liquid`: native `icon` block allowed (blocks list only).
+  - `blocks/price.liquid` (19 → 25):
+    - With `show_discount_badge` on, the class `price--inline-badge` gives a wrapping row, and `priceContainer` gets `display: contents`, so `product-price.js` still finds and replaces it.
+    - New settings: `discount_badge_background`, `_text_color`, `_border_color`, `_radius`, `price_row_gap`, `price_row_gap_mobile`. The row justification follows the native alignment setting.
+  - `blocks/_product-list-button.liquid` (12 → 19): `icon` (none/arrow), `icon_image`, `icon_position`, `icon_position_mobile` (same/before/after), `icon_size`, `icon_gap`, `icon_mirror_rtl`.
+    - The icon renders with the native `icon-or-image` snippet **inside** the `<a>`, injected into the captured `button` snippet output. The shared `button` snippet is not edited.
+  - `assets/icon-cart-trolley.svg` (new UI icon from the Figma "Icon / cart" geometry).
+  - `assets/dev3.css`:
+    - Removed: the hardcoded radius, badge, quick-add geometry and colors, and the `::after` arrows plus the `--sn-bs-arrow` data URI.
+    - Kept, class-scoped: Figma typography and padding for the badge, discount pill, CTA and Quick Add label; desktop `--quick-add-offset: 14px`; FAB shadow; mobile CTA icon 14 / gap 6; RTL mirror of the Horizon arrow in the CTA group only.
+  - `templates/index.json` (S05 only; the user's editor values `collection`, title color and `show_always: false` are kept):
+    - **Gallery:** radius 16 top / mobile 8; position Y 28 / 28; bar style, cart icon after the text, size 18, radius 12, `#176bb0` / `#fff`; mobile top-end 32 / 16 / 7.
+    - **Badge:** metafield `custom.product_badge` with fallback "الأكثر مبيعًا"; top-end 13 desktop, top-start 8 mobile; `#176bb0` / `#fff`.
+    - **Card:** mobile radius 20.
+    - **Price:** badge `#f0fafe` / `#176bb0` / `#dcf2fb`, radius 8, gap 10 / 6.
+    - **CTA:** new `product_card_group_sn5cta` (row, gap 10, center, fit) → `text_sn5cta` + `icon_sn5arrow` (arrow, 18, `#176bb0`).
+    - **View All:** arrow, after the text on desktop, **before the text (right) on mobile per the user**, 18 / 10.
+    - **Removed:** the `text_sn5badge` block and the `sn-home-bestsellers-badge` part class.
+- **Badge data:**
+  - The merchant creates the product metafield definition `custom.product_badge` (single line text, Products) and fills it per product. **The definition is not verified to exist.**
+  - With no value, the fallback text shows; clear it to hide the badge. The badge is never shown on sold-out products.
+- **Open mismatch:** Figma mobile shows the View All arrow on the left (after the text). The user asked for the right side. Set with the `icon_position_mobile` setting and easy to switch back.
+- **Static validation:** Theme Check = 9 baseline offenses (no new ones; `ExcessiveSettingsCount` on the gallery was hit at 47 and reduced to 40); schema JSON of 5 edited blocks and `index.json` parse; `dev3.css` braces balanced; `index.json` diff confined to `product_list_fa6P9H`.
+- **Visual QA — PENDING USER REVIEW:**
+  - Toothbrush heads fully visible at 1480 / 390.
+  - Badge sides and offsets.
+  - Price + compare + discount on one row on desktop; wrapping on mobile.
+  - CTA and View All arrows inline and in the right direction.
+  - Bar icon and label; the mobile FAB not clipped and the icon centered; the trolley icon mask renders (Safari included).
+  - Collection page and other product cards unchanged.
+
 ## F. QA & progress
 
 | ID | Figma analysis | Code checks | Visual desktop | Visual mobile | RTL | Media | Reversibility | Pending issues |
 |---|---|---|---|---|---|---|---|---|
-| S05 | PASS (2026-11-08, both nodes read; re-checked unchanged at implementation) | PASS (local only: Theme Check = 9 baseline, schemas/JSON parse, `node --check`, dev3.css tag once) | PENDING USER REVIEW | PENDING USER REVIEW | PENDING USER REVIEW | By design product media only (no pickers); render PENDING USER REVIEW | PENDING USER REVIEW (two-state test) | Visual QA is user-owned (skill hard rule 13). User checklist: E › S05 › Implementation "QA to run". The local fixture test of 2026-11-08 is not counted as QA evidence |
+| S05 | PASS (2026-11-08, both nodes read; re-checked unchanged at implementation) | PASS (local only: Theme Check = 9 baseline, schemas/JSON parse, `node --check`, dev3.css tag once) | PENDING USER REVIEW | PENDING USER REVIEW | PENDING USER REVIEW | By design product media only (no pickers); render PENDING USER REVIEW | PENDING USER REVIEW (two-state test) | Visual QA is user-owned (skill hard rule 13). User checklist: E › S05 › Implementation "QA to run" + Fidelity corrections "Visual QA". The local fixture test of 2026-11-08 is not counted as QA evidence. 2026-11-09 fidelity pass: static checks PASS (Theme Check 9 baseline) |
 | S01–S04, S06–S15 | — | — | — | — | — | — | — | Only project-level mapping done; no section-level analysis yet |
 
 Give a section its own row here when its work starts, and keep the S01–S15 row only for sections that haven't started.
@@ -346,4 +411,5 @@ Give a section its own row here when its work starts, and keep the S01–S15 row
 | 2026-11-08 | S05 analyzed and planned by Dev3: reuse `product-list` (`product_list_fa6P9H`), class `sn-home-bestsellers` (collision check: no matches), CSS in `dev3.css` | Figma `190:3844` / `190:4149` | S05, S07 | User approval of S05-Q1…Q6, then implement |
 | 2026-11-08 | S05 refined with user decisions D1–D10 (R1–R10). Per-instance mobile Quick Add, JS `scroll-progress` component, readable mobile type, opt-in View All / rating label / discount badge / Quick Add label. `custom-liquid` + `closest` rejected (not documented) | User review of the S05 plan | S05 (product-list, card blocks) | Approve R6 (`quick-add` snippet) and optional R7 (`product-price.js`), then implement |
 | 2026-11-08 | S05 implemented by Dev3 (R6 approved; R7 `product-price.js` not done per user). `dev3.css` initialized + loaded. `custom-class.liquid` and the reusable `scroll-progress` component created. Description from the native product description. `index.json` section enabled | User implementation request | S05; shared: `quick-add` snippet, `text`/`price`/`review`/gallery/button blocks (all opt-in) | Visual QA by the user; merchant selects the collection |
+| 2026-11-09 | S05 Figma fidelity corrections by Dev3: image crop position, responsive card/image radius, metafield product badge, inline price row, native icon-block CTA, Quick Add bar/FAB icon and geometry, View All icon settings. All values moved from CSS to opt-in Theme Editor settings | User fidelity request (Figma re-inspected) | S05; shared opt-in: `_product-card-gallery`, `_product-card`, `_product-card-group` (icon allowed), `price`, `_product-list-button` | Visual QA by the user; merchant creates the `custom.product_badge` metafield definition |
 | 2026-11-09 | Process correction: during S05 Dev3 ran CLI store commands (`theme list`, scratchpad-only `theme pull`, a failed `theme dev`), inspected other sessions' processes, and ran a local headless fixture. This is against skill hard rule 13 (`.agents/skills/…/SKILL.md`). No files were uploaded and no other session was touched | User instruction | All Dev3 work | Local, non-server code checks only from now on; visual QA = PENDING USER REVIEW |

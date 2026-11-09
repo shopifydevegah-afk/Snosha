@@ -113,7 +113,13 @@
                 "width": "fit-content",
                 "custom_width": 100,
                 "width_mobile": "fit-content",
-                "custom_width_mobile": 100
+                "custom_width_mobile": 100,
+                "icon": "arrow",
+                "icon_position": "end",
+                "icon_position_mobile": "start",
+                "icon_size": 18,
+                "icon_gap": 10,
+                "icon_mirror_rtl": true
               },
               "blocks": {}
             }
@@ -139,7 +145,9 @@
             "padding-block-start": 0,
             "padding-block-end": 0,
             "padding-inline-start": 0,
-            "padding-inline-end": 0
+            "padding-inline-end": 0,
+            "border_radius_mobile_custom": true,
+            "border_radius_mobile": 20
           },
           "blocks": {
             "product_card_gallery_677WP3": {
@@ -151,40 +159,40 @@
                 "border_width": 1,
                 "border_opacity": 100,
                 "border_color": "",
-                "border_radius": 0,
+                "border_radius": 16,
                 "padding-block-start": 0,
                 "padding-block-end": 0,
                 "padding-inline-start": 0,
                 "padding-inline-end": 0,
                 "quick_add_mobile": true,
-                "quick_add_label": "أضف إلى السلة"
-              },
-              "blocks": {}
-            },
-            "text_sn5badge": {
-              "type": "text",
-              "name": "Best Seller badge",
-              "settings": {
-                "text": "<p>الأكثر مبيعًا</p>",
-                "width": "fit-content",
-                "max_width": "normal",
-                "alignment": "left",
-                "type_preset": "paragraph",
-                "font": "var(--font-body--family)",
-                "font_size": "1rem",
-                "line_height": "normal",
-                "letter_spacing": "normal",
-                "case": "none",
-                "wrap": "nowrap",
-                "text_color": "",
-                "background": false,
-                "background_color": "#00000026",
-                "corner_radius": 0,
-                "padding-block-start": 0,
-                "padding-block-end": 0,
-                "padding-inline-start": 0,
-                "padding-inline-end": 0,
-                "custom_class": "sn-home-bestsellers-badge"
+                "quick_add_label": "أضف إلى السلة",
+                "image_fit": "cover",
+                "image_position_y": 28,
+                "border_radius_corners": "top",
+                "media_mobile_custom": true,
+                "image_ratio_mobile": "inherit",
+                "image_position_y_mobile": 28,
+                "border_radius_mobile": 8,
+                "quick_add_style": "bar",
+                "quick_add_icon": "cart",
+                "quick_add_icon_position": "end",
+                "quick_add_icon_size": 18,
+                "quick_add_radius": 12,
+                "quick_add_background": "#176bb0",
+                "quick_add_text_color": "#ffffff",
+                "quick_add_mobile_position": "top-end",
+                "quick_add_mobile_size": 32,
+                "quick_add_mobile_icon_size": 16,
+                "quick_add_mobile_offset": 7,
+                "custom_badge_source": "metafield",
+                "custom_badge_metafield": "custom.product_badge",
+                "custom_badge_text": "الأكثر مبيعًا",
+                "custom_badge_position": "top-end",
+                "custom_badge_position_mobile": "top-start",
+                "custom_badge_offset": 13,
+                "custom_badge_offset_mobile": 8,
+                "custom_badge_background": "#176bb0",
+                "custom_badge_text_color": "#ffffff"
               },
               "blocks": {}
             },
@@ -314,36 +322,99 @@
                     "padding-block-start": 0,
                     "padding-block-end": 0,
                     "padding-inline-start": 0,
-                    "padding-inline-end": 0
+                    "padding-inline-end": 0,
+                    "discount_badge_background": "#f0fafe",
+                    "discount_badge_text_color": "#176bb0",
+                    "discount_badge_border_color": "#dcf2fb",
+                    "discount_badge_radius": 8,
+                    "price_row_gap": 10,
+                    "price_row_gap_mobile": 6
                   },
                   "blocks": {}
                 },
-                "text_sn5cta": {
-                  "type": "text",
-                  "name": "View product label",
+                "product_card_group_sn5cta": {
+                  "type": "_product-card-group",
+                  "name": "View product",
                   "settings": {
-                    "text": "<p>عرض المنتج</p>",
+                    "content_direction": "row",
+                    "vertical_on_mobile": false,
+                    "horizontal_alignment": "flex-start",
+                    "vertical_alignment": "center",
+                    "align_baseline": false,
+                    "horizontal_alignment_flex_direction_column": "flex-start",
+                    "vertical_alignment_flex_direction_column": "center",
+                    "gap": 10,
                     "width": "fit-content",
-                    "max_width": "normal",
-                    "alignment": "left",
-                    "type_preset": "paragraph",
-                    "font": "var(--font-body--family)",
-                    "font_size": "1rem",
-                    "line_height": "normal",
-                    "letter_spacing": "normal",
-                    "case": "none",
-                    "wrap": "nowrap",
-                    "text_color": "",
-                    "background": false,
-                    "background_color": "#00000026",
-                    "corner_radius": 0,
+                    "custom_width": 100,
+                    "width_mobile": "fit-content",
+                    "custom_width_mobile": 100,
+                    "height": "fit",
+                    "custom_height": 100,
+                    "background_media": "none",
+                    "background_color": "",
+                    "video_position": "cover",
+                    "background_image_position": "cover",
+                    "toggle_overlay": false,
+                    "overlay_color": "#00000026",
+                    "overlay_style": "solid",
+                    "gradient_direction": "to top",
+                    "border": "none",
+                    "border_width": 1,
+                    "border_opacity": 100,
+                    "border_color": "",
+                    "border_radius": 0,
+                    "link": "",
+                    "open_in_new_tab": false,
                     "padding-block-start": 0,
                     "padding-block-end": 0,
                     "padding-inline-start": 0,
-                    "padding-inline-end": 0,
-                    "custom_class": "sn-home-bestsellers-cta"
+                    "padding-inline-end": 0
                   },
-                  "blocks": {}
+                  "blocks": {
+                    "text_sn5cta": {
+                      "type": "text",
+                      "name": "View product label",
+                      "settings": {
+                        "text": "<p>عرض المنتج</p>",
+                        "width": "fit-content",
+                        "max_width": "normal",
+                        "alignment": "left",
+                        "type_preset": "paragraph",
+                        "font": "var(--font-body--family)",
+                        "font_size": "1rem",
+                        "line_height": "normal",
+                        "letter_spacing": "normal",
+                        "case": "none",
+                        "wrap": "nowrap",
+                        "text_color": "",
+                        "background": false,
+                        "background_color": "#00000026",
+                        "corner_radius": 0,
+                        "padding-block-start": 0,
+                        "padding-block-end": 0,
+                        "padding-inline-start": 0,
+                        "padding-inline-end": 0,
+                        "custom_class": "sn-home-bestsellers-cta"
+                      },
+                      "blocks": {}
+                    },
+                    "icon_sn5arrow": {
+                      "type": "icon",
+                      "name": "View product arrow",
+                      "settings": {
+                        "icon": "arrow",
+                        "width": 18,
+                        "link": "",
+                        "open_in_new_tab": false,
+                        "icon_color": "#176bb0"
+                      },
+                      "blocks": {}
+                    }
+                  },
+                  "block_order": [
+                    "text_sn5cta",
+                    "icon_sn5arrow"
+                  ]
                 }
               },
               "block_order": [
@@ -351,13 +422,12 @@
                 "text_sn5desc",
                 "review_sn5rate",
                 "price_JQzVV4",
-                "text_sn5cta"
+                "product_card_group_sn5cta"
               ]
             }
           },
           "block_order": [
             "product_card_gallery_677WP3",
-            "text_sn5badge",
             "product_card_group_sn5txt"
           ]
         }

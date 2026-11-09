@@ -3,7 +3,7 @@
 /* ==========================================================================
    sn-home-bestsellers — product-list on index (S05 Featured Collection)
    Figma desktop 190:3844 · mobile 190:4149 · owner: Dev3
-   Part classes (on `text` blocks inside the card): -badge, -desc, -cta
+   Part classes (on `text` blocks inside the card): -desc, -cta
    Mobile card typography is an approved readability adaptation (plan S05 R3),
    not the scaled 6–9px Figma values.
    ========================================================================== */
@@ -13,11 +13,12 @@
   --sn-bs-link: #176bb0; /* Figma brand-secondary (= theme primary button) */
   --sn-bs-muted: #5a5a59; /* Figma text-secondary */
   --sn-bs-card-border: #efeded; /* Figma card stroke */
-  --sn-bs-soft: #f0fafe; /* palette color 3 */
   --sn-bs-soft-border: #dcf2fb; /* palette color 1 */
   --sn-bs-shadow: 0 12px 16px rgb(15 100 168 / 0.1); /* Figma hover card */
-  /* Arrow: Horizon icon-arrow.svg path (UI icon, kept in code) */
-  --sn-bs-arrow: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' fill='none'%3E%3Cpath stroke='black' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round' d='M4.25 10h11.5m0 0-4-4m4 4-4 4'/%3E%3C/svg%3E");
+
+  /* Merchant-facing values (image fit/position, radii, badge source/position/colors, quick add style/icon/colors,
+     discount badge colors, View All icon) are Theme Editor settings on the blocks; this file keeps the
+     Figma typography and fine geometry only. */
 
   /* ---------- Container: Figma content 1336 = 1376 container − 2 × 20 ---------- */
   &.section {
@@ -59,29 +60,20 @@
       color: var(--sn-bs-muted);
     }
 
-    /* View All (native _product-list-button, links to the selected collection) */
+    /* View All (native _product-list-button, links to the selected collection).
+       Icon, its side (desktop/mobile), size and gap are block settings. */
     .group-block-content > a {
       position: absolute;
       inset-block-end: 6px;
       inset-inline-end: 6px;
       display: inline-flex;
       align-items: center;
-      gap: 10px;
       padding: 0;
       font-size: 16px;
       line-height: 26px;
       font-weight: 600;
       color: var(--sn-bs-link);
       text-decoration: none;
-
-      &::after {
-        content: '';
-        flex-shrink: 0;
-        inline-size: 18px;
-        block-size: 18px;
-        background: currentColor;
-        mask: var(--sn-bs-arrow) center / contain no-repeat;
-      }
     }
 
     @media screen and (max-width: 749px) {
@@ -113,11 +105,6 @@
         inline-size: fit-content;
       }
     }
-  }
-
-  /* Arrows point in the reading direction */
-  [dir='rtl'] & :is(.section-resource-list__header .group-block-content > a, .sn-home-bestsellers-cta)::after {
-    scale: -1 1;
   }
 
   /* ---------- Grid: 2 × 2 on tablet so cards stay readable ---------- */
@@ -162,10 +149,7 @@
     box-shadow: var(--sn-bs-shadow);
   }
 
-  .card-gallery {
-    border-start-start-radius: 16px;
-    border-start-end-radius: 16px;
-  }
+  /* Image radius (desktop 16 / mobile 8, top corners) and crop position are image-block settings */
 
   /* Native Sale badge is replaced by the discount badge in the price row; Sold out stays */
   .product-badges:has(.color-custom-badge-sale) {
@@ -177,38 +161,18 @@
     flex: 1 1 auto;
   }
 
-  .sn-home-bestsellers-cta {
+  /* View product row (native group: text + icon) pinned to the bottom */
+  .group-block:has(> .group-block-content > .sn-home-bestsellers-cta) {
     margin-block-start: auto;
   }
 
-  /* Best Seller badge (section-level label on every card of this collection) */
-  .sn-home-bestsellers-badge {
-    position: absolute;
-    z-index: 2;
-    inset-block-start: 16px;
-    inset-inline-end: 13px;
-    inline-size: auto;
-    max-inline-size: calc(100% - 26px);
-    margin: 0;
+  /* Product badge (image-block setting, text from the product metafield): Figma type and padding.
+     Position, offset, colors and radius are settings. */
+  .product-badges__badge--custom {
     padding: 4px 12px;
-    border-radius: 8px;
-    background: var(--sn-bs-link);
-    color: #fff;
     font-size: 12px;
     line-height: 18px;
     font-weight: 600;
-    pointer-events: none;
-
-    * {
-      margin: 0;
-      font: inherit;
-      color: inherit;
-    }
-  }
-
-  /* Sold out keeps priority over the Best Seller label */
-  .product-card__content:has(.color-custom-badge-sold-out) > .sn-home-bestsellers-badge {
-    display: none;
   }
 
   /* Title (native product-title block) */
@@ -264,21 +228,13 @@
     color: var(--sn-bs-muted);
   }
 
-  /* Price row: price, compare-at, discount badge */
+  /* Price row: price, compare-at, discount badge on one row (price block, discount badge on).
+     Gaps, alignment and badge colors are price-block settings. */
   product-price {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    gap: 4px 10px;
     padding-block-start: 4px;
   }
 
   [ref='priceContainer'] {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: baseline;
-    gap: 4px 10px;
-
     .price {
       font-size: 18px;
       line-height: 28px;
@@ -296,25 +252,15 @@
   }
 
   .price-discount-badge {
-    display: inline-flex;
-    align-items: center;
     padding: 4px 12px;
-    border: 1px solid var(--sn-bs-soft-border);
-    border-radius: 8px;
-    background: var(--sn-bs-soft);
-    color: var(--sn-bs-link);
     font-size: 12px;
     line-height: 18px;
     font-weight: 600;
-    white-space: nowrap;
   }
 
-  /* "View product" (visual label; the native card link handles the click) */
+  /* "View product" text (native text block in a horizontal group with a native icon block;
+     the card link handles the click). Gap, alignment, icon and its size/color are settings. */
   .sn-home-bestsellers-cta {
-    display: inline-flex;
-    align-items: center;
-    gap: 10px;
-    inline-size: fit-content;
     font-size: 16px;
     line-height: 26px;
     font-weight: 600;
@@ -325,61 +271,24 @@
       font: inherit;
       color: inherit;
     }
-
-    &::after {
-      content: '';
-      flex-shrink: 0;
-      inline-size: 18px;
-      block-size: 18px;
-      background: currentColor;
-      mask: var(--sn-bs-arrow) center / contain no-repeat;
-    }
   }
 
-  /* ---------- Native quick add, restyled ---------- */
-  .quick-add {
-    --quick-add-background: var(--sn-bs-link);
-    --quick-add-foreground: #fff;
+  /* Horizon's arrow icon points right; in RTL the CTA arrow points the reading direction (Figma arrow-left) */
+  [dir='rtl'] & .group-block-content:has(> .sn-home-bestsellers-cta) .icon-block__media.icon-default {
+    scale: -1 1;
   }
 
-  /* Desktop: full-width bar over the image, shown on hover / focus (native visibility) */
+  /* ---------- Native quick add (style, icon, colors and mobile geometry are image-block settings) ---------- */
   @media screen and (min-width: 750px) {
+    .quick-add {
+      --quick-add-offset: 14px; /* Figma bar inset */
+    }
+
     button.quick-add__button {
-      inset-inline: 14px;
-      inset-block-end: 14px;
-      inline-size: auto;
-      max-inline-size: none;
-      block-size: auto;
-      min-block-size: 50px;
-      justify-content: center;
-      gap: 10px;
-      padding: 12px 20px;
-      border: 0;
-      border-radius: 12px;
-      backdrop-filter: none;
       font-family: var(--font-body--family);
       font-size: 16px;
       line-height: 26px;
       font-weight: 600;
-
-      > .add-to-cart-icon {
-        inline-size: 18px;
-        block-size: 18px;
-      }
-
-      &:hover {
-        scale: 1;
-      }
-
-      &:is(:hover, :focus-visible) {
-        inline-size: auto;
-        padding-inline-end: 20px;
-      }
-
-      &[data-added='true'] {
-        inline-size: auto;
-        color: transparent;
-      }
     }
   }
 
@@ -397,13 +306,12 @@
       }
     }
 
-    .sn-home-bestsellers-badge {
-      inset-block-start: 9px;
-      inset-inline-start: 8px;
-      inset-inline-end: auto;
+    .product-badges--custom {
       max-inline-size: calc(100% - 56px); /* keep clear of the cart button */
+    }
+
+    .product-badges__badge--custom {
       padding: 2px 8px;
-      border-radius: 6px;
       font-size: 11px;
       line-height: 16px;
     }
@@ -429,11 +337,6 @@
       line-height: 16px;
     }
 
-    product-price,
-    [ref='priceContainer'] {
-      gap: 4px 6px;
-    }
-
     [ref='priceContainer'] {
       .price {
         font-size: 14px;
@@ -448,42 +351,27 @@
 
     .price-discount-badge {
       padding: 0 8px;
-      border-radius: 6px;
       font-size: 11px;
       line-height: 16px;
     }
 
     .sn-home-bestsellers-cta {
-      gap: 6px;
       font-size: 13px;
       line-height: 20px;
+    }
 
-      &::after {
+    .group-block-content:has(> .sn-home-bestsellers-cta) {
+      gap: 6px;
+
+      .icon-block__media {
         inline-size: 14px;
         block-size: 14px;
       }
     }
 
-    /* Quick add: 32px circular button, top inline-end corner of the image */
+    /* Quick add circle: size, icon, side and offset are image-block settings; Figma shadow here */
     button.quick-add__button {
-      --quick-add-collapsed-width: 32px;
-
-      inset-block-start: 7px;
-      inset-block-end: auto;
-      inset-inline-end: 7px;
-      inline-size: 32px;
-      block-size: 32px;
-      justify-content: center;
-      border: 0;
-      border-radius: 999px;
       box-shadow: 0 6px 12px rgb(15 100 168 / 0.35);
-      backdrop-filter: none;
-
-      > .add-to-cart-icon {
-        inline-size: 32px;
-        block-size: 32px;
-        padding: 8px;
-      }
     }
   }
 }

@@ -2,6 +2,186 @@
 
 {% assign product = closest.product %}
 
+{%- liquid
+  # Opt-in extensions (Snosha). Every new setting defaults to native behaviour: no CSS or markup is output
+  # unless a setting is changed. All rules are scoped to this block instance.
+  assign bs = block.settings
+  assign scope = '#shopify-section-' | append: section.id | append: ' .card-gallery-' | append: block.id
+
+  # Product badge: product data (metafield) first, optional text fallback.
+  assign custom_badge_text = ''
+  if product != blank and product.available and bs.custom_badge_source != 'none'
+    if bs.custom_badge_source == 'metafield'
+      assign badge_key_parts = bs.custom_badge_metafield | strip | split: '.'
+      if badge_key_parts.size == 2
+        assign badge_namespace = badge_key_parts.first
+        assign badge_key = badge_key_parts.last
+        assign custom_badge_text = product.metafields[badge_namespace][badge_key].value | append: ''
+      endif
+    endif
+    if custom_badge_text == blank
+      assign custom_badge_text = bs.custom_badge_text
+    endif
+    assign custom_badge_text = custom_badge_text | strip_html | strip
+  endif
+
+  assign quick_add_icon_url = ''
+  if bs.quick_add_icon == 'cart'
+    assign quick_add_icon_url = 'icon-cart-trolley.svg' | asset_url
+  elsif bs.quick_add_icon == 'custom' and bs.quick_add_icon_image != blank
+    assign quick_add_icon_url = bs.quick_add_icon_image | image_url: width: 96
+  endif
+
+  assign mobile_ratio = ''
+  case bs.image_ratio_mobile
+    when 'portrait'
+      assign mobile_ratio = '4 / 5'
+    when 'square'
+      assign mobile_ratio = '1'
+    when 'landscape'
+      assign mobile_ratio = '16 / 9'
+  endcase
+-%}
+
+{%- capture gallery_css -%}
+  {%- if bs.image_fit != 'cover' or bs.image_position_y != 50 -%}
+    {{ scope }} .product-media-container img {
+      object-fit: {{ bs.image_fit }};
+      object-position: 50% {{ bs.image_position_y }}%;
+    }
+  {%- endif -%}
+  {%- if bs.border_radius_corners == 'top' -%}
+    {{ scope }} {
+      border-end-start-radius: 0;
+      border-end-end-radius: 0;
+    }
+  {%- endif -%}
+  {%- if bs.media_mobile_custom -%}
+    @media screen and (max-width: 749px) {
+      {%- if mobile_ratio != blank -%}
+        {{ scope }} :is(.product-media-container, svg, .product-card-gallery__title-placeholder) {
+          --gallery-aspect-ratio: {{ mobile_ratio }};
+        }
+      {%- endif -%}
+      {{ scope }} .product-media-container img {
+        object-fit: {{ bs.image_fit }};
+        object-position: 50% {{ bs.image_position_y_mobile }}%;
+      }
+      {{ scope }} {
+        border-radius: {{ bs.border_radius_mobile }}px;
+        {%- if bs.border_radius_corners == 'top' %}
+          border-end-start-radius: 0;
+          border-end-end-radius: 0;
+        {%- endif %}
+      }
+    }
+  {%- endif -%}
+
+  {%- if bs.quick_add_background != blank or bs.quick_add_text_color != blank -%}
+    {{ scope }} .quick-add {
+      {%- if bs.quick_add_background != blank %}--quick-add-background: {{ bs.quick_add_background }};{% endif %}
+      {%- if bs.quick_add_text_color != blank %}--quick-add-foreground: {{ bs.quick_add_text_color }};{% endif %}
+    }
+  {%- endif -%}
+  {%- if quick_add_icon_url != blank -%}
+    {{ scope }} .quick-add__button > .add-to-cart-icon {
+      background-color: currentColor;
+      -webkit-mask: url('{{ quick_add_icon_url }}') center / contain no-repeat;
+      mask: url('{{ quick_add_icon_url }}') center / contain no-repeat;
+    }
+    {{ scope }} .quick-add__button > .add-to-cart-icon > svg {
+      visibility: hidden;
+    }
+  {%- endif -%}
+  {%- if bs.quick_add_icon_position == 'end' -%}
+    {{ scope }} .quick-add__button > .add-to-cart-icon {
+      order: 1;
+    }
+  {%- endif -%}
+  {%- if bs.quick_add_style == 'bar' -%}
+    @media screen and (min-width: 750px) {
+      {{ scope }} button.quick-add__button {
+        /* Native quick add offset token */
+        inset-inline: var(--quick-add-offset);
+        inset-block-end: var(--quick-add-offset);
+        width: auto;
+        max-inline-size: none;
+        height: auto;
+        min-block-size: var(--button-size-md);
+        justify-content: center;
+        gap: 0.625em;
+        padding: 0.75em 1.25em;
+        border: 0;
+        border-radius: {{ bs.quick_add_radius }}px;
+        backdrop-filter: none;
+      }
+      {{ scope }} button.quick-add__button:hover {
+        scale: 1;
+      }
+      {{ scope }} button.quick-add__button:is(:hover, :focus-visible, [data-added='true']) {
+        width: auto;
+        padding-inline-end: 1.25em;
+      }
+      {{ scope }} button.quick-add__button > .add-to-cart-icon {
+        width: {{ bs.quick_add_icon_size }}px;
+        height: {{ bs.quick_add_icon_size }}px;
+      }
+    }
+  {%- endif -%}
+  {%- if bs.quick_add_mobile and settings.quick_add -%}
+    {%- comment -%}
+      Opt-in: shows the existing quick add button on mobile for this block only, by overriding the two
+      variables product-card.liquid sets from the global mobile_quick_add setting. No markup or JS change.
+    {%- endcomment -%}
+    {{ scope }} {
+      --quick-add-mobile-display: flex;
+      --quick-add-mobile-opacity: 1;
+    }
+    {%- if bs.quick_add_mobile_position != 'native' -%}
+      {%- liquid
+        assign qa_offset = bs.quick_add_mobile_offset | append: 'px'
+        if bs.quick_add_mobile_position contains 'top'
+          assign qa_block = qa_offset | append: ' auto'
+        else
+          assign qa_block = 'auto ' | append: qa_offset
+        endif
+        if bs.quick_add_mobile_position contains 'start'
+          assign qa_inline = qa_offset | append: ' auto'
+        else
+          assign qa_inline = 'auto ' | append: qa_offset
+        endif
+      -%}
+      @media screen and (max-width: 749px) {
+        {{ scope }} button.quick-add__button {
+          --quick-add-collapsed-width: {{ bs.quick_add_mobile_size }}px;
+          inset-block: {{ qa_block }};
+          inset-inline: {{ qa_inline }};
+          width: {{ bs.quick_add_mobile_size }}px;
+          height: {{ bs.quick_add_mobile_size }}px;
+          min-block-size: 0;
+          max-inline-size: none;
+          justify-content: center;
+          gap: 0;
+          padding: 0;
+          border: 0;
+          border-radius: 50%;
+          backdrop-filter: none;
+          /* Icon only: the label stays in the accessibility tree but takes no space */
+          font-size: 0;
+        }
+        {{ scope }} button.quick-add__button > .add-to-cart-icon {
+          order: 0;
+          width: {{ bs.quick_add_mobile_icon_size }}px;
+          height: {{ bs.quick_add_mobile_icon_size }}px;
+        }
+      }
+    {%- endif -%}
+  {%- endif -%}
+{%- endcapture -%}
+{%- if gallery_css != blank -%}
+  {% style %}{{ gallery_css }}{% endstyle %}
+{%- endif -%}
+
 {% capture children %}
   {% unless product == blank %}
     {%- if product.available == false or product.compare_at_price > product.price -%}
@@ -26,20 +206,28 @@
         </div>
       </div>
     {%- endif -%}
+    {%- if custom_badge_text != blank -%}
+      {%- comment -%} Opt-in product badge. Hidden for sold-out products, so the native Sold out badge keeps priority. {%- endcomment -%}
+      <div
+        class="product-badges product-badges--custom"
+        data-position="{{ bs.custom_badge_position }}"
+        data-position-mobile="{{ bs.custom_badge_position_mobile }}"
+        style="
+          --custom-badge-offset-desktop: {{ bs.custom_badge_offset }}px;
+          --custom-badge-offset-mobile: {{ bs.custom_badge_offset_mobile }}px;
+          --badge-border-radius: {{ settings.badge_corner_radius }}px;
+          --badge-font-family: var(--font-{{ settings.badge_font_family }}--family); --badge-font-weight: var(--font-{{ settings.badge_font_family }}--weight); --badge-text-transform: {{ settings.badge_text_transform }};
+          {% if bs.custom_badge_background != blank %}--custom-badge-background: {{ bs.custom_badge_background }};{% endif %}
+          {% if bs.custom_badge_text_color != blank %}--custom-badge-color: {{ bs.custom_badge_text_color }};{% endif %}
+        "
+      >
+        <span class="product-badges__badge product-badges__badge--rectangle product-badges__badge--custom">
+          {{- custom_badge_text | escape -}}
+        </span>
+      </div>
+    {%- endif -%}
     {% if product.available and settings.quick_add or settings.mobile_quick_add %}
-      {% render 'quick-add', product: product, section_id: section.id, add_label: block.settings.quick_add_label %}
-      {%- if block.settings.quick_add_mobile and settings.quick_add -%}
-        {%- comment -%}
-          Opt-in: shows the existing quick add button on mobile for this block only, by overriding the two
-          variables product-card.liquid sets from the global mobile_quick_add setting. No markup or JS change.
-        {%- endcomment -%}
-        {% style %}
-          #shopify-section-{{ section.id }} .card-gallery-{{ block.id }} {
-            --quick-add-mobile-display: flex;
-            --quick-add-mobile-opacity: 1;
-          }
-        {% endstyle %}
-      {%- endif -%}
+      {% render 'quick-add', product: product, section_id: section.id, add_label: bs.quick_add_label %}
     {% endif %}
   {% endunless %}
 {% endcapture %}
@@ -57,6 +245,44 @@
 
 {% render 'product-card-gallery-zoom-details-styles' %}
 {% render 'product-badges-styles' %}
+
+{% stylesheet %}
+  /* Opt-in product badge (only rendered when a badge source is selected) */
+  .product-badges--custom {
+    --custom-badge-offset: var(--custom-badge-offset-desktop);
+
+    inset-block-start: var(--custom-badge-offset);
+    inset-inline: var(--custom-badge-offset) auto;
+    max-inline-size: calc(100% - var(--custom-badge-offset) * 2);
+    pointer-events: none;
+
+    &[data-position='top-end'] {
+      inset-inline: auto var(--custom-badge-offset);
+    }
+
+    @media screen and (max-width: 749px) {
+      --custom-badge-offset: var(--custom-badge-offset-mobile);
+
+      &[data-position-mobile='top-start'] {
+        inset-inline: var(--custom-badge-offset) auto;
+      }
+
+      &[data-position-mobile='top-end'] {
+        inset-inline: auto var(--custom-badge-offset);
+      }
+    }
+  }
+
+  /* Shape, padding and font come from the theme's badge settings (product-badges-styles) */
+  .product-badges__badge.product-badges__badge--custom {
+    display: block;
+    background: var(--custom-badge-background, var(--color-background));
+    color: var(--custom-badge-color, var(--color-foreground));
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+{% endstylesheet %}
 
 {% schema %}
 {
@@ -91,6 +317,33 @@
       "default": "portrait",
       "label": "t:settings.aspect_ratio",
       "info": "t:info.aspect_ratio_adjusted"
+    },
+    {
+      "type": "select",
+      "id": "image_fit",
+      "label": "Image fit",
+      "options": [
+        {
+          "value": "cover",
+          "label": "Fill (crop)"
+        },
+        {
+          "value": "contain",
+          "label": "Fit (no crop)"
+        }
+      ],
+      "default": "cover"
+    },
+    {
+      "type": "range",
+      "id": "image_position_y",
+      "label": "Image vertical position",
+      "info": "0% = top edge, 100% = bottom edge. Lower values keep the top of tall images visible when the image is cropped.",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "%",
+      "default": 50
     },
     {
       "type": "header",
@@ -152,6 +405,79 @@
       "default": 0
     },
     {
+      "type": "select",
+      "id": "border_radius_corners",
+      "label": "Rounded corners",
+      "options": [
+        {
+          "value": "all",
+          "label": "All corners"
+        },
+        {
+          "value": "top",
+          "label": "Top corners only"
+        }
+      ],
+      "default": "all"
+    },
+    {
+      "type": "header",
+      "content": "Mobile image"
+    },
+    {
+      "type": "checkbox",
+      "id": "media_mobile_custom",
+      "label": "Use different image settings on mobile",
+      "default": false
+    },
+    {
+      "type": "select",
+      "id": "image_ratio_mobile",
+      "label": "Mobile aspect ratio",
+      "options": [
+        {
+          "value": "inherit",
+          "label": "Same as desktop"
+        },
+        {
+          "value": "portrait",
+          "label": "t:options.portrait"
+        },
+        {
+          "value": "square",
+          "label": "t:options.square"
+        },
+        {
+          "value": "landscape",
+          "label": "t:options.landscape"
+        }
+      ],
+      "default": "inherit",
+      "visible_if": "{{ block.settings.media_mobile_custom }}"
+    },
+    {
+      "type": "range",
+      "id": "image_position_y_mobile",
+      "label": "Mobile vertical position",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "%",
+      "default": 50,
+      "visible_if": "{{ block.settings.media_mobile_custom }}"
+    },
+    {
+      "type": "range",
+      "id": "border_radius_mobile",
+      "label": "Mobile corner radius",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 0,
+      "visible_if": "{{ block.settings.media_mobile_custom }}"
+    },
+    {
       "type": "header",
       "content": "t:content.padding"
     },
@@ -211,6 +537,274 @@
       "id": "quick_add_label",
       "label": "Add button label",
       "info": "Used only for products that can be added directly. Leave blank for the default text."
+    },
+    {
+      "type": "select",
+      "id": "quick_add_style",
+      "label": "Desktop button style",
+      "options": [
+        {
+          "value": "native",
+          "label": "Default"
+        },
+        {
+          "value": "bar",
+          "label": "Full-width bar"
+        }
+      ],
+      "default": "native"
+    },
+    {
+      "type": "select",
+      "id": "quick_add_icon",
+      "label": "Button icon",
+      "options": [
+        {
+          "value": "native",
+          "label": "Default"
+        },
+        {
+          "value": "cart",
+          "label": "Shopping cart"
+        },
+        {
+          "value": "custom",
+          "label": "Custom image"
+        }
+      ],
+      "default": "native"
+    },
+    {
+      "type": "image_picker",
+      "id": "quick_add_icon_image",
+      "label": "Custom icon",
+      "info": "Use a single-color SVG or PNG with a transparent background. It takes the button text color.",
+      "visible_if": "{{ block.settings.quick_add_icon == 'custom' }}"
+    },
+    {
+      "type": "select",
+      "id": "quick_add_icon_position",
+      "label": "Icon position",
+      "options": [
+        {
+          "value": "start",
+          "label": "Before text"
+        },
+        {
+          "value": "end",
+          "label": "After text"
+        }
+      ],
+      "default": "start"
+    },
+    {
+      "type": "range",
+      "id": "quick_add_icon_size",
+      "label": "Icon size",
+      "min": 12,
+      "max": 32,
+      "step": 1,
+      "unit": "px",
+      "default": 18,
+      "visible_if": "{{ block.settings.quick_add_style == 'bar' }}"
+    },
+    {
+      "type": "range",
+      "id": "quick_add_radius",
+      "label": "Button corner radius",
+      "min": 0,
+      "max": 40,
+      "step": 1,
+      "unit": "px",
+      "default": 12,
+      "visible_if": "{{ block.settings.quick_add_style == 'bar' }}"
+    },
+    {
+      "type": "color",
+      "id": "quick_add_background",
+      "label": "Button background",
+      "info": "Leave blank to use the theme setting."
+    },
+    {
+      "type": "color",
+      "id": "quick_add_text_color",
+      "label": "Button text and icon",
+      "info": "Leave blank to use the theme setting."
+    },
+    {
+      "type": "select",
+      "id": "quick_add_mobile_position",
+      "label": "Mobile button position",
+      "options": [
+        {
+          "value": "native",
+          "label": "Default"
+        },
+        {
+          "value": "top-start",
+          "label": "Top, start side"
+        },
+        {
+          "value": "top-end",
+          "label": "Top, end side"
+        },
+        {
+          "value": "bottom-start",
+          "label": "Bottom, start side"
+        },
+        {
+          "value": "bottom-end",
+          "label": "Bottom, end side"
+        }
+      ],
+      "default": "native",
+      "info": "Start is the right side in Arabic and the left side in English.",
+      "visible_if": "{{ block.settings.quick_add_mobile }}"
+    },
+    {
+      "type": "range",
+      "id": "quick_add_mobile_size",
+      "label": "Mobile button size",
+      "min": 24,
+      "max": 56,
+      "step": 1,
+      "unit": "px",
+      "default": 32,
+      "visible_if": "{{ block.settings.quick_add_mobile and block.settings.quick_add_mobile_position != 'native' }}"
+    },
+    {
+      "type": "range",
+      "id": "quick_add_mobile_icon_size",
+      "label": "Mobile icon size",
+      "min": 10,
+      "max": 32,
+      "step": 1,
+      "unit": "px",
+      "default": 16,
+      "visible_if": "{{ block.settings.quick_add_mobile and block.settings.quick_add_mobile_position != 'native' }}"
+    },
+    {
+      "type": "range",
+      "id": "quick_add_mobile_offset",
+      "label": "Mobile distance from image edges",
+      "min": 0,
+      "max": 30,
+      "step": 1,
+      "unit": "px",
+      "default": 7,
+      "visible_if": "{{ block.settings.quick_add_mobile and block.settings.quick_add_mobile_position != 'native' }}"
+    },
+    {
+      "type": "header",
+      "content": "Product badge"
+    },
+    {
+      "type": "select",
+      "id": "custom_badge_source",
+      "label": "Badge",
+      "options": [
+        {
+          "value": "none",
+          "label": "t:options.none"
+        },
+        {
+          "value": "metafield",
+          "label": "From product metafield"
+        },
+        {
+          "value": "text",
+          "label": "Same text on every card"
+        }
+      ],
+      "default": "none",
+      "info": "Hidden on sold-out products, so the Sold out badge keeps priority."
+    },
+    {
+      "type": "text",
+      "id": "custom_badge_metafield",
+      "label": "Metafield (namespace.key)",
+      "info": "A single line text product metafield, for example custom.product_badge. Edit its value on each product in Shopify admin.",
+      "default": "custom.product_badge",
+      "visible_if": "{{ block.settings.custom_badge_source == 'metafield' }}"
+    },
+    {
+      "type": "text",
+      "id": "custom_badge_text",
+      "label": "Badge text",
+      "info": "With a metafield, this is shown only when the product has no value. Leave blank to hide the badge then.",
+      "visible_if": "{{ block.settings.custom_badge_source != 'none' }}"
+    },
+    {
+      "type": "select",
+      "id": "custom_badge_position",
+      "label": "Position",
+      "options": [
+        {
+          "value": "top-start",
+          "label": "Top, start side"
+        },
+        {
+          "value": "top-end",
+          "label": "Top, end side"
+        }
+      ],
+      "default": "top-start",
+      "visible_if": "{{ block.settings.custom_badge_source != 'none' }}"
+    },
+    {
+      "type": "select",
+      "id": "custom_badge_position_mobile",
+      "label": "Mobile position",
+      "options": [
+        {
+          "value": "same",
+          "label": "Same as desktop"
+        },
+        {
+          "value": "top-start",
+          "label": "Top, start side"
+        },
+        {
+          "value": "top-end",
+          "label": "Top, end side"
+        }
+      ],
+      "default": "same",
+      "visible_if": "{{ block.settings.custom_badge_source != 'none' }}"
+    },
+    {
+      "type": "range",
+      "id": "custom_badge_offset",
+      "label": "Distance from image edges",
+      "min": 0,
+      "max": 40,
+      "step": 1,
+      "unit": "px",
+      "default": 12,
+      "visible_if": "{{ block.settings.custom_badge_source != 'none' }}"
+    },
+    {
+      "type": "range",
+      "id": "custom_badge_offset_mobile",
+      "label": "Mobile distance from image edges",
+      "min": 0,
+      "max": 40,
+      "step": 1,
+      "unit": "px",
+      "default": 8,
+      "visible_if": "{{ block.settings.custom_badge_source != 'none' }}"
+    },
+    {
+      "type": "color",
+      "id": "custom_badge_background",
+      "label": "Badge background",
+      "visible_if": "{{ block.settings.custom_badge_source != 'none' }}"
+    },
+    {
+      "type": "color",
+      "id": "custom_badge_text_color",
+      "label": "Badge text",
+      "visible_if": "{{ block.settings.custom_badge_source != 'none' }}"
     }
   ],
   "presets": [
