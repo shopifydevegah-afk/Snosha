@@ -89,10 +89,10 @@
                 "link": "",
                 "open_in_new_tab": false,
                 "placeholder": "",
-                "padding-block-start": 0,
-                "padding-block-end": 0,
-                "padding-inline-start": 0,
-                "padding-inline-end": 0,
+                "padding-block-start": 5,
+                "padding-block-end": 5,
+                "padding-inline-start": 14,
+                "padding-inline-end": 10,
                 "custom_class": "sn-home-hero-overline",
                 "float_position": "none",
                 "float_position_mobile": "same"
@@ -102,6 +102,7 @@
                   "type": "icon",
                   "settings": {
                     "icon": "star",
+                    "image_upload": "shopify://shop_images/vector.svg",
                     "width": 24,
                     "link": "",
                     "open_in_new_tab": false,
@@ -124,7 +125,7 @@
                     "letter_spacing": "normal",
                     "case": "none",
                     "wrap": "pretty",
-                    "text_color": "",
+                    "text_color": "#FFFFFF",
                     "background": false,
                     "background_color": "#00000026",
                     "corner_radius": 0,
@@ -182,7 +183,7 @@
                 "letter_spacing": "normal",
                 "case": "none",
                 "wrap": "pretty",
-                "text_color": "#ffffffdb",
+                "text_color": "#FFFFFF",
                 "background": false,
                 "background_color": "#00000026",
                 "corner_radius": 0,
@@ -332,7 +333,8 @@
                   "type": "icon",
                   "settings": {
                     "icon": "lightning_bolt",
-                    "width": 16,
+                    "image_upload": "shopify://shop_images/sonic.svg",
+                    "width": 200,
                     "link": "",
                     "open_in_new_tab": false,
                     "icon_color": "#ffffff"
@@ -417,7 +419,8 @@
                   "type": "icon",
                   "settings": {
                     "icon": "stopwatch",
-                    "width": 16,
+                    "image_upload": "shopify://shop_images/battery.svg",
+                    "width": 200,
                     "link": "",
                     "open_in_new_tab": false,
                     "icon_color": "#ffffff"
@@ -502,7 +505,8 @@
                   "type": "icon",
                   "settings": {
                     "icon": "check_box",
-                    "width": 16,
+                    "image_upload": "shopify://shop_images/vector_1b715f9f-fc54-4010-a53f-60444ef01aca.svg",
+                    "width": 200,
                     "link": "",
                     "open_in_new_tab": false,
                     "icon_color": "#ffffff"
@@ -586,8 +590,9 @@
                 "badge": {
                   "type": "icon",
                   "settings": {
-                    "icon": "star",
-                    "width": 16,
+                    "icon": "none",
+                    "image_upload": "shopify://shop_images/brush-head_5d8e2d1e-150c-46fc-861c-cd7e19d1e1db.png",
+                    "width": 22,
                     "link": "",
                     "open_in_new_tab": false,
                     "icon_color": "#ffffff"
@@ -765,6 +770,7 @@
                   "type": "icon",
                   "settings": {
                     "icon": "check_box",
+                    "image_upload": "shopify://shop_images/shield-check.svg",
                     "width": 30,
                     "link": "",
                     "open_in_new_tab": false,
@@ -924,6 +930,7 @@
                   "type": "icon",
                   "settings": {
                     "icon": "return",
+                    "image_upload": "shopify://shop_images/exchange.svg",
                     "width": 30,
                     "link": "",
                     "open_in_new_tab": false,
@@ -1083,6 +1090,7 @@
                   "type": "icon",
                   "settings": {
                     "icon": "box",
+                    "image_upload": "shopify://shop_images/package.svg",
                     "width": 30,
                     "link": "",
                     "open_in_new_tab": false,
@@ -1242,6 +1250,7 @@
                   "type": "icon",
                   "settings": {
                     "icon": "truck",
+                    "image_upload": "shopify://shop_images/truck.svg",
                     "width": 30,
                     "link": "",
                     "open_in_new_tab": false,
@@ -1379,7 +1388,7 @@
         "gap": 0,
         "section_width": "page-width",
         "section_height": "",
-        "section_height_custom": 50,
+        "section_height_custom": 0,
         "background_media": "none",
         "background_color": "",
         "video_position": "cover",
