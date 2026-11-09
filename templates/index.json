@@ -1457,14 +1457,14 @@
         "overlap_mobile": 49,
         "content_max_width": 1236,
         "card_sizes": true,
-        "card_tile_size": 58,
-        "card_padding_top_mobile": 10,
+        "card_padding_mobile": 10,
         "card_padding_bottom_mobile": 4,
-        "card_padding_inline_mobile": 10,
         "card_gap_mobile": 2,
         "card_item_gap_mobile": 3,
-        "card_tile_size_mobile": 38,
-        "card_icon_size_mobile": 20
+        "card_icon_size_mobile": 20,
+        "card_title_size_mobile": 10,
+        "card_description_size_mobile": 8,
+        "card_line_height_mobile": 19
       }
     }
   },

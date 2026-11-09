@@ -344,10 +344,13 @@
       block-size: 100%;
       aspect-ratio: auto;
       object-fit: contain;
-      /* Figma's product sits on the bottom of its image box (the box runs 9px past the hero edge). If the
-         uploaded file's proportions differ from the box, `contain` letterboxes it; centring split the spare
-         room above and below and lifted the product. Anchor it to the bottom instead. */
-      object-position: 50% 100%;
+      /* Measured from the Figma file (190:3796 / 335:3966): the product PNG is 1537×1023 (transparent,
+         product rows 60–894), but Figma STRETCHES it into a 707.6×524 box (+11% height). `contain` keeps
+         the real proportions, leaving 53px (mobile 25.7px) of spare height in the box. 87.4% places the
+         product's base exactly where Figma has it: desktop y 443 / 500, mobile y 273 / 330.
+         (50% put it 20px too high, 100% 7px too low.) Move the whole stage with the hero's
+         "Product stage vertical position" settings. */
+      object-position: 50% 87.4%;
     }
 
     .image-block__image {
@@ -520,8 +523,8 @@
 
   @media screen and (max-width: 989px) {
     margin-block: 0;
-    padding-block: var(--card-padding-top-mobile, 10px) var(--card-padding-bottom-mobile, 4px);
-    padding-inline: var(--card-padding-inline-mobile, 10px);
+    padding-block: var(--card-padding-mobile, 10px) var(--card-padding-bottom-mobile, 4px);
+    padding-inline: var(--card-padding-mobile, 10px);
     /* Figma mobile 20 (desktop 22): 2px smaller than the native radius */
     border-radius: max(0px, calc(var(--border-radius, 22px) - 2px));
     filter: none;
@@ -601,26 +604,28 @@
     translate: 0 -50%;
   }
 
-  /* Icon tile (Figma 58, radius 17, white → #f0fafe, 1px #dcf2fb, soft shadow) */
+  /* Icon tile (Figma 58 = 30 icon + 2×13 + 2×1 border, radius 17, white → #f0fafe, 1px #dcf2fb, shadow).
+     The tile wraps the icon, so it follows the icon size: desktop = the icon block's Width setting. */
   .icon-block {
     display: flex;
     align-items: center;
     justify-content: center;
     flex-shrink: 0;
     box-sizing: border-box;
-    inline-size: var(--card-tile-size, 58px);
-    block-size: var(--card-tile-size, 58px);
+    inline-size: auto;
+    block-size: auto;
+    aspect-ratio: 1;
+    padding: 13px;
     border: 1px solid #dcf2fb;
-    border-radius: calc(var(--card-tile-size, 58px) * 0.293);
+    border-radius: 17px;
     background-image: linear-gradient(to bottom, #fff, #f0fafe);
     color: #176bb0;
     filter: drop-shadow(0 8px 9px rgb(15 100 168 / 0.1));
   }
 
-  /* Desktop icon size = the icon block's Width (Figma 30); max-* only keeps it inside the tile */
   .icon-block__media {
-    max-inline-size: calc(var(--card-tile-size, 58px) - 16px);
-    max-block-size: calc(var(--card-tile-size, 58px) - 16px);
+    max-inline-size: 64px;
+    max-block-size: 64px;
     object-fit: contain;
   }
 
@@ -680,13 +685,13 @@
       gap: var(--card-item-gap-mobile, 3px);
     }
 
+    /* Figma mobile tile 38 = 20 icon + 2×8 + 2×1 border, radius 12 */
     .icon-block {
-      inline-size: var(--card-tile-size-mobile, 38px);
-      block-size: var(--card-tile-size-mobile, 38px);
-      border-radius: calc(var(--card-tile-size-mobile, 38px) * 0.316);
+      padding: 8px;
+      border-radius: 12px;
     }
 
-    /* Mobile icon size is set exactly (min + max beat the inline Width of the icon block) */
+    /* Section setting "Icon size — Mobile": set exactly (min + max beat the icon block's inline Width) */
     .icon-block__media {
       min-inline-size: var(--card-icon-size-mobile, 20px);
       max-inline-size: var(--card-icon-size-mobile, 20px);
@@ -697,10 +702,11 @@
     .text-block {
       max-inline-size: 100%;
 
+      /* Figma: plain wrapping at the column width (word-break: break-word), no balancing */
       > * {
         max-inline-size: 100%;
         overflow-wrap: break-word;
-        text-wrap: balance;
+        text-wrap: wrap;
       }
     }
   }
@@ -729,16 +735,17 @@
   }
 
   @media screen and (max-width: 749px) {
-    /* Figma mobile: title 10/19 SemiBold, description 8/19 Regular */
+    /* Section settings "Trust title / description font size — Mobile" and "Trust text line height —
+       Mobile" (Figma 335:4229: title 10/19 SemiBold, description 8/19 Regular). The only mobile size rule. */
     .text-block {
       :is(h1, h2, h3, h4) {
-        font-size: 10px;
-        line-height: 19px;
+        font-size: var(--card-title-size-mobile, 10px);
+        line-height: var(--card-line-height-mobile, 19px);
       }
 
       p {
-        font-size: 8px;
-        line-height: 19px;
+        font-size: var(--card-description-size-mobile, 8px);
+        line-height: var(--card-line-height-mobile, 19px);
       }
     }
   }

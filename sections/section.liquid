@@ -58,14 +58,14 @@
     {%- endif -%}
     {%- if section.settings.card_sizes -%}
       #shopify-section-{{ section.id }} {
-        --card-tile-size: {{ section.settings.card_tile_size }}px;
-        --card-padding-top-mobile: {{ section.settings.card_padding_top_mobile }}px;
+        --card-padding-mobile: {{ section.settings.card_padding_mobile }}px;
         --card-padding-bottom-mobile: {{ section.settings.card_padding_bottom_mobile }}px;
-        --card-padding-inline-mobile: {{ section.settings.card_padding_inline_mobile }}px;
         --card-gap-mobile: {{ section.settings.card_gap_mobile }}px;
         --card-item-gap-mobile: {{ section.settings.card_item_gap_mobile }}px;
-        --card-tile-size-mobile: {{ section.settings.card_tile_size_mobile }}px;
         --card-icon-size-mobile: {{ section.settings.card_icon_size_mobile }}px;
+        --card-title-size-mobile: {{ section.settings.card_title_size_mobile }}px;
+        --card-description-size-mobile: {{ section.settings.card_description_size_mobile }}px;
+        --card-line-height-mobile: {{ section.settings.card_line_height_mobile }}px;
       }
     {%- endif -%}
   {% endstyle %}
@@ -530,31 +530,20 @@
     },
     {
       "type": "header",
-      "content": "Card sizes"
+      "content": "Trust Strip card"
     },
     {
       "type": "checkbox",
       "id": "card_sizes",
-      "label": "Card size controls",
-      "info": "For a card group with custom-class styling (e.g. the Trust Strip). Off = the card's built-in sizes.",
+      "label": "Trust Strip card controls",
+      "info": "For a card group with custom-class styling (the Trust Strip). Off = the card's built-in Figma sizes. Desktop sizes = the card/item groups' Padding and Gap and the icon block's Width (the icon tile is always icon + 28px).",
       "default": false
     },
     {
       "type": "range",
-      "id": "card_tile_size",
-      "label": "Icon tile size (desktop)",
-      "min": 24,
-      "max": 120,
-      "step": 1,
-      "unit": "px",
-      "default": 58,
-      "visible_if": "{{ section.settings.card_sizes }}"
-    },
-    {
-      "type": "range",
-      "id": "card_padding_top_mobile",
-      "label": "Card padding top (mobile)",
-      "info": "Mobile & tablet (below 990px). Desktop padding = the card group's Padding settings.",
+      "id": "card_padding_mobile",
+      "label": "Card padding top & sides — Mobile",
+      "info": "Mobile & tablet (below 990px).",
       "min": 0,
       "max": 40,
       "step": 1,
@@ -565,7 +554,7 @@
     {
       "type": "range",
       "id": "card_padding_bottom_mobile",
-      "label": "Card padding bottom (mobile)",
+      "label": "Card padding bottom — Mobile",
       "min": 0,
       "max": 40,
       "step": 1,
@@ -575,20 +564,9 @@
     },
     {
       "type": "range",
-      "id": "card_padding_inline_mobile",
-      "label": "Card padding sides (mobile)",
-      "min": 0,
-      "max": 40,
-      "step": 1,
-      "unit": "px",
-      "default": 10,
-      "visible_if": "{{ section.settings.card_sizes }}"
-    },
-    {
-      "type": "range",
       "id": "card_gap_mobile",
       "label": "Trust item gap — Mobile",
-      "info": "Space between the card's items on mobile & tablet (max ≈6% of the card width). Desktop = the card group's Gap setting.",
+      "info": "Space between the items (max ≈6% of the card width).",
       "min": 0,
       "max": 24,
       "step": 1,
@@ -599,8 +577,8 @@
     {
       "type": "range",
       "id": "card_item_gap_mobile",
-      "label": "Space inside items (mobile)",
-      "info": "Between icon, title and description. Desktop = each item's Gap setting.",
+      "label": "Space inside items — Mobile",
+      "info": "Between icon, title and description.",
       "min": 0,
       "max": 24,
       "step": 1,
@@ -610,25 +588,48 @@
     },
     {
       "type": "range",
-      "id": "card_tile_size_mobile",
-      "label": "Icon tile size (mobile)",
-      "min": 20,
-      "max": 80,
-      "step": 1,
-      "unit": "px",
-      "default": 38,
-      "visible_if": "{{ section.settings.card_sizes }}"
-    },
-    {
-      "type": "range",
       "id": "card_icon_size_mobile",
-      "label": "Icon size (mobile)",
-      "info": "Desktop = the icon block's Width setting.",
+      "label": "Icon size — Mobile",
+      "info": "The icon tile is icon + 18px.",
       "min": 10,
       "max": 48,
       "step": 1,
       "unit": "px",
       "default": 20,
+      "visible_if": "{{ section.settings.card_sizes }}"
+    },
+    {
+      "type": "range",
+      "id": "card_title_size_mobile",
+      "label": "Trust title font size — Mobile",
+      "min": 8,
+      "max": 24,
+      "step": 1,
+      "unit": "px",
+      "default": 10,
+      "visible_if": "{{ section.settings.card_sizes }}"
+    },
+    {
+      "type": "range",
+      "id": "card_description_size_mobile",
+      "label": "Trust description font size — Mobile",
+      "min": 6,
+      "max": 20,
+      "step": 1,
+      "unit": "px",
+      "default": 8,
+      "visible_if": "{{ section.settings.card_sizes }}"
+    },
+    {
+      "type": "range",
+      "id": "card_line_height_mobile",
+      "label": "Trust text line height — Mobile",
+      "info": "Title and description.",
+      "min": 10,
+      "max": 36,
+      "step": 1,
+      "unit": "px",
+      "default": 19,
       "visible_if": "{{ section.settings.card_sizes }}"
     }
   ],
