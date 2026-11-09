@@ -65,6 +65,13 @@
     if block_settings.mobile_alignment != blank and block_settings.mobile_alignment != 'same'
       echo ' text-block--m-align-' | append: block_settings.mobile_alignment | append: ' '
     endif
+    # Optional mobile typography (project extension, Snosha S03). 0 / unset = no class, desktop size applies.
+    if block_settings.font_size_mobile > 0
+      echo ' text-block--m-size '
+    endif
+    if block_settings.line_height_mobile > 0
+      echo ' text-block--m-lh '
+    endif
   endcapture
 %}
 
@@ -81,6 +88,8 @@
       --color-rgb: {{ block_settings.text_color.rgb }};
     {% endif %}
 
+    {% if block_settings.font_size_mobile > 0 %}--font-size-mobile: {{ block_settings.font_size_mobile }}px;{% endif %}
+    {% if block_settings.line_height_mobile > 0 %}--line-height-mobile: {{ block_settings.line_height_mobile }}px;{% endif %}
     --width: {{ text_width }};
     --max-width: var(--max-width--{{ type }}-{{ block_settings.max_width }});
     {% if text_width == "100%" %}
@@ -161,6 +170,20 @@
 
     .text-block.text-block--m-align-end > * {
       text-align: end;
+    }
+
+    /* Optional mobile typography (text block "Font size — Mobile" / "Line height — Mobile").
+       The doubled class outranks the type presets (e.g. `.text-block.h3 :is(h3)`) and section CSS. */
+    .text-block.text-block--m-size.text-block--m-size,
+    .text-block.text-block--m-size.text-block--m-size > *,
+    .text-block.text-block--m-size.text-block--m-size :is(h1, h2, h3, h4, h5, h6, p) {
+      font-size: var(--font-size-mobile);
+    }
+
+    .text-block.text-block--m-lh.text-block--m-lh,
+    .text-block.text-block--m-lh.text-block--m-lh > *,
+    .text-block.text-block--m-lh.text-block--m-lh :is(h1, h2, h3, h4, h5, h6, p) {
+      line-height: var(--line-height-mobile);
     }
   }
 

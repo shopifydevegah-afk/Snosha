@@ -554,9 +554,18 @@
   }
 
   @media screen and (max-width: 749px) {
-    /* 346 at 390: 24px visual-left / 20px visual-right gutter (page margin is 16px) */
-    margin-inline: 4px 8px;
-    inline-size: auto;
+    /* Figma 335:4229: 346 wide at 390, gutters 24 (visual left) / 20 (visual right).
+       Width = section setting "Trust card width — Mobile" (default 346), never wider than the screen
+       minus 16px. It is set explicitly: the Trust section centres its content (column flex,
+       align-items: center), so an `auto` width shrank the card to its content and squeezed the columns.
+       Centred in the content column, then shifted 2px to the start edge for Figma's 24 / 20 gutters;
+       a width above the column (358 at 390) extends into the page margins, never past the screen. */
+    --sn-card-w: min(var(--card-width-mobile, 346px), 100vw - 16px);
+
+    align-self: flex-start;
+    inline-size: var(--sn-card-w);
+    max-inline-size: none;
+    margin-inline: calc((100% - var(--sn-card-w)) / 2 - 2px) auto;
   }
 }
 
@@ -629,31 +638,19 @@
     object-fit: contain;
   }
 
-  /* Text alignment comes from the editor: copy group alignment (desktop) and the text blocks'
-     "Text alignment (mobile)". Only typography is fixed here. */
+  /* Weights are Figma-fixed (the text block has no weight setting; a Custom preset would otherwise
+     reset titles to the body weight). Sizes, line heights, family and colour: see the :where() rules below. */
   .text-block {
     :is(h1, h2, h3, h4, p) {
       margin: 0;
-      letter-spacing: 0;
-      text-transform: none;
     }
 
-    /* Figma Product name 16/27 SemiBold #131311 */
     :is(h1, h2, h3, h4) {
-      font-family: var(--font-body--family);
-      font-size: 16px;
-      line-height: 27px;
       font-weight: 600;
-      color: #131311;
     }
 
-    /* Figma Body Small 14/24 Regular #5a5a59 */
     p {
-      font-family: var(--font-body--family);
-      font-size: 14px;
-      line-height: 24px;
       font-weight: 400;
-      color: #5a5a59;
     }
   }
 
@@ -720,34 +717,62 @@
     .text-block > * {
       text-align: center;
     }
+  }
+}
 
-    .text-block {
-      :is(h1, h2, h3, h4) {
-        font-size: 14px;
-        line-height: 22px;
-      }
 
-      p {
-        font-size: 12px;
-        line-height: 18px;
-      }
-    }
+/* Trust text: Figma defaults at element-level specificity (0,0,1: wrapper in :where), so every Theme Editor
+   setting wins (they use classes) while Horizon's plain h3 / p base rules are matched and dev1.css, loaded later, wins the tie:
+   - text block Custom preset → its Size / Line height / Font replace the desktop values;
+   - text block "Text color" replaces the colours;
+   - text block "Font size — Mobile" / "Line height — Mobile" (snippets/text.liquid) replace them below 750px.
+   Figma desktop 190:4081: title 16/27, description 14/24. Tablet 750–989 ASSUMED 14/22, 12/18.
+   Mobile Figma 335:4229 (10/19, 8/19) is set on the S03 text blocks, not here. */
+:where(.sn-home-trust-item .text-block) :is(h1, h2, h3, h4, p) {
+  font-family: var(--font-body--family);
+  letter-spacing: 0;
+  text-transform: none;
+}
+
+:where(.sn-home-trust-item .text-block:not(.custom-font-size)) :is(h1, h2, h3, h4) {
+  font-size: 16px;
+}
+
+:where(.sn-home-trust-item .text-block:not(.custom-font-size)) p {
+  font-size: 14px;
+}
+
+:where(.sn-home-trust-item .text-block:not(.custom-typography)) :is(h1, h2, h3, h4) {
+  line-height: 27px;
+}
+
+:where(.sn-home-trust-item .text-block:not(.custom-typography)) p {
+  line-height: 24px;
+}
+
+:where(.sn-home-trust-item .text-block:not(.custom-color)) :is(h1, h2, h3, h4) {
+  color: #131311;
+}
+
+:where(.sn-home-trust-item .text-block:not(.custom-color)) p {
+  color: #5a5a59;
+}
+
+@media screen and (min-width: 750px) and (max-width: 989px) {
+  :where(.sn-home-trust-item .text-block:not(.custom-font-size)) :is(h1, h2, h3, h4) {
+    font-size: 14px;
   }
 
-  @media screen and (max-width: 749px) {
-    /* Section settings "Trust title / description font size — Mobile" and "Trust text line height —
-       Mobile" (Figma 335:4229: title 10/19 SemiBold, description 8/19 Regular). The only mobile size rule. */
-    .text-block {
-      :is(h1, h2, h3, h4) {
-        font-size: var(--card-title-size-mobile, 10px);
-        line-height: var(--card-line-height-mobile, 19px);
-      }
+  :where(.sn-home-trust-item .text-block:not(.custom-font-size)) p {
+    font-size: 12px;
+  }
 
-      p {
-        font-size: var(--card-description-size-mobile, 8px);
-        line-height: var(--card-line-height-mobile, 19px);
-      }
-    }
+  :where(.sn-home-trust-item .text-block:not(.custom-typography)) :is(h1, h2, h3, h4) {
+    line-height: 22px;
+  }
+
+  :where(.sn-home-trust-item .text-block:not(.custom-typography)) p {
+    line-height: 18px;
   }
 }
 

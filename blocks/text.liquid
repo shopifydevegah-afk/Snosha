@@ -248,6 +248,29 @@
       "visible_if": "{{ block.settings.type_preset == 'custom' and section.settings.custom_class != blank }}"
     },
     {
+      "type": "range",
+      "id": "font_size_mobile",
+      "label": "Font size — Mobile",
+      "info": "Phones (below 750px). 0 = same as desktop.",
+      "min": 0,
+      "max": 48,
+      "step": 1,
+      "unit": "px",
+      "default": 0,
+      "visible_if": "{{ block.settings.type_preset != 'custom' or section.settings.custom_class == blank }}"
+    },
+    {
+      "type": "range",
+      "id": "line_height_mobile",
+      "label": "Line height — Mobile",
+      "info": "Phones (below 750px). 0 = same as desktop.",
+      "min": 0,
+      "max": 60,
+      "step": 1,
+      "unit": "px",
+      "default": 0
+    },
+    {
       "type": "select",
       "id": "line_height",
       "label": "t:settings.line_height",

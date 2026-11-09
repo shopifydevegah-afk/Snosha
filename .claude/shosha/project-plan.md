@@ -257,6 +257,45 @@ Not changed: `sections/section.liquid`, `snippets/section.liquid`, `snippets/gro
 - **Static checks:** hero 40 / section 40, no duplicate ids; ranges ≤101 steps with on-step defaults; Liquid if/style/comment balanced; every `section.settings.*` used in section.liquid exists (hero's `border*` references are stock Horizon); `--card-*` variables: every output is used and every use is output; 42 S03 blocks, 0 unknown settings; no leftover references to the removed ids; CSS braces balanced.
 - **PENDING USER REVIEW:** desktop product base vs Figma (if the uploaded PNG differs from the Figma export, fine-tune with the vertical position setting); mobile text at 10/8 vs larger merchant values (card height grows with larger text by design); 375px wrapping; tile sizes 58/38.
 
+**Mobile trust typography controls fix (2026-11-09, Dev1)**
+- **Figma:** `335:4229` (design context earlier the same day): title Cairo SemiBold 10/19 #131311, description Cairo Regular 8/19 #5a5a59. No new measurements.
+- **Root cause (merchant's text-size changes had no effect):** the merchant edits the trust items' Title/Description text blocks, but:
+  1. Those blocks use the Default (rte) preset, which hides Horizon's Size setting (it only shows for Custom).
+  2. Dev2's text-block "Mobile size" (`mobile_font_size`) only shows when the section has a custom class (the `section` section has none) and nothing in S03 reads it.
+  3. `dev1.css` set the trust sizes (desktop 16/14, tablet 14/12) with class-level specificity, so even a Custom preset Size would have been overridden.
+  4. The only working mobile controls were the section-level "Trust title/description font size — Mobile", which is not where a merchant looks.
+- **Fix:**
+  - `blocks/text.liquid` (22→24): "Font size — Mobile" (`font_size_mobile`) and "Line height — Mobile" (`line_height_mobile`), 0 = same as desktop (default, no output). "Font size — Mobile" is hidden only where Dev2's class-bound "Mobile size" already shows.
+  - `snippets/text.liquid`: when set, adds `text-block--m-size` / `text-block--m-lh` plus inline `--font-size-mobile` / `--line-height-mobile`; a ≤749px rule with a doubled class (beats presets and section CSS) applies them to the block and its h1–h6/p.
+  - `dev1.css`: no trust font sizes at class level any more. Figma desktop/tablet sizes, line heights, family and colours are fallbacks scoped with `:where()` to element-level specificity and skipped when the block uses Custom size / typography / Text color, so native settings always win. Only the Figma weights (600/400) stay fixed (the text block has no weight setting).
+  - Section-level "Trust title/description font size — Mobile" and "Trust text line height — Mobile" removed (section 40→37) so there is one control per value.
+- **S03 values:** all 8 trust text blocks set to titles 10 / descriptions 8, line height 19 (Figma); the template's section keys were removed.
+- **Fallback:** mobile value 0 → the block's desktop size (native Custom size, or the Figma 16/14 fallback for Default). Desktop is unaffected by the mobile settings.
+- **Files:** `blocks/text.liquid`, `snippets/text.liquid`, `sections/section.liquid`, `assets/dev1.css`, `templates/index.json`.
+- **Static checks:** text 24 / section 37 / hero 40, no duplicate ids; ranges valid; Liquid tags balanced in the touched files; `--card-*` and `--*-mobile` variables each output and consumed; no leftover references to the removed ids; no other block defines the new ids (7 other `render 'text'` callers get nil → no output); 42 S03 blocks, 0 unknown settings; CSS braces balanced.
+- **PENDING USER REVIEW:** change a trust title/description "Font size — Mobile" in the editor (mobile preview) and confirm it updates; desktop unchanged; larger sizes wrap inside the 4 columns and grow the card without horizontal scroll; Default 390 look = Figma.
+
+**Mobile Trust card width fix (2026-11-09, Dev1), after the merchant's mobile screenshot (card narrow, titles wrapping)**
+- **Figma rechecked:** metadata `382:4564` (Trust Container 390×100 at y 640) and design context `335:4229`.
+  - Outer 346×100 at x 24 → gutters 24 (left) / 20 (right); radius 20, clipped.
+  - 2px beam ring, inner card 342×96, radius 18, padding 10, shadow 0 16 34 rgb(13 64 128/.18).
+  - Four `flex: 1 0 0` cells, gap 2 → 79px each; tile 38, icon 20; title 10/19 SemiBold, description 8/19 Regular, centred, one line each.
+- **Root cause:** below 750px the card had `inline-size: auto` (so its margins could set the gutters). The Trust section's content wrapper is a centred column flex (`align-items: center`, native Horizontal alignment = Center), so an auto-width item is shrink-to-fit, not stretched. The card took its content's width, and with `minmax(0, 1fr)` columns that can be far less than 346, which squeezed the columns and wrapped the titles.
+- **Fix:**
+  - Explicit width `--sn-card-w: min(var(--card-width-mobile, 346px), 100vw - 16px)` with `align-self: flex-start`.
+  - `margin-inline-start: calc((100% - W) / 2 - 2px)`: centred in the content column, then shifted 2px to the start edge = Figma 24/20 at 390. A width above the column (358 at 390) extends into the page margins, but never past the screen.
+- **New setting:** "Trust card width — Mobile" (`card_width_mobile`, 280–390 step 2, default 346) on the Trust strip section under "Trust Strip card" (checkbox on); `--card-width-mobile`. Section 37→38. Template set to 346.
+- **Inner layout (unchanged, now gets the full width):** padding 10/10/4 ("Card padding …"), ring 2, four equal grid columns, gap 2 ("Trust item gap — Mobile").
+  - 390: card 346 → inner 322 → columns 79 (Figma).
+  - 375: 346 (gutters about 16.5/12.5) → 79.
+  - 360: 344 (about 10/6) → about 78.5.
+  - No horizontal overflow (width ≤ screen − 16).
+- **Typography:** unchanged (text-block "Font size — Mobile" 10/8, "Line height — Mobile" 19). With 79px columns the Figma titles fit on one line again.
+- **Desktop/tablet:** untouched (rule is inside ≤749px).
+- **Files:** `assets/dev1.css`, `sections/section.liquid`, `templates/index.json`.
+- **Static checks:** section 38 / text 24, no duplicate ids; range valid (55 steps, default on step); `--card-*` produced = consumed; 42 S03 blocks, 0 unknown settings; CSS braces balanced; Liquid tags balanced.
+- **PENDING USER REVIEW:** mobile at 390 / 375 / 360: card width 346, gutters, one-line titles, no horizontal scroll; "Trust card width — Mobile" changes the card live.
+
 - Expected reversibility (untested): `CLASS_PLUS_SETTINGS`: trust section overlap 58/49, content max width 1236, trust card padding 22/36 and radius 22 stay when the class is removed (card-size variables become unused); hero content_direction row / gap 0 / height auto; content group padding 34/96/40/48 and gap 16; chip float positions; button `button-custom` colors + `width_mobile`; text colors; trust section padding 0. `mobile_text` is not tied to a class (renders natively per device).
 
 ## F. QA & progress
@@ -300,3 +339,5 @@ Give a section its own row here when its work starts, and keep the S01–S15 row
 | 2026-11-09 | S03 Trust Strip correction by Dev1: overlap ranges fixed to ≤101 steps (0–150 made section.liquid unsavable, so no overlap was live); hero stage bottom-anchored on desktop; mobile cells → equal grid columns, nowrap removed; card radius/border/background/padding via native settings; new opt-in section settings content max width + Card sizes (section at 40) | User editor check: strip wrong on desktop + mobile | S03; `section` (40), `dev1.css`, `index.json` | User-owned visual QA (PENDING USER REVIEW) |
 | 2026-11-09 | S03 stage/trust refinement by Dev1: hero stage offsets (desktop X/Y, mobile Y) via `translate` on the stage group; product image anchored to the bottom of its box (`object-position`); mobile trust gap relabelled + capped at 6% | Merchant editor review | S03; `hero` (40), `section` label, `dev1.css`, `index.json` | User-owned visual QA (PENDING USER REVIEW) |
 | 2026-11-09 | S03 product position + mobile trust typography by Dev1: image `object-position` 87.4% measured from the Figma PNG (Figma stretches it +11%); stage position settings renamed with clear up/down help; new mobile trust title/description size + line-height settings (tile sizes now derived from icon size, mobile padding top+sides merged; section stays 40) | Merchant review: product too low, mobile trust text off | S03; `hero` labels, `section`, `dev1.css`, `index.json` | User-owned visual QA (PENDING USER REVIEW) |
+| 2026-11-09 | S03 mobile trust typography controls fixed by Dev1: per-text-block "Font size — Mobile" / "Line height — Mobile" (text 24, snippet output, 0 = desktop size); trust Figma sizes in dev1.css lowered to element specificity so native Size/Color win; section-level typography settings removed (section 37) | Merchant: mobile trust text size not adjustable | S03; `text`, `snippets/text.liquid`, `section`, `dev1.css`, `index.json` | User-owned visual QA (PENDING USER REVIEW) |
+| 2026-11-09 | S03 mobile Trust card width fixed by Dev1: `auto` width in the centred section column made the card shrink-to-fit; now explicit width from new "Trust card width — Mobile" (346, capped at screen − 16) with Figma 24/20 gutters | Merchant mobile screenshot: card narrow, text wrapping | S03; `section` (38), `dev1.css`, `index.json` | User-owned visual QA (PENDING USER REVIEW) |
