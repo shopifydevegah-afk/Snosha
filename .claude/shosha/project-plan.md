@@ -422,6 +422,62 @@ Verified in code and docs on 2026-11-08 before deciding:
   - Mobile card height and spacing.
   - Other product cards and text blocks unchanged.
 
+#### S05 mobile Figma accuracy + discount color fix — 2026-11-09 (Dev3) — IMPLEMENTED, visual QA PENDING USER REVIEW
+
+- **User decision:** the mobile card uses the **actual Figma mobile sizes**. This supersedes R3 and the readable sizes of the previous pass. Accessibility trade-off: 6.5–9.5px text on mobile cards is below common legibility minimums; accepted by the user.
+- **Figma re-read:** `190:4149` design context, card `387:4634` metadata, `190:3844` metadata.
+  - **Section:** 390 × 573 = 56 + header 84 (title row 44 incl. 3/3 padding, gap 14, subtitle 26) + 14 + carousel 305 (11 + 283 + 11) + 14 + progress 4 + 14 + link 26 + 56.
+  - **Card:** 165 × 283, image 165, card gap 7.31.
+    - Text frame: padding 6.27 / bottom 6.27, gap 3.13; 102.84 tall. Name 15, description 26 (2 lines), rating 12, price row 17.09 (`pt` 2.09), CTA 14.
+    - Spacer 3.13; the card clips at 283, so about 14 visible below the CTA.
+  - **Type (size / line height):**
+    - Title 8.354 / 14.098 (600); description 7.31 / 12.532.
+    - Price 9.399 / 14.62 (700); compare-at 7.31 / 11.487.
+    - Discount badge 6.27 / 9.399 (600), padding 2.089 / 6.266, radius 4.177, border 0.522.
+    - Best Seller badge 6.27 / 9.399, padding 2.089 / 6.266, radius 4.177, top 8.93 / right 7.83.
+    - Rating label 6.266 / 10.443; stars 12.32. CTA 8.35 / 13.576, arrow 9.399, gap 5.222. Price row gap 5.222.
+- **Discount badge color root cause:**
+  - The setting path (`discount_badge_text_color` / `_background` / `_border_color` → inline `--discount-badge-*` on `<product-price>` → `.price-discount-badge`) was correct.
+  - But `assets/base.css` `.text-block.h6 > *` (specificity 0,2,0; the price block uses the h6 preset) sets `color: var(--color)`, `font-size`, `line-height`, weight and family on every direct child of `<product-price>`, including the badge. It outranked `.price-discount-badge` (0,1,0), so the text color and the badge text-size settings never applied.
+  - The same rule pinned `[ref=priceContainer]` to the h6 size, so "Mobile price size" did not reach the prices either.
+- **Fix (price block stylesheet, opt-in class only):**
+  - Badge rules moved under `product-price.price--inline-badge > .price-discount-badge` (0,2,1).
+  - `priceContainer` gets `font-size` / `line-height: inherit`; mobile size is set on `product-price.price--inline-badge.price--mobile-size` (0,2,1 > `.h6.h6` 0,2,0).
+  - The color fallback is now `var(--color)`. No duplicate setting was added.
+  - Not tested in the Theme Editor color picker (no preview was run). The fix was verified by tracing the code path and comparing selector specificity.
+- **Settings added / changed:**
+  - New `snippets/text-responsive-style.liquid` holds the text-block line limit and mobile size logic, now shared. `text.liquid` renders it; `product-title.liquid` renders it and gets `font_size_mobile` and `line_height_mobile` (18 → 20).
+  - `text` mobile size and line height step 0.5 (line height max 50).
+  - `review`: `font_size_mobile` (label and count, line height 1.67) (7 → 8).
+  - `icon`: `width_mobile` (0 = same; `!important` because `icon-or-image` writes an inline width on uploaded images) (6 → 7).
+  - `price`: discount badge sizes min 5 step 0.5, mobile price step 0.5.
+  - `_product-card`: badge sizes min 5 step 0.5.
+- **`dev3.css`:** removed the mobile title (13/20), CTA (13/20), CTA icon 14 and rating label (11/16) rules, and the price top padding (now the price block's native top padding, 4).
+  - Mobile `.price` 1em / 1.55 and compare 0.78em / 1.57 are Figma ratios driven by the price block's mobile size.
+  - Discount weight selector raised to `product-price > .price-discount-badge`.
+- **`index.json` (S05):**
+  - **Card:** mobile badge 6.5, mobile gap 7.
+  - **Details group:** mobile gap 3, sides 6, bottom 14.
+  - **Title:** mobile 8.5 / 14.
+  - **Description:** mobile 7.5 / 12.5, 2 lines.
+  - **Review label:** mobile 6.5.
+  - **Price:** mobile 9.5, discount mobile 6.5, mobile gap 5, top padding 4.
+  - **CTA:** text mobile 8.5 / 13.5, arrow mobile 9.5, gap 5.
+  - Ranges use 0.5px steps, so Figma's fractional values round to the nearest 0.5.
+- **Estimated mobile card height:** without reviews ≈ 268 (165 + 7 + 14 + 3 + 25 + 3 + 4 + ~16 + 3 + 13.5 + 14); about 283 with a rating row.
+- **Section:** spacing already matched Figma in `dev3.css` (56 / 25 / 25 / 14 / 56; header 24/38, 15/26, gap 14) and is unchanged.
+- **Remaining mismatches:**
+  - Mobile price top padding 4 (Figma 2.09; the native padding setting is not responsive).
+  - The CTA arrow is the merchant-uploaded `arrow-left.svg`, so it is not mirrored by CSS.
+  - Stars are data-dependent.
+- **Static validation:** Theme Check = 9 baseline offenses; 6 edited schemas parse, no duplicate IDs, ranges ≤ 101 steps with defaults on-step; `index.json` parses; `dev3.css` braces balanced.
+- **Visual QA — PENDING USER REVIEW:**
+  - Change the discount badge text and background colors in the Theme Editor and confirm the badge updates.
+  - Mobile card height ≈ Figma at 390.
+  - Price row on one line at 165.
+  - Badge vs cart button.
+  - Desktop unchanged, apart from the discount badge now using its own 12px size and colors instead of the h6 preset.
+
 ## F. QA & progress
 
 | ID | Figma analysis | Code checks | Visual desktop | Visual mobile | RTL | Media | Reversibility | Pending issues |
@@ -460,4 +516,5 @@ Give a section its own row here when its work starts, and keep the S01–S15 row
 | 2026-11-08 | S05 implemented by Dev3 (R6 approved; R7 `product-price.js` not done per user). `dev3.css` initialized + loaded. `custom-class.liquid` and the reusable `scroll-progress` component created. Description from the native product description. `index.json` section enabled | User implementation request | S05; shared: `quick-add` snippet, `text`/`price`/`review`/gallery/button blocks (all opt-in) | Visual QA by the user; merchant selects the collection |
 | 2026-11-09 | S05 Figma fidelity corrections by Dev3: image crop position, responsive card/image radius, metafield product badge, inline price row, native icon-block CTA, Quick Add bar/FAB icon and geometry, View All icon settings. All values moved from CSS to opt-in Theme Editor settings | User fidelity request (Figma re-inspected) | S05; shared opt-in: `_product-card-gallery`, `_product-card`, `_product-card-group` (icon allowed), `price`, `_product-list-button` | Visual QA by the user; merchant creates the `custom.product_badge` metafield definition |
 | 2026-11-09 | S05 final visual alignment by Dev3: discount badge inline (root cause `.text-block > *` width 100%), CTA arrow before the text (user request), mobile badge/description/price/card spacing via new opt-in settings on `price`, `text`, `_product-card`, `_product-card-group` | User request + Figma re-read | S05; shared opt-in blocks | Visual QA by the user |
+| 2026-11-09 | S05 mobile switched to exact Figma type sizes (supersedes R3, user decision). Discount badge color/size bug fixed (base.css `.text-block.h6 > *` outranked the badge rules). Shared `text-responsive-style` snippet; mobile size settings on `product-title`, `review`, `icon` | User request + Figma re-read | S05; shared opt-in blocks | Visual QA by the user, incl. the color picker |
 | 2026-11-09 | Process correction: during S05 Dev3 ran CLI store commands (`theme list`, scratchpad-only `theme pull`, a failed `theme dev`), inspected other sessions' processes, and ran a local headless fixture. This is against skill hard rule 13 (`.agents/skills/…/SKILL.md`). No files were uploaded and no other session was touched | User instruction | All Dev3 work | Local, non-server code checks only from now on; visual QA = PENDING USER REVIEW |

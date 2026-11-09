@@ -213,11 +213,7 @@
   }
 
   /* Price row: price, compare-at, discount badge on one row (price block, discount badge on).
-     Gaps, alignment and badge colors are price-block settings. */
-  product-price {
-    padding-block-start: 4px;
-  }
-
+     Gaps, alignment, top padding, badge colors/size and mobile price size are price-block settings. */
   [ref='priceContainer'] {
     .price {
       font-size: 18px;
@@ -235,8 +231,8 @@
     }
   }
 
-  /* Text size, padding ratio, radius and colors are price-block settings */
-  .price-discount-badge {
+  /* Text size, padding ratio, radius and colors are price-block settings (Figma SemiBold here) */
+  product-price > .price-discount-badge {
     font-weight: 600;
   }
 
@@ -274,7 +270,9 @@
     }
   }
 
-  /* ---------- Mobile (≤749): readable card typography (approved, R3) ---------- */
+  /* ---------- Mobile (≤749). Figma mobile type sizes are block settings (2026-11-09, supersedes R3):
+     title = product-title, description / CTA label = text block, prices / discount = price block,
+     rating label = review block, badge = product card, CTA arrow = icon block mobile width. ---------- */
   @media screen and (max-width: 749px) {
     /* Card gap, text padding and gaps are product-card / group settings (Customize mobile card / Mobile spacing) */
 
@@ -282,43 +280,21 @@
       max-inline-size: calc(100% - 56px); /* keep clear of the cart button */
     }
 
-    a[ref='productTitleLink'] :is(.text-block, p) {
-      font-size: 13px;
-      line-height: 20px;
-    }
-
     .rating-wrapper .stars {
-      --star-size: 12px;
+      --star-size: 12px; /* Figma 12.3 star */
     }
 
-    .rating-label {
-      font-size: 11px;
-      line-height: 16px;
-    }
-
-    /* Price size follows the price block's Mobile price size; compare-at keeps the Figma 0.78 ratio */
+    /* Prices follow the price block's Mobile price size (Figma 9.4/14.62); compare-at keeps the
+       Figma ratio 7.31/9.4 = 0.78 with line height 11.49/7.31 */
     [ref='priceContainer'] {
       .price {
         font-size: 1em;
-        line-height: 1.5;
+        line-height: 1.55;
       }
 
       .compare-at-price {
-        font-size: 0.8em;
-        line-height: 1.5;
-      }
-    }
-
-    .sn-home-bestsellers-cta {
-      font-size: 13px;
-      line-height: 20px;
-    }
-
-    /* Readable-scale arrow (Figma 9.4 scaled); the icon block has one size setting */
-    .group-block-content:has(> .sn-home-bestsellers-cta) {
-      .icon-block__media {
-        inline-size: 14px;
-        block-size: 14px;
+        font-size: 0.78em;
+        line-height: 1.57;
       }
     }
 

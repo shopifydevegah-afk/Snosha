@@ -135,7 +135,9 @@
 {% render 'payment-terms-styles' %}
 
 {% stylesheet %}
-  /* Opt-in (show_discount_badge): prices and the discount badge share one wrapping row */
+  /* Opt-in (show_discount_badge): prices and the discount badge share one wrapping row.
+     Selectors start with product-price.price--inline-badge so they outrank the text-block preset rules
+     in base.css (e.g. .text-block.h6 > * sets color, font-size and line-height on every direct child). */
   product-price.price--inline-badge {
     flex-direction: row;
     flex-wrap: wrap;
@@ -147,44 +149,46 @@
       column-gap: var(--price-row-gap-mobile);
     }
 
-    /* `.text-block > * { width: var(--width) }` (text.liquid) makes every child 100% wide when the
-       block width is "Fill", which pushed the badge onto its own row. Row items size to their content. */
+    /* .text-block > * { width: var(--width) } (text.liquid) would make each item 100% wide */
     > * {
       width: auto;
     }
 
-    /* The price container stays in the DOM for product-price.js; its items join the row */
+    /* The price container stays in the DOM for product-price.js; its items join the row and take the
+       block's own size (the preset rule would otherwise pin it to the preset size). */
     > [ref='priceContainer'] {
       display: contents;
+      font-size: inherit;
+      line-height: inherit;
     }
 
     > :is(.tax-note, .installments) {
       flex-basis: 100%;
     }
-  }
 
-  /* Padding and radius scale with the badge text (Figma: 12px text → 4/12 padding, 8 radius) */
-  .price-discount-badge {
-    display: inline-flex;
-    align-items: center;
-    padding: 0.333em 1em;
-    border: 1px solid var(--discount-badge-border, transparent);
-    border-radius: var(--discount-badge-radius, 0);
-    background: var(--discount-badge-background, rgb(var(--color-foreground-rgb) / var(--opacity-5)));
-    color: var(--discount-badge-color, currentColor);
-    font-size: var(--discount-badge-font-size, 0.75em);
-    line-height: 1.5;
-    white-space: nowrap;
-  }
+    /* Padding and radius scale with the badge text (Figma: 12px text → 4/12 padding, 8 radius) */
+    > .price-discount-badge {
+      display: inline-flex;
+      align-items: center;
+      padding: 0.333em 1em;
+      border: 1px solid var(--discount-badge-border, transparent);
+      border-radius: var(--discount-badge-radius, 0);
+      background: var(--discount-badge-background, rgb(var(--color-foreground-rgb) / var(--opacity-5)));
+      color: var(--discount-badge-color, var(--color, currentColor));
+      font-size: var(--discount-badge-font-size, 0.75em);
+      line-height: 1.5;
+      white-space: nowrap;
 
-  @media screen and (max-width: 749px) {
-    product-price.price--mobile-size {
-      font-size: var(--price-font-size-mobile);
+      @media screen and (max-width: 749px) {
+        font-size: var(--discount-badge-font-size-mobile, var(--discount-badge-font-size, 0.75em));
+        border-radius: var(--discount-badge-radius-mobile, var(--discount-badge-radius, 0));
+      }
     }
 
-    .price-discount-badge {
-      font-size: var(--discount-badge-font-size-mobile, var(--discount-badge-font-size, 0.75em));
-      border-radius: var(--discount-badge-radius-mobile, var(--discount-badge-radius, 0));
+    &.price--mobile-size {
+      @media screen and (max-width: 749px) {
+        font-size: var(--price-font-size-mobile);
+      }
     }
   }
 {% endstylesheet %}
@@ -270,9 +274,9 @@
       "type": "range",
       "id": "discount_badge_font_size",
       "label": "Discount badge text size",
-      "min": 8,
+      "min": 5,
       "max": 20,
-      "step": 1,
+      "step": 0.5,
       "unit": "px",
       "default": 12,
       "visible_if": "{{ block.settings.show_discount_badge }}"
@@ -281,9 +285,9 @@
       "type": "range",
       "id": "discount_badge_font_size_mobile",
       "label": "Mobile discount badge text size",
-      "min": 8,
+      "min": 5,
       "max": 20,
-      "step": 1,
+      "step": 0.5,
       "unit": "px",
       "default": 12,
       "visible_if": "{{ block.settings.show_discount_badge }}"
@@ -295,7 +299,7 @@
       "info": "0 = same as desktop. The compare-at price follows proportionally where the theme styles it in em.",
       "min": 0,
       "max": 24,
-      "step": 1,
+      "step": 0.5,
       "unit": "px",
       "default": 0,
       "visible_if": "{{ block.settings.show_discount_badge }}"

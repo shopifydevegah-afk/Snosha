@@ -147,7 +147,7 @@
             "border_radius_mobile_custom": true,
             "border_radius_mobile": 20,
             "product_card_gap_mobile": 7,
-            "badge_font_size_mobile": 10,
+            "badge_font_size_mobile": 6.5,
             "padding-block-start": 0,
             "padding-block-end": 0,
             "padding-inline-start": 0,
@@ -238,9 +238,9 @@
                 "padding-inline-start": 12,
                 "padding-inline-end": 12,
                 "mobile_spacing_custom": true,
-                "gap_mobile": 4,
-                "padding_inline_mobile": 7,
-                "padding_block_end_mobile": 16
+                "gap_mobile": 3,
+                "padding_inline_mobile": 6,
+                "padding_block_end_mobile": 14
               },
               "blocks": {
                 "product_title_YXxMTj": {
@@ -264,7 +264,9 @@
                     "padding-block-start": 0,
                     "padding-block-end": 0,
                     "padding-inline-start": 0,
-                    "padding-inline-end": 0
+                    "padding-inline-end": 0,
+                    "font_size_mobile": 8.5,
+                    "line_height_mobile": 14
                   },
                   "blocks": {}
                 },
@@ -285,8 +287,8 @@
                     "wrap": "pretty",
                     "max_lines": 2,
                     "max_lines_mobile": 2,
-                    "font_size_mobile": 11,
-                    "line_height_mobile": 17,
+                    "font_size_mobile": 7.5,
+                    "line_height_mobile": 12.5,
                     "text_color": "",
                     "background": false,
                     "background_color": "#00000026",
@@ -309,7 +311,8 @@
                     "text_color": "#60c1e1",
                     "type_preset": "paragraph",
                     "width": "fit-content",
-                    "alignment": "left"
+                    "alignment": "left",
+                    "font_size_mobile": 6.5
                   },
                   "blocks": {}
                 },
@@ -327,8 +330,8 @@
                     "discount_badge_border_color": "#dcf2fb",
                     "discount_badge_radius": 8,
                     "discount_badge_font_size": 12,
-                    "discount_badge_font_size_mobile": 10,
-                    "price_font_size_mobile": 13,
+                    "discount_badge_font_size_mobile": 6.5,
+                    "price_font_size_mobile": 9.5,
                     "price_row_gap": 10,
                     "price_row_gap_mobile": 5,
                     "type_preset": "h6",
@@ -340,7 +343,7 @@
                     "letter_spacing": "normal",
                     "case": "none",
                     "text_color": "",
-                    "padding-block-start": 0,
+                    "padding-block-start": 4,
                     "padding-block-end": 0,
                     "padding-inline-start": 0,
                     "padding-inline-end": 0
@@ -399,7 +402,8 @@
                         "width": 18,
                         "link": "",
                         "open_in_new_tab": false,
-                        "icon_color": "#176bb0"
+                        "icon_color": "#176bb0",
+                        "width_mobile": 9.5
                       },
                       "blocks": {}
                     },
@@ -420,8 +424,8 @@
                         "wrap": "nowrap",
                         "max_lines": 0,
                         "max_lines_mobile": 0,
-                        "font_size_mobile": 0,
-                        "line_height_mobile": 0,
+                        "font_size_mobile": 8.5,
+                        "line_height_mobile": 13.5,
                         "text_color": "",
                         "background": false,
                         "background_color": "#00000026",
