@@ -1,6 +1,12 @@
 
 
 {% render 'text', block: block %}
+{%- comment -%} Snosha (opt-in): phone font size, passed as a CSS var only when the section has a custom class; consumed by that class's CSS at ≤749px. {%- endcomment -%}
+{%- if section.settings.custom_class != blank and block.settings.type_preset == 'custom' -%}
+  {% style %}
+    .text-block--{{ block.id }} { --sn-mobile-font-size: {{ block.settings.mobile_font_size }}px; }
+  {% endstyle %}
+{%- endif -%}
 
 {% schema %}
 {
@@ -11,12 +17,6 @@
       "type": "richtext",
       "id": "text",
       "label": "t:settings.text"
-    },
-    {
-      "type": "richtext",
-      "id": "mobile_text",
-      "label": "Mobile text",
-      "info": "Optional. Replaces the text above on mobile (below 750px). Leave empty to show the same text on all devices."
     },
     {
       "type": "header",
@@ -64,19 +64,6 @@
       "label": "t:settings.alignment",
       "default": "left",
       "visible_if": "{{ block.settings.width == '100%' }}"
-    },
-    {
-      "type": "select",
-      "id": "mobile_alignment",
-      "label": "Text alignment (mobile)",
-      "info": "Below 750px.",
-      "options": [
-        { "value": "same", "label": "Same as desktop" },
-        { "value": "start", "label": "Start (right in Arabic)" },
-        { "value": "center", "label": "Center" },
-        { "value": "end", "label": "End (left in Arabic)" }
-      ],
-      "default": "same"
     },
     {
       "type": "header",
@@ -228,6 +215,18 @@
       ],
       "default": "1rem",
       "visible_if": "{{ block.settings.type_preset == 'custom' }}"
+    },
+    {
+      "type": "range",
+      "id": "mobile_font_size",
+      "label": "Mobile size",
+      "info": "Phones only. Size above = desktop.",
+      "min": 12,
+      "max": 64,
+      "step": 1,
+      "unit": "px",
+      "default": 24,
+      "visible_if": "{{ block.settings.type_preset == 'custom' and section.settings.custom_class != blank }}"
     },
     {
       "type": "select",
