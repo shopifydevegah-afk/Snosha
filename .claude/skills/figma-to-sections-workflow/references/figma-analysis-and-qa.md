@@ -75,6 +75,9 @@ Record for **Desktop and Mobile separately**:
 - Media: list every image/video/poster/content icon with its dimensions, aspect ratio, crop and focal point. Note whether mobile uses different media, and classify each one as *resource media*, *merchant content media* (needs a Theme Editor control) or *UI asset* (code)
 - Interactive states (hover, active, focus, open), sliders and their controls, and behavior if Figma shows it
 - RTL: is the design drawn RTL? Note anything that shouldn't mirror (logos, numbers, media, play icons)
+- Text content changes: truncated or shortened labels on mobile (e.g. first N words), hidden lines, different copy
+
+**Desktop ↔ Mobile comparison table (mandatory, SKILL.md hard rule 14).** After extracting both frames, write one row per property: heading size/line height, body/title sizes, media ratio and size, card width/height, gaps, paddings, column count, layout mode (carousel/grid), visible text, controls (arrows, progress). Columns: `Property | Desktop | Mobile | Same? | How it's delivered`. For each "different" row, the last column says one of: **native responsive setting** (name it), **existing setting reused for one breakpoint + new mobile-only setting** (name both), or **scoped CSS at ≤749 only** (fixed Figma value with no merchant need). Never copy a desktop value into a mobile rule, or the reverse, without a row that says they match. Copy the table (or its "different" rows) into the section's plan entry.
 
 If a value isn't available, write `ASSUMED: <value> (reason)`. Never invent one.
 

@@ -177,7 +177,12 @@
         "background_color": "",
         "padding-block-start": 50,
         "padding-block-end": 100,
-        "custom_class": "sn-home-collections"
+        "custom_class": "sn-home-collections",
+        "mobile_heading_size": 24,
+        "mobile_image_size": 97,
+        "mobile_image_ratio": "square",
+        "mobile_title_size": 11,
+        "mobile_title_word_limit": "two"
       }
     }
   },
