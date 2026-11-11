@@ -27,7 +27,8 @@
             "font_size_mobile": "0.75rem",
             "weight_mobile": "400",
             "text_color": "",
-            "show_icon": true
+            "show_icon": true,
+            "icon_image": "shopify://shop_images/sparkle-brand.svg"
           },
           "blocks": {}
         }
@@ -65,8 +66,8 @@
           "static": true,
           "settings": {
             "menu": "main-menu",
-            "background_color": "#FFFFFF",
-            "text_color": "#176BB0",
+            "background_color": "#ffffff",
+            "text_color": "#176bb0",
             "type_font_primary_size": "1rem",
             "menu_font_style": "inverse",
             "type_font_primary_link": "body",
