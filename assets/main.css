@@ -115,14 +115,12 @@
         justify-self: center;
       }
 
+      /* Logo size comes from the native setting logo_height = 36 (Figma artwork 178 x 36).
+         Figma (190:3775): artwork at x 669, y 30 in the 1480 x 88 frame, so its centre is
+         18px right of and 4px below the header centre. */
       .header-logo {
         grid-area: center;
-        translate: 18px 0; /* Figma: logo centre sits 18px right of the frame centre */
-      }
-
-      .header-logo__image {
-        height: 36px; /* Figma logo artwork 178 x 36 */
-        width: auto;
+        translate: 18px 4px;
       }
     }
   }
@@ -163,16 +161,16 @@
       --header-drawer-min-height: var(--button-size);
     }
 
-    /* Figma logo frame: 138px wide (27.9px high). Width-based so the image ratio sets the height;
-       shrinks on very narrow screens instead of overlapping the icons. */
+    /* Logo size comes from the native setting logo_height_mobile = 36. Figma (190:4088): the
+       138 x 27.9 instance frame holds a 178 x 36 artwork that overflows it unscaled
+       (x -20, y -4), centred in the header. Native object-fit: contain keeps the ratio
+       if a very narrow screen forces it to shrink instead of overlapping the icons. */
     .header-logo {
       min-width: 0;
     }
 
     .header-logo__image {
-      width: 138px;
       max-width: 100%;
-      height: auto;
     }
   }
 
@@ -214,9 +212,7 @@
     }
 
     .header-logo__image {
-      width: 138px;
       max-width: 100%;
-      height: auto;
     }
   }
 

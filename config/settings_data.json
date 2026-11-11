@@ -10,7 +10,7 @@
 {
   "current": {
     "logo": "shopify://shop_images/SNOSHA_804af7d0-87bc-4d7c-a190-1c512099ec0a.svg",
-    "logo_height": 37,
+    "logo_height": 36,
     "logo_height_mobile": 36,
     "favicon": "shopify://shop_images/SNOSHA_804af7d0-87bc-4d7c-a190-1c512099ec0a.svg",
     "page_text_color": "{{ settings.color_palette.foreground }}",

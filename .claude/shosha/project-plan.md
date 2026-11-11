@@ -135,7 +135,7 @@ Each section gets its own subsection here (with the Native Reuse Audit) when its
   - It now works with either `search_position`, so the setting is back to the merchant's original `left`.
 - **Mobile logo looked small.**
   - The previous CSS fixed a 28px height. With the logo's assumed ratio of about 4.94 that's about 138px, the Figma width. It also blocked the native size setting.
-  - Now width-based: 138px (the Figma frame), `height: auto`, `max-width: 100%`, and `min-width: 0` on the link so it shrinks on narrow screens instead of overlapping the icons.
+  - ~~Now width-based: 138px (the Figma frame), `height: auto`, `max-width: 100%`, and `min-width: 0` on the link so it shrinks on narrow screens instead of overlapping the icons.~~ **SUPERSEDED by fix round 2** (the 138px frame wasn't the visible artwork).
   - The uploaded file couldn't be inspected (the Shopify MCP is connected to a different store), so internal padding in the file is unverified. If the logo still looks small, check the file's padding first.
 - **Mobile row height:** Horizon's `.header__drawer` has a 60px min-height, which made the row about 80px. Set to `--button-size` (44px) in scope, so the row is 64px.
 - **Mobile drawer:**
@@ -147,12 +147,27 @@ Each section gets its own subsection here (with the Native Reuse Audit) when its
 - Reversibility now: `CLASS_PLUS_SETTINGS: drawer_accordion, drawer_dividers` (untested). Removing the class restores the native header layout, icons, logo and drawer typography; the accordion and dividers remain until those settings are reset.
 - **User action needed:** the Theme Editor (store) data must contain Header → Advanced → Custom CSS class = `sn-header-main`, otherwise none of S02 applies. The repo has it; the editor screenshot suggests the store doesn't.
 
+#### S02 fix round 2: exact logo (2026-11-11)
+- Figma, measured with `get_metadata`:
+  - desktop instance `190:3775` is a 184×37.18 frame at (666, 29) holding the **178×36** artwork at (+3, +1). The artwork sits at (669, 30) in the 1480×88 header: centre 18px right of and **4px below** the header centre.
+  - mobile instance `190:4088` is a 138×27.89 frame holding the **same 178×36 artwork, unscaled and overflowing** at (−20, −4). It sits at (106, ≈14) in the 390×64 header: exactly centred.
+  - Visible logo on both viewports: **178×36**. The 138/184 values are frame sizes, not the artwork.
+- Figma artwork file `43c8e.svg`: viewBox `0 0 178 36`, ratio 4.944, with no transparent padding (artwork fills the viewBox).
+- Root cause of the "too small" mobile logo: the earlier CSS (28px high, then 138px wide) followed the instance frame. The native `logo_height_mobile` = 36 was already right and was being overridden.
+- Fix (native first):
+  - all CSS logo-size overrides removed;
+  - native `logo_height_mobile` = 36 (unchanged);
+  - native `logo_height` 37 → **36** in `config/settings_data.json` (protected file; changed under the user's explicit "prefer native logo settings" instruction, 2026-11-11). It's used only by `_header-logo`, so the native width is ceil(36 × ratio) = 178.
+  - Scoped CSS kept: desktop `translate: 18px 4px`; mobile `min-width: 0` on the link and `max-width: 100%` on the image (native `object-fit: contain` keeps the ratio if a very narrow screen forces shrinking).
+  - At 390px the 190px centre column fits 178px, leaving 24px clearance to the search glyph.
+- Limitation: the **uploaded** store file (`shop_images/SNOSHA_…svg`) couldn't be opened from here. If it was exported from the 184×37.18 desktop instance instead of the artwork, it carries about 3px / 1px of transparent padding, and the artwork would render about 1px short. Confirm in Shopify → Content → Files (expect 178×36).
+
 ## F. QA & progress
 
 | ID | Figma analysis | Code checks | Visual desktop | Visual mobile | RTL | Media | Reversibility | Pending issues |
 |---|---|---|---|---|---|---|---|---|
 | S01 | PASS (get_design_context, 2026-11-11) | PASS: Theme Check = baseline 9, JSON/schema parse OK, assets exist | PENDING USER REVIEW | PENDING USER REVIEW | PENDING USER REVIEW | PENDING USER REVIEW | PENDING USER REVIEW (expected `CLASS_PLUS_SETTINGS`: see E) | custom-class snippet sanitizer matrix untested (needs render); confirm text color is white |
-| S02 | PASS (get_design_context, 2026-11-11; navigation `190:3776` not analysed) | PASS: Theme Check = baseline 9 (header count 42→43, same offense), JSON/schema parse OK, mask assets exist | PENDING USER REVIEW | PENDING USER REVIEW | PENDING USER REVIEW | N/A (logo is the global native setting; icons are UI) | PENDING USER REVIEW (expected `CLASS_PLUS_SETTINGS: drawer_accordion, drawer_dividers`) | Fix round 1 applied 2026-11-11 (desktop grid, mobile logo and height, drawer); confirm the store has `custom_class` = `sn-header-main`; account hidden on mobile (Figma); account button width unverified; cart bubble position; logo file padding unverified |
+| S02 | PASS (get_design_context, 2026-11-11; navigation `190:3776` not analysed) | PASS: Theme Check = baseline 9 (header count 42→43, same offense), JSON/schema parse OK, mask assets exist | PENDING USER REVIEW | PENDING USER REVIEW | PENDING USER REVIEW | N/A (logo is the global native setting; icons are UI) | PENDING USER REVIEW (expected `CLASS_PLUS_SETTINGS: drawer_accordion, drawer_dividers`) | Fix rounds 1–2 applied 2026-11-11 (desktop grid, mobile height, drawer, exact 178×36 logo via native settings); confirm the store has `custom_class` = `sn-header-main` and `logo_height` = 36; account hidden on mobile (Figma); account button width unverified; cart bubble position; uploaded logo file dimensions unverified |
 | S03–S15 | — | — | — | — | — | — | — | Only project-level mapping done; no section-level analysis yet |
 
 Give a section its own row here when its work starts, and keep the S01–S15 row only for sections that haven't started.
@@ -188,3 +203,4 @@ Give a section its own row here when its work starts, and keep the S01–S15 row
 | 2026-11-11 | `header` schema to 43 settings (`custom_class`) | Required by the custom-class policy; the user's S02 task asked for it | S02 | Theme Check warning only; no further `header` settings without need |
 | 2026-11-11 | S02 header row implemented (category B) | — | S02 | User visual QA; desktop navigation `190:3776` is a separate task |
 | 2026-11-11 | S02 fix round 1: desktop grid independent of `search_position` (setting reverted to `left`), mobile logo width-based 138px, mobile row 64px, drawer tidied (native accordion and dividers plus scoped CSS; featured cards hidden in the drawer only) | User review | S02 | User visual QA; make sure the store's header has the class `sn-header-main` |
+| 2026-11-11 | S02 fix round 2: logo matched to the Figma **artwork** (178×36 on both viewports) through native `logo_height` 37→36 (`settings_data.json`, user-instructed) and `logo_height_mobile` 36; CSS size overrides removed; desktop offset 18px / 4px | The mobile Figma frame (138px) is not the visible artwork | S02 | Confirm the uploaded logo file is 178×36 |
