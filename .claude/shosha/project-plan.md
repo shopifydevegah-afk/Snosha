@@ -203,8 +203,26 @@ Category **B**: native section + on-demand `custom_class` setting. No Liquid/JS 
   - Figma's CTA is right-aligned on mobile. The task text said centred; Figma was followed.
   - Mobile heading line height is 1.63 × 24 = 39 vs Figma 38, because one ratio covers both devices.
   - Mobile label chip is about 50×22 vs Figma 45×21.
-  - Content column is 41% ≈ 566 vs 557 at 1480.
+  - (Resolved 2026-11-11: row capped at 1360, so content is 558 vs 557.)
   - Tablet (750–989) keeps the desktop row at 56/41%. There is no Figma frame for it, and the content column is narrow there.
+- **Desktop refinement (2026-11-11), after user feedback "image too large, heading/CTA not aligned with the image":**
+  - **Figma re-read** (`get_metadata` 190:3903): row 1358 = image 774×535 + gap 27 + content 557×552. Figma centres both columns, so **in Figma itself** the heading starts 8.5px above the image and the CTA ends 8.5px below it.
+  - **Cause of the oversized image:** the row had no maximum width. It followed Horizon's 1920px "normal" page width, so the 56% image grew with the screen: about 773 wide at 1480, about 1020×704 at 1920.
+  - **Fix: width.**
+    - New section setting `content_max_width` (800–1800 px, step 10, default 1360; var only with the class) caps the row and centres it.
+    - Section side padding 10 → 0.
+    - Slider width 56% → 57%; content stays 41%.
+    - Result at ≥1440: image 775×535 (Figma 774×535), content 558 (Figma 557), gap 27.
+  - **Fix: alignment.**
+    - Content group set to native Height "Fill" + Vertical alignment "Space between".
+    - `dev2.css` (≥750, under the class) lets a Height-Fill group stretch to the row height. That native setting drives it, so there are no offsets, no transforms and no absolute positioning.
+    - Heading top = image top, CTA bottom = image bottom whenever the content is no taller than the image.
+    - To fit Figma's 552px of content into the 535px image, the content gap is **14** (Figma 20). Set it back to 20 to restore Figma's exact gaps; the column is then 8.5px taller on each side, as in Figma.
+  - **Narrower widths** (1200, tablet): the text is taller than the image. The row grows, nothing is clipped, and the image stays centred at its ratio.
+  - **Mobile unchanged:** stacked, mobile gap 14, the stretch rule is desktop-only.
+  - **Files:** `sections/section.liquid` (setting + var), `assets/dev2.css`, `templates/index.json` (S08 values only; the merchant's images were kept).
+  - **Theme Check:** 9 = baseline.
+  - **Visual QA:** PENDING USER REVIEW (rule 13).
 - **Checks:** Theme Check 9 = baseline. All five schemas parse. `index.json` parses, and only the S08 section and its order entry were added (S04 untouched).
 - **PENDING USER REVIEW:**
   - visual QA at 1480, 1200, 820, 390 and 375, plus RTL.
@@ -257,3 +275,4 @@ Give a section its own row here when its work starts, and keep the S01–S15 row
 | 2026-11-09 | No previews, server processes, push/pull or browser automation by agents; visual QA belongs to the user (`PENDING USER REVIEW`). Rule copied from `.agents/skills/…/SKILL.md` into `.claude/skills/…/SKILL.md` (hard rule 13, Stages F/G/H); the Desktop/Mobile rule became 14. The Dev2 preview (`theme dev` on #190250942577) was stopped | User instruction | All | — |
 | 2026-11-09 | Theme Editor control policy adopted (Skill hard rule 15; details in `references/schema-extension-policy.md`): every merchant-adjustable visual value gets a Theme Editor control (native first, smallest safe extension, separate Desktop/Mobile controls, Figma values as editable defaults); only listed technical exceptions stay in code. Replaces the earlier practice of putting exact Figma values in class-scoped CSS (old hard rule 5). Plan step D now records a control map; Stage F adds a hardcoded-value audit and Stage G a two-value control test | Merchant must be able to adjust the design without code | All future section work | Applies from the next task. S04 is not changed retroactively (user confirmed it is correct); its remaining literals stay as they are |
 | 2026-11-11 | S08 implemented on the native `section` preset "Image compare" + `comparison-slider` (category B/D). `custom_class` added to `section` (rendered in shared `snippets/section.liquid`, opt-in). Opt-in settings added to `section`, `comparison-slider`, `text`, `group`, `button` (see S08). RTL mirror fix for the native slider under the class | Native-first reuse; Theme Editor control policy (rule 15) | S08; blocks `text`, `group`, `button`, `comparison-slider`; `snippets/section.liquid` | Visual QA by the user; merchant images, tooth icon, CTA link |
+| 2026-11-11 | S08 desktop refinement: `section` setting `content_max_width` (row cap, default 1360); slider 57% / content 41%; content group Height Fill + Space between with a class-scoped stretch rule; content gap 20 → 14 so heading/CTA align with the 535px image | Image grew with the 1920px page width; user asked for top/bottom alignment, which Figma itself misses by 8.5px | S08 | Visual QA by the user |

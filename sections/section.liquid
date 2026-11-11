@@ -18,6 +18,7 @@
 {%- if section.settings.custom_class != blank -%}
   {% style %}
     #shopify-section-{{ section.id }} {
+      --sn-content-max-width: {{ section.settings.content_max_width }}px;
       --sn-padding-block-start-mobile: {{ section.settings['padding-block-start-mobile'] }}px;
       --sn-padding-block-end-mobile: {{ section.settings['padding-block-end-mobile'] }}px;
       --sn-padding-inline-mobile: {{ section.settings['padding-inline-mobile'] }}px;
@@ -471,6 +472,17 @@
       "step": 1,
       "unit": "px",
       "default": 0
+    },
+    {
+      "type": "range",
+      "id": "content_max_width",
+      "label": "Content max width",
+      "info": "Caps the row on wide screens, centred. Applies when a custom class is set.",
+      "min": 800,
+      "max": 1800,
+      "step": 10,
+      "unit": "px",
+      "default": 1360
     },
     {
       "type": "header",

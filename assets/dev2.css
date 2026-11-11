@@ -246,6 +246,26 @@
    are UI constants (handle, divider, shadow, label inset/line box), each with a reason.
    ========================================================================== */
 .sn-home-before-after {
+  /* Row width: section "Content max width" (Figma: 774 image + 27 gap + 557 text = 1358 → 1360).
+     Without a cap the row followed the 1920px page width, so the 57% image kept growing on wide
+     screens. Column widths stay the native block "Width: Custom %" settings. */
+  > .custom-section-content > .section-content-wrapper {
+    max-inline-size: var(--sn-content-max-width, none);
+    margin-inline: auto;
+    inline-size: 100%;
+  }
+
+  /* Two-column row (≥750): a column group whose native "Height" is "Fill" stretches to the row height,
+     so its native "Vertical alignment: Space between" puts the heading at the image's top edge and the
+     button at its bottom edge. If the text is taller than the image (narrow widths), the row simply
+     grows: nothing is clipped and the image keeps its ratio, centred by the section's native alignment. */
+  @media screen and (min-width: 750px) {
+    > .custom-section-content > .section-content-wrapper > .group-block--height-fill {
+      align-self: stretch;
+      height: auto;
+    }
+  }
+
   /* Text blocks: weight and exact line height (text block "Weight" / "Exact line height");
      size = native "Size" on desktop. Without those vars the native custom-typography values apply. */
   .text-block.custom-typography,
