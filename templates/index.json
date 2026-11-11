@@ -125,6 +125,8 @@
                     "font": "var(--font-body--family)",
                     "font_size": "1rem",
                     "mobile_font_size": 24,
+                    "font_size_mobile": 0,
+                    "line_height_mobile": 0,
                     "line_height": "normal",
                     "letter_spacing": "normal",
                     "case": "none",
@@ -159,6 +161,8 @@
                 "font": "var(--font-body--family)",
                 "font_size": "1rem",
                 "mobile_font_size": 24,
+                "font_size_mobile": 0,
+                "line_height_mobile": 0,
                 "line_height": "normal",
                 "letter_spacing": "normal",
                 "case": "none",
@@ -187,6 +191,8 @@
                 "font": "var(--font-body--family)",
                 "font_size": "1rem",
                 "mobile_font_size": 24,
+                "font_size_mobile": 0,
+                "line_height_mobile": 0,
                 "line_height": "normal",
                 "letter_spacing": "normal",
                 "case": "none",
@@ -364,6 +370,8 @@
                     "font": "var(--font-body--family)",
                     "font_size": "1rem",
                     "mobile_font_size": 24,
+                    "font_size_mobile": 0,
+                    "line_height_mobile": 0,
                     "line_height": "normal",
                     "letter_spacing": "normal",
                     "case": "none",
@@ -453,6 +461,8 @@
                     "font": "var(--font-body--family)",
                     "font_size": "1rem",
                     "mobile_font_size": 24,
+                    "font_size_mobile": 0,
+                    "line_height_mobile": 0,
                     "line_height": "normal",
                     "letter_spacing": "normal",
                     "case": "none",
@@ -542,6 +552,8 @@
                     "font": "var(--font-body--family)",
                     "font_size": "1rem",
                     "mobile_font_size": 24,
+                    "font_size_mobile": 0,
+                    "line_height_mobile": 0,
                     "line_height": "normal",
                     "letter_spacing": "normal",
                     "case": "none",
@@ -631,6 +643,8 @@
                     "font": "var(--font-body--family)",
                     "font_size": "1rem",
                     "mobile_font_size": 24,
+                    "font_size_mobile": 0,
+                    "line_height_mobile": 0,
                     "line_height": "normal",
                     "letter_spacing": "normal",
                     "case": "none",
@@ -1585,6 +1599,8 @@
                     "font": "var(--font-body--family)",
                     "font_size": "1rem",
                     "mobile_font_size": 24,
+                    "font_size_mobile": 0,
+                    "line_height_mobile": 0,
                     "line_height": "normal",
                     "letter_spacing": "normal",
                     "case": "none",
@@ -1596,9 +1612,7 @@
                     "padding-block-start": 0,
                     "padding-block-end": 0,
                     "padding-inline-start": 0,
-                    "padding-inline-end": 0,
-                    "font_size_mobile": 0,
-                    "line_height_mobile": 0
+                    "padding-inline-end": 0
                   },
                   "blocks": {}
                 }
@@ -1620,6 +1634,8 @@
                 "font": "var(--font-body--family)",
                 "font_size": "1rem",
                 "mobile_font_size": 24,
+                "font_size_mobile": 24,
+                "line_height_mobile": 38,
                 "line_height": "normal",
                 "letter_spacing": "normal",
                 "case": "none",
@@ -1631,9 +1647,7 @@
                 "padding-block-start": 0,
                 "padding-block-end": 0,
                 "padding-inline-start": 0,
-                "padding-inline-end": 0,
-                "font_size_mobile": 24,
-                "line_height_mobile": 38
+                "padding-inline-end": 0
               },
               "blocks": {}
             },
@@ -1650,6 +1664,8 @@
                 "font": "var(--font-body--family)",
                 "font_size": "1rem",
                 "mobile_font_size": 24,
+                "font_size_mobile": 13,
+                "line_height_mobile": 22,
                 "line_height": "normal",
                 "letter_spacing": "normal",
                 "case": "none",
@@ -1661,9 +1677,7 @@
                 "padding-block-start": 0,
                 "padding-block-end": 0,
                 "padding-inline-start": 0,
-                "padding-inline-end": 0,
-                "font_size_mobile": 13,
-                "line_height_mobile": 22
+                "padding-inline-end": 0
               },
               "blocks": {}
             },
@@ -1759,7 +1773,6 @@
                       "type": "icon",
                       "settings": {
                         "icon": "stopwatch",
-                        "image_upload": "",
                         "width": 16,
                         "link": "",
                         "open_in_new_tab": false,
@@ -1780,6 +1793,8 @@
                         "font": "var(--font-body--family)",
                         "font_size": "1rem",
                         "mobile_font_size": 24,
+                        "font_size_mobile": 0,
+                        "line_height_mobile": 0,
                         "line_height": "normal",
                         "letter_spacing": "normal",
                         "case": "none",
@@ -1791,9 +1806,7 @@
                         "padding-block-start": 0,
                         "padding-block-end": 0,
                         "padding-inline-start": 0,
-                        "padding-inline-end": 0,
-                        "font_size_mobile": 0,
-                        "line_height_mobile": 0
+                        "padding-inline-end": 0
                       },
                       "blocks": {}
                     }
@@ -1872,6 +1885,8 @@
                         "font": "var(--font-body--family)",
                         "font_size": "1rem",
                         "mobile_font_size": 24,
+                        "font_size_mobile": 0,
+                        "line_height_mobile": 0,
                         "line_height": "normal",
                         "letter_spacing": "normal",
                         "case": "none",
@@ -1883,9 +1898,7 @@
                         "padding-block-start": 0,
                         "padding-block-end": 0,
                         "padding-inline-start": 0,
-                        "padding-inline-end": 0,
-                        "font_size_mobile": 0,
-                        "line_height_mobile": 0
+                        "padding-inline-end": 0
                       },
                       "blocks": {}
                     }
@@ -1943,7 +1956,6 @@
                       "type": "icon",
                       "settings": {
                         "icon": "bottle",
-                        "image_upload": "",
                         "width": 16,
                         "link": "",
                         "open_in_new_tab": false,
@@ -1964,6 +1976,8 @@
                         "font": "var(--font-body--family)",
                         "font_size": "1rem",
                         "mobile_font_size": 24,
+                        "font_size_mobile": 0,
+                        "line_height_mobile": 0,
                         "line_height": "normal",
                         "letter_spacing": "normal",
                         "case": "none",
@@ -1975,9 +1989,7 @@
                         "padding-block-start": 0,
                         "padding-block-end": 0,
                         "padding-inline-start": 0,
-                        "padding-inline-end": 0,
-                        "font_size_mobile": 0,
-                        "line_height_mobile": 0
+                        "padding-inline-end": 0
                       },
                       "blocks": {}
                     }
@@ -2056,6 +2068,8 @@
                         "font": "var(--font-body--family)",
                         "font_size": "1rem",
                         "mobile_font_size": 24,
+                        "font_size_mobile": 0,
+                        "line_height_mobile": 0,
                         "line_height": "normal",
                         "letter_spacing": "normal",
                         "case": "none",
@@ -2067,9 +2081,7 @@
                         "padding-block-start": 0,
                         "padding-block-end": 0,
                         "padding-inline-start": 0,
-                        "padding-inline-end": 0,
-                        "font_size_mobile": 0,
-                        "line_height_mobile": 0
+                        "padding-inline-end": 0
                       },
                       "blocks": {}
                     }
@@ -2096,7 +2108,7 @@
                 "style_class": "button-custom",
                 "custom_button_background": "#0f64a8",
                 "custom_button_text": "#ffffff",
-                "custom_button_border": "#0f64a800",
+                "custom_button_border": "rgba(0,0,0,0)",
                 "link_text_color": "",
                 "width": "fit-content",
                 "custom_width": 100,
@@ -2215,6 +2227,8 @@
                     "font": "var(--font-body--family)",
                     "font_size": "1rem",
                     "mobile_font_size": 24,
+                    "font_size_mobile": 0,
+                    "line_height_mobile": 0,
                     "line_height": "normal",
                     "letter_spacing": "normal",
                     "case": "none",
@@ -2226,9 +2240,7 @@
                     "padding-block-start": 0,
                     "padding-block-end": 0,
                     "padding-inline-start": 0,
-                    "padding-inline-end": 0,
-                    "font_size_mobile": 0,
-                    "line_height_mobile": 0
+                    "padding-inline-end": 0
                   },
                   "blocks": {}
                 }
@@ -2280,13 +2292,12 @@
                 "float_position": "none",
                 "float_position_mobile": "same"
               },
-              "blocks": {},
-              "block_order": []
+              "blocks": {}
             },
             "product_image": {
               "type": "image",
               "settings": {
-                "image": "",
+                "image": "shopify://shop_images/ce3a9d782ccce2c0f43df794cac8294fc07edd36.png",
                 "link": "",
                 "image_ratio": "adapt",
                 "width": "fill",
@@ -2349,8 +2360,7 @@
                 "float_position": "none",
                 "float_position_mobile": "same"
               },
-              "blocks": {},
-              "block_order": []
+              "blocks": {}
             }
           },
           "block_order": [
@@ -2403,8 +2413,7 @@
             "float_position": "none",
             "float_position_mobile": "same"
           },
-          "blocks": {},
-          "block_order": []
+          "blocks": {}
         },
         "f1_waves": {
           "type": "group",
@@ -2449,8 +2458,7 @@
             "float_position": "none",
             "float_position_mobile": "same"
           },
-          "blocks": {},
-          "block_order": []
+          "blocks": {}
         }
       },
       "block_order": [
