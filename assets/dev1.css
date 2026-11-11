@@ -1328,13 +1328,14 @@
    Figma desktop 190:3943 (1480×1072; container 1376 + 20px inner padding), mobile 190:4265 (390×695)
    Generic native composition: carousel → header group .sn-home-care-head (2 text blocks) →
    carousel content → any number of `_card` slides, each holding a `product-card` (product picker) →
-     product gallery · group .sn-home-care-badge (text; shown only on the featured card) · product title ·
+     product gallery · optional group .sn-home-care-badge (text; stays with its own card) · product title ·
      text (product description) · group .sn-home-care-specs > specification rows (icon + text) ·
      group .sn-home-care-price (price + custom Liquid discount pill .sn-home-care-discount) ·
      group .sn-home-care-cta (text).
-   Featured = the `_card` "Featured card" checkbox (class .sn-card-featured, inert without this class);
-   the carousel starts on it. Card widths / mobile gap come from the section's "Card sizes" settings
-   (--carousel-* variables, Figma values as fallbacks).
+   Desktop (≥990): the `_card` "Featured card" checkbox (.sn-card-featured) gets the featured design.
+   Tablet/mobile (≤989): every card has the same layout; the featured look (ring, glow, filled button)
+   follows the card that is centred in the scroller (CSS view timeline on each card, no JavaScript);
+   the carousel opens on the "Featured card". Section settings → --carousel-* variables (Figma fallbacks).
    ========================================================================== */
 .sn-home-choose-care {
   /* Figma container 1376px (class-scoped, like S03 / S06) */
@@ -1371,14 +1372,21 @@
     background-color: transparent;
   }
 
+  /* Arrows are off through the section's native "Icon: None"; this keeps them off if re-enabled */
+  slideshow-arrows {
+    display: none;
+  }
+
   .carousel-content slideshow-slides {
-    /* room for the card shadows / featured glow (the scroller clips overflow) */
+    /* room for the card shadows / glow (the scroller clips overflow) */
     padding-block: 48px;
     margin-block: -48px;
     align-items: center;
   }
 
   .carousel-content slideshow-slides > .card {
+    position: relative;
+    isolation: isolate;
     flex: 0 0 auto;
     height: auto;
     overflow: visible;
@@ -1415,19 +1423,29 @@
     }
   }
 
-  /* Tablet + mobile (≤989): every card has the same width; the side gutters are half the leftover space,
-     so a start-snapped card is centred and both neighbours peek. The native slideshow scrolls the
-     featured card to that position on load (scroll-padding-inline-start = gutter). */
+  /* Tablet + mobile (≤989): equal card widths; each side gutter is half the space left beside one card, so
+     the first and last cards can reach the centre too. Cards snap by their centre to the centre of the
+     whole scroller (native one-sided scroll-padding removed), so the snapped card is always symmetric. */
   @media screen and (max-width: 989px) {
     .carousel-content slideshow-slides {
       --sn-care-slide-w: 340px; /* tablet: no Figma frame (ASSUMED) */
       --gutter-slide-width: max(0px, calc((100cqi - var(--sn-care-slide-w)) / 2));
       --slideshow-gap: 16px;
+
+      scroll-padding-inline: 0;
     }
 
     .carousel-content slideshow-slides > .card {
       width: var(--sn-care-slide-w);
-      scroll-snap-align: start;
+      scroll-snap-align: center;
+      padding: 3px; /* ring space on every card: no layout change when the active card changes */
+      border-radius: 27px;
+    }
+
+    /* Opens on the "Featured card" in browsers with scroll-initial-target (the native slideshow also
+       scrolls to it on load) */
+    .carousel-content slideshow-slides > .card.sn-card-featured {
+      scroll-initial-target: nearest;
     }
   }
 
@@ -1437,9 +1455,9 @@
       --slideshow-gap: var(--carousel-gap-mobile, 12px);
     }
 
-    /* Figma mobile has no arrows (swipe + progress bar) */
-    .carousel-content slideshow-arrows {
-      display: none;
+    .carousel-content slideshow-slides > .card {
+      padding: 1.7px;
+      border-radius: 17.42px;
     }
   }
 
@@ -1463,12 +1481,15 @@
       min-height: 672px;
     }
 
+    @media screen and (max-width: 989px) {
+      box-shadow: none; /* the slide carries the shadow / glow */
+    }
+
     @media screen and (max-width: 749px) {
       min-height: 440px;
       gap: 10.48px;
       padding: 15.72px 15.72px 4.06px;
       border-radius: 15.72px;
-      box-shadow: 0 7.86px 20.96px rgb(15 100 168 / 0.1);
     }
   }
 
@@ -1485,12 +1506,20 @@
     }
   }
 
+  /* Whole product visible: the native card gallery hardcodes object-fit cover; the section's
+     "Product image fit" (Fit = contain, default) replaces it here only. */
+  .card-gallery .product-media-container img {
+    object-fit: var(--carousel-image-fit, contain);
+    object-position: center;
+  }
+
   /* The discount pill sits in the price row, so the native "Sale" image badge is not repeated */
   .card-gallery .color-custom-badge-sale {
     display: none;
   }
 
-  /* Featured badge (text block with native background) on the image's top start corner */
+  /* Product badge (text block with native background) on the image's top start corner.
+     It belongs to its own card: shown whenever the block exists and isn't hidden. */
   .sn-home-care-badge {
     position: absolute;
     z-index: 2;
@@ -1500,18 +1529,14 @@
     pointer-events: none;
 
     @media screen and (max-width: 749px) {
-      inset-block-start: 21px;
-      inset-inline-start: 21.4px;
+      inset-block-start: 23.1px;
+      inset-inline-start: 23.5px;
 
       .text-block--background {
         padding: 2.27px 6.8px;
         border-radius: 4.54px;
       }
     }
-  }
-
-  .card:not(.sn-card-featured) .sn-home-care-badge {
-    display: none;
   }
 
   /* Product description: a short excerpt of the product's own description */
@@ -1652,110 +1677,169 @@
     filter: brightness(0.96);
   }
 
-  /* --- Featured card (follows the "Featured card" checkbox, whatever its position) ---------------- */
-  .carousel-content slideshow-slides > .card.sn-card-featured {
-    padding: 3px;
-    border-radius: 27px;
-    background: conic-gradient(
-      from 90deg,
-      #63cdff 0%,
-      #3999d4 17.5%,
-      #247ebe 26.25%,
-      #0f64a8 35%,
-      #87b2d4 45%,
-      #ffffff 55%,
-      #87b2d4 65%,
-      #0f64a8 75%,
-      #247ebe 81.25%,
-      #3999d4 87.5%,
-      #63cdff 100%
-    );
-    box-shadow:
-      0 24px 48px rgb(15 100 168 / 0.18),
-      0 0 36px rgb(99 204 255 / 0.45);
+  /* --- Featured card: desktop (≥990), follows the "Featured card" checkbox --------------------- */
+  @media screen and (min-width: 990px) {
+    .carousel-content slideshow-slides > .card.sn-card-featured {
+      padding: 3px;
+      border-radius: 27px;
+      background: var(--sn-care-ring);
+      box-shadow: var(--sn-care-glow);
 
-    @media screen and (max-width: 749px) {
-      padding: 1.7px;
-      border-radius: 15.31px;
-      box-shadow:
-        0 13.61px 27.22px rgb(15 100 168 / 0.18),
-        0 0 20.42px rgb(99 204 255 / 0.45);
-    }
-
-    .product-card__content.product-grid__card {
-      min-height: 0;
-      box-shadow: none;
-
-      @media screen and (max-width: 749px) {
-        gap: 9.07px;
-        padding: 13.61px;
-        border-radius: 13.61px;
+      .product-card__content.product-grid__card {
+        min-height: 0;
+        box-shadow: none;
       }
-    }
 
-    /* Figma featured image box 408×300 */
-    .card-gallery[data-image-ratio='landscape'] > * {
-      --gallery-aspect-ratio: 408 / 300;
-    }
-
-    .card-gallery {
-      @media screen and (max-width: 749px) {
-        border-radius: 9.07px;
+      /* Figma featured image box 408×300 */
+      .card-gallery[data-image-ratio='landscape'] > * {
+        --gallery-aspect-ratio: 408 / 300;
       }
-    }
 
-    .sn-home-care-specs {
-      @media screen and (max-width: 749px) {
-        padding-block-start: 2.27px;
+      .sn-home-care-price {
+        margin-block-start: 0;
+        padding-block-start: 6px;
       }
-    }
 
-    .sn-home-care-specs .group-block-content {
-      @media screen and (max-width: 749px) {
-        gap: 5.67px;
+      .sn-home-care-price product-price .price {
+        font-size: 24px;
+        font-weight: 600;
+        line-height: 40px;
       }
-    }
 
-    .sn-home-care-specs .icon-block__media {
-      @media screen and (max-width: 749px) {
-        width: 11px;
-        height: 11px;
-      }
-    }
-
-    .sn-home-care-price {
-      margin-block-start: 0;
-      padding-block-start: 6px;
-
-      @media screen and (max-width: 749px) {
-        padding-block-start: 3.4px;
-      }
-    }
-
-    .sn-home-care-price product-price .price {
-      font-size: 24px;
-      font-weight: 600;
-      line-height: 40px;
-
-      @media screen and (max-width: 749px) {
-        font-size: 13.61px;
-        line-height: 22.68px;
-      }
-    }
-
-    /* Filled button: the theme's primary button colours (Theme settings → Colors) */
-    .sn-home-care-cta .text-block--background {
-      border-color: transparent;
-      background-color: var(--color-primary-button-background, #176bb0);
-
-      &,
-      > * {
+      .sn-home-care-cta .text-block--background {
+        border-color: transparent;
+        background-color: var(--color-primary-button-background, #176bb0);
         color: var(--color-primary-button-text, #ffffff);
       }
+    }
+  }
 
-      @media screen and (max-width: 749px) {
-        padding: 7.37px 15.88px;
-        border-radius: 6.8px;
+  /* --- Active card: tablet + mobile (≤989) --------------------------------------------------------
+     Every slide reserves the ring space; the ring (::before), glow and filled button are switched on
+     for the card centred in the scroller. Nothing that affects layout changes, so the track never moves. */
+  --sn-care-ring: conic-gradient(
+    from 90deg,
+    #63cdff 0%,
+    #3999d4 17.5%,
+    #247ebe 26.25%,
+    #0f64a8 35%,
+    #87b2d4 45%,
+    #ffffff 55%,
+    #87b2d4 65%,
+    #0f64a8 75%,
+    #247ebe 81.25%,
+    #3999d4 87.5%,
+    #63cdff 100%
+  );
+  --sn-care-shadow: 0 12px 32px rgb(15 100 168 / 0.1), 0 0 0 rgb(99 204 255 / 0);
+  --sn-care-glow: 0 24px 48px rgb(15 100 168 / 0.18), 0 0 36px rgb(99 204 255 / 0.45);
+
+  @media screen and (max-width: 749px) {
+    --sn-care-shadow: 0 7.86px 20.96px rgb(15 100 168 / 0.1), 0 0 0 rgb(99 204 255 / 0);
+    --sn-care-glow: 0 13.61px 27.22px rgb(15 100 168 / 0.18), 0 0 20.42px rgb(99 204 255 / 0.45);
+  }
+
+  @media screen and (max-width: 989px) {
+    .carousel-content slideshow-slides > .card {
+      box-shadow: var(--sn-care-shadow);
+
+      &::before {
+        content: '';
+        position: absolute;
+        z-index: -1;
+        inset: 0;
+        border-radius: inherit;
+        background: var(--sn-care-ring);
+        opacity: 0;
+        pointer-events: none;
+      }
+    }
+  }
+}
+
+/* Browsers without scroll-driven animations (Firefox today): the "Featured card" keeps the look */
+@supports not (animation-timeline: view()) {
+  @media screen and (max-width: 989px) {
+    .sn-home-choose-care .carousel-content slideshow-slides > .card.sn-card-featured {
+      box-shadow: var(--sn-care-glow);
+
+      &::before {
+        opacity: 1;
+      }
+
+      .sn-home-care-cta .text-block--background {
+        border-color: transparent;
+        background-color: var(--color-primary-button-background, #176bb0);
+        color: var(--color-primary-button-text, #ffffff);
+      }
+    }
+  }
+}
+
+/* Active = centred: each slide's own view timeline in the scroller (50% = centred). The look is on
+   between 44% and 56% and off before 36% / after 64%, so at rest exactly one card (the snapped one) is
+   active, and the state always matches the real scroll position. */
+@keyframes sn-care-active-glow {
+  0%,
+  36%,
+  64%,
+  100% {
+    box-shadow: var(--sn-care-shadow);
+  }
+
+  44%,
+  56% {
+    box-shadow: var(--sn-care-glow);
+  }
+}
+
+@keyframes sn-care-active-ring {
+  0%,
+  36%,
+  64%,
+  100% {
+    opacity: 0;
+  }
+
+  44%,
+  56% {
+    opacity: 1;
+  }
+}
+
+@keyframes sn-care-active-button {
+  0%,
+  36%,
+  64%,
+  100% {
+    border-color: #60c1e1;
+    background-color: var(--text-background-color, #ffffff);
+    color: var(--color, #176bb0);
+  }
+
+  44%,
+  56% {
+    border-color: transparent;
+    background-color: var(--color-primary-button-background, #176bb0);
+    color: var(--color-primary-button-text, #ffffff);
+  }
+}
+
+@supports (animation-timeline: view()) {
+  @media screen and (max-width: 989px) {
+    .sn-home-choose-care .carousel-content slideshow-slides > .card {
+      view-timeline: --sn-care-card inline;
+      animation: sn-care-active-glow linear both;
+      animation-timeline: --sn-care-card;
+
+      &::before {
+        animation: sn-care-active-ring linear both;
+        animation-timeline: --sn-care-card;
+      }
+
+      .sn-home-care-cta .text-block--background {
+        animation: sn-care-active-button linear both;
+        animation-timeline: --sn-care-card;
       }
     }
   }
@@ -1766,8 +1850,9 @@
   background: linear-gradient(180deg, #f7fbfe 0%, #dcf2fb 100%);
 }
 
-/* Progress bar (tablet + mobile): a scroll-driven fill tied to the carousel's real scroll position
-   (no JavaScript). Browsers without scroll-driven animations show no bar rather than a fake one. */
+/* Progress bar (tablet + mobile): a scroll-driven fill tied to the same scroller as the active card,
+   so position, active card and bar always agree (no JavaScript). Browsers without scroll-driven
+   animations show no bar rather than a fake one. */
 @keyframes sn-care-progress {
   from {
     background-size: 0% 100%;
@@ -1850,20 +1935,17 @@
   color: #131311;
 }
 
-:where(.sn-home-choose-care .sn-card-featured .product-card__content > a > .text-block:not(.custom-typography)) :is(h3, h4, p) {
-  font-size: 32px;
-  line-height: 52px;
+@media screen and (min-width: 990px) {
+  :where(.sn-home-choose-care .sn-card-featured .product-card__content > a > .text-block:not(.custom-typography)) :is(h3, h4, p) {
+    font-size: 32px;
+    line-height: 52px;
+  }
 }
 
 @media screen and (max-width: 749px) {
   :where(.sn-home-choose-care .product-card__content > a > .text-block:not(.custom-typography)) :is(h3, h4, p) {
     font-size: 15.72px;
     line-height: 26.2px;
-  }
-
-  :where(.sn-home-choose-care .sn-card-featured .product-card__content > a > .text-block:not(.custom-typography)) :is(h3, h4, p) {
-    font-size: 18.15px;
-    line-height: 29.49px;
   }
 }
 
@@ -1888,7 +1970,7 @@
   color: #131311;
 }
 
-/* Featured badge + CTA labels */
+/* Product badge + CTA labels */
 :where(.sn-home-care-badge .text-block:not(.custom-typography)) p {
   font-size: 12px;
   font-weight: 600;

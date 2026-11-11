@@ -27,6 +27,7 @@
       --carousel-featured-width: {{ section.settings.featured_card_width }};
       --carousel-card-width-mobile: {{ section.settings.card_width_mobile }}px;
       --carousel-gap-mobile: {{ section.settings.columns_gap_mobile }}px;
+      --carousel-image-fit: {{ section.settings.image_fit | default: 'contain' }};
     {% endif %}
   "
   data-testid="carousel-section"
@@ -186,6 +187,24 @@
     {
       "type": "header",
       "content": "Card sizes (custom class)"
+    },
+    {
+      "type": "select",
+      "id": "image_fit",
+      "label": "Product image fit",
+      "info": "Read by the section's custom CSS class. Fit shows the whole product; Fill crops it to the image box.",
+      "options": [
+        {
+          "value": "contain",
+          "label": "Fit"
+        },
+        {
+          "value": "cover",
+          "label": "Fill"
+        }
+      ],
+      "default": "contain",
+      "visible_if": "{{ section.settings.custom_class != blank }}"
     },
     {
       "type": "range",
