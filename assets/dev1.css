@@ -1163,19 +1163,20 @@
   }
 
   /* Product image = the stage's own native image block (independent of the hero's background media).
-     Figma (190:3859 / 190:4173): a transparent PNG drawn 558px high on desktop (stage 520 high), centre
-     47.87% / 52.12%; 400px high on mobile (stage 330), centre 50% / 63.64%.
-     - Proportions = the image block's native "Aspect ratio" (Adapt = the uploaded file's own ratio, so no
-       crop and no letterbox; Square / Portrait / Landscape give that box). The box is sized by height and
-       its width follows the ratio, so any product cutout keeps the Figma product height.
-     - Scale = the image block's native Width (Fill = Figma size; Custom % scales it; mobile = Mobile width).
-     - `contain`, never `cover`: a cutout is never cropped or stretched. */
+     Figma "Product Image" layer (190:3859 / 190:4173) = what exporting the product from Figma gives:
+     desktop 438 × 438 at stage (141, 22) → centre 47.87% / 46.35% of the 752 × 520 stage;
+     mobile 280 × 280 at (55, 40) → centre 50% / 54.55% of the 390 × 330 stage.
+     - Width = the image block's native Width (desktop) / Mobile width, literally the image's width as a %
+       of the stage. S06: Custom 58% (≈ 438px) / 72% (≈ 281px). Fill = full stage width.
+     - Height follows the native Aspect ratio (Adapt = the file's own proportions: no crop, no empty box).
+     - Centred on the Figma product centre; `contain`, never `cover`, so a cutout is never cropped or
+       stretched. The whole stage (with circle and watermark) moves with the hero's stage position settings. */
   .image-block {
     position: absolute;
     left: 47.87%;
-    top: 52.12%;
-    block-size: calc(var(--size-style-width, 100%) * 1.0731);
-    inline-size: auto;
+    top: 46.35%;
+    inline-size: var(--size-style-width, 58.24%);
+    block-size: auto;
     max-inline-size: none;
     aspect-ratio: var(--ratio, 1);
     margin: 0;
@@ -1184,8 +1185,8 @@
 
     @media screen and (max-width: 989px) {
       left: 50%;
-      top: 63.64%;
-      block-size: calc(var(--size-style-width-mobile, 100%) * 1.2121);
+      top: 54.55%;
+      inline-size: var(--size-style-width-mobile, 71.79%);
     }
   }
 

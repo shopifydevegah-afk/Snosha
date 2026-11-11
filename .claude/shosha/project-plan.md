@@ -402,6 +402,26 @@ Not changed: `sections/section.liquid`, `snippets/section.liquid`, `snippets/gro
   - Aspect ratio Adapt vs Square.
   - Decoration blocks on/off.
 
+**Product image size fix (2026-11-11, Dev1), after the merchant uploaded the product (`ce3a9d78…png`)**
+- **Figma rechecked:** `190:3859` / `190:4173`, plus the Figma product PNGs measured (scratch only).
+  - Desktop: the "Product Image" layer is 438×438 at stage (141, 22); its image fill is a 558 square (2x file 1116²) at (81, -8). The visible flosser is about 114×476 inside it, clipped at the bottom by the 438 circle layer (visible to about y 458 of 520).
+  - Mobile: layer 280×280 at (55, 40); fill 400 square (2x 800²) at (-5, 10); flosser about 83×312.
+- **Root cause:**
+  - The CSS sized the box as Figma's internal 558 / 400 image-fill square (box height = 107% / 121% of the stage), not the 438 / 280 product layer a merchant exports.
+  - Any file other than that exact padded fill rendered too big. For example, a 438 layer export renders 27% too large; a tight cutout ends up 558px tall and runs past the bottom.
+  - The native Width setting was used as a hidden multiplier of that height, so the editor controls didn't behave like widths.
+- **Fix (CSS + native settings, no new settings):**
+  - Box = the Figma product layer, centred at 47.87% / 46.35% (desktop) and 50% / 54.55% (mobile).
+  - Width = the image block's native **Width** / **Mobile width**, literally % of the stage. S06: Custom 58% (≈ 438px) and 72% (≈ 281px).
+  - Height = native Aspect ratio (Adapt = the file's proportions).
+  - `object-fit: contain`.
+  - Stage geometry is unchanged (752×520 / 390×330 = Figma).
+- **Not added:** a separate product-only vertical offset. The hero's "Product stage … position" settings move the product together with the circle and watermark (keeps the Figma relationship), and the image block has no room for a meaningful native offset. The hero is at 40 settings.
+- **If the uploaded file is not a 438-layer export:** a tight cutout needs about 15% (desktop) / 21% (mobile); Figma's padded fill image needs about 74% / 100%.
+- **Files:** `assets/dev1.css` (S06 product image rule), `templates/index.json` (product image Width / Mobile width only; the uploaded image is kept).
+- **Static checks:** Theme Check 9 = baseline; 27 S06 blocks, 0 invalid settings; CSS braces balanced.
+- **PENDING USER REVIEW:** product size and position vs Figma at 1480 and 390; tune Width / Mobile width if the uploaded file's padding differs from the Figma layer export.
+
 ## F. QA & progress
 
 | ID | Figma analysis | Code checks | Visual desktop | Visual mobile | RTL | Media | Reversibility | Pending issues |
@@ -448,3 +468,4 @@ Give a section its own row here when its work starts, and keep the S01–S15 row
 | 2026-11-09 | S03 mobile Trust card width fixed by Dev1: `auto` width in the centred section column made the card shrink-to-fit; now explicit width from new "Trust card width — Mobile" (346, capped at screen − 16) with Figma 24/20 gutters | Merchant mobile screenshot: card narrow, text wrapping | S03; `section` (38), `dev1.css`, `index.json` | User-owned visual QA (PENDING USER REVIEW) |
 | 2026-11-11 | S06 F1 Banner implemented by Dev1 on the native `hero` (category C, no schema change): content/stage/decoration groups + text/image/icon/button blocks; decorations as hideable blocks drawn with exact Figma SVG shapes in `dev1.css`; inserted after `sn_home_trust` | Figma `190:3851` / `190:4167`; native-first audit (hero > section > media-with-content) | S06; `dev1.css` (appended), `index.json` | User-owned visual QA; merchant media; S04/S05 to be inserted before S06 |
 | 2026-11-11 | S06 audit by Dev1: confirmed native `hero` (no custom files; the "F1 Banner" instance name removed); product image box now follows the image block's native Aspect ratio + Width (height-led, contain), sample t-shirt placeholder replaced by an editor-only dashed slot and hidden on the storefront; background = hero Media (+ mobile) | Merchant: placeholder, image behaviour, apparent custom section | S06; `dev1.css`, `index.json` | User-owned visual QA |
+| 2026-11-11 | S06 product image size fixed by Dev1: box = Figma product layer (438 / 280) instead of the internal 558 / 400 fill square; native image Width / Mobile width now literally % of the stage (S06 58% / 72%), height from Aspect ratio, contain | Merchant: uploaded product rendered at the wrong scale | S06; `dev1.css`, `index.json` | User-owned visual QA |
