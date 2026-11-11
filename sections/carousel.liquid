@@ -15,19 +15,42 @@
     section--{{ section.settings.section_width }}
     {% if section.settings.background_color != blank %}color-custom-{{ section.id }}{% endif %}
     section-carousel
+    {% if section.settings.mobile_centered %}section-carousel--mobile-centered{% endif %}
     spacing-style
     gap-style
+    {%- render 'custom-class', value: section.settings.custom_class %}
   "
   style="
     {% render 'spacing-style', settings: section.settings %}
     {% render 'gap-style', value: 12 %}
+    {% if section.settings.mobile_centered %}--carousel-mobile-card-width: {{ section.settings.mobile_card_width }}px;{% endif %}
   "
   data-testid="carousel-section"
 >
   {% content_for 'block', type: 'group', id: 'static-header' %}
 
   {% content_for 'block', type: '_carousel-content', id: 'static-carousel-content', closest.product: null %}
+
+  {%- comment -%} Opt-in progress bar; it hides itself while the carousel does not overflow. {%- endcomment -%}
+  {%- if section.settings.show_scroll_progress -%}
+    {% render 'scroll-progress', target: '.carousel-content slideshow-slides' %}
+  {%- endif -%}
 </div>
+
+{% stylesheet %}
+  /* Opt-in: fixed-width cards centered on mobile, neighbours visible on both sides */
+  @media screen and (max-width: 749px) {
+    .section-carousel--mobile-centered .carousel-content slideshow-slides {
+      padding-inline: max(0px, calc((100% - var(--carousel-mobile-card-width)) / 2));
+      scroll-padding-inline: 0;
+    }
+
+    .section-carousel--mobile-centered .carousel-content slideshow-slides > .card {
+      width: min(var(--carousel-mobile-card-width), 100%);
+      scroll-snap-align: center;
+    }
+  }
+{% endstylesheet %}
 
 {% schema %}
 {
@@ -60,6 +83,24 @@
         }
       ],
       "default": "1"
+    },
+    {
+      "type": "checkbox",
+      "id": "mobile_centered",
+      "label": "Center cards on mobile",
+      "info": "Fixed-width cards that snap to the center, with the next and previous cards partly visible.",
+      "default": false
+    },
+    {
+      "type": "range",
+      "id": "mobile_card_width",
+      "label": "Mobile card width",
+      "min": 200,
+      "max": 360,
+      "step": 2,
+      "unit": "px",
+      "default": 290,
+      "visible_if": "{{ section.settings.mobile_centered }}"
     },
     {
       "type": "select",
@@ -147,6 +188,13 @@
       "visible_if": "{{ section.settings.icons_style != 'none' }}"
     },
     {
+      "type": "checkbox",
+      "id": "show_scroll_progress",
+      "label": "Show scroll progress bar",
+      "info": "Shows a bar under the carousel that follows the scroll position, only when the cards do not all fit.",
+      "default": false
+    },
+    {
       "type": "header",
       "content": "t:content.padding"
     },
@@ -169,6 +217,16 @@
       "step": 1,
       "unit": "px",
       "default": 0
+    },
+    {
+      "type": "header",
+      "content": "Advanced"
+    },
+    {
+      "type": "text",
+      "id": "custom_class",
+      "label": "Custom CSS class",
+      "info": "Lowercase letters, numbers and hyphens, starting with a letter. Separate multiple classes with spaces."
     }
   ],
   "presets": [

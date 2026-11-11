@@ -315,3 +315,159 @@
     }
   }
 }
+
+/* ==========================================================================
+   sn-home-reels — S09 Reels (owner: Dev3). Native `carousel` section on index.
+   Figma desktop 190:3935, mobile 190:4254.
+   Each Reel is a native card block: video block (poster, ratio, play button are block settings)
+   + product-card block (product picker; title, price and thumbnail come from the product).
+   Part class (text block): -soon = "coming soon" label from custom.coming_soon_label.
+   Card count, columns, gaps, mobile card width, progress bar are section settings.
+   ========================================================================== */
+.sn-home-reels {
+  /* Figma colors with no Horizon token */
+  --sn-rl-ink: #12568d; /* Figma color/state-hover: heading, product title */
+  --sn-rl-link: #176bb0; /* Figma brand-secondary: price, label */
+  --sn-rl-thumb-bg: #f0fafe; /* Figma thumbnail fill */
+  --sn-rl-thumb-size: 43px;
+
+  /* ---------- Container: Figma content 1336 = 1376 container − 2 × 20 ---------- */
+  &.section {
+    row-gap: 24px; /* Figma heading → carousel */
+
+    @media screen and (min-width: 750px) {
+      --page-content-width: 83.5rem;
+      --page-width: calc(var(--page-content-width) + var(--page-margin) * 2);
+      --peek-next-slide-size: 0px; /* Figma: 5 full cards (248px), no peek */
+    }
+
+    /* Figma mobile: padding 48.5 / 40, 24px gutters, gap 23 (carousel → progress) */
+    @media screen and (max-width: 749px) {
+      --page-margin: 24px;
+
+      row-gap: 23px;
+      padding-block: calc(48.5px + var(--section-top-offset, 0px)) 40px;
+    }
+  }
+
+  /* ---------- Heading ---------- */
+  .group-block h2 {
+    margin: 0;
+    font-size: 32px;
+    line-height: 52px;
+    font-weight: 600;
+    color: var(--sn-rl-ink);
+
+    @media screen and (max-width: 749px) {
+      font-size: 24px;
+      line-height: 38px;
+    }
+  }
+
+  @media screen and (max-width: 749px) {
+    /* Figma Section Head bottom padding 20.5 (+ 23 gap = 43.5 heading → carousel) */
+    &.section > .group-block:first-child {
+      margin-block-end: 20.5px;
+    }
+  }
+
+  /* ---------- Reel card: transparent, video then product row ---------- */
+  .card {
+    background: transparent;
+  }
+
+  /* Poster + video fill the 9:16 frame (ratio, radius, play button are video-block settings) */
+  deferred-media {
+    display: block;
+  }
+
+  /* ---------- Product row (product-card block) ---------- */
+  .product-card__content {
+    background: transparent;
+  }
+
+  /* Thumbnail: the selected product's featured image */
+  .product-card .image-block {
+    flex: 0 0 var(--sn-rl-thumb-size);
+    inline-size: var(--sn-rl-thumb-size);
+    block-size: var(--sn-rl-thumb-size);
+    background: var(--sn-rl-thumb-bg);
+    border-radius: 6px;
+
+    img,
+    .placeholder-image {
+      inline-size: 100%;
+      block-size: 100%;
+      aspect-ratio: 1;
+      object-fit: cover;
+    }
+  }
+
+  /* Title: Figma Body Small, one line with ellipsis on desktop, wraps on mobile */
+  a[ref='productTitleLink'] :is(.text-block, p) {
+    margin: 0;
+    font-size: 14px;
+    line-height: 24px;
+    font-weight: 400;
+    color: var(--sn-rl-ink);
+  }
+
+  @media screen and (min-width: 750px) {
+    a[ref='productTitleLink'] p {
+      overflow: hidden;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+    }
+  }
+
+  @media screen and (max-width: 749px) {
+    a[ref='productTitleLink'] p {
+      display: -webkit-box;
+      -webkit-box-orient: vertical;
+      -webkit-line-clamp: 2;
+      overflow: hidden;
+    }
+  }
+
+  /* Price: Figma Bold 14/24 */
+  [ref='priceContainer'] {
+    .price {
+      font-size: 14px;
+      line-height: 24px;
+      font-weight: 700;
+      color: var(--sn-rl-link);
+    }
+
+    .compare-at-price {
+      font-size: 12px;
+      line-height: 24px;
+      font-weight: 400;
+      text-decoration: line-through;
+    }
+  }
+
+  /* "Coming soon" label (text block linked to the product metafield; renders only when filled).
+     When present it replaces the price, as in the Figma mobile reel. */
+  .sn-home-reels-soon {
+    font-size: 14px;
+    line-height: 24px;
+    font-weight: 700;
+    color: var(--sn-rl-link);
+
+    * {
+      margin: 0;
+      font: inherit;
+      color: inherit;
+    }
+  }
+
+  .product-card:has(.sn-home-reels-soon) product-price {
+    display: none;
+  }
+
+  /* ---------- Progress bar (native scroll-progress, section setting) ---------- */
+  scroll-progress {
+    --scroll-progress-track: #dcf2fb; /* Figma Progress */
+    --scroll-progress-thumb: linear-gradient(to right, #63cdff, #0f64a8); /* Figma Progress Fill */
+  }
+}

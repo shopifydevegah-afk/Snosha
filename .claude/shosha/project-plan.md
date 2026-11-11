@@ -14,7 +14,7 @@
 | Mobile homepage | `190:4082`, https://www.figma.com/design/1fqyznLFgS65tTjGvBYPBm/Snosha?node-id=190-4082 (390px wide) |
 | Environment | Claude Code in the theme repo. Shopify CLI 4.9.4 (`shopify theme dev` for preview). Git; no auto commit/push/deploy |
 | Delivery | Incremental: one section at a time, after the user's request with its nodes |
-| Current homepage state | `index.json` order: `product_list_fa6P9H` (S05, enabled since 2026-11-08) → `product_list_Rxv4hg` (S07 Bundles, added 2026-11-11). Other homepage sections not built yet |
+| Current homepage state | `index.json` order: `product_list_fa6P9H` (S05, enabled since 2026-11-08) → `product_list_Rxv4hg` (S07 Bundles, added 2026-11-11) → `carousel_sn9Rls` (S09 Reels, added 2026-11-11). Other homepage sections not built yet |
 
 ## B. Global architecture decisions
 
@@ -39,9 +39,9 @@ Each one is decided; the details are in the referenced Skill file.
 | Main | `assets/main.css` | Initialized 2026-11-08 (loaded once after `custom-cairo.css`) | none assigned explicitly yet |
 | Dev1 | `assets/dev1.css` | Not initialized | — |
 | Dev2 | `assets/dev2.css` | Not initialized | — |
-| Dev3 | `assets/dev3.css` | Initialized 2026-11-08 (loaded once in `layout/theme.liquid`, right after `main.css`) | S05, S07 |
+| Dev3 | `assets/dev3.css` | Initialized 2026-11-08 (loaded once in `layout/theme.liquid`, right after `main.css`) | S05, S07, S09 |
 
-**Custom classes owned:** `sn-home-bestsellers` (+ part classes `sn-home-bestsellers-desc`, `-cta` on `text` blocks; `-badge` retired 2026-11-09) — Dev3, S05 + S07. Modifier `sn-home-bundles` (S07 mobile section spacing) — Dev3, 2026-11-11.
+**Custom classes owned:** `sn-home-bestsellers` (+ part classes `sn-home-bestsellers-desc`, `-cta` on `text` blocks; `-badge` retired 2026-11-09) — Dev3, S05 + S07. Modifier `sn-home-bundles` (S07 mobile section spacing) — Dev3, 2026-11-11. `sn-home-reels` (+ part class `sn-home-reels-soon` on a `text` block) — Dev3, S09, 2026-11-11.
 **Shared-file claims (active):** none.
 
 ## D. Section registry
@@ -58,7 +58,7 @@ Logical areas from the Figma homepage, in Figma order. A row isn't necessarily o
 | S06 | F1 Banner | `190:3851` | `190:4167` | index.json | — | NOT_STARTED | — | — | — | — |
 | S07 | Featured Collection 2 / Bundles | `190:3896` (container `351:4546`) | `190:4204` | index.json | Dev3 | IMPLEMENTED (2026-11-11; visual QA PENDING USER REVIEW) | A + modifier class | `product-list` (`product_list_Rxv4hg`) | `sn-home-bestsellers sn-home-bundles` | Collection left for the merchant. Same components as S05 |
 | S08 | Before / After | `190:3903` | `190:4222` | index.json | — | NOT_STARTED | — | — | — | — |
-| S09 | Reels | `190:3935` | `190:4254` | index.json | — | NOT_STARTED | — | — | — | — |
+| S09 | Reels | `190:3935` | `190:4254` | index.json | Dev3 | IMPLEMENTED (2026-11-11; visual QA PENDING USER REVIEW) | B + C (opt-in) | `carousel` (`carousel_sn9Rls`) + `_card` / `video` / `product-card` blocks | `sn-home-reels` | Merchant uploads videos and selects products; optional metafield `custom.coming_soon_label` |
 | S10 | Choose Your Care | `190:3943` | `190:4265` | index.json | — | NOT_STARTED | — | — | — | — |
 | S11 | Bundle | `190:3987` | `190:4318` | index.json | — | NOT_STARTED | — | — | — | — |
 | S12 | Blog | `190:4018` | `190:4349` | index.json | — | NOT_STARTED | — | — | — | — |
@@ -526,11 +526,109 @@ Verified in code and docs on 2026-11-08 before deciding:
   - Mobile at 390: 56 / 40 padding, 11 gaps, progress and View All positions (total ≈ 545 with View All shown).
   - S05 unchanged; empty-collection placeholders in the editor.
 
+### S09 Reels — IMPLEMENTED 2026-11-11 (Dev3), visual QA PENDING USER REVIEW
+
+- **Figma read (2026-11-11, `get_metadata` + `get_design_context` with screenshots, both nodes accessible):**
+  - **Desktop `190:3935` "12 Reels"** (1480 × 719):
+    - Padding 60 / 60. Container `354:4625` 1376 wide at x 52, inline padding 20 → content 1336, column gap 24.
+    - Heading `360:7397` "اكتشف عالم SNOSHA": Cairo SemiBold 32/52 (Desktop/H2), `#12568d`, centered.
+    - Carousel `190:3937` 1336 × 523: 5 Reel Cards (`190:3938–3942`), 248 × 523 each, gap 24.
+    - Card: column, gap 12. Video 248 × 440 (≈ 9:16), radius 18, poster cover-cropped.
+    - Play button: 52 × 52, `#176bb0` (brand-secondary), radius 26, white play vector 24 inside a 22 frame, centered.
+    - Product row `…;190:2978`: padding 10, gap 14, items centered. Thumbnail 43 × 43, radius 6, border 1px `rgba(220,242,251,.4)`, fill `#f0fafe`; it sits on the right (inline-start in RTL).
+    - Info column gap 3: title Regular 14/24 `#12568d`, one line with ellipsis on desktop; price Bold 14/24 `#176bb0` ("EGP 1,299" is sample data).
+  - **Mobile `190:4254`** (390 × 820):
+    - Padding 48.5 top / 40 bottom; container column gap 23.
+    - Head `190:4255`: inline padding 24, bottom padding 20.5 → heading 24/38 (Mobile/H2), centered.
+    - Carousel `190:4257`: inline padding 24; track `398:4817` with 5 cards 290 × 623, gap 12.
+    - The third card is centered (x 50–340), with 38px of each neighbor visible.
+    - Video 290 × 516 (≈ 9:16), radius 18. Same play button and product row; the title wraps onto 2 lines.
+    - Progress `190:4263` 342 × 4, `#dcf2fb`, radius 99. Fill `190:4264` is 68 wide at the inline-start (right), gradient `#63cdff → #0f64a8`.
+  - "قريبًا" on mobile cards 1 and 3 replaces the price → treated as a product-level state, not a fixed label.
+- **Native Reuse Audit:**
+  - Inspected:
+    - Sections: `carousel`, `product-list`, `slideshow`, `hero`, `media-with-content`, `section`.
+    - Blocks: `_carousel-content`, `_card`, `video`, `product-card`, `_product-card-group`, `product-title`, `price`, `image`, `text`, `group`.
+    - Snippets: `video`, `slideshow`, `slideshow-styles`, `scroll-progress`, `product-card`, `deferred-media-video-styles`, `video-placeholder-styles`.
+    - JS: `media.js` (`DeferredMedia`), `slideshow.js`, `scroll-progress.js`.
+  - **Match: native `carousel` section** (`sections/carousel.liquid`, schema name `t:names.carousel`, presets kept).
+    - Static `group` header plus static `_carousel-content`, which renders the native `slideshow` (RTL, swipe, Theme Editor re-render).
+    - Repeatable `_card` blocks, one card = one Reel: add, remove, reorder and duplicate natively.
+    - `_card` accepts `video` and `product-card`.
+  - **Video:** the native `video` block → `snippets/video.liquid` → `<deferred-media>`. The poster is a real `<button>` with a localized aria-label. The video loads only on click (from a `<template>`) and plays muted with native controls (no autoplay with sound). The `mediaStartedPlaying` event pauses every other `deferred-media`, so only one Reel plays at a time. YouTube/Vimeo `video_url` is kept.
+  - **Product:** the native `product-card` theme block has a product picker. Its whole content is a link to `product.url` (`product-card__link`, aria-label = title). Children use `closest.product`: `product-title`, `price` (real variant price), and an `image` block bound to `{{ closest.product.featured_image }}` (dynamic source).
+  - **Progress:** the reusable `scroll-progress` from S05 (target `.carousel-content slideshow-slides`). It is RTL-safe, follows resizes and editor re-renders, and hides itself when there is no overflow.
+  - **Gaps:**
+    - Uploaded videos had no custom poster or crop ratio (only the file's ratio and preview image).
+    - No play-button styling.
+    - No centered fixed-width mobile card.
+    - No progress-bar option on `carousel`.
+    - No `custom_class`.
+    - An empty `product-card` renders placeholder data on the storefront.
+    - Reels do not pause when scrolled off-screen. This is not supported by the slideshow; only the "one plays at a time" rule exists natively.
+  - **Category B + C** (opt-in schema extensions + native composition). No new section; A–D are sufficient, E not needed.
+- **Schema extensions (all opt-in; defaults = native output):**
+  - `sections/carousel.liquid` (9 → 13 settings):
+    - `mobile_centered` + `mobile_card_width` (200–360, default 290): fixed-width cards that snap to the center on mobile. Scroller padding `(100% − width) / 2`, so the first card starts centered with its neighbor visible.
+    - `show_scroll_progress`: renders `scroll-progress`.
+    - `custom_class`, rendered with `custom-class.liquid`.
+    - New `{% stylesheet %}` for the centered mode.
+  - `blocks/video.liquid` (19 → 28 settings):
+    - `uploaded_poster` (image_picker; falls back to the video's own preview image).
+    - `uploaded_aspect_ratio` (video / 9:16 / 4:5 / 1:1 / 16:9; the poster button follows it).
+    - Play button: `play_button_style` (default/custom), `play_button_size`, `play_button_icon_size`, `play_button_radius`, `play_button_background`, `play_button_icon_color`, `play_button_icon_image` (custom icon, native `icon-play.svg` fallback).
+    - `snippets/video.liquid` (3 callers) is untouched.
+    - Poster position = the image's focal point (Shopify Files), which `image_tag` outputs natively.
+  - `blocks/product-card.liquid` (16 → 17 settings): `hide_when_empty`. On the storefront it renders nothing while no product is selected; the editor keeps the placeholder.
+  - No template has an existing `video` block. `carousel` and `product-card` had no instances. Existing behavior is unchanged.
+- **Instance `carousel_sn9Rls`** (`index.json`, after S07; Figma order S07 → S08 → S09, S08 not built):
+  - Section:
+    - `columns` 5, `columns_gap` 24, `mobile_columns` 1, `mobile_centered` true / 290, `section_width` page-width.
+    - `icons_style` none (Figma has no arrows), `show_scroll_progress` true, padding 60 / 60, `custom_class: sn-home-reels`.
+  - Header `static-header` (group, column, centered, gap 0, padding 0) → `text_sn9Head` `<h2>اكتشف عالم SNOSHA</h2>`.
+  - 5 Reel cards (`card_r9Ka1Q`, `card_r9Lb2W`, `card_r9Mc3E`, `card_r9Nd4R`, `card_r9Oe5T`). Each card: column, gap 12, padding 0, containing:
+    - `video_<id>`: uploaded, **no video** (merchant uploads), no poster, ratio 9:16, radius 18, loop. Custom play button 52 / icon 24 / radius 26 / `#176bb0` / `#ffffff`.
+    - `product_card_<id>`: **no product** (merchant selects), `hide_when_empty` true, gap 0, containing:
+      - `group_info_<id>` (row, gap 14, padding 10):
+        - `image_thumb_<id>`: `{{ closest.product.featured_image }}`, square, 1px `#dcf2fb` at 40%, radius 6.
+        - `group_text_<id>` (column, gap 3): `product_title_<id>`, `price_<id>` (discount badge off) and `text_soon_<id>` (`{{ closest.product.metafields.custom.coming_soon_label }}`, part class `sn-home-reels-soon`).
+  - Nothing is hardcoded: no video files, posters, titles or prices. Empty slots show native placeholders in the editor.
+- **Coming soon:** proposed product metafield **`custom.coming_soon_label`** (single line text, e.g. "قريبًا").
+  - When filled, the label shows and the price is hidden (class CSS `.product-card:has(.sn-home-reels-soon) product-price`). When empty, the real price shows.
+  - Sold-out products keep their native price (not treated as coming soon).
+  - The merchant creates the definition (Settings → Custom data → Products) to pick it in the editor. No product records changed.
+- **CSS (`assets/dev3.css`, `.sn-home-reels`, collision check: no matches):**
+  - Container 1336 and desktop `--peek-next-slide-size: 0` → 5 × 248 cards.
+  - Gaps: 24 desktop; mobile 23 + 20.5 under the heading.
+  - Mobile: padding 48.5 / 40, gutters 24.
+  - Heading 32/52 → 24/38. Title 14/24 (one-line ellipsis desktop, 2-line clamp mobile). Price Bold 14/24 `#176bb0`.
+  - Thumbnail 43 / `#f0fafe`; progress colors.
+  - Removing the class gives the native carousel look; playback, product links and the opt-in settings keep working.
+- **Behaviour notes:**
+  - Mobile starts with the first Reel centered (RTL start). Figma shows card 3 of 5 centered as an illustration; no initial-slide setting was added.
+  - Desktop shows a progress bar only if there are more Reels than columns.
+- **Files:** `sections/carousel.liquid`, `blocks/video.liquid`, `blocks/product-card.liquid`, `assets/dev3.css`, `templates/index.json` (additions + one comma in `order`).
+- **Static validation:**
+  - Theme Check = 9 baseline offenses (no new ones).
+  - `index.json` parses (round-trip identical before the edit). Order `[product_list_fa6P9H, product_list_Rxv4hg, carousel_sn9Rls]`.
+  - Every setting key exists in its schema; every child block type is allowed by its parent; all `block_order` refs resolve; no duplicate block IDs.
+  - `dev3.css` braces balanced, CRLF kept. No JS changed.
+- **Merchant to do:**
+  - Upload each Reel's video (and an optional poster) and select its product.
+  - Create the `custom.coming_soon_label` definition if needed.
+  - Delete or add Reel cards as needed.
+- **Visual QA — PENDING USER REVIEW:**
+  - Desktop 1480: 5 × 248 cards, 440 video, 24 gaps, centered heading.
+  - Mobile 390: 290 × 516 centered card with neighbors visible, swipe and snap in RTL, progress 342 × 4 following the scroll.
+  - Play button, playback, and pausing when another Reel starts. Product row (thumbnail on the right, title, price or "قريبًا").
+  - Empty product hides the row on the storefront. Two-state test (class off).
+
 ## F. QA & progress
 
 | ID | Figma analysis | Code checks | Visual desktop | Visual mobile | RTL | Media | Reversibility | Pending issues |
 |---|---|---|---|---|---|---|---|---|
 | S05 | PASS (2026-11-08, both nodes read; re-checked unchanged at implementation) | PASS (local only: Theme Check = 9 baseline, schemas/JSON parse, `node --check`, dev3.css tag once) | PENDING USER REVIEW | PENDING USER REVIEW | PENDING USER REVIEW | By design product media only (no pickers); render PENDING USER REVIEW | PENDING USER REVIEW (two-state test) | Visual QA is user-owned (skill hard rule 13). User checklist: E › S05 › Implementation "QA to run" + Fidelity corrections "Visual QA". The local fixture test of 2026-11-08 is not counted as QA evidence. 2026-11-09 fidelity pass and final alignment pass: static checks PASS (Theme Check 9 baseline) |
+| S09 | PASS (2026-11-11, both nodes read) | PASS (local only: Theme Check = 9 baseline, schemas/template validated, CSS braces) | PENDING USER REVIEW | PENDING USER REVIEW | PENDING USER REVIEW | Video/poster/product pickers in the editor; render PENDING USER REVIEW | PENDING USER REVIEW (two-state test) | Checklist: E › S09 › Visual QA |
 | S01–S04, S06–S15 | — | — | — | — | — | — | — | Only project-level mapping done; no section-level analysis yet |
 
 Give a section its own row here when its work starts, and keep the S01–S15 row only for sections that haven't started.
@@ -566,4 +664,5 @@ Give a section its own row here when its work starts, and keep the S01–S15 row
 | 2026-11-09 | S05 final visual alignment by Dev3: discount badge inline (root cause `.text-block > *` width 100%), CTA arrow before the text (user request), mobile badge/description/price/card spacing via new opt-in settings on `price`, `text`, `_product-card`, `_product-card-group` | User request + Figma re-read | S05; shared opt-in blocks | Visual QA by the user |
 | 2026-11-09 | S05 mobile switched to exact Figma type sizes (supersedes R3, user decision). Discount badge color/size bug fixed (base.css `.text-block.h6 > *` outranked the badge rules). Shared `text-responsive-style` snippet; mobile size settings on `product-title`, `review`, `icon` | User request + Figma re-read | S05; shared opt-in blocks | Visual QA by the user, incl. the color picker |
 | 2026-11-11 | S07 Bundles implemented by Dev3 as a second native `product-list` instance (`product_list_Rxv4hg`) cloned from S05 with new IDs; collection left for the merchant; mobile spacing via modifier `sn-home-bundles` (S05 values moved to CSS variables, unchanged) | User request + Figma `351:4546` / `190:4204` | S07; `dev3.css` shared rule set | Merchant selects the Bundles collection; visual QA by the user |
+| 2026-11-11 | S09 Reels implemented by Dev3 with the native `carousel` section (`carousel_sn9Rls`): one `_card` per Reel holding a `video` block and a `product-card` block (title, price, featured-image thumbnail from the product). Opt-in extensions: carousel `mobile_centered`/`mobile_card_width`/`show_scroll_progress`/`custom_class`; video `uploaded_poster`/`uploaded_aspect_ratio`/play-button settings; product-card `hide_when_empty`. Reuses `scroll-progress` | User request + Figma `190:3935` / `190:4254` | S09; shared opt-in: `carousel`, `video`, `product-card` | Merchant uploads videos and selects products; optional `custom.coming_soon_label` definition; visual QA by the user |
 | 2026-11-09 | Process correction: during S05 Dev3 ran CLI store commands (`theme list`, scratchpad-only `theme pull`, a failed `theme dev`), inspected other sessions' processes, and ran a local headless fixture. This is against skill hard rule 13 (`.agents/skills/…/SKILL.md`). No files were uploaded and no other session was touched | User instruction | All Dev3 work | Local, non-server code checks only from now on; visual QA = PENDING USER REVIEW |
