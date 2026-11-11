@@ -1345,21 +1345,15 @@
   --page-content-width: 1376px;
   --page-width: calc(var(--page-content-width) + var(--page-margin) * 2);
 
-  /* Grid items may never force the section wider than the screen (RTL overflow showed as a strip of
-     page background beside the section). */
-  min-width: 0;
-  max-width: 100%;
-
-  > * {
-    min-width: 0;
-  }
-
   /* Heading → cards: Figma 56 desktop / 22 mobile */
+  /* Row gap only, like native `.section-carousel { row-gap }`. The section is a 3-column grid
+     (margin | content | margin); a `gap` shorthand would add two column gaps, make the grid wider than
+     the screen on mobile (content column = 100% − 2 margins) and push everything sideways (left in RTL). */
   &.gap-style {
-    gap: 56px;
+    row-gap: 56px;
 
     @media screen and (max-width: 749px) {
-      gap: 22px;
+      row-gap: 22px;
     }
   }
 
@@ -1824,11 +1818,6 @@
       background-position: right center;
     }
   }
-}
-
-/* S10 only: the carousel is a full-width track inside the section; nothing in it may widen the page */
-.shopify-section:has(> .sn-home-choose-care) {
-  overflow-x: clip;
 }
 
 /* Section background: Figma pale-blue gradient while the section has no Background colour */
