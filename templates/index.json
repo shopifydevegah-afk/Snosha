@@ -1311,36 +1311,39 @@
         "component_sn_1": {
           "type": "component",
           "settings": {
+            "product": "snosha-n2-1",
             "quantity": 1,
-            "subtitle": "",
+            "subtitle": "فرشاة أسنان كهربائية بتقنية Sonic",
             "show_hotspot": true,
-            "x_position": 78,
+            "x_position": 77,
             "y_position": 68,
-            "x_position_mobile": 80,
+            "x_position_mobile": 79,
             "y_position_mobile": 71
           }
         },
         "component_sn_2": {
           "type": "component",
           "settings": {
+            "product": "snosha-f1",
             "quantity": 1,
-            "subtitle": "",
+            "subtitle": "جهاز تنظيف الأسنان بالماء",
             "show_hotspot": true,
-            "x_position": 51,
+            "x_position": 53,
             "y_position": 54,
-            "x_position_mobile": 53,
+            "x_position_mobile": 55,
             "y_position_mobile": 57
           }
         },
         "component_sn_3": {
           "type": "component",
           "settings": {
+            "product": "فرشاة-الأطفال",
             "quantity": 1,
-            "subtitle": "",
+            "subtitle": "فرشاة أسنان كهربائية للأطفال",
             "show_hotspot": true,
-            "x_position": 23,
-            "y_position": 65,
-            "x_position_mobile": 25,
+            "x_position": 28,
+            "y_position": 64,
+            "x_position_mobile": 30,
             "y_position_mobile": 68
           }
         }
@@ -1351,9 +1354,12 @@
         "component_sn_3"
       ],
       "settings": {
-        "image_ratio": 75,
-        "image_ratio_mobile": 75,
-        "image_radius": 0,
+        "bundle_product": "bundle-product",
+        "image": "shopify://shop_images/9ab7e4a9248013fb43c20e0c00a40bda40077a0d.png",
+        "image_mobile": "shopify://shop_images/9ab7e4a9248013fb43c20e0c00a40bda40077a0d_1.png",
+        "image_ratio": 71,
+        "image_ratio_mobile": 70,
+        "image_radius": 16,
         "heading": "باقات العناية المناسبة لروتينك",
         "description": "كمّل روتينك في باقة واحدة بسعر أفضل، اختيارات متكاملة للعناية اليومية.",
         "heading_size": 32,
@@ -1376,7 +1382,7 @@
         "border_color": "#dcf2fb",
         "brand_color": "#176bb0",
         "hotspot_ring_color": "#60c1e1",
-        "hotspot_size": 32,
+        "hotspot_size": 28,
         "content_max_width": 1340,
         "media_width": 50,
         "column_gap": 56,

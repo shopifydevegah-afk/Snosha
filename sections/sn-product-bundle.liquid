@@ -30,9 +30,13 @@
     assign count = count | plus: 1
   endfor
 
+  # Pricing. The bundle variant's own price is what Shopify charges. A comparison ("was") price and a
+  # saving % are shown only when both prices are real and the bundle price is above 0 and below the
+  # comparison: a 0 price (unset, or a product the storefront can't sell) never becomes a "100%" discount.
+  # Percent is rounded down so the badge never overstates the saving.
   assign was_total = 0
   assign percent = 0
-  if parent != blank
+  if parent != blank and pv.price > 0
     if pv.compare_at_price > pv.price
       assign was_total = pv.compare_at_price
     elsif components_total > pv.price
@@ -47,6 +51,43 @@
   assign show_media = false
   if image_desktop != blank or image_mobile != blank or request.design_mode
     assign show_media = true
+  endif
+
+  # Hotspot geometry. Positions are % of the uploaded picture. The frame crops it (object-fit: cover,
+  # anchored at the image focal point), so each marker is mapped through the same crop:
+  # k = how much larger than the frame the picture is drawn on that axis; p = focal point %.
+  # left% = k·x − (k − 1)·p. The mobile values use the mobile picture (or the main one) and mobile frame.
+  assign kx_d = 1
+  assign ky_d = 1
+  assign px_d = 50
+  assign py_d = 50
+  if image_desktop != blank
+    assign frame_r = 100.0 | divided_by: section.settings.image_ratio
+    assign img_r = image_desktop.aspect_ratio | times: 1.0
+    if img_r > frame_r
+      assign kx_d = img_r | divided_by: frame_r | round: 4
+    else
+      assign ky_d = frame_r | divided_by: img_r | round: 4
+    endif
+    assign px_d = image_desktop.presentation.focal_point.x | default: 50
+    assign py_d = image_desktop.presentation.focal_point.y | default: 50
+  endif
+
+  assign image_for_mobile = image_mobile | default: image_desktop
+  assign kx_m = 1
+  assign ky_m = 1
+  assign px_m = 50
+  assign py_m = 50
+  if image_for_mobile != blank
+    assign frame_r = 100.0 | divided_by: section.settings.image_ratio_mobile
+    assign img_r = image_for_mobile.aspect_ratio | times: 1.0
+    if img_r > frame_r
+      assign kx_m = img_r | divided_by: frame_r | round: 4
+    else
+      assign ky_m = frame_r | divided_by: img_r | round: 4
+    endif
+    assign px_m = image_for_mobile.presentation.focal_point.x | default: 50
+    assign py_m = image_for_mobile.presentation.focal_point.y | default: 50
   endif
 -%}
 
@@ -82,20 +123,20 @@
     --pb-title: {{ section.settings.title_size }}px;
     --pb-sub: {{ section.settings.subtitle_size }}px;
     --pb-button-radius: {{ section.settings.button_radius }}px;
+    --kx-d: {{ kx_d }}; --ky-d: {{ ky_d }}; --px-d: {{ px_d }}; --py-d: {{ py_d }};
+    --kx-m: {{ kx_m }}; --ky-m: {{ ky_m }}; --px-m: {{ px_m }}; --py-m: {{ py_m }};
   "
 >
   <div class="sn-pb">
     {%- if show_media -%}
       <div class="sn-pb__media">
+        {%- comment -%}
+          Two <img> when a mobile picture is set, so each keeps its own focal point (object-position),
+          which the hotspot mapping above relies on. The hidden one is lazy and display:none.
+        {%- endcomment -%}
         {%- if image_desktop != blank and image_mobile != blank -%}
-          <picture class="sn-pb__picture">
-            <source
-              media="(max-width: 749px)"
-              srcset="{{ image_mobile | image_url: width: 750 }} 750w, {{ image_mobile | image_url: width: 1100 }} 1100w"
-              sizes="calc(100vw - 48px)"
-            >
-            {% render 'image', image: image_desktop, class: 'sn-pb__image' %}
-          </picture>
+          {% render 'image', image: image_desktop, class: 'sn-pb__image sn-pb__image--desktop' %}
+          {{ image_mobile | image_url: width: 1100 | image_tag: loading: 'lazy', class: 'sn-pb__image sn-pb__image--mobile', sizes: '100vw', widths: '400, 750, 1100' }}
         {%- elsif image_desktop != blank or image_mobile != blank -%}
           {%- assign only_image = image_desktop | default: image_mobile -%}
           {% render 'image', image: only_image, class: 'sn-pb__image' %}
@@ -174,6 +215,21 @@
             Pick the "Bundle product" (the Shopify product the button adds). Until then the price and button stay hidden.
           {%- else -%}
             The button adds "{{ parent.title | escape }}" at its own price. Make sure the component blocks below list the products that are really inside it.
+            <br>
+            Shopify data: variant "{{ pv.title | escape }}" · price {{ pv.price | money }}
+            {%- if pv.compare_at_price > 0 %} · compare-at {{ pv.compare_at_price | money }}{% endif %}
+            · {% if pv.available %}available{% else %}NOT available{% endif %}
+            · inventory {% if pv.inventory_management == 'shopify' %}tracked ({{ pv.inventory_quantity }} in stock, {% if pv.inventory_policy == 'continue' %}continue selling when out of stock{% else %}stop selling at 0{% endif %}){% else %}not tracked{% endif %}
+            {%- unless pv.available -%}
+              <br>
+              Why "sold out": Shopify reports this variant as unavailable on the Online Store. Check in admin that the bundle
+              product is Active and published to Online Store, has stock (or "Continue selling when out of stock"), and, if it
+              is a Shopify Bundles product, that each component has stock.
+            {%- endunless -%}
+            {%- if pv.price <= 0 -%}
+              <br>
+              Price is 0: set the bundle product's price in admin. No saving or badge is shown until it has a real price.
+            {%- endif -%}
           {%- endif %}
           Add one "Bundle item" block per product (Add block, under this section).
         </p>
@@ -231,6 +287,8 @@
       {%- endif -%}
 
       {%- if parent != blank -%}
+        {%- comment -%} A 0 price on an unavailable variant = not set up yet: no price is shown (the editor note says why) {%- endcomment -%}
+        {%- if pv.price > 0 or pv.available -%}
         <div class="sn-pb__total">
           <p class="sn-pb__now">
             <span>{{ section.settings.total_label | escape }}</span>
@@ -247,6 +305,7 @@
             </p>
           {%- endif -%}
         </div>
+        {%- endif -%}
 
         <sn-bundle-cart class="sn-pb__cart" data-error-text="{{ 'content.unavailable' | t | escape }}">
           <script type="application/json" ref="data">[{"id":{{ pv.id }},"quantity":1}]</script>
@@ -291,31 +350,34 @@
     border-radius: var(--pb-radius);
   }
 
-  .sn-pb__media > .sn-pb__picture,
   .sn-pb__image {
     display: block;
     width: 100%;
     height: 100%;
     border-radius: inherit;
-  }
-
-  .sn-pb__image {
     object-fit: cover;
   }
 
-  /* Hotspot centre = % of the image (physical: the image does not mirror in RTL) */
+  .sn-pb__image--desktop {
+    display: none;
+  }
+
+  /* Hotspot centre = % of the uploaded picture, mapped through the frame's cover crop
+     (k and focal point p come from the section, per breakpoint). Physical left/top: the image
+     does not mirror in RTL. */
   .sn-pb__hotspot {
     position: absolute;
-    left: calc(var(--xm) * 1%);
-    top: calc(var(--ym) * 1%);
+    left: calc((var(--kx-m) * var(--xm) - (var(--kx-m) - 1) * var(--px-m)) * 1%);
+    top: calc((var(--ky-m) * var(--ym) - (var(--ky-m) - 1) * var(--py-m)) * 1%);
     translate: -50% -50%;
     z-index: 1;
   }
 
+  /* Phones: never smaller than a 32px touch target (Figma mobile marker = 32px) */
   .sn-pb__marker {
     display: block;
-    width: var(--pb-spot);
-    height: var(--pb-spot);
+    width: max(var(--pb-spot), 32px);
+    height: max(var(--pb-spot), 32px);
     padding: 0;
     border-radius: 50%;
     cursor: pointer;
@@ -468,9 +530,22 @@
       aspect-ratio: 100 / var(--pb-ratio);
     }
 
+    .sn-pb__image--desktop {
+      display: block;
+    }
+
+    .sn-pb__image--mobile {
+      display: none;
+    }
+
     .sn-pb__hotspot {
-      left: calc(var(--x) * 1%);
-      top: calc(var(--y) * 1%);
+      left: calc((var(--kx-d) * var(--x) - (var(--kx-d) - 1) * var(--px-d)) * 1%);
+      top: calc((var(--ky-d) * var(--y) - (var(--ky-d) - 1) * var(--py-d)) * 1%);
+    }
+
+    .sn-pb__marker {
+      width: var(--pb-spot);
+      height: var(--pb-spot);
     }
 
     .sn-pb__content {
@@ -486,7 +561,10 @@
   "tag": "section",
   "class": "sn-product-bundle-section",
   "disabled_on": {
-    "groups": ["header", "footer"]
+    "groups": [
+      "header",
+      "footer"
+    ]
   },
   "max_blocks": 12,
   "blocks": [
@@ -539,7 +617,8 @@
           "step": 1,
           "unit": "%",
           "default": 50,
-          "visible_if": "{{ block.settings.show_hotspot }}"
+          "visible_if": "{{ block.settings.show_hotspot }}",
+          "info": "% of the picture width (the whole uploaded image, not the cropped frame)."
         },
         {
           "type": "range",
@@ -550,7 +629,8 @@
           "step": 1,
           "unit": "%",
           "default": 50,
-          "visible_if": "{{ block.settings.show_hotspot }}"
+          "visible_if": "{{ block.settings.show_hotspot }}",
+          "info": "% of the picture height."
         },
         {
           "type": "range",
@@ -561,7 +641,8 @@
           "step": 1,
           "unit": "%",
           "default": 50,
-          "visible_if": "{{ block.settings.show_hotspot }}"
+          "visible_if": "{{ block.settings.show_hotspot }}",
+          "info": "% of the mobile picture (or the main picture) width."
         },
         {
           "type": "range",
@@ -572,7 +653,8 @@
           "step": 1,
           "unit": "%",
           "default": 50,
-          "visible_if": "{{ block.settings.show_hotspot }}"
+          "visible_if": "{{ block.settings.show_hotspot }}",
+          "info": "% of the mobile picture (or the main picture) height."
         }
       ]
     }
@@ -604,7 +686,7 @@
       "type": "range",
       "id": "image_ratio",
       "label": "Image height (desktop)",
-      "info": "% of its width. Figma: 75.",
+      "info": "% of its width. Figma: 75 (744 × 560). The picture is cropped to this frame around its focal point; hotspots follow the crop.",
       "min": 40,
       "max": 140,
       "step": 1,
@@ -629,7 +711,7 @@
       "max": 40,
       "step": 1,
       "unit": "px",
-      "default": 0
+      "default": 16
     },
     {
       "type": "header",
@@ -833,7 +915,8 @@
       "max": 60,
       "step": 2,
       "unit": "px",
-      "default": 32
+      "default": 28,
+      "info": "Desktop size. Phones use at least 32px (touch target). Figma: 28 desktop, 32 mobile."
     },
     {
       "type": "header",
@@ -945,12 +1028,38 @@
     {
       "name": "Product bundle",
       "settings": {
-        "custom_class": "sn-home-bundle"
+        "custom_class": "sn-home-bundle",
+        "hotspot_size": 28,
+        "image_radius": 16
       },
       "blocks": [
-        { "type": "component", "settings": { "x_position": 78, "y_position": 68, "x_position_mobile": 80, "y_position_mobile": 71 } },
-        { "type": "component", "settings": { "x_position": 51, "y_position": 54, "x_position_mobile": 53, "y_position_mobile": 57 } },
-        { "type": "component", "settings": { "x_position": 23, "y_position": 65, "x_position_mobile": 25, "y_position_mobile": 68 } }
+        {
+          "type": "component",
+          "settings": {
+            "x_position": 77,
+            "y_position": 68,
+            "x_position_mobile": 79,
+            "y_position_mobile": 71
+          }
+        },
+        {
+          "type": "component",
+          "settings": {
+            "x_position": 53,
+            "y_position": 54,
+            "x_position_mobile": 55,
+            "y_position_mobile": 57
+          }
+        },
+        {
+          "type": "component",
+          "settings": {
+            "x_position": 28,
+            "y_position": 64,
+            "x_position_mobile": 30,
+            "y_position_mobile": 68
+          }
+        }
       ]
     }
   ]

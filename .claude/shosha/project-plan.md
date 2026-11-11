@@ -394,6 +394,27 @@ Category **B**: native section + on-demand `custom_class` setting. No Liquid/JS 
     - The cart shows one bundle line, with components shown by Horizon only if it is a real Shopify Bundles product.
   - **Checks:** Theme Check 9 = baseline; `node --check` OK; `dev2.css` braces balanced; S08 CSS unchanged.
   - **QA:** visual, editor and add-to-cart PENDING USER REVIEW.
+- **Fix: sold out / 100% / hotspots (2026-11-11):**
+  - **Data limit:** the product picks were made in the online editor; local `index.json` has none, and rule 13 bars `theme pull`. The connected Shopify MCP store is "Peace Lily Australia", not SNOSHA, so it was not queried. The real product values are unverified.
+  - **"نفد المخزون":** the button and message depend only on the bundle variant's `available`, never on the items. So Shopify itself reports the picked bundle variant as unavailable. Possible causes (unconfirmed): no stock with "stop selling", not Active / not published to Online Store, or Shopify Bundles components out of stock. Not a code bug; nothing was hidden or forced.
+  - **100% / LE 0.00:**
+    - **Data:** the bundle variant's price is 0 in Shopify.
+    - **Code bug:** I compared the items' total (7,497) against that 0 and showed a 100% saving.
+    - **Fix:** a saving or badge is shown only when 0 < bundle price < comparison price. A 0-priced variant that is also unavailable gets no price at all (treated as not set up yet). A 0-priced variant that is available shows its real 0 price, with no discount.
+  - **Editor diagnostic:** the note now shows the variant, price, compare-at, availability and inventory (tracked/quantity/policy), plus the likely cause in plain words. Customers never see it.
+  - **Hotspot geometry, from Figma:**
+    - Both frames draw the bundle photo at 113.09% width, offset −9.47% (photo ratio ≈ 1.5025 vs frame 744:560).
+    - Marker centres, % of the frame: desktop 22.31/64.29, 50.54/53.57, 77.42/67.86; mobile 24.86/67.70, 52.93/57.20, 79.83/71.20.
+    - Markers: desktop 27.5px, mobile 32px; 1.5px `#60c1e1` ring; white; 10px `#176bb0` dot; Shadow/Soft.
+  - **Old implementation:** eyeballed frame-% coordinates (78/68, 51/54, 23/65) on a centre-cropped image, a 32px marker everywhere, and a dot scaled with the marker.
+  - **New coordinate system:** X/Y are % of the uploaded picture. The section maps them through the frame's cover crop (k = picture/frame overflow factor, p = image focal point): left = k·x − (k−1)·p, separately for desktop and mobile (each image keeps its own focal point; two `<img>` when a mobile image is set).
+    - Figma converted to picture %: desktop 77/68, 53/54, 28/64; mobile 79/71, 55/57, 30/68 (blocks 1–3, rounded to the 1% step).
+    - Setting the image focal point to x ≈ 72% reproduces Figma's exact crop; the markers stay on the products either way.
+  - **Defaults:** `hotspot_size` 32 → 28 (phones use at least 32); `image_radius` 0 → 16 (Figma desktop; mobile Figma 7.4 is not separate, no setting left). The dot is a fixed 10px.
+  - **Files:** `sections/sn-product-bundle.liquid`, `assets/dev2.css`, `templates/index.json` (S11 positions and defaults only).
+  - **Theme Check:** 9 = baseline.
+  - **QA:** browser and editor QA PENDING USER REVIEW.
+  - **Warning:** pushing local `index.json` would overwrite the online editor's product picks. Pull or re-apply first.
 
 ## F. QA & progress
 

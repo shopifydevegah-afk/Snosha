@@ -558,9 +558,9 @@
     color: var(--pb-text);
   }
 
-  /* ---------- Hotspot: white disc, ring and dot from settings (Figma 32 / 1.5 / 10) ---------- */
+  /* ---------- Hotspot: white disc, 1.5px ring, 10px dot (Figma desktop 28, mobile 32), soft shadow ---------- */
   .sn-pb__marker {
-    background: radial-gradient(circle, var(--pb-brand) 0 calc(var(--pb-spot) * 0.156), #fff 0);
+    background: radial-gradient(circle, var(--pb-brand) 0 5px, #fff 5.5px); /* Figma 10px dot at both sizes */
     border: 1.5px solid var(--pb-ring);
     box-shadow: 0 12px 32px 0 rgb(15 100 168 / 0.1); /* Figma Shadow/Soft */
 
