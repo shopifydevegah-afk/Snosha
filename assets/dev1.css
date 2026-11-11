@@ -1336,12 +1336,23 @@
    closest to the centre of the real scroller (slideshow-slides) with .is-active-card and writes
    --carousel-progress; the ring, glow and filled button follow that class. When every card fits
    (desktop) the "Featured card" checkbox (.sn-card-featured) is the active one. The Featured card also
-   keeps the larger desktop size and is centred on load. Section settings → --carousel-* (Figma fallbacks).
+   is centred on load. All cards share one width (no layout change when the active card moves); the
+   active card is emphasised with paint + a transform zoom only. Desktop keeps the carousel inside the
+   1376 container; tablet/mobile use the full-width track. Section settings → --carousel-* (Figma fallbacks).
    ========================================================================== */
 .sn-home-choose-care {
   /* Figma container 1376px (class-scoped, like S03 / S06) */
   --page-content-width: 1376px;
   --page-width: calc(var(--page-content-width) + var(--page-margin) * 2);
+
+  /* Grid items may never force the section wider than the screen (RTL overflow showed as a strip of
+     page background beside the section). */
+  min-width: 0;
+  max-width: 100%;
+
+  > * {
+    min-width: 0;
+  }
 
   /* Heading → cards: Figma 56 desktop / 22 mobile */
   &.gap-style {
@@ -1394,7 +1405,10 @@
     padding: 3px; /* ring space on every card: changing the active card never changes layout */
     border-radius: 27px;
     box-shadow: var(--sn-care-shadow);
-    transition: box-shadow 0.25s ease;
+    transform-origin: center;
+    transition:
+      box-shadow 0.25s ease,
+      scale 0.25s ease;
 
     &::before {
       content: '';
@@ -1426,30 +1440,64 @@
     background-color: transparent;
   }
 
-  /* Desktop (≥990): Figma widths (400 / 462 from the section settings), scaled down together when three
-     cards don't fit; centred while they fit ("safe" falls back to start once the row scrolls). */
+  /* Side gutters as flex spacers instead of the native scroller padding: a flex item always belongs to
+     the scrollable range, so the last card (far left in RTL) can reach the centre in every browser
+     (inline-end padding of a scroll container is not reliably scrollable). Width = gutter − one gap,
+     because the spacer itself is followed by a gap. */
+  .carousel-content slideshow-slides {
+    padding-inline: 0;
+
+    &::before,
+    &::after {
+      content: '';
+      flex: 0 0 max(0px, calc(var(--gutter-slide-width, 0px) - var(--slideshow-gap, 0px)));
+    }
+  }
+
+  /* Desktop (≥990): the carousel stays inside the 1376 container (native wraps it in a full-bleed
+     .force-full-width, which let 4+ cards run to the screen edges). Equal cards: Card width — Desktop
+     (400), shrunk so three always fit. Up to 3 cards: centred, nothing scrolls. 4+ cards: side gutters
+     of half the leftover width + centre snap, so any card (first and last too) can be centred. */
   @media screen and (min-width: 990px) {
+    > .force-full-width {
+      grid-column: 2;
+    }
+
     .carousel-content slideshow-slides {
-      --sn-care-w: var(--carousel-card-width, 400);
-      --sn-care-fw: var(--carousel-featured-width, 462);
-      --sn-care-avail: calc(100cqi - 2 * var(--gutter-slide-width, 0px) - 2 * var(--carousel-gap, 40px));
+      --sn-care-card: min(
+        calc(var(--carousel-card-width, 400) * 1px),
+        calc((100cqi - 2 * var(--carousel-gap, 40px)) / 3)
+      );
+      --gutter-slide-width: 0px;
 
       justify-content: center;
       justify-content: safe center;
+
+      /* up to 3 cards: no gutters, no spacers */
+      &::before,
+      &::after {
+        display: none;
+      }
+    }
+
+    .carousel-content slideshow-slides:has(> .card ~ .card ~ .card ~ .card) {
+      --gutter-slide-width: max(0px, calc((100cqi - var(--sn-care-card)) / 2));
+
+      justify-content: flex-start;
+      scroll-padding-inline: 0;
+
+      &::before,
+      &::after {
+        display: block;
+      }
+
+      > .card {
+        scroll-snap-align: center;
+      }
     }
 
     .carousel-content slideshow-slides > .card {
-      width: min(
-        calc(var(--sn-care-w) * 1px),
-        calc(var(--sn-care-avail) * var(--sn-care-w) / (2 * var(--sn-care-w) + var(--sn-care-fw)))
-      );
-    }
-
-    .carousel-content slideshow-slides > .card.sn-card-featured {
-      width: min(
-        calc(var(--sn-care-fw) * 1px),
-        calc(var(--sn-care-avail) * var(--sn-care-fw) / (2 * var(--sn-care-w) + var(--sn-care-fw)))
-      );
+      width: var(--sn-care-card);
     }
   }
 
@@ -1500,7 +1548,10 @@
     @media screen and (max-width: 749px) {
       min-height: 440px;
       gap: 10.48px;
-      padding: 15.72px 15.72px 4.06px;
+      /* Bottom: never less than the side padding (Figma's regular mobile card had 4px, which put the
+         button on the card edge); a larger native "Padding bottom" on the product card is scaled ×0.655
+         like the rest of the Figma mobile card. */
+      padding: 15.72px 15.72px max(15.72px, calc(var(--padding-block-end, 0px) * 0.655));
       border-radius: 15.72px;
     }
   }
@@ -1689,36 +1740,13 @@
     filter: brightness(0.96);
   }
 
-  /* --- Featured card size (desktop, layout only): follows the "Featured card" checkbox ----------- */
-  @media screen and (min-width: 990px) {
-    .carousel-content slideshow-slides > .card.sn-card-featured {
-      .product-card__content.product-grid__card {
-        min-height: 0;
-      }
-
-      /* Figma featured image box 408×300 */
-      .card-gallery[data-image-ratio='landscape'] > * {
-        --gallery-aspect-ratio: 408 / 300;
-      }
-
-      .sn-home-care-price {
-        margin-block-start: 0;
-        padding-block-start: 6px;
-      }
-
-      .sn-home-care-price product-price .price {
-        font-size: 24px;
-        font-weight: 600;
-        line-height: 40px;
-      }
-    }
-  }
-
   /* --- Active card (paint only): ring, glow, filled button ----------------------------------------
      .is-active-card comes from carousel-active-card.js. Before the script runs (or without it) the
      "Featured card" shows the look, so there is never a moment without a highlighted card. */
   .carousel-content slideshow-slides > .card.is-active-card,
   &:not(:has(.is-active-card)) .carousel-content slideshow-slides > .card.sn-card-featured {
+    z-index: 1;
+    scale: var(--sn-care-zoom);
     box-shadow: var(--sn-care-glow);
 
     &::before {
@@ -1758,15 +1786,18 @@
     #3999d4 87.5%,
     #63cdff 100%
   );
+  /* Active zoom: section setting "Active card zoom" (106%); a quarter less on phones, where the gap is 12 */
+  --sn-care-zoom: var(--carousel-active-zoom, 1.06);
   --sn-care-shadow: 0 12px 32px rgb(15 100 168 / 0.1), 0 0 0 rgb(99 204 255 / 0);
   --sn-care-glow: 0 24px 48px rgb(15 100 168 / 0.18), 0 0 36px rgb(99 204 255 / 0.45);
 
   @media screen and (max-width: 749px) {
+    --sn-care-zoom: calc(1 + (var(--carousel-active-zoom, 1.06) - 1) * 0.75);
     --sn-care-shadow: 0 7.86px 20.96px rgb(15 100 168 / 0.1), 0 0 0 rgb(99 204 255 / 0);
     --sn-care-glow: 0 13.61px 27.22px rgb(15 100 168 / 0.18), 0 0 20.42px rgb(99 204 255 / 0.45);
   }
 
-  /* --- Progress bar (tablet + mobile) --------------------------------------------------------------
+  /* --- Progress bar (tablet + mobile, only while the cards scroll; none on desktop, as in Figma) ---
      Width = --carousel-progress, written by carousel-active-card.js from the same scroller and in the
      same frame as the active card, so position, highlight and bar always agree. Shown only while the
      cards actually scroll. Fill starts at the inline start (right in Arabic). */
@@ -1775,7 +1806,7 @@
       content: '';
       display: block;
       block-size: 4px;
-      margin: 22px 24px 0;
+      margin: 22px max(24px, calc((100% - 342px) / 2)) 0;
       border-radius: 99px;
       background-color: #ffffff;
       background-image: linear-gradient(90deg, #63cdff 0%, #0f64a8 100%);
@@ -1793,6 +1824,11 @@
       background-position: right center;
     }
   }
+}
+
+/* S10 only: the carousel is a full-width track inside the section; nothing in it may widen the page */
+.shopify-section:has(> .sn-home-choose-care) {
+  overflow-x: clip;
 }
 
 /* Section background: Figma pale-blue gradient while the section has no Background colour */
@@ -1832,13 +1868,6 @@
 
 :where(.sn-home-choose-care .product-card__content > a > .text-block:not(.custom-color)) :is(h3, h4, p) {
   color: #131311;
-}
-
-@media screen and (min-width: 990px) {
-  :where(.sn-home-choose-care .sn-card-featured .product-card__content > a > .text-block:not(.custom-typography)) :is(h3, h4, p) {
-    font-size: 32px;
-    line-height: 52px;
-  }
 }
 
 @media screen and (max-width: 749px) {

@@ -6,7 +6,9 @@
  *   1. measures which card is closest to the horizontal centre of the real scroller
  *      (`slideshow-slides`) and marks it `is-active-card` (exactly one card at a time);
  *   2. writes the scroller's progress (0–1) to `--carousel-progress` on the section;
- *   3. on load, centres the card marked "Featured card" (`.sn-card-featured`) once.
+ *   3. on load, centres the card marked "Featured card" (`.sn-card-featured`) once;
+ *   4. handles mouse drag for this carousel only (the native drag release is start-aligned, see
+ *      #handleMouseDown); touch, trackpad and wheel stay native scrolling + CSS centre snap.
  * Everything is geometry-based (getBoundingClientRect + scrollBy with a physical delta), so it behaves
  * the same in LTR and RTL whatever sign the browser uses for scrollLeft.
  */
@@ -38,6 +40,11 @@ class CarouselActiveCard extends HTMLElement {
 
     this.#scroller.addEventListener('scroll', this.#schedule, { passive: true, signal });
     document.addEventListener('shopify:block:select', this.#handleBlockSelect, { signal });
+
+    // Mouse drag: captured on the scroller's parent so it runs before the native slideshow's own
+    // mousedown handler (see #handleMouseDown). Touch swiping is native scrolling and is untouched.
+    this.#scroller.parentElement?.addEventListener('mousedown', this.#handleMouseDown, { capture: true, signal });
+    this.#scroller.addEventListener('dragstart', this.#preventWhileScrollable, { signal });
 
     this.#resizeObserver = new ResizeObserver(this.#schedule);
     this.#resizeObserver.observe(this.#scroller);
@@ -153,6 +160,92 @@ class CarouselActiveCard extends HTMLElement {
     // A positive physical delta always moves the view to the right, in LTR and RTL alike
     scroller.scrollBy({ left: delta, behavior });
   }
+
+  /** Brings the card nearest the centre exactly to the centre. */
+  #settle() {
+    const scroller = this.#scroller;
+    if (!scroller) return;
+
+    const box = scroller.getBoundingClientRect();
+    const middle = box.left + box.width / 2;
+    let nearest = null;
+    let best = Infinity;
+    for (const card of this.#cards) {
+      const rect = card.getBoundingClientRect();
+      const distance = Math.abs(rect.left + rect.width / 2 - middle);
+      if (distance < best) {
+        best = distance;
+        nearest = card;
+      }
+    }
+
+    const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (nearest) this.#scrollToCard(nearest, reduce ? 'instant' : 'smooth');
+  }
+
+  /** @param {Event} event */
+  #preventWhileScrollable = (event) => {
+    if (this.#isScrollable) event.preventDefault();
+  };
+
+  /**
+   * Mouse drag for this centred carousel. The native slideshow's drag release picks the visible slide
+   * closest to the scroller's START edge and aligns it to the start, which in a centred layout lands one
+   * card short and can never reach the last card. Here the drag just moves the scroller (snap paused), and
+   * on release the card nearest the centre is centred. The event is stopped so the native handler
+   * doesn't run for this carousel only.
+   * @param {MouseEvent} event
+   */
+  #handleMouseDown = (event) => {
+    const scroller = this.#scroller;
+    if (!scroller || event.button !== 0 || !this.#isScrollable) return;
+    if (!(event.target instanceof Node) || !scroller.contains(event.target)) return;
+
+    event.stopPropagation();
+
+    const startX = event.clientX;
+    let lastX = startX;
+    let moved = false;
+    const drag = new AbortController();
+
+    const onMove = (/** @type {MouseEvent} */ move) => {
+      if (!moved) {
+        if (Math.abs(move.clientX - startX) < 5) return;
+        moved = true;
+        scroller.style.scrollSnapType = 'none';
+        scroller.style.scrollBehavior = 'auto';
+        scroller.style.cursor = 'grabbing';
+        scroller.style.userSelect = 'none';
+      }
+      const delta = move.clientX - lastX;
+      lastX = move.clientX;
+      scroller.scrollBy({ left: -delta, behavior: 'instant' });
+    };
+
+    const onUp = () => {
+      drag.abort();
+      if (!moved) return;
+
+      scroller.style.removeProperty('scroll-snap-type');
+      scroller.style.removeProperty('scroll-behavior');
+      scroller.style.removeProperty('cursor');
+      scroller.style.removeProperty('user-select');
+
+      // The click that ends a drag must not open the product
+      const swallow = (/** @type {Event} */ click) => {
+        click.preventDefault();
+        click.stopPropagation();
+      };
+      scroller.addEventListener('click', swallow, { capture: true, once: true });
+      setTimeout(() => scroller.removeEventListener('click', swallow, { capture: true }), 0);
+
+      this.#settle();
+    };
+
+    document.addEventListener('mousemove', onMove, { signal: drag.signal });
+    document.addEventListener('mouseup', onUp, { signal: drag.signal });
+    this.#abort?.signal.addEventListener('abort', () => drag.abort(), { once: true });
+  };
 
   /** Theme Editor: selecting a block inside a card brings that card to the centre. */
   #handleBlockSelect = (/** @type {Event} */ event) => {

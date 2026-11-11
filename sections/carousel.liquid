@@ -24,7 +24,7 @@
     {%- comment -%} Snosha S10: card sizes for the section's custom-class CSS (output only with a custom class). {%- endcomment -%}
     {% if section.settings.custom_class != blank %}
       --carousel-card-width: {{ section.settings.card_width }};
-      --carousel-featured-width: {{ section.settings.featured_card_width }};
+      --carousel-active-zoom: {{ section.settings.active_card_zoom | divided_by: 100.0 }};
       --carousel-card-width-mobile: {{ section.settings.card_width_mobile }}px;
       --carousel-gap-mobile: {{ section.settings.columns_gap_mobile }}px;
       --carousel-image-fit: {{ section.settings.image_fit | default: 'contain' }};
@@ -234,13 +234,14 @@
     },
     {
       "type": "range",
-      "id": "featured_card_width",
-      "label": "Featured card width — Desktop",
-      "min": 360,
-      "max": 560,
-      "step": 2,
-      "unit": "px",
-      "default": 462,
+      "id": "active_card_zoom",
+      "label": "Active card zoom",
+      "info": "Size of the highlighted card compared with the others (phones use a little less). 100% = no zoom.",
+      "min": 100,
+      "max": 112,
+      "step": 1,
+      "unit": "%",
+      "default": 106,
       "visible_if": "{{ section.settings.custom_class != blank }}"
     },
     {

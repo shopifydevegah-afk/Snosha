@@ -5662,10 +5662,10 @@
         "custom_class": "sn-home-choose-care",
         "image_fit": "contain",
         "card_width": 400,
-        "featured_card_width": 462,
         "card_width_mobile": 262,
         "columns_gap_mobile": 12,
-        "highlight_active_card": true
+        "highlight_active_card": true,
+        "active_card_zoom": 106
       }
     }
   },
