@@ -125,6 +125,59 @@
     }
   }
 
+  /* Desktop navigation (Figma 190:3776, Nav Item variants Default / Active).
+     Native state is reused: Liquid adds .menu-list__link--active when link.active
+     (and aria-current="page" when link.current). Nothing here touches the mobile drawer. */
+  @media screen and (min-width: 750px) {
+    &[data-menu-style='menu'] .menu-list {
+      /* Default label colour; the variables are inline on nav.menu-list, so redefine them on
+         its child. Horizon's hover dimming keeps working with these values. */
+      > .overflow-menu {
+        --menu-top-level-font-color: #12568d; /* Figma Default (navy) */
+        --menu-top-level-font-color-rgb: 18 86 141;
+      }
+
+      /* At rest, Horizon dims every other link while one is active; Figma keeps them solid */
+      &:not(:has(.menu-list__list-item:hover, .menu-list__list-item:focus-within))
+        .menu-list__link:not(.menu-list__link--active) {
+        color: var(--menu-top-level-font-color);
+      }
+
+      .menu-list__link--active {
+        color: #176bb0; /* Figma Active (secondary blue) */
+      }
+
+      .menu-list__link-title {
+        --sn-nav-title-padding: var(--gap-sm); /* Horizon's padding-inline on the title */
+      }
+
+      [slot='overflow'] .menu-list__link-title {
+        --sn-nav-title-padding: 0px;
+      }
+
+      /* Marker behind the active label. Figma: item = label + 5px each side; marker spans the
+         item, from 9px to 23.54px of the 24px line (15px text), rotated 1.5deg, radius 3px.
+         Offsets are in em from the text centre so they follow the label size and line height. */
+      .menu-list__link--active .menu-list__link-title {
+        position: relative;
+        z-index: 0; /* own stacking context so the marker sits behind the text only */
+
+        &::before {
+          content: '';
+          position: absolute;
+          z-index: -1;
+          inset-inline: calc(var(--sn-nav-title-padding) - 5px);
+          top: calc(50% - 0.2em);
+          height: 0.97em;
+          border-radius: 3px;
+          background-color: rgb(99 205 255 / 0.45);
+          transform: rotate(1.5deg);
+          pointer-events: none;
+        }
+      }
+    }
+  }
+
   /* Mobile layout (narrow screens, and touch devices in drawer mode) */
   @media screen and (max-width: 749px) {
     --sn-header-icon-color: #176bb0; /* Figma mobile icon stroke */

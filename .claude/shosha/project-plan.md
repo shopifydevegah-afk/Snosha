@@ -51,7 +51,7 @@ Logical areas from the Figma homepage, in Figma order. A row isn't necessarily o
 | ID | Section | Desktop node | Mobile node | Target | Owner | Status | Cat. | Native component | Custom class | Dependencies / blockers |
 |---|---|---|---|---|---|---|---|---|---|---|
 | S01 | Announcement Bar | `190:3768` | `190:4083` | header-group (global) | Main | IMPLEMENTED | B | `header-announcements` + `_announcement` | `sn-header-announcement` | Global: affects all pages. Visual QA pending user review |
-| S02 | Header / Navigation | `190:3769` + `190:3776` | `190:4084` | header-group (global) | Main | IMPLEMENTED (header row only) | B | `header` (+ `_header-logo`, `header-actions`, `search`, `header-drawer`) | `sn-header-main` | Global. Desktop navigation `190:3776` not started (separate task). `header` now has 43 settings (G). Visual QA pending user review |
+| S02 | Header / Navigation | `190:3769` + `190:3776` | `190:4084` | header-group (global) | Main | IMPLEMENTED (header row + desktop nav active state) | B | `header` (+ `_header-logo`, `_header-menu`, `header-actions`, `search`, `header-drawer`) | `sn-header-main` | Global. Desktop nav: only the Default/Active states done; nav typography (15px/500) and spacing not changed yet. `header` now has 43 settings (G). Visual QA pending user review |
 | S03 | Hero + Trust Strip | `190:3789` | `335:3959` | index.json | — | NOT_STARTED | — | — | — | — |
 | S04 | Collections | `190:3830` | `190:4133` | index.json | — | NOT_STARTED | — | — | — | — |
 | S05 | Featured Collection | `190:3844` | `190:4149` | index.json | — | NOT_STARTED | — | — | — | Same design as S07 |
@@ -162,12 +162,28 @@ Each section gets its own subsection here (with the Native Reuse Audit) when its
   - At 390px the 190px centre column fits 178px, leaving 24px clearance to the search glyph.
 - Limitation: the **uploaded** store file (`shop_images/SNOSHA_…svg`) couldn't be opened from here. If it was exported from the 184×37.18 desktop instance instead of the artwork, it carries about 3px / 1px of transparent padding, and the artwork would render about 1px short. Confirm in Shopify → Content → Files (expect 178×36).
 
+#### S02 desktop navigation: active state (2026-11-11)
+- Figma `190:3776` (1480×43, padding 5 / 14, container max 1376 with 20px padding, 32px gaps). `Nav Item` component `346:4607` has two variants:
+  - **Default:** label `#12568d`, Cairo 15px / 500 / 24px line height;
+  - **Active** (`346:4604`): label `#176bb0` plus 5px inline padding, and a marker `rgba(99,205,255,0.45)` with 3px radius, rotated 1.5°, spanning the item from y 9 to 23.54 of the 24px line.
+- Native reuse: the `_header-menu` desktop menu (`nav.menu-list` > `overflow-list` > `li.menu-list__list-item` > `a.menu-list__link` > `span.menu-list__link-title`). Current page: Liquid adds `.menu-list__link--active` when `link.active` and `aria-current="page"` when `link.current`. No Liquid, JS or menu-data changes; no label matching.
+- CSS (`assets/main.css`, Main, `#header-component.sn-header-main[data-menu-style='menu']`, ≥750px only):
+  - colour variables redefined on `.menu-list > .overflow-menu` to navy, so Horizon's hover dimming still works;
+  - at rest, non-active links are kept solid (Horizon otherwise dims every other link while one is active);
+  - active link `#176bb0`;
+  - marker drawn as `::before` on the active `.menu-list__link-title`: `z-index: -1` inside its own stacking context, `inset-inline: (title padding − 5px)` so it follows the label width, `top: 50% − 0.2em`, `height: 0.97em` (from the Figma geometry in em, relative to the text centre), `rotate(1.5deg)`, `pointer-events: none`;
+  - overflow ("More") items use padding 0 for the inset.
+- Not changed (outside this task): nav font size (native setting `type_font_primary_size` = 1rem/16px vs Figma 15px), weight and item gaps.
+- Mobile drawer code untouched (diff is additions only, desktop media query only).
+- Reversibility: `CLASS_ONLY` for this part (no settings changed); untested.
+- Checks: Theme Check = baseline 9; CSS braces balanced.
+
 ## F. QA & progress
 
 | ID | Figma analysis | Code checks | Visual desktop | Visual mobile | RTL | Media | Reversibility | Pending issues |
 |---|---|---|---|---|---|---|---|---|
 | S01 | PASS (get_design_context, 2026-11-11) | PASS: Theme Check = baseline 9, JSON/schema parse OK, assets exist | PENDING USER REVIEW | PENDING USER REVIEW | PENDING USER REVIEW | PENDING USER REVIEW | PENDING USER REVIEW (expected `CLASS_PLUS_SETTINGS`: see E) | custom-class snippet sanitizer matrix untested (needs render); confirm text color is white |
-| S02 | PASS (get_design_context, 2026-11-11; navigation `190:3776` not analysed) | PASS: Theme Check = baseline 9 (header count 42→43, same offense), JSON/schema parse OK, mask assets exist | PENDING USER REVIEW | PENDING USER REVIEW | PENDING USER REVIEW | N/A (logo is the global native setting; icons are UI) | PENDING USER REVIEW (expected `CLASS_PLUS_SETTINGS: drawer_accordion, drawer_dividers`) | Fix rounds 1–2 applied 2026-11-11 (desktop grid, mobile height, drawer, exact 178×36 logo via native settings); confirm the store has `custom_class` = `sn-header-main` and `logo_height` = 36; account hidden on mobile (Figma); account button width unverified; cart bubble position; uploaded logo file dimensions unverified |
+| S02 | PASS (get_design_context, 2026-11-11; navigation `190:3776` and `Nav Item` variants analysed 2026-11-11) | PASS: Theme Check = baseline 9 (header count 42→43, same offense), JSON/schema parse OK, mask assets exist | PENDING USER REVIEW | PENDING USER REVIEW | PENDING USER REVIEW | N/A (logo is the global native setting; icons are UI) | PENDING USER REVIEW (expected `CLASS_PLUS_SETTINGS: drawer_accordion, drawer_dividers`) | Fix rounds 1–2 applied 2026-11-11 (desktop grid, mobile height, drawer, exact 178×36 logo via native settings); confirm the store has `custom_class` = `sn-header-main` and `logo_height` = 36; desktop nav active marker and colours (added 2026-11-11); nav typography 16 vs 15px not done; account hidden on mobile (Figma); account button width unverified; cart bubble position; uploaded logo file dimensions unverified |
 | S03–S15 | — | — | — | — | — | — | — | Only project-level mapping done; no section-level analysis yet |
 
 Give a section its own row here when its work starts, and keep the S01–S15 row only for sections that haven't started.
@@ -204,3 +220,4 @@ Give a section its own row here when its work starts, and keep the S01–S15 row
 | 2026-11-11 | S02 header row implemented (category B) | — | S02 | User visual QA; desktop navigation `190:3776` is a separate task |
 | 2026-11-11 | S02 fix round 1: desktop grid independent of `search_position` (setting reverted to `left`), mobile logo width-based 138px, mobile row 64px, drawer tidied (native accordion and dividers plus scoped CSS; featured cards hidden in the drawer only) | User review | S02 | User visual QA; make sure the store's header has the class `sn-header-main` |
 | 2026-11-11 | S02 fix round 2: logo matched to the Figma **artwork** (178×36 on both viewports) through native `logo_height` 37→36 (`settings_data.json`, user-instructed) and `logo_height_mobile` 36; CSS size overrides removed; desktop offset 18px / 4px | The mobile Figma frame (138px) is not the visible artwork | S02 | Confirm the uploaded logo file is 178×36 |
+| 2026-11-11 | S02 desktop navigation Default/Active states: native `link.active` class plus scoped CSS marker (`::before`) and colours | Match the Figma `Nav Item` variants without new markup | S02 | User visual QA; nav typography is a separate decision |
