@@ -307,3 +307,247 @@
     display: none;
   }
 }
+
+/* sn-footer-main — footer (S15) | Figma desktop 190:4048, mobile 190:14491 | owner: Main
+   Native footer with native blocks (footer-group.json): group "brand" (image + text), 3 x menu
+   (Shopify menu pickers), group "newsletter" (text, text, email-signup). DOM order is the RTL
+   reading order: brand, menus, newsletter. The class sits on the footer's .section element. */
+.sn-footer-main {
+  /* Figma container: 1376px (52px side margins at 1480px) */
+  --page-content-width: 86rem;
+  --page-width: calc(var(--page-content-width) + var(--page-margin) * 2);
+
+  /* Block roles, found by content so the merchant can still reorder blocks */
+  --sn-footer-heading: #12568d;
+  --sn-footer-text: #5a5a59;
+
+  .footer-content > .group-block:not(:has(.email-signup-block)) {
+    /* Brand: logo in the Figma 186 x 45 frame (artwork 178 x 36), never stretched */
+    .image-block {
+      width: 186px;
+      max-width: 100%;
+      height: 45px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    :is(.image-block__image, .placeholder-image) {
+      width: 178px;
+      max-width: 100%;
+      height: 36px;
+      object-fit: contain;
+    }
+
+    .text-block,
+    .text-block > * {
+      font-size: 14px;
+      font-weight: 400;
+      line-height: 24px;
+      color: var(--sn-footer-text);
+    }
+  }
+
+  /* Menus: heading 16/600/27 navy, links 14/400/24 grey; 12px rhythm comes from menu_spacing */
+  .footer-content > .menu {
+    .menu__heading {
+      font-size: 16px;
+      font-weight: 600;
+      line-height: 27px;
+      color: var(--sn-footer-heading);
+    }
+
+    .menu__heading__default {
+      font-weight: 600;
+    }
+
+    .menu__item,
+    .menu__item a {
+      font-size: 14px;
+      font-weight: 400;
+      line-height: 24px;
+      color: var(--sn-footer-text);
+    }
+  }
+
+  /* Newsletter: title 20/600/34, text 14/24, form 52px row (input 50px, button 97 x 52) */
+  .footer-content > .group-block:has(.email-signup-block) {
+    .text-block,
+    .text-block > * {
+      font-size: 14px;
+      font-weight: 400;
+      line-height: 24px;
+      color: var(--sn-footer-text);
+    }
+
+    .text-block:nth-child(1 of .text-block),
+    .text-block:nth-child(1 of .text-block) > * {
+      font-size: 20px;
+      font-weight: 600;
+      line-height: 34px;
+      color: var(--sn-footer-heading);
+    }
+
+    .email-signup__input-group {
+      flex-direction: row; /* Horizon stacks it on mobile; Figma keeps one row */
+      align-items: center;
+      gap: 8px;
+    }
+
+    .email-signup__input {
+      flex: 1 1 auto;
+      width: auto;
+      min-width: 0;
+      height: 50px;
+      padding: 0 16px;
+      border-radius: 12px;
+      font-size: 14px;
+      line-height: 24px;
+
+      &::placeholder {
+        color: var(--sn-footer-text);
+        opacity: 1;
+      }
+    }
+
+    .email-signup__button {
+      flex: 0 0 auto;
+      width: auto;
+      height: 52px;
+      padding: 13px 28px;
+      border-radius: 12px;
+      font-size: 16px;
+      font-weight: 600;
+      line-height: 26px;
+    }
+  }
+
+  /* Desktop: one row, visual order (RTL) brand | menus | newsletter, 48px gaps */
+  @media screen and (min-width: 990px) {
+    .footer-content {
+      display: flex;
+      align-items: flex-start;
+      gap: 48px;
+      padding-inline: 20px;
+    }
+
+    .footer-content > .group-block:not(:has(.email-signup-block)) {
+      flex: 0 0 300px;
+    }
+
+    .footer-content > .group-block:has(.email-signup-block) {
+      flex: 0 0 340px;
+    }
+
+    .footer-content > .menu {
+      flex: 1 1 0;
+      min-width: 0;
+    }
+  }
+
+  /* Tablet and mobile: brand, newsletter, then menus two per row; the first menu in the DOM
+     (rightmost on desktop, "Shopping" in Figma) moves to its own full-width row last */
+  @media screen and (max-width: 989px) {
+    .footer-content {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: var(--footer-gap);
+      padding-inline: 20px;
+    }
+
+    .footer-content > .group-block {
+      grid-column: 1 / -1;
+    }
+
+    .footer-content > .group-block:not(:has(.email-signup-block)) {
+      order: 1;
+      max-width: 342px;
+    }
+
+    .footer-content > .group-block:has(.email-signup-block) {
+      order: 2;
+    }
+
+    .footer-content > .menu {
+      order: 3;
+    }
+
+    .footer-content > .menu:nth-child(1 of .menu) {
+      order: 4;
+      grid-column: 1 / -1;
+    }
+  }
+
+  @media screen and (max-width: 749px) {
+    --page-margin: 20px; /* Figma mobile gutter */
+
+    .footer-content {
+      padding-inline: 0;
+      padding-block: 48px 0; /* Figma: 48px top; the copyright row follows 20px below */
+    }
+
+    .footer-content > .menu {
+      .menu__heading {
+        font-size: 14px;
+      }
+
+      .menu__item,
+      .menu__item a {
+        font-size: 12px;
+      }
+    }
+
+    .footer-content > .group-block:has(.email-signup-block) {
+      .text-block,
+      .text-block > * {
+        font-size: 12px;
+      }
+
+      .text-block:nth-child(1 of .text-block),
+      .text-block:nth-child(1 of .text-block) > * {
+        font-size: 17px;
+      }
+
+      .email-signup__input {
+        padding: 0 20px;
+        font-size: 12px;
+      }
+    }
+  }
+}
+
+/* sn-footer-utilities — footer-utilities "Policies and links" (S15, bottom) | owner: Main
+   Native copyright block (dynamic year + store name + editable text after it). */
+.sn-footer-utilities {
+  --page-content-width: 86rem;
+  --page-width: calc(var(--page-content-width) + var(--page-margin) * 2);
+
+  .utilities {
+    line-height: 20px;
+  }
+
+  /* Desktop: divider spans the 1336px inner width, like the footer content above */
+  @media screen and (min-width: 750px) {
+    .utilities {
+      width: auto;
+      margin-inline: 20px;
+    }
+  }
+
+  /* Mobile: no divider, copyright 11px centred, 20px below the menus, 24px bottom */
+  @media screen and (max-width: 749px) {
+    --page-margin: 20px;
+
+    .utilities {
+      border-top-width: 0;
+      padding-block: 20px 24px;
+    }
+
+    /* the block's custom-font-size class also sets the size on its child span */
+    .footer-utilities__group-copyright,
+    .footer-utilities__group-copyright > * {
+      font-size: 11px;
+      text-align: center;
+    }
+  }
+}

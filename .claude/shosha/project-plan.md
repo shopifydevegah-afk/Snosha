@@ -36,12 +36,12 @@ Each one is decided; the details are in the referenced Skill file.
 
 | Developer | CSS file | Status | Sections assigned |
 |---|---|---|---|
-| Main | `assets/main.css` | Initialized 2026-11-08 (loaded once after `custom-cairo.css`) | S01 (2026-11-11), S02 header (2026-11-11) |
+| Main | `assets/main.css` | Initialized 2026-11-08 (loaded once after `custom-cairo.css`) | S01 (2026-11-11), S02 header (2026-11-11), S15 (2026-11-11) |
 | Dev1 | `assets/dev1.css` | Not initialized | — |
 | Dev2 | `assets/dev2.css` | Not initialized | — |
 | Dev3 | `assets/dev3.css` | Not initialized | — |
 
-**Custom classes owned:** `sn-header-announcement` (Main, S01), `sn-header-main` (Main, S02).
+**Custom classes owned:** `sn-header-announcement` (Main, S01), `sn-header-main` (Main, S02), `sn-footer-main` and `sn-footer-utilities` (Main, S15).
 **Shared-file claims (active):** none.
 
 ## D. Section registry
@@ -64,7 +64,7 @@ Logical areas from the Figma homepage, in Figma order. A row isn't necessarily o
 | S12 | Blog | `190:4018` | `190:4349` | index.json | — | NOT_STARTED | — | — | — | — |
 | S13 | Why SNOSHA | `190:4024` | `190:4361` | index.json | — | NOT_STARTED | — | — | — | — |
 | S14 | FAQ | `217:14604` | `217:14813` | index.json | — | NOT_STARTED | — | — | — | — |
-| S15 | Footer | `190:4048` | `190:14491` | footer-group (global) | — | NOT_STARTED | — | — | — | Global: affects all pages |
+| S15 | Footer | `190:4048` | `190:14491` | footer-group (global) | Main | IMPLEMENTED | B/C | `footer` (blocks: `group`, `image`, `text`, `menu` ×3, `email-signup`) + `footer-utilities` (`footer-copyright`) | `sn-footer-main`, `sn-footer-utilities` | Global: affects all pages. The merchant assigns menus and the logo. Visual QA pending user review |
 
 ## E. Section decisions
 
@@ -178,13 +178,53 @@ Each section gets its own subsection here (with the Native Reuse Audit) when its
 - Reversibility: `CLASS_ONLY` for this part (no settings changed); untested.
 - Checks: Theme Check = baseline 9; CSS braces balanced.
 
+### S15 Footer
+- Figma: desktop `190:4048` (1480×469), mobile `190:14491` (390×761). Read with `get_design_context` 2026-11-11.
+- Desktop spec:
+  - padding 60 top; container 1376px with 20px padding (inner 1336px);
+  - top row with 48px gaps, from the visual right: brand (300px: logo frame 186×45 with 178×36 artwork, 16px gap, text 14/24 `#5a5a59`), Shopping, Help, About (flex 1, heading 16/600/27 `#12568d`, links 14/24 `#5a5a59`, 12px gaps), Newsletter (340px: title 20/600/34, text 14/24, form 52px = input 50px with `#dcf2fb` border and 12px radius + 8px gap + button 97×52 `#176bb0`, 16/600, 12px radius);
+  - top row bottom padding 25 + gap 48 = 73 to the divider (1px `#dcf2fb`); copyright 12/20 on the visual right; padding 60 bottom.
+- Mobile spec: padding 48 / 24, 20px gutters, everything 20px apart:
+  - brand (max 342px, right-aligned);
+  - newsletter (title 17/600/34, text 12/24, form on one row, input on the visual right);
+  - Help | About side by side (heading 14/600/27, links 12/24);
+  - Shopping full width;
+  - copyright 11/20 centred, no divider.
+- Native reuse (category B/C): the existing `footer` (`t:names.footer`) and `footer-utilities` (`t:names.policies_and_links`, instance `t:names.utilities`) in `footer-group.json`. Names, types, presets and order unchanged. No new section.
+- Blocks composed in the footer (order = RTL reading order):
+  - `group` brand: `image` (own `image_picker` + `link`, independent of the header logo) + `text`;
+  - `menu` ×3 with headings التسوق / المساعدة / عن SNOSHA, `menu: ""` (the merchant assigns real Shopify menus), `menu_spacing` 12, accordion off;
+  - `group` newsletter: `text` title, `text` description, `email-signup` (native customer form, native success and error messages, custom input style `#fff` / `#dcf2fb` / radius 12, `button-custom` `#176bb0` / `#fff`, label اشترك).
+- Settings added (category B, all empty by default = native output): `custom_class` on `footer` and `footer-utilities`; `placeholder` on `email-signup` (falls back to the translation); `suffix_text` on `footer-copyright` (text after the store name; the year stays dynamic).
+- Settings changed (Level 3):
+  - footer `padding-block-end` 60→73, `custom_class` = `sn-footer-main`;
+  - utilities `padding-block-end` 48→60, `custom_class` = `sn-footer-utilities`;
+  - copyright `show_powered_by` true→false, `text_color` → `#5a5a59`, `suffix_text` = `— جميع الحقوق محفوظة.`
+- CSS (`assets/main.css`, Main):
+  - `.sn-footer-main` on the footer `.section`: container 86rem; blocks found by content (`.group-block:has(.email-signup-block)` = newsletter, other `.group-block` = brand, `.menu`), so reordering doesn't break it;
+  - ≥990: flex row (300 / flex-1 per menu / 340, 48px gap);
+  - <990: 2-column grid with `order` (brand, newsletter, menus) and the first menu in the DOM (Shopping) moved to a full-width last row via `:nth-child(1 of .menu)`;
+  - ≤749: mobile type sizes and paddings, `--page-margin` 20px;
+  - `.sn-footer-utilities`: container 86rem, `.utilities` margin-inline 20px from 750px up (divider spans 1336px), on mobile no divider, 20/24 padding, 11px centred copyright.
+- Copyright: the native block renders `© {year} {store name}`; Figma wording comes from `suffix_text`. Shown once, by Utilities only.
+- Limitations:
+  - the copyright shows the Shopify **store name**, so it must be "SNOSHA" in Settings → Store details;
+  - the native form does not add `contact[tags]=newsletter` (logic kept as is);
+  - an empty logo shows the native placeholder until the merchant picks an image;
+  - menus are empty (headings only) until assigned;
+  - the logo link is empty, so the merchant sets "/";
+  - tablet (750–989) uses the stacked layout with desktop type sizes (no Figma frame for it).
+- Shared files: `sections/footer-group.json`, `blocks/email-signup.liquid` (also used outside the footer; blank placeholder = native). Claimed and released by Main 2026-11-11.
+- Category: **B/C**. Approved by user: task request 2026-11-11.
+
 ## F. QA & progress
 
 | ID | Figma analysis | Code checks | Visual desktop | Visual mobile | RTL | Media | Reversibility | Pending issues |
 |---|---|---|---|---|---|---|---|---|
 | S01 | PASS (get_design_context, 2026-11-11) | PASS: Theme Check = baseline 9, JSON/schema parse OK, assets exist | PENDING USER REVIEW | PENDING USER REVIEW | PENDING USER REVIEW | PENDING USER REVIEW | PENDING USER REVIEW (expected `CLASS_PLUS_SETTINGS`: see E) | custom-class snippet sanitizer matrix untested (needs render); confirm text color is white |
 | S02 | PASS (get_design_context, 2026-11-11; navigation `190:3776` and `Nav Item` variants analysed 2026-11-11) | PASS: Theme Check = baseline 9 (header count 42→43, same offense), JSON/schema parse OK, mask assets exist | PENDING USER REVIEW | PENDING USER REVIEW | PENDING USER REVIEW | N/A (logo is the global native setting; icons are UI) | PENDING USER REVIEW (expected `CLASS_PLUS_SETTINGS: drawer_accordion, drawer_dividers`) | Fix rounds 1–2 applied 2026-11-11 (desktop grid, mobile height, drawer, exact 178×36 logo via native settings); confirm the store has `custom_class` = `sn-header-main` and `logo_height` = 36; desktop nav active marker and colours (added 2026-11-11); nav typography 16 vs 15px not done; account hidden on mobile (Figma); account button width unverified; cart bubble position; uploaded logo file dimensions unverified |
-| S03–S15 | — | — | — | — | — | — | — | Only project-level mapping done; no section-level analysis yet |
+| S03–S14 | — | — | — | — | — | — | — | Only project-level mapping done; no section-level analysis yet |
+| S15 | PASS (get_design_context, 2026-11-11) | PASS: Theme Check = baseline 9, footer-group JSON and 4 schemas parse, no duplicate IDs | PENDING USER REVIEW | PENDING USER REVIEW | PENDING USER REVIEW | PENDING USER REVIEW (logo via image picker) | PENDING USER REVIEW (expected `CLASS_PLUS_SETTINGS: footer/utilities padding, copyright settings`) | Merchant: pick the logo, assign 3 menus, set the logo link, check the store name; test newsletter submit |
 
 Give a section its own row here when its work starts, and keep the S01–S15 row only for sections that haven't started.
 
@@ -222,3 +262,4 @@ Give a section its own row here when its work starts, and keep the S01–S15 row
 | 2026-11-11 | S02 fix round 2: logo matched to the Figma **artwork** (178×36 on both viewports) through native `logo_height` 37→36 (`settings_data.json`, user-instructed) and `logo_height_mobile` 36; CSS size overrides removed; desktop offset 18px / 4px | The mobile Figma frame (138px) is not the visible artwork | S02 | Confirm the uploaded logo file is 178×36 |
 | 2026-11-11 | S02 desktop navigation Default/Active states: native `link.active` class plus scoped CSS marker (`::before`) and colours | Match the Figma `Nav Item` variants without new markup | S02 | User visual QA; nav typography is a separate decision |
 | 2026-11-11 | `_header-menu` "Top level size" select gets a 15px option (default still 16px) | User request; matches Figma nav 15px | S02 | Merchant picks 15px in the Theme Editor (Header → Menu → Top level size) |
+| 2026-11-11 | S15 footer implemented on the native Footer and Utilities (category B/C): native blocks composed, `custom_class` on both sections, `placeholder` on `email-signup`, `suffix_text` on `footer-copyright` | First global footer | S15 | User visual QA; merchant assigns menus and logo |

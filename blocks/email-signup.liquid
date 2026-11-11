@@ -64,7 +64,7 @@
         autocorrect="off"
         autocapitalize="off"
         autocomplete="email"
-        placeholder="{{ 'blocks.email_signup.placeholder' | t }}"
+        placeholder="{% if block_settings.placeholder != blank %}{{ block_settings.placeholder | escape }}{% else %}{{ 'blocks.email_signup.placeholder' | t }}{% endif %}"
         required
         {% if form.errors and form.id == blank %}
           autofocus
@@ -721,6 +721,12 @@
       "label": "t:settings.label",
       "default": "t:text_defaults.sign_up",
       "visible_if": "{{ block.settings.display_type == \"text\" }}"
+    },
+    {
+      "type": "text",
+      "id": "placeholder",
+      "label": "Input placeholder",
+      "info": "Optional. Leave empty to use the theme's default text."
     },
     {
       "type": "checkbox",

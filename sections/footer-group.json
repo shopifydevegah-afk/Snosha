@@ -13,13 +13,165 @@
   "sections": {
     "footer_m9NzUG": {
       "type": "footer",
+      "blocks": {
+        "footer_brand": {
+          "type": "group",
+          "settings": {
+            "content_direction": "column",
+            "horizontal_alignment_flex_direction_column": "flex-start",
+            "vertical_alignment_flex_direction_column": "flex-start",
+            "gap": 16,
+            "width": "fill",
+            "width_mobile": "fill",
+            "height": "fit"
+          },
+          "blocks": {
+            "footer_brand_logo": {
+              "type": "image",
+              "settings": {
+                "link": "",
+                "image_ratio": "adapt",
+                "width": "fit-content",
+                "width_mobile": "fit-content",
+                "height": "fit"
+              },
+              "blocks": {}
+            },
+            "footer_brand_text": {
+              "type": "text",
+              "settings": {
+                "text": "<p>عناية ذكية بالفم — تكنولوجيا وتصميم مدروس يجعلان روتينك اليومي أسهل.</p>",
+                "width": "100%",
+                "max_width": "none",
+                "alignment": "right",
+                "type_preset": "paragraph"
+              },
+              "blocks": {}
+            }
+          },
+          "block_order": [
+            "footer_brand_logo",
+            "footer_brand_text"
+          ]
+        },
+        "footer_menu_shop": {
+          "type": "menu",
+          "settings": {
+            "menu": "",
+            "heading": "التسوق",
+            "menu_spacing": 12,
+            "show_as_accordion": false,
+            "heading_preset": "paragraph",
+            "link_preset": "paragraph"
+          },
+          "blocks": {}
+        },
+        "footer_menu_help": {
+          "type": "menu",
+          "settings": {
+            "menu": "",
+            "heading": "المساعدة",
+            "menu_spacing": 12,
+            "show_as_accordion": false,
+            "heading_preset": "paragraph",
+            "link_preset": "paragraph"
+          },
+          "blocks": {}
+        },
+        "footer_menu_about": {
+          "type": "menu",
+          "settings": {
+            "menu": "",
+            "heading": "عن SNOSHA",
+            "menu_spacing": 12,
+            "show_as_accordion": false,
+            "heading_preset": "paragraph",
+            "link_preset": "paragraph"
+          },
+          "blocks": {}
+        },
+        "footer_newsletter": {
+          "type": "group",
+          "settings": {
+            "content_direction": "column",
+            "horizontal_alignment_flex_direction_column": "flex-start",
+            "vertical_alignment_flex_direction_column": "flex-start",
+            "gap": 14,
+            "width": "fill",
+            "width_mobile": "fill",
+            "height": "fit"
+          },
+          "blocks": {
+            "footer_newsletter_title": {
+              "type": "text",
+              "settings": {
+                "text": "<p>اشترك في النشرة</p>",
+                "width": "100%",
+                "max_width": "none",
+                "alignment": "right",
+                "type_preset": "paragraph"
+              },
+              "blocks": {}
+            },
+            "footer_newsletter_text": {
+              "type": "text",
+              "settings": {
+                "text": "<p>نصائح للعناية بالفم وعروض SNOSHA مباشرة على بريدك.</p>",
+                "width": "100%",
+                "max_width": "none",
+                "alignment": "right",
+                "type_preset": "paragraph"
+              },
+              "blocks": {}
+            },
+            "footer_newsletter_form": {
+              "type": "email-signup",
+              "settings": {
+                "width": "fill",
+                "heading": "",
+                "border_style": "all",
+                "input_style": "custom",
+                "border_width": 1,
+                "border_radius": 12,
+                "input_background_color": "#ffffff",
+                "input_text_color": "#5a5a59",
+                "input_border_color": "#dcf2fb",
+                "input_type_preset": "paragraph",
+                "style_class": "button-custom",
+                "custom_button_background": "#176bb0",
+                "custom_button_text": "#ffffff",
+                "custom_button_border": "#176bb0",
+                "display_type": "text",
+                "label": "اشترك",
+                "placeholder": "البريد الإلكتروني",
+                "integrated_button": false,
+                "button_type_preset": "paragraph"
+              },
+              "blocks": {}
+            }
+          },
+          "block_order": [
+            "footer_newsletter_title",
+            "footer_newsletter_text",
+            "footer_newsletter_form"
+          ]
+        }
+      },
+      "block_order": [
+        "footer_brand",
+        "footer_menu_shop",
+        "footer_menu_help",
+        "footer_menu_about",
+        "footer_newsletter"
+      ],
       "name": "t:names.footer",
       "settings": {
         "section_width": "page-width",
         "gap": 20,
         "background_color": "{{ settings.color_palette.color3 }}",
         "padding-block-start": 60,
-        "padding-block-end": 60
+        "padding-block-end": 73,
+        "custom_class": "sn-footer-main"
       }
     },
     "footer_utilities_jLGE8U": {
@@ -28,8 +180,9 @@
         "footer_copyright_jweRK8": {
           "type": "footer-copyright",
           "settings": {
-            "show_powered_by": true,
-            "text_color": "",
+            "show_powered_by": false,
+            "suffix_text": "— جميع الحقوق محفوظة.",
+            "text_color": "#5a5a59",
             "font_size": "0.75rem",
             "case": "none"
           },
@@ -47,7 +200,8 @@
         "divider_thickness": 1,
         "divider_color": "{{ settings.color_palette.color1 }}",
         "padding-block-start": 48,
-        "padding-block-end": 48
+        "padding-block-end": 60,
+        "custom_class": "sn-footer-utilities"
       }
     }
   },

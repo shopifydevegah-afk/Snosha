@@ -15,6 +15,7 @@
   <span class="footer-utilities__text">
     &copy; {{ 'now' | date: '%Y' }}
     {{ shop.name | link_to: routes.root_url -}}
+    {%- if block_settings.suffix_text != blank %} {{ block_settings.suffix_text | escape }}{% endif -%}
     {%- if block_settings.show_powered_by -%}
       , {{ powered_by_link }}
     {%- endif -%}
@@ -41,6 +42,12 @@
     {
       "type": "paragraph",
       "content": "t:content.manage_store_name"
+    },
+    {
+      "type": "text",
+      "id": "suffix_text",
+      "label": "Text after store name",
+      "info": "Optional, e.g. \"— All rights reserved.\" The year is added automatically."
     },
     {
       "type": "header",
