@@ -36,12 +36,12 @@ Each one is decided; the details are in the referenced Skill file.
 
 | Developer | CSS file | Status | Sections assigned |
 |---|---|---|---|
-| Main | `assets/main.css` | Initialized 2026-11-08 (loaded once after `custom-cairo.css`) | S01 (2026-11-11) |
+| Main | `assets/main.css` | Initialized 2026-11-08 (loaded once after `custom-cairo.css`) | S01 (2026-11-11), S02 header (2026-11-11) |
 | Dev1 | `assets/dev1.css` | Not initialized | — |
 | Dev2 | `assets/dev2.css` | Not initialized | — |
 | Dev3 | `assets/dev3.css` | Not initialized | — |
 
-**Custom classes owned:** `sn-header-announcement` (Main, S01).
+**Custom classes owned:** `sn-header-announcement` (Main, S01), `sn-header-main` (Main, S02).
 **Shared-file claims (active):** none.
 
 ## D. Section registry
@@ -51,7 +51,7 @@ Logical areas from the Figma homepage, in Figma order. A row isn't necessarily o
 | ID | Section | Desktop node | Mobile node | Target | Owner | Status | Cat. | Native component | Custom class | Dependencies / blockers |
 |---|---|---|---|---|---|---|---|---|---|---|
 | S01 | Announcement Bar | `190:3768` | `190:4083` | header-group (global) | Main | IMPLEMENTED | B | `header-announcements` + `_announcement` | `sn-header-announcement` | Global: affects all pages. Visual QA pending user review |
-| S02 | Header / Navigation | `190:3769` + `190:3776` | `190:4084` | header-group (global) | — | NOT_STARTED | — | — | — | Global. `header` already has 42 settings (G) |
+| S02 | Header / Navigation | `190:3769` + `190:3776` | `190:4084` | header-group (global) | Main | IMPLEMENTED (header row only) | B | `header` (+ `_header-logo`, `header-actions`, `search`, `header-drawer`) | `sn-header-main` | Global. Desktop navigation `190:3776` not started (separate task). `header` now has 43 settings (G). Visual QA pending user review |
 | S03 | Hero + Trust Strip | `190:3789` | `335:3959` | index.json | — | NOT_STARTED | — | — | — | — |
 | S04 | Collections | `190:3830` | `190:4133` | index.json | — | NOT_STARTED | — | — | — | — |
 | S05 | Featured Collection | `190:3844` | `190:4149` | index.json | — | NOT_STARTED | — | — | — | Same design as S07 |
@@ -100,12 +100,42 @@ Each section gets its own subsection here (with the Native Reuse Audit) when its
 - Narrow screens: text may wrap below about 330px instead of overflowing; the icon doesn't shrink. Not forced to nowrap.
 - Category: **B**. Approved by user: task request 2026-11-11.
 
+### S02 Header (header row; desktop navigation `190:3776` not done)
+- Figma: desktop `190:3769`, mobile `190:4084`. Read with `get_design_context` 2026-11-11.
+- Desktop spec:
+  - row: 88px tall (33px padding + 22px icons), white, no border;
+  - container: max 1376px with 20px padding;
+  - icons: 22px frames, 22px apart, on the visual right; order from the visual right is cart, search, account;
+  - logo: frame 184×37.18 (artwork 178×36), centre 18px right of the frame centre.
+- Mobile spec:
+  - row: 64px tall, white, 1px `#dcf2fb` bottom border, 20px side padding;
+  - three columns: [cart, search 18px apart] | logo 138×27.9 centred | menu;
+  - no account icon.
+- Icon colours: desktop `#12568d`, mobile `#176bb0`.
+- Matching Horizon: section `header` (name `t:names.header`, kept, `presets: []` unchanged), already in `header-group.json` (`header_section`). Reused with its static `_header-logo`/`_header-menu` blocks and the native `header-actions`, `search` and `header-drawer` controls. No new section, no duplicated markup, no JS changes.
+- Native settings reused: `logo_position` center, `menu_row` bottom (navigation stays in its own row), `search_row` top, `actions_display_style` icon, `section_width` page-width, `enable_sticky_header` always. Logo image: global `settings.logo` (already the SNOSHA SVG).
+- Setting changed (Level 3): `search_position` left→**right** (Horizon's default), so search sits in the same column as the actions.
+- Setting added (category B): `custom_class` on `header` → rendered on `<header-component id="header-component">`.
+- Icons: Horizon's glyphs differ (bag instead of cart, 2-line menu, different search and account). The Figma SVGs were saved as `assets/icon-header-{account,search,cart,menu}.svg` and painted over the **native** `<svg>` elements with CSS masks. Buttons, links, `aria-*`, drawer, search modal, cart drawer and bubble are unchanged, and tap targets stay 44px (40px on mobile).
+- CSS (`assets/main.css`, owner Main, under `#header-component.sn-header-main`; the ID is needed to beat Horizon's drawer-mode rules):
+  - desktop: top-row container 86rem (1376px), 22px vertical padding (88px row), grid areas swapped to `'right center left'`, `header-actions` flattened (`display: contents`) and ordered cart / search / account with no gap, logo 36px high and nudged 18px;
+  - mobile and drawer mode: 40px edge columns, 20px side padding, 9.5px vertical padding plus a 1px `#dcf2fb` border through Horizon's own `--border-bottom-*-mobile` variables (64px), search moved next to the cart (`rightA`), account hidden, cart and search glyphs pinned to the outer edge (18px gap), menu glyph pinned, logo 28px high.
+- Logo size: done in scoped CSS because the native size settings (`logo_height` 37 / `logo_height_mobile` 36) are global, in protected `settings_data.json`.
+- Settings to reset to undo (Level 3): `search_position` → left, `custom_class` → empty. Expected reversibility: `CLASS_PLUS_SETTINGS: search_position` (untested).
+- Shared files touched: `sections/header-group.json` (header instance only: 2 settings; S01 untouched), `sections/header.liquid` (class render + 1 setting). Claimed and released by Main 2026-11-11.
+- Dependencies and limits:
+  - the mobile border relies on the top row having `divider--page-width` (true while the menu is in the bottom row and `divider_size` = page-width);
+  - transparent header modes would keep the blue icons (they're off);
+  - in touch drawer mode at ≥750px (tablets) the mobile layout and 28px logo apply.
+- Category: **B**. Approved by user: task request 2026-11-11.
+
 ## F. QA & progress
 
 | ID | Figma analysis | Code checks | Visual desktop | Visual mobile | RTL | Media | Reversibility | Pending issues |
 |---|---|---|---|---|---|---|---|---|
 | S01 | PASS (get_design_context, 2026-11-11) | PASS: Theme Check = baseline 9, JSON/schema parse OK, assets exist | PENDING USER REVIEW | PENDING USER REVIEW | PENDING USER REVIEW | PENDING USER REVIEW | PENDING USER REVIEW (expected `CLASS_PLUS_SETTINGS`: see E) | custom-class snippet sanitizer matrix untested (needs render); confirm text color is white |
-| S02–S15 | — | — | — | — | — | — | — | Only project-level mapping done; no section-level analysis yet |
+| S02 | PASS (get_design_context, 2026-11-11; navigation `190:3776` not analysed) | PASS: Theme Check = baseline 9 (header count 42→43, same offense), JSON/schema parse OK, mask assets exist | PENDING USER REVIEW | PENDING USER REVIEW | PENDING USER REVIEW | N/A (logo is the global native setting; icons are UI) | PENDING USER REVIEW (expected `CLASS_PLUS_SETTINGS: search_position`) | Account hidden on mobile (Figma), so check how mobile users reach account; account button width (Shopify web component) unverified; cart bubble position over the new glyph |
+| S03–S15 | — | — | — | — | — | — | — | Only project-level mapping done; no section-level analysis yet |
 
 Give a section its own row here when its work starts, and keep the S01–S15 row only for sections that haven't started.
 
@@ -116,7 +146,7 @@ Give a section its own row here when its work starts, and keep the S01–S15 row
 - Gutters: Figma mobile 24px (20px in some sections) vs Horizon 16px. Horizon scales padding ×0.7 below 990px.
 - Tokens: Cairo, `#176bb0` (primary button), `#f0fafe` and `#dcf2fb` (palette) match. The theme foreground is `#000000` vs Figma `#131311`, and theme H1/H2 are 56/48px vs Figma display 56, H1 40, H2 32.
 - Theme Check baseline: 9 offenses (2 errors, 7 warnings), listed in horizon-architecture.md.
-- The `header` schema has 42 settings (Theme Check warning; not a platform limit).
+- The `header` schema has 42 settings (Theme Check warning; not a platform limit). **Update 2026-11-11:** 43 after adding the required `custom_class` for S02 (same single warning).
 - Media: the merchant uploads final images and videos through the Theme Editor. No Figma exports go in the code.
 - Preview: Shopify CLI preview is available but hasn't been used for visual QA yet.
 
@@ -136,3 +166,6 @@ Give a section its own row here when its work starts, and keep the S01–S15 row
 | 2026-11-11 | `snippets/custom-class.liquid` created (first use) | Required by the custom-class policy | All future custom classes | Run the sanitizer test matrix when a render is available |
 | 2026-11-11 | Exception to "no Figma exports in code": a decorative brand icon may ship as a default local SVG asset **if** a Theme Editor `image_picker` can override it | No native equivalent; the task asked for the exact Figma icon | S01 (`icon-sparkle-brand.svg`) | Reuse the same asset for other sparkle icons (S03, S06, S13) instead of duplicating it |
 | 2026-11-11 | S01 implemented (category B) | First section | S01 | User visual QA |
+| 2026-11-11 | UI icons that differ from Horizon's are replaced with Figma SVG assets painted over the native `<svg>` by CSS masks (no markup or JS changes) | Exact Figma glyphs while keeping native controls | S02 (`icon-header-*.svg`) | Reuse the same pattern and assets elsewhere |
+| 2026-11-11 | `header` schema to 43 settings (`custom_class`) | Required by the custom-class policy; the user's S02 task asked for it | S02 | Theme Check warning only; no further `header` settings without need |
+| 2026-11-11 | S02 header row implemented (category B) | — | S02 | User visual QA; desktop navigation `190:3776` is a separate task |

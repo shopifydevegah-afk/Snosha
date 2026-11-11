@@ -197,6 +197,11 @@
 
   assign class = 'header'
 
+  capture custom_class
+    render 'custom-class', value: section.settings.custom_class
+  endcapture
+  assign class = class | append: custom_class
+
   if header_height_class
     assign class = class | append: ' ' | append: header_height_class
   endif
@@ -1840,6 +1845,16 @@
       "label": "t:settings.text_color_transparent",
       "placeholder": "t:settings.default",
       "visible_if": "{{ section.settings.enable_transparent_header_collection }}"
+    },
+    {
+      "type": "header",
+      "content": "Advanced"
+    },
+    {
+      "type": "text",
+      "id": "custom_class",
+      "label": "Custom CSS class",
+      "info": "Lowercase letters, numbers and hyphens, starting with a letter. Separate multiple classes with spaces."
     }
   ],
   "presets": []

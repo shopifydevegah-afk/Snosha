@@ -18,3 +18,179 @@
     }
   }
 }
+
+/* sn-header-main — header (S02) | Figma desktop 190:3769, mobile 190:4084 | owner: Main
+   The native header (buttons, links, drawer, search, cart, account, JS) is untouched. This block:
+   - paints the Figma glyphs over the native <svg> elements with CSS masks (assets/icon-header-*.svg);
+   - places the actions, sizes the rows and the logo as in Figma.
+   Relies on the native setting search_position = right (Horizon's default).
+   `#header-component` is part of the selectors because Horizon's touch/drawer rules use that ID. */
+#header-component.sn-header-main {
+  --sn-header-icon-color: #12568d; /* Figma desktop icon stroke */
+
+  /* Figma icon glyphs: the native <svg> stays for accessibility and JS; its own paths are hidden
+     and the element is painted with the Figma shape as a mask. */
+  .search-action .svg-wrapper > svg,
+  .header-actions__cart-icon .svg-wrapper > svg,
+  .account-button__icon,
+  .header-drawer-icon--open > svg {
+    width: var(--icon-size-md); /* 22px, the Figma icon frame */
+    height: var(--icon-size-md);
+    background-color: var(--sn-header-icon-color);
+    mask-repeat: no-repeat;
+    mask-position: center;
+
+    > * {
+      visibility: hidden;
+    }
+  }
+
+  .search-action .svg-wrapper > svg {
+    mask-image: url('icon-header-search.svg');
+    mask-size: 18px; /* Figma: 18px vector in a 22px frame */
+  }
+
+  .header-actions__cart-icon .svg-wrapper > svg {
+    mask-image: url('icon-header-cart.svg');
+    mask-size: 22px;
+  }
+
+  .account-button__icon {
+    mask-image: url('icon-header-account.svg');
+    mask-size: 24px; /* Figma: 24px vector in a 22px frame */
+  }
+
+  .header-drawer-icon--open {
+    width: var(--icon-size-md);
+    height: var(--icon-size-md);
+  }
+
+  .header-drawer-icon--open > svg {
+    mask-image: url('icon-header-menu.svg');
+    mask-size: 24px; /* Figma: 24px vector in a 22px frame */
+  }
+
+  /* Desktop (inline menu) */
+  @media screen and (min-width: 750px) {
+    &[data-menu-style='menu'] .header__row--top {
+      /* Figma container: 1376px (52px side margins at 1480px) */
+      --page-content-width: 86rem;
+      --page-width: calc(var(--page-content-width) + var(--page-margin) * 2);
+
+      > .header__columns {
+        /* 22px + 44px buttons + 22px = 88px row */
+        --padding-block-start: 22px;
+        --padding-block-end: 22px;
+
+        /* Figma: glyphs end 20px inside the container; native buttons are 44px around a 22px glyph */
+        padding-inline: calc(20px - (var(--button-size) - var(--icon-size-md)) / 2);
+
+        /* Figma: actions at the inline-start side (visual right in RTL) */
+        grid-template-areas: 'right center left';
+      }
+
+      .header__column--right {
+        gap: 0; /* 44px buttons side by side = 22px between the 22px glyphs */
+      }
+
+      header-actions {
+        display: contents;
+      }
+
+      /* Figma order from inline-start: cart, search, account */
+      header-actions > .header-actions__action:not(.account-button) {
+        order: 1;
+      }
+
+      .header__column--right .search-action {
+        order: 2;
+        margin-inline: 0;
+      }
+
+      .account-button {
+        order: 3;
+      }
+
+      .header-logo {
+        translate: 18px 0; /* Figma: logo centre sits 18px right of the frame centre */
+      }
+
+      .header-logo__image {
+        height: 36px; /* Figma logo artwork 178 x 36 */
+        width: auto;
+      }
+    }
+  }
+
+  /* Mobile layout (narrow screens, and touch devices in drawer mode) */
+  @media screen and (max-width: 749px) {
+    --sn-header-icon-color: #176bb0; /* Figma mobile icon stroke */
+
+    .header__row--top > .header__columns {
+      --header-mobile-bookend: 40px; /* 22px glyphs, 18px apart */
+      --border-bottom-width-mobile: 1px; /* read by Horizon's mobile border rule */
+      --border-bottom-color-mobile: #dcf2fb;
+
+      padding-inline: 20px;
+      padding-block: 9.5px; /* 9.5 + 44 + 9.5 + 1px border = 64px */
+    }
+
+    .header__row--top .header__columns .search-action {
+      grid-area: rightA; /* next to the cart, as in Figma */
+    }
+
+    .account-button {
+      display: none; /* not in the Figma mobile header */
+    }
+
+    /* Pin the cart and search glyphs to the outer edge of their 40px cells */
+    :is(.header-actions__cart-icon, .search-action) .svg-wrapper {
+      width: var(--header-mobile-bookend);
+      justify-content: flex-end;
+    }
+
+    .header-drawer-icon--open {
+      margin-inline: 0; /* pin the menu glyph to the edge */
+    }
+
+    .header-logo__image {
+      height: 28px; /* Figma logo 138 x 27.9 */
+      width: auto;
+    }
+  }
+
+  &[data-menu-style='drawer'] {
+    --sn-header-icon-color: #176bb0;
+
+    .header__row--top > .header__columns {
+      --header-mobile-bookend: 40px;
+      --border-bottom-width-mobile: 1px;
+      --border-bottom-color-mobile: #dcf2fb;
+
+      padding-inline: 20px;
+      padding-block: 9.5px;
+    }
+
+    .header__row--top .header__columns .search-action {
+      grid-area: rightA;
+    }
+
+    .account-button {
+      display: none;
+    }
+
+    :is(.header-actions__cart-icon, .search-action) .svg-wrapper {
+      width: var(--header-mobile-bookend);
+      justify-content: flex-end;
+    }
+
+    .header-drawer-icon--open {
+      margin-inline: 0;
+    }
+
+    .header-logo__image {
+      height: 28px;
+      width: auto;
+    }
+  }
+}

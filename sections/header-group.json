@@ -93,7 +93,7 @@
         "menu_row": "bottom",
         "customer_account_menu": "customer-account-main-menu",
         "show_search": true,
-        "search_position": "left",
+        "search_position": "right",
         "search_row": "top",
         "show_country": false,
         "country_selector_style": false,
@@ -129,7 +129,8 @@
         "text_color_transparent_product": "",
         "enable_transparent_header_collection": false,
         "collection_inverse_logo": false,
-        "text_color_transparent_collection": ""
+        "text_color_transparent_collection": "",
+        "custom_class": "sn-header-main"
       }
     }
   },
