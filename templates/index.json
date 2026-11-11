@@ -1220,8 +1220,8 @@
           "type": "comparison-slider",
           "name": "t:names.comparison_slider",
           "settings": {
-            "before_image": "shopify://shop_images/92ca5856b07edb3f14a53ea7e3f9c48fdeaf29db.png",
-            "after_image": "shopify://shop_images/92ca5856b07edb3f14a53ea7e3f9c48fdeaf29db.png",
+            "before_image": "shopify://shop_images/92ca5856b07edb3f14a53ea7e3f9c48fdeaf29db_67da0230-bf8f-4155-923a-a6f7c68aa8c9.png",
+            "after_image": "shopify://shop_images/92ca5856b07edb3f14a53ea7e3f9c48fdeaf29db_67da0230-bf8f-4155-923a-a6f7c68aa8c9.png",
             "slider_style": "horizontal",
             "show_text": true,
             "before_text": "قبل",
@@ -1296,13 +1296,13 @@
         "padding-block-end": 60,
         "padding-inline-start": 0,
         "padding-inline-end": 0,
+        "content_max_width": 1360,
         "padding-block-start-mobile": 56,
         "padding-block-end-mobile": 40,
         "padding-inline-mobile": 8,
         "gap_mobile": 20,
         "mobile_reverse_order": true,
-        "custom_class": "sn-home-before-after",
-        "content_max_width": 1360
+        "custom_class": "sn-home-before-after"
       }
     }
   },
