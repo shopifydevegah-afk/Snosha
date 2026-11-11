@@ -2525,15 +2525,29 @@
             "height": "fit",
             "custom_height": 100,
             "background_media": "none",
+            "background_color": "",
+            "video_position": "cover",
+            "background_image_position": "cover",
+            "toggle_overlay": false,
+            "overlay_color": "#00000026",
+            "overlay_style": "solid",
+            "gradient_direction": "to top",
             "border": "none",
             "border_width": 1,
             "border_opacity": 100,
+            "border_color": "",
             "border_radius": 0,
+            "link": "",
+            "open_in_new_tab": false,
+            "placeholder": "",
             "padding-block-start": 0,
             "padding-block-end": 0,
             "padding-inline-start": 0,
             "padding-inline-end": 0,
-            "custom_class": "sn-home-care-head"
+            "mobile_content_alignment": "same",
+            "custom_class": "sn-home-care-head",
+            "float_position": "none",
+            "float_position_mobile": "same"
           },
           "blocks": {
             "care_heading": {
@@ -2546,14 +2560,25 @@
                 "alignment": "center",
                 "mobile_alignment": "same",
                 "type_preset": "rte",
+                "font": "var(--font-body--family)",
+                "font_size": "1rem",
+                "mobile_font_size": 24,
                 "font_size_mobile": 24,
                 "line_height_mobile": 38,
+                "line_height": "normal",
+                "letter_spacing": "normal",
+                "case": "none",
+                "wrap": "pretty",
+                "text_color": "",
                 "background": false,
+                "background_color": "#00000026",
+                "corner_radius": 0,
                 "padding-block-start": 0,
                 "padding-block-end": 0,
                 "padding-inline-start": 0,
                 "padding-inline-end": 0
-              }
+              },
+              "blocks": {}
             },
             "care_description": {
               "type": "text",
@@ -2565,14 +2590,25 @@
                 "alignment": "center",
                 "mobile_alignment": "same",
                 "type_preset": "rte",
+                "font": "var(--font-body--family)",
+                "font_size": "1rem",
+                "mobile_font_size": 24,
                 "font_size_mobile": 15,
                 "line_height_mobile": 38,
+                "line_height": "normal",
+                "letter_spacing": "normal",
+                "case": "none",
+                "wrap": "pretty",
+                "text_color": "",
                 "background": false,
+                "background_color": "#00000026",
+                "corner_radius": 0,
                 "padding-block-start": 0,
                 "padding-block-end": 0,
                 "padding-inline-start": 0,
                 "padding-inline-end": 0
-              }
+              },
+              "blocks": {}
             }
           },
           "block_order": [
@@ -2584,11 +2620,13 @@
           "type": "_carousel-content",
           "static": true,
           "settings": {
+            "background_color": "",
             "height": "fit",
             "position": "center",
             "border": "none",
             "border_width": 1,
             "border_opacity": 100,
+            "border_color": "",
             "border_radius": 0,
             "padding-block-start": 0,
             "padding-block-end": 0,
@@ -2596,7 +2634,7 @@
             "padding-inline-end": 0
           },
           "blocks": {
-            "care_card_1": {
+            "care_card_3": {
               "type": "_card",
               "name": "Product card",
               "settings": {
@@ -2609,7 +2647,15 @@
                 "vertical_alignment_flex_direction_column": "center",
                 "gap": 0,
                 "background_media": "none",
+                "background_color": "",
+                "video_position": "cover",
+                "background_image_position": "cover",
                 "aspect_ratio": "adapt",
+                "toggle_overlay": false,
+                "overlay_color": "#00000026",
+                "overlay_style": "solid",
+                "gradient_direction": "to top",
+                "link": "",
                 "open_in_new_tab": false,
                 "padding-block-start": 0,
                 "padding-block-end": 0,
@@ -2618,9 +2664,10 @@
                 "featured": false
               },
               "blocks": {
-                "care_f1_product": {
+                "care_tongue_product": {
                   "type": "product-card",
                   "settings": {
+                    "product": "منظف-اللسان-snosha",
                     "product_card_gap": 16,
                     "width": "fill",
                     "custom_width": 100,
@@ -2630,6 +2677,7 @@
                     "border": "none",
                     "border_width": 1,
                     "border_opacity": 100,
+                    "border_color": "",
                     "border_radius": 24,
                     "padding-block-start": 24,
                     "padding-block-end": 13,
@@ -2637,7 +2685,7 @@
                     "padding-inline-end": 24
                   },
                   "blocks": {
-                    "care_f1_gallery": {
+                    "care_tongue_gallery": {
                       "type": "_product-card-gallery",
                       "settings": {
                         "image_ratio": "landscape",
@@ -2650,22 +2698,34 @@
                         "padding-block-end": 0,
                         "padding-inline-start": 0,
                         "padding-inline-end": 0
-                      }
+                      },
+                      "blocks": {}
                     },
-                    "care_f1_title": {
+                    "care_tongue_title": {
                       "type": "product-title",
                       "settings": {
                         "width": "100%",
                         "max_width": "none",
                         "alignment": "left",
                         "type_preset": "rte",
+                        "font": "var(--font-body--family)",
+                        "font_size": "1rem",
+                        "line_height": "normal",
+                        "letter_spacing": "normal",
+                        "case": "none",
+                        "wrap": "pretty",
+                        "text_color": "",
+                        "background": false,
+                        "background_color": "#00000026",
+                        "corner_radius": 0,
                         "padding-block-start": 0,
                         "padding-block-end": 0,
                         "padding-inline-start": 0,
                         "padding-inline-end": 0
-                      }
+                      },
+                      "blocks": {}
                     },
-                    "care_f1_description": {
+                    "care_tongue_description": {
                       "type": "text",
                       "name": "Product description",
                       "settings": {
@@ -2676,16 +2736,27 @@
                         "alignment": "left",
                         "mobile_alignment": "same",
                         "type_preset": "rte",
+                        "font": "var(--font-body--family)",
+                        "font_size": "1rem",
+                        "mobile_font_size": 24,
                         "font_size_mobile": 9,
                         "line_height_mobile": 16,
+                        "line_height": "normal",
+                        "letter_spacing": "normal",
+                        "case": "none",
+                        "wrap": "pretty",
+                        "text_color": "",
                         "background": false,
+                        "background_color": "#00000026",
+                        "corner_radius": 0,
                         "padding-block-start": 0,
                         "padding-block-end": 0,
                         "padding-inline-start": 0,
                         "padding-inline-end": 0
-                      }
+                      },
+                      "blocks": {}
                     },
-                    "care_f1_specs": {
+                    "care_tongue_specs": {
                       "type": "_product-card-group",
                       "name": "Product specifications",
                       "settings": {
@@ -2704,10 +2775,20 @@
                         "height": "fit",
                         "custom_height": 100,
                         "background_media": "none",
+                        "background_color": "",
+                        "video_position": "cover",
+                        "background_image_position": "cover",
+                        "toggle_overlay": false,
+                        "overlay_color": "#00000026",
+                        "overlay_style": "solid",
+                        "gradient_direction": "to top",
                         "border": "none",
                         "border_width": 1,
                         "border_opacity": 100,
+                        "border_color": "",
                         "border_radius": 0,
+                        "link": "",
+                        "open_in_new_tab": false,
                         "padding-block-start": 4,
                         "padding-block-end": 0,
                         "padding-inline-start": 0,
@@ -2715,7 +2796,7 @@
                         "custom_class": "sn-home-care-specs"
                       },
                       "blocks": {
-                        "care_f1_spec_1": {
+                        "care_tongue_spec_1": {
                           "type": "_product-card-group",
                           "name": "Specification item",
                           "settings": {
@@ -2734,10 +2815,20 @@
                             "height": "fit",
                             "custom_height": 100,
                             "background_media": "none",
+                            "background_color": "",
+                            "video_position": "cover",
+                            "background_image_position": "cover",
+                            "toggle_overlay": false,
+                            "overlay_color": "#00000026",
+                            "overlay_style": "solid",
+                            "gradient_direction": "to top",
                             "border": "none",
                             "border_width": 1,
                             "border_opacity": 100,
+                            "border_color": "",
                             "border_radius": 0,
+                            "link": "",
+                            "open_in_new_tab": false,
                             "padding-block-start": 0,
                             "padding-block-end": 0,
                             "padding-inline-start": 0,
@@ -2745,42 +2836,55 @@
                             "custom_class": ""
                           },
                           "blocks": {
-                            "care_f1_spec_1_icon": {
+                            "care_tongue_spec_1_icon": {
                               "type": "icon",
                               "settings": {
-                                "icon": "bottle",
+                                "icon": "star",
+                                "image_upload": "shopify://shop_images/vector_f8fb5689-2ef7-4efe-8613-8fe0f58e37a9.svg",
                                 "width": 20,
                                 "link": "",
                                 "open_in_new_tab": false,
                                 "icon_color": "#176bb0"
-                              }
+                              },
+                              "blocks": {}
                             },
-                            "care_f1_spec_1_text": {
+                            "care_tongue_spec_1_text": {
                               "type": "text",
                               "settings": {
-                                "text": "<p>خزان ماء 330 مل</p>",
+                                "text": "<p>يزيل مصدر 90% من رائحة الفم</p>",
                                 "mobile_text": "",
                                 "width": "100%",
                                 "max_width": "none",
                                 "alignment": "left",
                                 "mobile_alignment": "same",
                                 "type_preset": "rte",
+                                "font": "var(--font-body--family)",
+                                "font_size": "1rem",
+                                "mobile_font_size": 24,
                                 "font_size_mobile": 9,
                                 "line_height_mobile": 16,
+                                "line_height": "normal",
+                                "letter_spacing": "normal",
+                                "case": "none",
+                                "wrap": "pretty",
+                                "text_color": "",
                                 "background": false,
+                                "background_color": "#00000026",
+                                "corner_radius": 0,
                                 "padding-block-start": 0,
                                 "padding-block-end": 0,
                                 "padding-inline-start": 0,
                                 "padding-inline-end": 0
-                              }
+                              },
+                              "blocks": {}
                             }
                           },
                           "block_order": [
-                            "care_f1_spec_1_icon",
-                            "care_f1_spec_1_text"
+                            "care_tongue_spec_1_icon",
+                            "care_tongue_spec_1_text"
                           ]
                         },
-                        "care_f1_spec_2": {
+                        "care_tongue_spec_2": {
                           "type": "_product-card-group",
                           "name": "Specification item",
                           "settings": {
@@ -2799,10 +2903,20 @@
                             "height": "fit",
                             "custom_height": 100,
                             "background_media": "none",
+                            "background_color": "",
+                            "video_position": "cover",
+                            "background_image_position": "cover",
+                            "toggle_overlay": false,
+                            "overlay_color": "#00000026",
+                            "overlay_style": "solid",
+                            "gradient_direction": "to top",
                             "border": "none",
                             "border_width": 1,
                             "border_opacity": 100,
+                            "border_color": "",
                             "border_radius": 0,
+                            "link": "",
+                            "open_in_new_tab": false,
                             "padding-block-start": 0,
                             "padding-block-end": 0,
                             "padding-inline-start": 0,
@@ -2810,43 +2924,55 @@
                             "custom_class": ""
                           },
                           "blocks": {
-                            "care_f1_spec_2_icon": {
+                            "care_tongue_spec_2_icon": {
                               "type": "icon",
                               "settings": {
                                 "icon": "check_box",
-                                "image_upload": "shopify://shop_images/vector_1b715f9f-fc54-4010-a53f-60444ef01aca.svg",
+                                "image_upload": "shopify://shop_images/shield-check.svg",
                                 "width": 20,
                                 "link": "",
                                 "open_in_new_tab": false,
                                 "icon_color": "#176bb0"
-                              }
+                              },
+                              "blocks": {}
                             },
-                            "care_f1_spec_2_text": {
+                            "care_tongue_spec_2_text": {
                               "type": "text",
                               "settings": {
-                                "text": "<p>4 أوضاع تنظيف</p>",
+                                "text": "<p>فولاذ مقاوم للصدأ 420J2</p>",
                                 "mobile_text": "",
                                 "width": "100%",
                                 "max_width": "none",
                                 "alignment": "left",
                                 "mobile_alignment": "same",
                                 "type_preset": "rte",
+                                "font": "var(--font-body--family)",
+                                "font_size": "1rem",
+                                "mobile_font_size": 24,
                                 "font_size_mobile": 9,
                                 "line_height_mobile": 16,
+                                "line_height": "normal",
+                                "letter_spacing": "normal",
+                                "case": "none",
+                                "wrap": "pretty",
+                                "text_color": "",
                                 "background": false,
+                                "background_color": "#00000026",
+                                "corner_radius": 0,
                                 "padding-block-start": 0,
                                 "padding-block-end": 0,
                                 "padding-inline-start": 0,
                                 "padding-inline-end": 0
-                              }
+                              },
+                              "blocks": {}
                             }
                           },
                           "block_order": [
-                            "care_f1_spec_2_icon",
-                            "care_f1_spec_2_text"
+                            "care_tongue_spec_2_icon",
+                            "care_tongue_spec_2_text"
                           ]
                         },
-                        "care_f1_spec_3": {
+                        "care_tongue_spec_3": {
                           "type": "_product-card-group",
                           "name": "Specification item",
                           "settings": {
@@ -2865,10 +2991,20 @@
                             "height": "fit",
                             "custom_height": 100,
                             "background_media": "none",
+                            "background_color": "",
+                            "video_position": "cover",
+                            "background_image_position": "cover",
+                            "toggle_overlay": false,
+                            "overlay_color": "#00000026",
+                            "overlay_style": "solid",
+                            "gradient_direction": "to top",
                             "border": "none",
                             "border_width": 1,
                             "border_opacity": 100,
+                            "border_color": "",
                             "border_radius": 0,
+                            "link": "",
+                            "open_in_new_tab": false,
                             "padding-block-start": 0,
                             "padding-block-end": 0,
                             "padding-inline-start": 0,
@@ -2876,43 +3012,55 @@
                             "custom_class": ""
                           },
                           "blocks": {
-                            "care_f1_spec_3_icon": {
+                            "care_tongue_spec_3_icon": {
                               "type": "icon",
                               "settings": {
                                 "icon": "check_box",
-                                "image_upload": "shopify://shop_images/brush-head_5d8e2d1e-150c-46fc-861c-cd7e19d1e1db.png",
+                                "image_upload": "shopify://shop_images/brush-head.svg",
                                 "width": 20,
                                 "link": "",
                                 "open_in_new_tab": false,
                                 "icon_color": "#176bb0"
-                              }
+                              },
+                              "blocks": {}
                             },
-                            "care_f1_spec_3_text": {
+                            "care_tongue_spec_3_text": {
                               "type": "text",
                               "settings": {
-                                "text": "<p>4 رؤوس متخصصة</p>",
+                                "text": "<p>تصميم مزدوج: فرشاة + مكشطة</p>",
                                 "mobile_text": "",
                                 "width": "100%",
                                 "max_width": "none",
                                 "alignment": "left",
                                 "mobile_alignment": "same",
                                 "type_preset": "rte",
+                                "font": "var(--font-body--family)",
+                                "font_size": "1rem",
+                                "mobile_font_size": 24,
                                 "font_size_mobile": 9,
                                 "line_height_mobile": 16,
+                                "line_height": "normal",
+                                "letter_spacing": "normal",
+                                "case": "none",
+                                "wrap": "pretty",
+                                "text_color": "",
                                 "background": false,
+                                "background_color": "#00000026",
+                                "corner_radius": 0,
                                 "padding-block-start": 0,
                                 "padding-block-end": 0,
                                 "padding-inline-start": 0,
                                 "padding-inline-end": 0
-                              }
+                              },
+                              "blocks": {}
                             }
                           },
                           "block_order": [
-                            "care_f1_spec_3_icon",
-                            "care_f1_spec_3_text"
+                            "care_tongue_spec_3_icon",
+                            "care_tongue_spec_3_text"
                           ]
                         },
-                        "care_f1_spec_4": {
+                        "care_tongue_spec_4": {
                           "type": "_product-card-group",
                           "name": "Specification item",
                           "settings": {
@@ -2931,10 +3079,20 @@
                             "height": "fit",
                             "custom_height": 100,
                             "background_media": "none",
+                            "background_color": "",
+                            "video_position": "cover",
+                            "background_image_position": "cover",
+                            "toggle_overlay": false,
+                            "overlay_color": "#00000026",
+                            "overlay_style": "solid",
+                            "gradient_direction": "to top",
                             "border": "none",
                             "border_width": 1,
                             "border_opacity": 100,
+                            "border_color": "",
                             "border_radius": 0,
+                            "link": "",
+                            "open_in_new_tab": false,
                             "padding-block-start": 0,
                             "padding-block-end": 0,
                             "padding-inline-start": 0,
@@ -2942,50 +3100,63 @@
                             "custom_class": ""
                           },
                           "blocks": {
-                            "care_f1_spec_4_icon": {
+                            "care_tongue_spec_4_icon": {
                               "type": "icon",
                               "settings": {
-                                "icon": "stopwatch",
+                                "icon": "box",
+                                "image_upload": "shopify://shop_images/package.svg",
                                 "width": 20,
                                 "link": "",
                                 "open_in_new_tab": false,
                                 "icon_color": "#176bb0"
-                              }
+                              },
+                              "blocks": {}
                             },
-                            "care_f1_spec_4_text": {
+                            "care_tongue_spec_4_text": {
                               "type": "text",
                               "settings": {
-                                "text": "<p>ضغط ماء 30–120 PSI</p>",
+                                "text": "<p>حافظة سفر + ضمان سنة</p>",
                                 "mobile_text": "",
                                 "width": "100%",
                                 "max_width": "none",
                                 "alignment": "left",
                                 "mobile_alignment": "same",
                                 "type_preset": "rte",
+                                "font": "var(--font-body--family)",
+                                "font_size": "1rem",
+                                "mobile_font_size": 24,
                                 "font_size_mobile": 9,
                                 "line_height_mobile": 16,
+                                "line_height": "normal",
+                                "letter_spacing": "normal",
+                                "case": "none",
+                                "wrap": "pretty",
+                                "text_color": "",
                                 "background": false,
+                                "background_color": "#00000026",
+                                "corner_radius": 0,
                                 "padding-block-start": 0,
                                 "padding-block-end": 0,
                                 "padding-inline-start": 0,
                                 "padding-inline-end": 0
-                              }
+                              },
+                              "blocks": {}
                             }
                           },
                           "block_order": [
-                            "care_f1_spec_4_icon",
-                            "care_f1_spec_4_text"
+                            "care_tongue_spec_4_icon",
+                            "care_tongue_spec_4_text"
                           ]
                         }
                       },
                       "block_order": [
-                        "care_f1_spec_1",
-                        "care_f1_spec_2",
-                        "care_f1_spec_3",
-                        "care_f1_spec_4"
+                        "care_tongue_spec_1",
+                        "care_tongue_spec_2",
+                        "care_tongue_spec_3",
+                        "care_tongue_spec_4"
                       ]
                     },
-                    "care_f1_price_row": {
+                    "care_tongue_price_row": {
                       "type": "_product-card-group",
                       "name": "Price",
                       "settings": {
@@ -3004,10 +3175,20 @@
                         "height": "fit",
                         "custom_height": 100,
                         "background_media": "none",
+                        "background_color": "",
+                        "video_position": "cover",
+                        "background_image_position": "cover",
+                        "toggle_overlay": false,
+                        "overlay_color": "#00000026",
+                        "overlay_style": "solid",
+                        "gradient_direction": "to top",
                         "border": "none",
                         "border_width": 1,
                         "border_opacity": 100,
+                        "border_color": "",
                         "border_radius": 0,
+                        "link": "",
+                        "open_in_new_tab": false,
                         "padding-block-start": 0,
                         "padding-block-end": 0,
                         "padding-inline-start": 0,
@@ -3015,34 +3196,43 @@
                         "custom_class": "sn-home-care-price"
                       },
                       "blocks": {
-                        "care_f1_price": {
+                        "care_tongue_price": {
                           "type": "price",
                           "settings": {
                             "show_sale_price_first": true,
                             "show_installments": false,
                             "show_tax_info": false,
+                            "type_preset": "",
                             "width": "fit-content",
                             "alignment": "left",
+                            "font": "var(--font-body--family)",
+                            "font_size": "1rem",
+                            "line_height": "normal",
+                            "letter_spacing": "normal",
+                            "case": "none",
+                            "text_color": "",
                             "padding-block-start": 0,
                             "padding-block-end": 0,
                             "padding-inline-start": 0,
                             "padding-inline-end": 0
-                          }
+                          },
+                          "blocks": {}
                         },
-                        "care_f1_discount": {
+                        "care_tongue_discount": {
                           "type": "custom-liquid",
                           "name": "Discount badge",
                           "settings": {
                             "custom_liquid": "{%- assign sn_variant = closest.product.selected_or_first_available_variant -%}{%- if sn_variant.compare_at_price > sn_variant.price -%}{%- assign sn_off = sn_variant.compare_at_price | minus: sn_variant.price | times: 100.0 | divided_by: sn_variant.compare_at_price | round -%}<span class=\"sn-home-care-discount\">خصم {{ sn_off }}%</span>{%- endif -%}"
-                          }
+                          },
+                          "blocks": {}
                         }
                       },
                       "block_order": [
-                        "care_f1_price",
-                        "care_f1_discount"
+                        "care_tongue_price",
+                        "care_tongue_discount"
                       ]
                     },
-                    "care_f1_cta": {
+                    "care_tongue_cta": {
                       "type": "_product-card-group",
                       "name": "Button",
                       "settings": {
@@ -3061,10 +3251,20 @@
                         "height": "fit",
                         "custom_height": 100,
                         "background_media": "none",
+                        "background_color": "",
+                        "video_position": "cover",
+                        "background_image_position": "cover",
+                        "toggle_overlay": false,
+                        "overlay_color": "#00000026",
+                        "overlay_style": "solid",
+                        "gradient_direction": "to top",
                         "border": "none",
                         "border_width": 1,
                         "border_opacity": 100,
+                        "border_color": "",
                         "border_radius": 0,
+                        "link": "",
+                        "open_in_new_tab": false,
                         "padding-block-start": 0,
                         "padding-block-end": 0,
                         "padding-inline-start": 0,
@@ -3072,7 +3272,7 @@
                         "custom_class": "sn-home-care-cta"
                       },
                       "blocks": {
-                        "care_f1_cta_text": {
+                        "care_tongue_cta_text": {
                           "type": "text",
                           "settings": {
                             "text": "<p>عرض المنتج</p>",
@@ -3082,8 +3282,15 @@
                             "alignment": "center",
                             "mobile_alignment": "same",
                             "type_preset": "rte",
+                            "font": "var(--font-body--family)",
+                            "font_size": "1rem",
+                            "mobile_font_size": 24,
                             "font_size_mobile": 10,
                             "line_height_mobile": 17,
+                            "line_height": "normal",
+                            "letter_spacing": "normal",
+                            "case": "none",
+                            "wrap": "pretty",
                             "text_color": "#176bb0",
                             "background": true,
                             "background_color": "#ffffff",
@@ -3092,84 +3299,27 @@
                             "padding-block-end": 13,
                             "padding-inline-start": 28,
                             "padding-inline-end": 28
-                          }
+                          },
+                          "blocks": {}
                         }
                       },
                       "block_order": [
-                        "care_f1_cta_text"
-                      ]
-                    },
-                    "care_card_1_badge": {
-                      "type": "_product-card-group",
-                      "name": "Featured badge",
-                      "settings": {
-                        "content_direction": "column",
-                        "vertical_on_mobile": true,
-                        "horizontal_alignment": "flex-start",
-                        "vertical_alignment": "center",
-                        "align_baseline": false,
-                        "horizontal_alignment_flex_direction_column": "flex-start",
-                        "vertical_alignment_flex_direction_column": "center",
-                        "gap": 0,
-                        "width": "fit-content",
-                        "custom_width": 100,
-                        "width_mobile": "fit-content",
-                        "custom_width_mobile": 100,
-                        "height": "fit",
-                        "custom_height": 100,
-                        "background_media": "none",
-                        "border": "none",
-                        "border_width": 1,
-                        "border_opacity": 100,
-                        "border_radius": 0,
-                        "padding-block-start": 0,
-                        "padding-block-end": 0,
-                        "padding-inline-start": 0,
-                        "padding-inline-end": 0,
-                        "custom_class": "sn-home-care-badge"
-                      },
-                      "blocks": {
-                        "care_card_1_badge_text": {
-                          "type": "text",
-                          "settings": {
-                            "text": "<p>الأكثر مبيعًا</p>",
-                            "mobile_text": "",
-                            "width": "fit-content",
-                            "max_width": "none",
-                            "alignment": "left",
-                            "mobile_alignment": "same",
-                            "type_preset": "rte",
-                            "font_size_mobile": 7,
-                            "line_height_mobile": 10,
-                            "text_color": "#ffffff",
-                            "background": true,
-                            "background_color": "#176bb0",
-                            "corner_radius": 8,
-                            "padding-block-start": 4,
-                            "padding-block-end": 4,
-                            "padding-inline-start": 12,
-                            "padding-inline-end": 12
-                          }
-                        }
-                      },
-                      "block_order": [
-                        "care_card_1_badge_text"
+                        "care_tongue_cta_text"
                       ]
                     }
                   },
                   "block_order": [
-                    "care_f1_gallery",
-                    "care_card_1_badge",
-                    "care_f1_title",
-                    "care_f1_description",
-                    "care_f1_specs",
-                    "care_f1_price_row",
-                    "care_f1_cta"
+                    "care_tongue_gallery",
+                    "care_tongue_title",
+                    "care_tongue_description",
+                    "care_tongue_specs",
+                    "care_tongue_price_row",
+                    "care_tongue_cta"
                   ]
                 }
               },
               "block_order": [
-                "care_f1_product"
+                "care_tongue_product"
               ]
             },
             "care_card_2": {
@@ -3185,7 +3335,15 @@
                 "vertical_alignment_flex_direction_column": "center",
                 "gap": 0,
                 "background_media": "none",
+                "background_color": "",
+                "video_position": "cover",
+                "background_image_position": "cover",
                 "aspect_ratio": "adapt",
+                "toggle_overlay": false,
+                "overlay_color": "#00000026",
+                "overlay_style": "solid",
+                "gradient_direction": "to top",
+                "link": "",
                 "open_in_new_tab": false,
                 "padding-block-start": 0,
                 "padding-block-end": 0,
@@ -3197,6 +3355,7 @@
                 "care_n2_product": {
                   "type": "product-card",
                   "settings": {
+                    "product": "snosha-n2",
                     "product_card_gap": 16,
                     "width": "fill",
                     "custom_width": 100,
@@ -3206,6 +3365,7 @@
                     "border": "none",
                     "border_width": 1,
                     "border_opacity": 100,
+                    "border_color": "",
                     "border_radius": 24,
                     "padding-block-start": 24,
                     "padding-block-end": 24,
@@ -3226,7 +3386,8 @@
                         "padding-block-end": 0,
                         "padding-inline-start": 0,
                         "padding-inline-end": 0
-                      }
+                      },
+                      "blocks": {}
                     },
                     "care_n2_badge": {
                       "type": "_product-card-group",
@@ -3247,10 +3408,20 @@
                         "height": "fit",
                         "custom_height": 100,
                         "background_media": "none",
+                        "background_color": "",
+                        "video_position": "cover",
+                        "background_image_position": "cover",
+                        "toggle_overlay": false,
+                        "overlay_color": "#00000026",
+                        "overlay_style": "solid",
+                        "gradient_direction": "to top",
                         "border": "none",
                         "border_width": 1,
                         "border_opacity": 100,
+                        "border_color": "",
                         "border_radius": 0,
+                        "link": "",
+                        "open_in_new_tab": false,
                         "padding-block-start": 0,
                         "padding-block-end": 0,
                         "padding-inline-start": 0,
@@ -3261,15 +3432,22 @@
                         "care_n2_badge_text": {
                           "type": "text",
                           "settings": {
-                            "text": "<p>الأكثر مبيعًا</p>",
+                            "text": "<p>{{ closest.product.metafields.custom.product_badge.value }}</p>",
                             "mobile_text": "",
                             "width": "fit-content",
                             "max_width": "none",
                             "alignment": "left",
                             "mobile_alignment": "same",
                             "type_preset": "rte",
+                            "font": "var(--font-body--family)",
+                            "font_size": "1rem",
+                            "mobile_font_size": 24,
                             "font_size_mobile": 7,
                             "line_height_mobile": 10,
+                            "line_height": "normal",
+                            "letter_spacing": "normal",
+                            "case": "none",
+                            "wrap": "pretty",
                             "text_color": "#ffffff",
                             "background": true,
                             "background_color": "#176bb0",
@@ -3278,7 +3456,8 @@
                             "padding-block-end": 4,
                             "padding-inline-start": 12,
                             "padding-inline-end": 12
-                          }
+                          },
+                          "blocks": {}
                         }
                       },
                       "block_order": [
@@ -3292,11 +3471,22 @@
                         "max_width": "none",
                         "alignment": "left",
                         "type_preset": "rte",
+                        "font": "var(--font-body--family)",
+                        "font_size": "1rem",
+                        "line_height": "normal",
+                        "letter_spacing": "normal",
+                        "case": "none",
+                        "wrap": "pretty",
+                        "text_color": "",
+                        "background": false,
+                        "background_color": "#00000026",
+                        "corner_radius": 0,
                         "padding-block-start": 0,
                         "padding-block-end": 0,
                         "padding-inline-start": 0,
                         "padding-inline-end": 0
-                      }
+                      },
+                      "blocks": {}
                     },
                     "care_n2_description": {
                       "type": "text",
@@ -3309,14 +3499,25 @@
                         "alignment": "left",
                         "mobile_alignment": "same",
                         "type_preset": "rte",
+                        "font": "var(--font-body--family)",
+                        "font_size": "1rem",
+                        "mobile_font_size": 24,
                         "font_size_mobile": 8,
                         "line_height_mobile": 14,
+                        "line_height": "normal",
+                        "letter_spacing": "normal",
+                        "case": "none",
+                        "wrap": "pretty",
+                        "text_color": "",
                         "background": false,
+                        "background_color": "#00000026",
+                        "corner_radius": 0,
                         "padding-block-start": 0,
                         "padding-block-end": 0,
                         "padding-inline-start": 0,
                         "padding-inline-end": 0
-                      }
+                      },
+                      "blocks": {}
                     },
                     "care_n2_specs": {
                       "type": "_product-card-group",
@@ -3337,10 +3538,20 @@
                         "height": "fit",
                         "custom_height": 100,
                         "background_media": "none",
+                        "background_color": "",
+                        "video_position": "cover",
+                        "background_image_position": "cover",
+                        "toggle_overlay": false,
+                        "overlay_color": "#00000026",
+                        "overlay_style": "solid",
+                        "gradient_direction": "to top",
                         "border": "none",
                         "border_width": 1,
                         "border_opacity": 100,
+                        "border_color": "",
                         "border_radius": 0,
+                        "link": "",
+                        "open_in_new_tab": false,
                         "padding-block-start": 4,
                         "padding-block-end": 0,
                         "padding-inline-start": 0,
@@ -3367,10 +3578,20 @@
                             "height": "fit",
                             "custom_height": 100,
                             "background_media": "none",
+                            "background_color": "",
+                            "video_position": "cover",
+                            "background_image_position": "cover",
+                            "toggle_overlay": false,
+                            "overlay_color": "#00000026",
+                            "overlay_style": "solid",
+                            "gradient_direction": "to top",
                             "border": "none",
                             "border_width": 1,
                             "border_opacity": 100,
+                            "border_color": "",
                             "border_radius": 0,
+                            "link": "",
+                            "open_in_new_tab": false,
                             "padding-block-start": 0,
                             "padding-block-end": 0,
                             "padding-inline-start": 0,
@@ -3382,12 +3603,13 @@
                               "type": "icon",
                               "settings": {
                                 "icon": "lightning_bolt",
-                                "image_upload": "shopify://shop_images/sonic.svg",
+                                "image_upload": "shopify://shop_images/sonic_41a62ee9-ff42-4099-ab5b-147805c3388a.svg",
                                 "width": 20,
                                 "link": "",
                                 "open_in_new_tab": false,
                                 "icon_color": "#176bb0"
-                              }
+                              },
+                              "blocks": {}
                             },
                             "care_n2_spec_1_text": {
                               "type": "text",
@@ -3399,14 +3621,25 @@
                                 "alignment": "left",
                                 "mobile_alignment": "same",
                                 "type_preset": "rte",
+                                "font": "var(--font-body--family)",
+                                "font_size": "1rem",
+                                "mobile_font_size": 24,
                                 "font_size_mobile": 8,
                                 "line_height_mobile": 14,
+                                "line_height": "normal",
+                                "letter_spacing": "normal",
+                                "case": "none",
+                                "wrap": "pretty",
+                                "text_color": "",
                                 "background": false,
+                                "background_color": "#00000026",
+                                "corner_radius": 0,
                                 "padding-block-start": 0,
                                 "padding-block-end": 0,
                                 "padding-inline-start": 0,
                                 "padding-inline-end": 0
-                              }
+                              },
+                              "blocks": {}
                             }
                           },
                           "block_order": [
@@ -3433,10 +3666,20 @@
                             "height": "fit",
                             "custom_height": 100,
                             "background_media": "none",
+                            "background_color": "",
+                            "video_position": "cover",
+                            "background_image_position": "cover",
+                            "toggle_overlay": false,
+                            "overlay_color": "#00000026",
+                            "overlay_style": "solid",
+                            "gradient_direction": "to top",
                             "border": "none",
                             "border_width": 1,
                             "border_opacity": 100,
+                            "border_color": "",
                             "border_radius": 0,
+                            "link": "",
+                            "open_in_new_tab": false,
                             "padding-block-start": 0,
                             "padding-block-end": 0,
                             "padding-inline-start": 0,
@@ -3448,12 +3691,13 @@
                               "type": "icon",
                               "settings": {
                                 "icon": "check_box",
-                                "image_upload": "shopify://shop_images/vector_1b715f9f-fc54-4010-a53f-60444ef01aca.svg",
+                                "image_upload": "shopify://shop_images/sliders_ce46d8fa-3298-4e44-9443-535ffdd1d216.svg",
                                 "width": 20,
                                 "link": "",
                                 "open_in_new_tab": false,
                                 "icon_color": "#176bb0"
-                              }
+                              },
+                              "blocks": {}
                             },
                             "care_n2_spec_2_text": {
                               "type": "text",
@@ -3465,14 +3709,25 @@
                                 "alignment": "left",
                                 "mobile_alignment": "same",
                                 "type_preset": "rte",
+                                "font": "var(--font-body--family)",
+                                "font_size": "1rem",
+                                "mobile_font_size": 24,
                                 "font_size_mobile": 8,
                                 "line_height_mobile": 14,
+                                "line_height": "normal",
+                                "letter_spacing": "normal",
+                                "case": "none",
+                                "wrap": "pretty",
+                                "text_color": "",
                                 "background": false,
+                                "background_color": "#00000026",
+                                "corner_radius": 0,
                                 "padding-block-start": 0,
                                 "padding-block-end": 0,
                                 "padding-inline-start": 0,
                                 "padding-inline-end": 0
-                              }
+                              },
+                              "blocks": {}
                             }
                           },
                           "block_order": [
@@ -3499,10 +3754,20 @@
                             "height": "fit",
                             "custom_height": 100,
                             "background_media": "none",
+                            "background_color": "",
+                            "video_position": "cover",
+                            "background_image_position": "cover",
+                            "toggle_overlay": false,
+                            "overlay_color": "#00000026",
+                            "overlay_style": "solid",
+                            "gradient_direction": "to top",
                             "border": "none",
                             "border_width": 1,
                             "border_opacity": 100,
+                            "border_color": "",
                             "border_radius": 0,
+                            "link": "",
+                            "open_in_new_tab": false,
                             "padding-block-start": 0,
                             "padding-block-end": 0,
                             "padding-inline-start": 0,
@@ -3514,12 +3779,13 @@
                               "type": "icon",
                               "settings": {
                                 "icon": "lightning_bolt",
-                                "image_upload": "shopify://shop_images/battery.svg",
+                                "image_upload": "shopify://shop_images/battery_587accbe-f56e-4ae8-ad26-e0af2029232f.svg",
                                 "width": 20,
                                 "link": "",
                                 "open_in_new_tab": false,
                                 "icon_color": "#176bb0"
-                              }
+                              },
+                              "blocks": {}
                             },
                             "care_n2_spec_3_text": {
                               "type": "text",
@@ -3531,14 +3797,25 @@
                                 "alignment": "left",
                                 "mobile_alignment": "same",
                                 "type_preset": "rte",
+                                "font": "var(--font-body--family)",
+                                "font_size": "1rem",
+                                "mobile_font_size": 24,
                                 "font_size_mobile": 8,
                                 "line_height_mobile": 14,
+                                "line_height": "normal",
+                                "letter_spacing": "normal",
+                                "case": "none",
+                                "wrap": "pretty",
+                                "text_color": "",
                                 "background": false,
+                                "background_color": "#00000026",
+                                "corner_radius": 0,
                                 "padding-block-start": 0,
                                 "padding-block-end": 0,
                                 "padding-inline-start": 0,
                                 "padding-inline-end": 0
-                              }
+                              },
+                              "blocks": {}
                             }
                           },
                           "block_order": [
@@ -3565,10 +3842,20 @@
                             "height": "fit",
                             "custom_height": 100,
                             "background_media": "none",
+                            "background_color": "",
+                            "video_position": "cover",
+                            "background_image_position": "cover",
+                            "toggle_overlay": false,
+                            "overlay_color": "#00000026",
+                            "overlay_style": "solid",
+                            "gradient_direction": "to top",
                             "border": "none",
                             "border_width": 1,
                             "border_opacity": 100,
+                            "border_color": "",
                             "border_radius": 0,
+                            "link": "",
+                            "open_in_new_tab": false,
                             "padding-block-start": 0,
                             "padding-block-end": 0,
                             "padding-inline-start": 0,
@@ -3580,11 +3867,13 @@
                               "type": "icon",
                               "settings": {
                                 "icon": "washing",
+                                "image_upload": "shopify://shop_images/drop.svg",
                                 "width": 20,
                                 "link": "",
                                 "open_in_new_tab": false,
                                 "icon_color": "#176bb0"
-                              }
+                              },
+                              "blocks": {}
                             },
                             "care_n2_spec_4_text": {
                               "type": "text",
@@ -3596,14 +3885,25 @@
                                 "alignment": "left",
                                 "mobile_alignment": "same",
                                 "type_preset": "rte",
+                                "font": "var(--font-body--family)",
+                                "font_size": "1rem",
+                                "mobile_font_size": 24,
                                 "font_size_mobile": 8,
                                 "line_height_mobile": 14,
+                                "line_height": "normal",
+                                "letter_spacing": "normal",
+                                "case": "none",
+                                "wrap": "pretty",
+                                "text_color": "",
                                 "background": false,
+                                "background_color": "#00000026",
+                                "corner_radius": 0,
                                 "padding-block-start": 0,
                                 "padding-block-end": 0,
                                 "padding-inline-start": 0,
                                 "padding-inline-end": 0
-                              }
+                              },
+                              "blocks": {}
                             }
                           },
                           "block_order": [
@@ -3630,10 +3930,20 @@
                             "height": "fit",
                             "custom_height": 100,
                             "background_media": "none",
+                            "background_color": "",
+                            "video_position": "cover",
+                            "background_image_position": "cover",
+                            "toggle_overlay": false,
+                            "overlay_color": "#00000026",
+                            "overlay_style": "solid",
+                            "gradient_direction": "to top",
                             "border": "none",
                             "border_width": 1,
                             "border_opacity": 100,
+                            "border_color": "",
                             "border_radius": 0,
+                            "link": "",
+                            "open_in_new_tab": false,
                             "padding-block-start": 0,
                             "padding-block-end": 0,
                             "padding-inline-start": 0,
@@ -3645,12 +3955,13 @@
                               "type": "icon",
                               "settings": {
                                 "icon": "check_box",
-                                "image_upload": "shopify://shop_images/brush-head_5d8e2d1e-150c-46fc-861c-cd7e19d1e1db.png",
+                                "image_upload": "shopify://shop_images/brush-head.svg",
                                 "width": 20,
                                 "link": "",
                                 "open_in_new_tab": false,
                                 "icon_color": "#176bb0"
-                              }
+                              },
+                              "blocks": {}
                             },
                             "care_n2_spec_5_text": {
                               "type": "text",
@@ -3662,14 +3973,25 @@
                                 "alignment": "left",
                                 "mobile_alignment": "same",
                                 "type_preset": "rte",
+                                "font": "var(--font-body--family)",
+                                "font_size": "1rem",
+                                "mobile_font_size": 24,
                                 "font_size_mobile": 8,
                                 "line_height_mobile": 14,
+                                "line_height": "normal",
+                                "letter_spacing": "normal",
+                                "case": "none",
+                                "wrap": "pretty",
+                                "text_color": "",
                                 "background": false,
+                                "background_color": "#00000026",
+                                "corner_radius": 0,
                                 "padding-block-start": 0,
                                 "padding-block-end": 0,
                                 "padding-inline-start": 0,
                                 "padding-inline-end": 0
-                              }
+                              },
+                              "blocks": {}
                             }
                           },
                           "block_order": [
@@ -3696,10 +4018,20 @@
                             "height": "fit",
                             "custom_height": 100,
                             "background_media": "none",
+                            "background_color": "",
+                            "video_position": "cover",
+                            "background_image_position": "cover",
+                            "toggle_overlay": false,
+                            "overlay_color": "#00000026",
+                            "overlay_style": "solid",
+                            "gradient_direction": "to top",
                             "border": "none",
                             "border_width": 1,
                             "border_opacity": 100,
+                            "border_color": "",
                             "border_radius": 0,
+                            "link": "",
+                            "open_in_new_tab": false,
                             "padding-block-start": 0,
                             "padding-block-end": 0,
                             "padding-inline-start": 0,
@@ -3711,11 +4043,13 @@
                               "type": "icon",
                               "settings": {
                                 "icon": "stopwatch",
+                                "image_upload": "shopify://shop_images/timer.svg",
                                 "width": 20,
                                 "link": "",
                                 "open_in_new_tab": false,
                                 "icon_color": "#176bb0"
-                              }
+                              },
+                              "blocks": {}
                             },
                             "care_n2_spec_6_text": {
                               "type": "text",
@@ -3727,14 +4061,25 @@
                                 "alignment": "left",
                                 "mobile_alignment": "same",
                                 "type_preset": "rte",
+                                "font": "var(--font-body--family)",
+                                "font_size": "1rem",
+                                "mobile_font_size": 24,
                                 "font_size_mobile": 8,
                                 "line_height_mobile": 14,
+                                "line_height": "normal",
+                                "letter_spacing": "normal",
+                                "case": "none",
+                                "wrap": "pretty",
+                                "text_color": "",
                                 "background": false,
+                                "background_color": "#00000026",
+                                "corner_radius": 0,
                                 "padding-block-start": 0,
                                 "padding-block-end": 0,
                                 "padding-inline-start": 0,
                                 "padding-inline-end": 0
-                              }
+                              },
+                              "blocks": {}
                             }
                           },
                           "block_order": [
@@ -3771,10 +4116,20 @@
                         "height": "fit",
                         "custom_height": 100,
                         "background_media": "none",
+                        "background_color": "",
+                        "video_position": "cover",
+                        "background_image_position": "cover",
+                        "toggle_overlay": false,
+                        "overlay_color": "#00000026",
+                        "overlay_style": "solid",
+                        "gradient_direction": "to top",
                         "border": "none",
                         "border_width": 1,
                         "border_opacity": 100,
+                        "border_color": "",
                         "border_radius": 0,
+                        "link": "",
+                        "open_in_new_tab": false,
                         "padding-block-start": 6,
                         "padding-block-end": 0,
                         "padding-inline-start": 0,
@@ -3788,20 +4143,29 @@
                             "show_sale_price_first": true,
                             "show_installments": false,
                             "show_tax_info": false,
+                            "type_preset": "",
                             "width": "fit-content",
                             "alignment": "left",
+                            "font": "var(--font-body--family)",
+                            "font_size": "1rem",
+                            "line_height": "normal",
+                            "letter_spacing": "normal",
+                            "case": "none",
+                            "text_color": "",
                             "padding-block-start": 0,
                             "padding-block-end": 0,
                             "padding-inline-start": 0,
                             "padding-inline-end": 0
-                          }
+                          },
+                          "blocks": {}
                         },
                         "care_n2_discount": {
                           "type": "custom-liquid",
                           "name": "Discount badge",
                           "settings": {
                             "custom_liquid": "{%- assign sn_variant = closest.product.selected_or_first_available_variant -%}{%- if sn_variant.compare_at_price > sn_variant.price -%}{%- assign sn_off = sn_variant.compare_at_price | minus: sn_variant.price | times: 100.0 | divided_by: sn_variant.compare_at_price | round -%}<span class=\"sn-home-care-discount\">خصم {{ sn_off }}%</span>{%- endif -%}"
-                          }
+                          },
+                          "blocks": {}
                         }
                       },
                       "block_order": [
@@ -3828,10 +4192,20 @@
                         "height": "fit",
                         "custom_height": 100,
                         "background_media": "none",
+                        "background_color": "",
+                        "video_position": "cover",
+                        "background_image_position": "cover",
+                        "toggle_overlay": false,
+                        "overlay_color": "#00000026",
+                        "overlay_style": "solid",
+                        "gradient_direction": "to top",
                         "border": "none",
                         "border_width": 1,
                         "border_opacity": 100,
+                        "border_color": "",
                         "border_radius": 0,
+                        "link": "",
+                        "open_in_new_tab": false,
                         "padding-block-start": 0,
                         "padding-block-end": 0,
                         "padding-inline-start": 0,
@@ -3849,8 +4223,15 @@
                             "alignment": "center",
                             "mobile_alignment": "same",
                             "type_preset": "rte",
+                            "font": "var(--font-body--family)",
+                            "font_size": "1rem",
+                            "mobile_font_size": 24,
                             "font_size_mobile": 9,
                             "line_height_mobile": 15,
+                            "line_height": "normal",
+                            "letter_spacing": "normal",
+                            "case": "none",
+                            "wrap": "pretty",
                             "text_color": "#176bb0",
                             "background": true,
                             "background_color": "#ffffff",
@@ -3859,7 +4240,8 @@
                             "padding-block-end": 13,
                             "padding-inline-start": 28,
                             "padding-inline-end": 28
-                          }
+                          },
+                          "blocks": {}
                         }
                       },
                       "block_order": [
@@ -3882,7 +4264,7 @@
                 "care_n2_product"
               ]
             },
-            "care_card_3": {
+            "care_card_1": {
               "type": "_card",
               "name": "Product card",
               "settings": {
@@ -3895,7 +4277,15 @@
                 "vertical_alignment_flex_direction_column": "center",
                 "gap": 0,
                 "background_media": "none",
+                "background_color": "",
+                "video_position": "cover",
+                "background_image_position": "cover",
                 "aspect_ratio": "adapt",
+                "toggle_overlay": false,
+                "overlay_color": "#00000026",
+                "overlay_style": "solid",
+                "gradient_direction": "to top",
+                "link": "",
                 "open_in_new_tab": false,
                 "padding-block-start": 0,
                 "padding-block-end": 0,
@@ -3904,9 +4294,10 @@
                 "featured": false
               },
               "blocks": {
-                "care_tongue_product": {
+                "care_f1_product": {
                   "type": "product-card",
                   "settings": {
+                    "product": "snosha-f1-1",
                     "product_card_gap": 16,
                     "width": "fill",
                     "custom_width": 100,
@@ -3916,6 +4307,7 @@
                     "border": "none",
                     "border_width": 1,
                     "border_opacity": 100,
+                    "border_color": "",
                     "border_radius": 24,
                     "padding-block-start": 24,
                     "padding-block-end": 13,
@@ -3923,7 +4315,7 @@
                     "padding-inline-end": 24
                   },
                   "blocks": {
-                    "care_tongue_gallery": {
+                    "care_f1_gallery": {
                       "type": "_product-card-gallery",
                       "settings": {
                         "image_ratio": "landscape",
@@ -3936,22 +4328,34 @@
                         "padding-block-end": 0,
                         "padding-inline-start": 0,
                         "padding-inline-end": 0
-                      }
+                      },
+                      "blocks": {}
                     },
-                    "care_tongue_title": {
+                    "care_f1_title": {
                       "type": "product-title",
                       "settings": {
                         "width": "100%",
                         "max_width": "none",
                         "alignment": "left",
                         "type_preset": "rte",
+                        "font": "var(--font-body--family)",
+                        "font_size": "1rem",
+                        "line_height": "normal",
+                        "letter_spacing": "normal",
+                        "case": "none",
+                        "wrap": "pretty",
+                        "text_color": "",
+                        "background": false,
+                        "background_color": "#00000026",
+                        "corner_radius": 0,
                         "padding-block-start": 0,
                         "padding-block-end": 0,
                         "padding-inline-start": 0,
                         "padding-inline-end": 0
-                      }
+                      },
+                      "blocks": {}
                     },
-                    "care_tongue_description": {
+                    "care_f1_description": {
                       "type": "text",
                       "name": "Product description",
                       "settings": {
@@ -3962,16 +4366,27 @@
                         "alignment": "left",
                         "mobile_alignment": "same",
                         "type_preset": "rte",
+                        "font": "var(--font-body--family)",
+                        "font_size": "1rem",
+                        "mobile_font_size": 24,
                         "font_size_mobile": 9,
                         "line_height_mobile": 16,
+                        "line_height": "normal",
+                        "letter_spacing": "normal",
+                        "case": "none",
+                        "wrap": "pretty",
+                        "text_color": "",
                         "background": false,
+                        "background_color": "#00000026",
+                        "corner_radius": 0,
                         "padding-block-start": 0,
                         "padding-block-end": 0,
                         "padding-inline-start": 0,
                         "padding-inline-end": 0
-                      }
+                      },
+                      "blocks": {}
                     },
-                    "care_tongue_specs": {
+                    "care_f1_specs": {
                       "type": "_product-card-group",
                       "name": "Product specifications",
                       "settings": {
@@ -3990,10 +4405,20 @@
                         "height": "fit",
                         "custom_height": 100,
                         "background_media": "none",
+                        "background_color": "",
+                        "video_position": "cover",
+                        "background_image_position": "cover",
+                        "toggle_overlay": false,
+                        "overlay_color": "#00000026",
+                        "overlay_style": "solid",
+                        "gradient_direction": "to top",
                         "border": "none",
                         "border_width": 1,
                         "border_opacity": 100,
+                        "border_color": "",
                         "border_radius": 0,
+                        "link": "",
+                        "open_in_new_tab": false,
                         "padding-block-start": 4,
                         "padding-block-end": 0,
                         "padding-inline-start": 0,
@@ -4001,7 +4426,7 @@
                         "custom_class": "sn-home-care-specs"
                       },
                       "blocks": {
-                        "care_tongue_spec_1": {
+                        "care_f1_spec_1": {
                           "type": "_product-card-group",
                           "name": "Specification item",
                           "settings": {
@@ -4020,10 +4445,20 @@
                             "height": "fit",
                             "custom_height": 100,
                             "background_media": "none",
+                            "background_color": "",
+                            "video_position": "cover",
+                            "background_image_position": "cover",
+                            "toggle_overlay": false,
+                            "overlay_color": "#00000026",
+                            "overlay_style": "solid",
+                            "gradient_direction": "to top",
                             "border": "none",
                             "border_width": 1,
                             "border_opacity": 100,
+                            "border_color": "",
                             "border_radius": 0,
+                            "link": "",
+                            "open_in_new_tab": false,
                             "padding-block-start": 0,
                             "padding-block-end": 0,
                             "padding-inline-start": 0,
@@ -4031,43 +4466,55 @@
                             "custom_class": ""
                           },
                           "blocks": {
-                            "care_tongue_spec_1_icon": {
+                            "care_f1_spec_1_icon": {
                               "type": "icon",
                               "settings": {
-                                "icon": "star",
-                                "image_upload": "shopify://shop_images/vector.svg",
+                                "icon": "bottle",
+                                "image_upload": "shopify://shop_images/tank.svg",
                                 "width": 20,
                                 "link": "",
                                 "open_in_new_tab": false,
                                 "icon_color": "#176bb0"
-                              }
+                              },
+                              "blocks": {}
                             },
-                            "care_tongue_spec_1_text": {
+                            "care_f1_spec_1_text": {
                               "type": "text",
                               "settings": {
-                                "text": "<p>يزيل مصدر 90% من رائحة الفم</p>",
+                                "text": "<p>خزان ماء 330 مل</p>",
                                 "mobile_text": "",
                                 "width": "100%",
                                 "max_width": "none",
                                 "alignment": "left",
                                 "mobile_alignment": "same",
                                 "type_preset": "rte",
+                                "font": "var(--font-body--family)",
+                                "font_size": "1rem",
+                                "mobile_font_size": 24,
                                 "font_size_mobile": 9,
                                 "line_height_mobile": 16,
+                                "line_height": "normal",
+                                "letter_spacing": "normal",
+                                "case": "none",
+                                "wrap": "pretty",
+                                "text_color": "",
                                 "background": false,
+                                "background_color": "#00000026",
+                                "corner_radius": 0,
                                 "padding-block-start": 0,
                                 "padding-block-end": 0,
                                 "padding-inline-start": 0,
                                 "padding-inline-end": 0
-                              }
+                              },
+                              "blocks": {}
                             }
                           },
                           "block_order": [
-                            "care_tongue_spec_1_icon",
-                            "care_tongue_spec_1_text"
+                            "care_f1_spec_1_icon",
+                            "care_f1_spec_1_text"
                           ]
                         },
-                        "care_tongue_spec_2": {
+                        "care_f1_spec_2": {
                           "type": "_product-card-group",
                           "name": "Specification item",
                           "settings": {
@@ -4086,10 +4533,20 @@
                             "height": "fit",
                             "custom_height": 100,
                             "background_media": "none",
+                            "background_color": "",
+                            "video_position": "cover",
+                            "background_image_position": "cover",
+                            "toggle_overlay": false,
+                            "overlay_color": "#00000026",
+                            "overlay_style": "solid",
+                            "gradient_direction": "to top",
                             "border": "none",
                             "border_width": 1,
                             "border_opacity": 100,
+                            "border_color": "",
                             "border_radius": 0,
+                            "link": "",
+                            "open_in_new_tab": false,
                             "padding-block-start": 0,
                             "padding-block-end": 0,
                             "padding-inline-start": 0,
@@ -4097,43 +4554,55 @@
                             "custom_class": ""
                           },
                           "blocks": {
-                            "care_tongue_spec_2_icon": {
+                            "care_f1_spec_2_icon": {
                               "type": "icon",
                               "settings": {
                                 "icon": "check_box",
-                                "image_upload": "shopify://shop_images/shield-check.svg",
+                                "image_upload": "shopify://shop_images/sliders_ce46d8fa-3298-4e44-9443-535ffdd1d216.svg",
                                 "width": 20,
                                 "link": "",
                                 "open_in_new_tab": false,
                                 "icon_color": "#176bb0"
-                              }
+                              },
+                              "blocks": {}
                             },
-                            "care_tongue_spec_2_text": {
+                            "care_f1_spec_2_text": {
                               "type": "text",
                               "settings": {
-                                "text": "<p>فولاذ مقاوم للصدأ 420J2</p>",
+                                "text": "<p>4 أوضاع تنظيف</p>",
                                 "mobile_text": "",
                                 "width": "100%",
                                 "max_width": "none",
                                 "alignment": "left",
                                 "mobile_alignment": "same",
                                 "type_preset": "rte",
+                                "font": "var(--font-body--family)",
+                                "font_size": "1rem",
+                                "mobile_font_size": 24,
                                 "font_size_mobile": 9,
                                 "line_height_mobile": 16,
+                                "line_height": "normal",
+                                "letter_spacing": "normal",
+                                "case": "none",
+                                "wrap": "pretty",
+                                "text_color": "",
                                 "background": false,
+                                "background_color": "#00000026",
+                                "corner_radius": 0,
                                 "padding-block-start": 0,
                                 "padding-block-end": 0,
                                 "padding-inline-start": 0,
                                 "padding-inline-end": 0
-                              }
+                              },
+                              "blocks": {}
                             }
                           },
                           "block_order": [
-                            "care_tongue_spec_2_icon",
-                            "care_tongue_spec_2_text"
+                            "care_f1_spec_2_icon",
+                            "care_f1_spec_2_text"
                           ]
                         },
-                        "care_tongue_spec_3": {
+                        "care_f1_spec_3": {
                           "type": "_product-card-group",
                           "name": "Specification item",
                           "settings": {
@@ -4152,10 +4621,20 @@
                             "height": "fit",
                             "custom_height": 100,
                             "background_media": "none",
+                            "background_color": "",
+                            "video_position": "cover",
+                            "background_image_position": "cover",
+                            "toggle_overlay": false,
+                            "overlay_color": "#00000026",
+                            "overlay_style": "solid",
+                            "gradient_direction": "to top",
                             "border": "none",
                             "border_width": 1,
                             "border_opacity": 100,
+                            "border_color": "",
                             "border_radius": 0,
+                            "link": "",
+                            "open_in_new_tab": false,
                             "padding-block-start": 0,
                             "padding-block-end": 0,
                             "padding-inline-start": 0,
@@ -4163,43 +4642,55 @@
                             "custom_class": ""
                           },
                           "blocks": {
-                            "care_tongue_spec_3_icon": {
+                            "care_f1_spec_3_icon": {
                               "type": "icon",
                               "settings": {
                                 "icon": "check_box",
-                                "image_upload": "shopify://shop_images/brush-head_5d8e2d1e-150c-46fc-861c-cd7e19d1e1db.png",
+                                "image_upload": "shopify://shop_images/brush-head.svg",
                                 "width": 20,
                                 "link": "",
                                 "open_in_new_tab": false,
                                 "icon_color": "#176bb0"
-                              }
+                              },
+                              "blocks": {}
                             },
-                            "care_tongue_spec_3_text": {
+                            "care_f1_spec_3_text": {
                               "type": "text",
                               "settings": {
-                                "text": "<p>تصميم مزدوج: فرشاة + مكشطة</p>",
+                                "text": "<p>4 رؤوس متخصصة</p>",
                                 "mobile_text": "",
                                 "width": "100%",
                                 "max_width": "none",
                                 "alignment": "left",
                                 "mobile_alignment": "same",
                                 "type_preset": "rte",
+                                "font": "var(--font-body--family)",
+                                "font_size": "1rem",
+                                "mobile_font_size": 24,
                                 "font_size_mobile": 9,
                                 "line_height_mobile": 16,
+                                "line_height": "normal",
+                                "letter_spacing": "normal",
+                                "case": "none",
+                                "wrap": "pretty",
+                                "text_color": "",
                                 "background": false,
+                                "background_color": "#00000026",
+                                "corner_radius": 0,
                                 "padding-block-start": 0,
                                 "padding-block-end": 0,
                                 "padding-inline-start": 0,
                                 "padding-inline-end": 0
-                              }
+                              },
+                              "blocks": {}
                             }
                           },
                           "block_order": [
-                            "care_tongue_spec_3_icon",
-                            "care_tongue_spec_3_text"
+                            "care_f1_spec_3_icon",
+                            "care_f1_spec_3_text"
                           ]
                         },
-                        "care_tongue_spec_4": {
+                        "care_f1_spec_4": {
                           "type": "_product-card-group",
                           "name": "Specification item",
                           "settings": {
@@ -4218,10 +4709,20 @@
                             "height": "fit",
                             "custom_height": 100,
                             "background_media": "none",
+                            "background_color": "",
+                            "video_position": "cover",
+                            "background_image_position": "cover",
+                            "toggle_overlay": false,
+                            "overlay_color": "#00000026",
+                            "overlay_style": "solid",
+                            "gradient_direction": "to top",
                             "border": "none",
                             "border_width": 1,
                             "border_opacity": 100,
+                            "border_color": "",
                             "border_radius": 0,
+                            "link": "",
+                            "open_in_new_tab": false,
                             "padding-block-start": 0,
                             "padding-block-end": 0,
                             "padding-inline-start": 0,
@@ -4229,51 +4730,63 @@
                             "custom_class": ""
                           },
                           "blocks": {
-                            "care_tongue_spec_4_icon": {
+                            "care_f1_spec_4_icon": {
                               "type": "icon",
                               "settings": {
-                                "icon": "box",
-                                "image_upload": "shopify://shop_images/package.svg",
+                                "icon": "stopwatch",
+                                "image_upload": "shopify://shop_images/gauge.svg",
                                 "width": 20,
                                 "link": "",
                                 "open_in_new_tab": false,
                                 "icon_color": "#176bb0"
-                              }
+                              },
+                              "blocks": {}
                             },
-                            "care_tongue_spec_4_text": {
+                            "care_f1_spec_4_text": {
                               "type": "text",
                               "settings": {
-                                "text": "<p>حافظة سفر + ضمان سنة</p>",
+                                "text": "<p>ضغط ماء 30–120 PSI</p>",
                                 "mobile_text": "",
                                 "width": "100%",
                                 "max_width": "none",
                                 "alignment": "left",
                                 "mobile_alignment": "same",
                                 "type_preset": "rte",
+                                "font": "var(--font-body--family)",
+                                "font_size": "1rem",
+                                "mobile_font_size": 24,
                                 "font_size_mobile": 9,
                                 "line_height_mobile": 16,
+                                "line_height": "normal",
+                                "letter_spacing": "normal",
+                                "case": "none",
+                                "wrap": "pretty",
+                                "text_color": "",
                                 "background": false,
+                                "background_color": "#00000026",
+                                "corner_radius": 0,
                                 "padding-block-start": 0,
                                 "padding-block-end": 0,
                                 "padding-inline-start": 0,
                                 "padding-inline-end": 0
-                              }
+                              },
+                              "blocks": {}
                             }
                           },
                           "block_order": [
-                            "care_tongue_spec_4_icon",
-                            "care_tongue_spec_4_text"
+                            "care_f1_spec_4_icon",
+                            "care_f1_spec_4_text"
                           ]
                         }
                       },
                       "block_order": [
-                        "care_tongue_spec_1",
-                        "care_tongue_spec_2",
-                        "care_tongue_spec_3",
-                        "care_tongue_spec_4"
+                        "care_f1_spec_1",
+                        "care_f1_spec_2",
+                        "care_f1_spec_3",
+                        "care_f1_spec_4"
                       ]
                     },
-                    "care_tongue_price_row": {
+                    "care_f1_price_row": {
                       "type": "_product-card-group",
                       "name": "Price",
                       "settings": {
@@ -4292,10 +4805,20 @@
                         "height": "fit",
                         "custom_height": 100,
                         "background_media": "none",
+                        "background_color": "",
+                        "video_position": "cover",
+                        "background_image_position": "cover",
+                        "toggle_overlay": false,
+                        "overlay_color": "#00000026",
+                        "overlay_style": "solid",
+                        "gradient_direction": "to top",
                         "border": "none",
                         "border_width": 1,
                         "border_opacity": 100,
+                        "border_color": "",
                         "border_radius": 0,
+                        "link": "",
+                        "open_in_new_tab": false,
                         "padding-block-start": 0,
                         "padding-block-end": 0,
                         "padding-inline-start": 0,
@@ -4303,34 +4826,43 @@
                         "custom_class": "sn-home-care-price"
                       },
                       "blocks": {
-                        "care_tongue_price": {
+                        "care_f1_price": {
                           "type": "price",
                           "settings": {
                             "show_sale_price_first": true,
                             "show_installments": false,
                             "show_tax_info": false,
+                            "type_preset": "",
                             "width": "fit-content",
                             "alignment": "left",
+                            "font": "var(--font-body--family)",
+                            "font_size": "1rem",
+                            "line_height": "normal",
+                            "letter_spacing": "normal",
+                            "case": "none",
+                            "text_color": "",
                             "padding-block-start": 0,
                             "padding-block-end": 0,
                             "padding-inline-start": 0,
                             "padding-inline-end": 0
-                          }
+                          },
+                          "blocks": {}
                         },
-                        "care_tongue_discount": {
+                        "care_f1_discount": {
                           "type": "custom-liquid",
                           "name": "Discount badge",
                           "settings": {
                             "custom_liquid": "{%- assign sn_variant = closest.product.selected_or_first_available_variant -%}{%- if sn_variant.compare_at_price > sn_variant.price -%}{%- assign sn_off = sn_variant.compare_at_price | minus: sn_variant.price | times: 100.0 | divided_by: sn_variant.compare_at_price | round -%}<span class=\"sn-home-care-discount\">خصم {{ sn_off }}%</span>{%- endif -%}"
-                          }
+                          },
+                          "blocks": {}
                         }
                       },
                       "block_order": [
-                        "care_tongue_price",
-                        "care_tongue_discount"
+                        "care_f1_price",
+                        "care_f1_discount"
                       ]
                     },
-                    "care_tongue_cta": {
+                    "care_f1_cta": {
                       "type": "_product-card-group",
                       "name": "Button",
                       "settings": {
@@ -4349,10 +4881,20 @@
                         "height": "fit",
                         "custom_height": 100,
                         "background_media": "none",
+                        "background_color": "",
+                        "video_position": "cover",
+                        "background_image_position": "cover",
+                        "toggle_overlay": false,
+                        "overlay_color": "#00000026",
+                        "overlay_style": "solid",
+                        "gradient_direction": "to top",
                         "border": "none",
                         "border_width": 1,
                         "border_opacity": 100,
+                        "border_color": "",
                         "border_radius": 0,
+                        "link": "",
+                        "open_in_new_tab": false,
                         "padding-block-start": 0,
                         "padding-block-end": 0,
                         "padding-inline-start": 0,
@@ -4360,7 +4902,7 @@
                         "custom_class": "sn-home-care-cta"
                       },
                       "blocks": {
-                        "care_tongue_cta_text": {
+                        "care_f1_cta_text": {
                           "type": "text",
                           "settings": {
                             "text": "<p>عرض المنتج</p>",
@@ -4370,8 +4912,15 @@
                             "alignment": "center",
                             "mobile_alignment": "same",
                             "type_preset": "rte",
+                            "font": "var(--font-body--family)",
+                            "font_size": "1rem",
+                            "mobile_font_size": 24,
                             "font_size_mobile": 10,
                             "line_height_mobile": 17,
+                            "line_height": "normal",
+                            "letter_spacing": "normal",
+                            "case": "none",
+                            "wrap": "pretty",
                             "text_color": "#176bb0",
                             "background": true,
                             "background_color": "#ffffff",
@@ -4380,84 +4929,27 @@
                             "padding-block-end": 13,
                             "padding-inline-start": 28,
                             "padding-inline-end": 28
-                          }
+                          },
+                          "blocks": {}
                         }
                       },
                       "block_order": [
-                        "care_tongue_cta_text"
-                      ]
-                    },
-                    "care_card_3_badge": {
-                      "type": "_product-card-group",
-                      "name": "Featured badge",
-                      "settings": {
-                        "content_direction": "column",
-                        "vertical_on_mobile": true,
-                        "horizontal_alignment": "flex-start",
-                        "vertical_alignment": "center",
-                        "align_baseline": false,
-                        "horizontal_alignment_flex_direction_column": "flex-start",
-                        "vertical_alignment_flex_direction_column": "center",
-                        "gap": 0,
-                        "width": "fit-content",
-                        "custom_width": 100,
-                        "width_mobile": "fit-content",
-                        "custom_width_mobile": 100,
-                        "height": "fit",
-                        "custom_height": 100,
-                        "background_media": "none",
-                        "border": "none",
-                        "border_width": 1,
-                        "border_opacity": 100,
-                        "border_radius": 0,
-                        "padding-block-start": 0,
-                        "padding-block-end": 0,
-                        "padding-inline-start": 0,
-                        "padding-inline-end": 0,
-                        "custom_class": "sn-home-care-badge"
-                      },
-                      "blocks": {
-                        "care_card_3_badge_text": {
-                          "type": "text",
-                          "settings": {
-                            "text": "<p>الأكثر مبيعًا</p>",
-                            "mobile_text": "",
-                            "width": "fit-content",
-                            "max_width": "none",
-                            "alignment": "left",
-                            "mobile_alignment": "same",
-                            "type_preset": "rte",
-                            "font_size_mobile": 7,
-                            "line_height_mobile": 10,
-                            "text_color": "#ffffff",
-                            "background": true,
-                            "background_color": "#176bb0",
-                            "corner_radius": 8,
-                            "padding-block-start": 4,
-                            "padding-block-end": 4,
-                            "padding-inline-start": 12,
-                            "padding-inline-end": 12
-                          }
-                        }
-                      },
-                      "block_order": [
-                        "care_card_3_badge_text"
+                        "care_f1_cta_text"
                       ]
                     }
                   },
                   "block_order": [
-                    "care_tongue_gallery",
-                    "care_card_3_badge",
-                    "care_tongue_title",
-                    "care_tongue_description",
-                    "care_tongue_specs",
-                    "care_tongue_price_row",
-                    "care_tongue_cta"
+                    "care_f1_gallery",
+                    "care_f1_title",
+                    "care_f1_description",
+                    "care_f1_specs",
+                    "care_f1_price_row",
+                    "care_f1_cta"
                   ]
                 }
               },
               "block_order": [
-                "care_tongue_product"
+                "care_f1_product"
               ]
             }
           },
@@ -4473,6 +4965,7 @@
         "mobile_columns": "1",
         "section_width": "page-width",
         "columns_gap": 40,
+        "background_color": "",
         "icons_style": "arrow",
         "icons_shape": "none",
         "padding-block-start": 60,
