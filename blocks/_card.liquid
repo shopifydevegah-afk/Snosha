@@ -16,11 +16,10 @@
   endif
 %}
 
-{%- comment -%} Snosha S10: a featured card gets a slide id so the carousel can start on it; sn-card-featured is inert unless a section custom class styles it. {%- endcomment -%}
+{%- comment -%} Snosha S10: sn-card-featured marks the starting / desktop featured card; inert unless a section custom class styles it. {%- endcomment -%}
 <div
   class="card{% if block_settings.background_color != blank %} color-custom-{{ block.id }}{% endif %}{% if block_settings.featured %} sn-card-featured{% endif %}"
   ref="slides[]"
-  {% if block_settings.featured %}slide-id="{{ block.id }}"{% endif %}
   data-carousel-card
   {{ block.shopify_attributes }}
 >
@@ -570,7 +569,7 @@
       "type": "checkbox",
       "id": "featured",
       "label": "Featured card",
-      "info": "The carousel starts on the first featured card. Its highlighted look comes from the section's custom CSS class.",
+      "info": "The carousel opens centred on this card, and on desktop it gets the featured size. Needs the section's Highlight centred card option.",
       "default": false
     }
   ],

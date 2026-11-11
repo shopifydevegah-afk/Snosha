@@ -35,6 +35,12 @@
   {% content_for 'block', type: 'group', id: 'static-header' %}
 
   {% content_for 'block', type: '_carousel-content', id: 'static-carousel-content', closest.product: null %}
+
+  {%- comment -%} Snosha S10 (opt-in): marks the centred card, drives --carousel-progress, opens on the Featured card. {%- endcomment -%}
+  {%- if section.settings.custom_class != blank and section.settings.highlight_active_card -%}
+    <carousel-active-card hidden></carousel-active-card>
+    <script src="{{ 'carousel-active-card.js' | asset_url }}" type="module"></script>
+  {%- endif -%}
 </div>
 
 {% schema %}
@@ -187,6 +193,14 @@
     {
       "type": "header",
       "content": "Card sizes (custom class)"
+    },
+    {
+      "type": "checkbox",
+      "id": "highlight_active_card",
+      "label": "Highlight centred card",
+      "info": "The card in the middle of the carousel gets the featured look, and the carousel opens on the card marked Featured card. Styled by the section's custom CSS class.",
+      "default": false,
+      "visible_if": "{{ section.settings.custom_class != blank }}"
     },
     {
       "type": "select",

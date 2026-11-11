@@ -5664,7 +5664,8 @@
         "card_width": 400,
         "featured_card_width": 462,
         "card_width_mobile": 262,
-        "columns_gap_mobile": 12
+        "columns_gap_mobile": 12,
+        "highlight_active_card": true
       }
     }
   },

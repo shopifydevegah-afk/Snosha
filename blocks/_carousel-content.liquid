@@ -23,15 +23,6 @@
     assign show_arrows = true
   endif
 
-  # Project extension (Snosha S10): start on the first card marked "Featured card" (none = first slide, native).
-  assign initial_slide = 0
-  for child in block.blocks
-    if child.settings.featured
-      assign initial_slide = forloop.index0
-      break
-    endif
-  endfor
-
   assign slide_position = block.settings.position
   if block.settings.height == 'fill'
     assign slide_position = 'stretch'
@@ -63,7 +54,7 @@
     icon_shape: section.settings.icons_shape,
     auto_hide_controls: false,
     infinite: false,
-    initial_slide: initial_slide,
+    initial_slide: 0,
     slide_count: slide_count,
     slide_position: slide_position,
     slideshow_gutters: slideshow_gutters,
