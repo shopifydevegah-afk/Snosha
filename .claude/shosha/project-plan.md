@@ -37,11 +37,11 @@ Each one is decided; the details are in the referenced Skill file.
 | Developer | CSS file | Status | Sections assigned |
 |---|---|---|---|
 | Main | `assets/main.css` | Initialized 2026-11-08 (loaded once after `custom-cairo.css`) | none assigned explicitly yet |
-| Dev1 | `assets/dev1.css` | Initialized 2026-11-08 (file created; loaded once in `layout/theme.liquid` after `main.css`, tag count 1, Cairo line unchanged) | S03 |
+| Dev1 | `assets/dev1.css` | Initialized 2026-11-08 (file created; loaded once in `layout/theme.liquid` after `main.css`, tag count 1, Cairo line unchanged) | S03, S06 |
 | Dev2 | `assets/dev2.css` | Not initialized | — |
 | Dev3 | `assets/dev3.css` | Not initialized | — |
 
-**Custom classes owned:** Dev1 (S03, `dev1.css`): `sn-home-hero`, `sn-home-hero-content`, `sn-home-hero-overline`, `sn-home-hero-stage`, `sn-home-hero-chip`, `sn-home-trust-card`, `sn-home-trust-item`, plus the Liquid-generated position classes `sn-float`, `sn-float--*`, `sn-float-m--*` (inert outside `.sn-home-hero-stage`).
+**Custom classes owned:** Dev1 (S03, `dev1.css`): `sn-home-hero`, `sn-home-hero-content`, `sn-home-hero-overline`, `sn-home-hero-stage`, `sn-home-hero-chip`, `sn-home-trust-card`, `sn-home-trust-item`, plus the Liquid-generated position classes `sn-float`, `sn-float--*`, `sn-float-m--*` (inert outside `.sn-home-hero-stage`). Dev1 (S06, `dev1.css`): `sn-home-f1-banner`, `sn-home-f1-content`, `sn-home-f1-tag`, `sn-home-f1-specs`, `sn-home-f1-spec`, `sn-home-f1-stage`, `sn-home-f1-watermark`, `sn-home-f1-arc`, `sn-home-f1-sparkles`, `sn-home-f1-glow`, `sn-home-f1-waves` (collision check 2026-11-11: none).
 **Shared-file claims (active):** none. (Dev1/S03 claims on `templates/index.json`, `blocks/group.liquid`, `blocks/text.liquid`, `snippets/text.liquid`, `snippets/custom-class.liquid`, `layout/theme.liquid` released 2026-11-08 after implementation.)
 
 ## D. Section registry
@@ -55,7 +55,7 @@ Logical areas from the Figma homepage, in Figma order. A row isn't necessarily o
 | S03 | Hero + Trust Strip | `190:3789` | `335:3959` | index.json | Dev1 | IMPLEMENTED | C + B + D (D4 text snippet) | `hero` (Hero) + `section` (Trust); blocks `group`, `text`, `button`, `image`, `icon` | `sn-home-hero*`, `sn-home-trust-card`/`-item`, inert `sn-float*` position classes | Implemented 2026-11-08; refined 2026-11-09 (Figma re-measured: product image box, CTA label fix, icon caps, mobile trust card, mobile alignment settings). **Visual QA: PENDING USER REVIEW** (user-owned per Skill rule 13). Shared edits: `blocks/group.liquid` (36→40, at the limit), `blocks/text.liquid` (now 22 incl. Dev2's `mobile_font_size`) + `snippets/text.liquid`, `sections/hero.liquid` (37→40, **at the limit**: product stage offsets), `sections/section.liquid` (28→40, **at the limit**: opt-in overlap, content max width, card sizes; 2026-11-09) |
 | S04 | Collections | `190:3830` | `190:4133` | index.json | — | NOT_STARTED | — | — | — | — |
 | S05 | Featured Collection | `190:3844` | `190:4149` | index.json | — | NOT_STARTED | — | — | — | Same design as S07 |
-| S06 | F1 Banner | `190:3851` | `190:4167` | index.json | — | NOT_STARTED | — | — | — | — |
+| S06 | F1 Banner | `190:3851` | `190:4167` | index.json | Dev1 | IMPLEMENTED | C (+ scoped CSS; no schema change) | `hero`; blocks `group`, `text`, `image`, `icon`, `button` | `sn-home-f1-banner`, `-content`, `-tag`, `-specs`, `-spec`, `-stage`, `-watermark`, `-arc`, `-sparkles`, `-glow`, `-waves` | Implemented 2026-11-11 after S03 trust (`sn_home_f1`, type `hero`; audit 2026-11-11: no custom files, product media fixed). Decorations = hideable blocks. **Visual QA: PENDING USER REVIEW**. Merchant: product image, optional background, tank/PSI icons, CTA product |
 | S07 | Featured Collection 2 | `190:3896` | `190:4204` | index.json | — | NOT_STARTED | — | — | — | Reuse S05's decisions |
 | S08 | Before / After | `190:3903` | `190:4222` | index.json | — | NOT_STARTED | — | — | — | — |
 | S09 | Reels | `190:3935` | `190:4254` | index.json | — | NOT_STARTED | — | — | — | — |
@@ -298,11 +298,116 @@ Not changed: `sections/section.liquid`, `snippets/section.liquid`, `snippets/gro
 
 - Expected reversibility (untested): `CLASS_PLUS_SETTINGS`: trust section overlap 58/49, content max width 1236, trust card padding 22/36 and radius 22 stay when the class is removed (card-size variables become unused); hero content_direction row / gap 0 / height auto; content group padding 34/96/40/48 and gap 16; chip float positions; button `button-custom` colors + `width_mobile`; text colors; trust section padding 0. `mobile_text` is not tied to a class (renders natively per device).
 
+### S06 F1 Banner — IMPLEMENTED 2026-11-11 (Dev1); visual QA pending
+
+**Figma (inspected 2026-11-11: metadata + design context of `190:3851` and `190:4167`; decoration SVG/PNG assets downloaded to scratch only, to measure them; nothing from Figma is stored in the theme).**
+
+| Item | Desktop `190:3851` | Mobile `190:4167` |
+|---|---|---|
+| Frame | 1480×520, bg `linear-gradient(68.2deg, #fff 5.73%, #f0fafe 94.27%)` | 390×714, same gradient at 85.61deg |
+| Container | 1376 (x 52), inner padding 20, copy right-aligned | gutters 24; stage first (full-bleed 390×330), then content, bottom padding 36 |
+| Copy | 584 wide (x 772 in container) incl. 24 start padding → text 560; column gap 18; vertically centred (y 46, 428 high) | tag/heading/description gap 12, specs +18, CTA +32 |
+| Tag | 95×32, padding 7/16, pill, `to right #63cdff → #0f64a8`, shadow 0 8 18 rgb(15 100 168/.3), 12/18 SemiBold white | same |
+| Heading | Cairo Bold 40/64 `#12568d`, accent "بخطوة أسهل" `#176bb0`, 2 lines in 560 | SemiBold 24/38, 1 line in 342 |
+| Description | Regular 16/28 `#5a5a59`, 2 lines | 13/22, 3 lines |
+| Specs | wrap, gap 10, right-aligned: row 1 = PSI, modes, tank (right → left), row 2 = heads | gap 8/10, row 1 = modes, tank; row 2 = heads, PSI |
+| Spec chip | 38 high, white, 1px `#dcf2fb`, radius 12, padding 6 / 10 (badge side) / 6 / 12, gap 8; label 12/20 SemiBold `#12568d`; badge 26 radius 8 `to bottom #63cdff → #0f64a8`; icon 15 white | same |
+| CTA | 157×54, radius 10, padding 14/32, `to right #63cdff → #0f64a8`, shadow 0 10 22 rgb(15 100 168/.35), 16/26 SemiBold white; right-aligned | same, right-aligned |
+| Product image | layer 438 at (213, 22); PNG 558 square at (153, -8) | layer 280 at (55, 40); PNG 400 square at (-5, 10) |
+| Dotted circle | 510 at (165, 5), layer opacity 50%, PNG 143 dashes, `#56bdf1 → #1e76b5` diagonal at 50% alpha | 320 at (35, 20), 87 dashes |
+| F1 watermark | Cairo Bold 380, `rgba(23,107,176,.05)`, tracking -2%, at (31, -100) | 210 at (-20, 354) (behind the content) |
+| Glow | ellipse 320×280 `#63cdff` 20%, blur 75, centre (680, 0) | 260×220, right -70, top -90 |
+| Waves | back 1480×170 from y 390; front 1480×407 from y 203 (above the circle, below watermark/product) | back 390×44.8 on the bottom edge; no front wave |
+| Sparkles / bubbles | 3 sparkles (22/16/22, 70/50/70%) + 9 bubbles (fill `#63cdff` 22% or 1.5px ring 30%) | 2 sparkles + 4 bubbles |
+
+**Native Reuse Audit → category C (composition) + scoped CSS; no schema change.**
+- `hero` (chosen): independent background media with an optional separate mobile image and desktop fallback, native Background colour + overlay/gradient, and an image-only mode that keeps the image's natural height when there are no blocks (`hero--no-blocks-auto-height`). It already has the S03 "Product stage … position" settings. It takes any theme blocks.
+- `media-with-content`: rejected. Media and content are side by side; there is no independent full-width background layer under both.
+- `section`: rejected. No separate mobile background image, and no natural-height image-only mode.
+- New section: not needed.
+- `hero` and `group` are both at 40 settings, so nothing was added. Every optional element is a block the merchant can hide (eye icon) or delete.
+
+**Structure (`templates/index.json` → `sn_home_f1`, type `hero`, custom class `sn-home-f1-banner`, after `sn_home_trust`):**
+- `f1_content` group `sn-home-f1-content`: column, gap 18, Width Custom 44% (≈ 584 of 1336), start padding 24. Contains:
+  - Product tag group `sn-home-f1-tag` (padding 7/16) with text "SNOSHA F1".
+  - Heading text `<h2>` with `<em>` accent; Font size — Mobile 24, Line height — Mobile 38.
+  - Description text; mobile 13/22.
+  - Specs group `sn-home-f1-specs` (row, gap 10) with 4 chip groups `sn-home-f1-spec`, using native Background, Border, Corner radius, Padding and Gap; each chip is icon + text.
+  - CTA: native button, `button-custom`, bg `#0f64a8`, text white, **link empty** (merchant picks the product).
+- `f1_stage` group `sn-home-f1-stage` contains:
+  - Watermark group `sn-home-f1-watermark` (editable text "F1", Text color `#176bb0`).
+  - Dotted circle group `sn-home-f1-arc` (empty).
+  - Product image block (empty: merchant uploads).
+  - Sparkles group `sn-home-f1-sparkles` (empty).
+- `f1_glow` / `f1_waves`: empty switch groups `sn-home-f1-glow` / `sn-home-f1-waves` (`display: none`). The glow and waves are drawn on `.hero__container::after` (above the background image, below the content) only while the switch block is present.
+- **Icons:** PSI = native `stopwatch`, tank = native `bottle` (placeholders until the merchant uploads the Figma icons). Modes and heads reuse the merchant's S03 uploads (sliders SVG, brush-head PNG). Icon Width 16 (Figma 15; the setting steps by 2).
+
+**CSS (`dev1.css`, appended after S03, every selector depends on a `sn-home-f1-*` class):**
+- **Decorations:** exact Figma SVG shapes as data URIs. The dotted circle is redrawn as an SVG with `pathLength` and the measured dash count / gradient. Positions are stage-relative %, and the watermark size is in `cqi` (stage is an inline-size container), so the whole stage scales and moves as one unit.
+- **Stage:**
+  - Desktop: `flex: 1` with aspect 752/520; content `flex: 0 0` its native Width.
+  - Tablet 750–989 (ASSUMED): stacked, stage max 560 centred.
+  - ≤749: full-bleed 390/330 with `order: -1`.
+  - The hero "Product stage … position" settings apply (`translate`).
+- **Product image box:** 558/752 of the stage, centred where Figma has it, `object-fit: contain`. Size = the image block's native Width (Fill = Figma; Custom % scales it).
+- **Typography:** Figma values at element-level specificity (`:where` wrapper), so native Custom size / line height / text colour and the per-block mobile size settings win. Weights are fixed (Bold / SemiBold mobile heading).
+- **Empty states:** an empty stage or content group collapses (`display: none`), and a single remaining column is centred. With no blocks at all the hero is native (image-only).
+- **Background fallback:** Figma gradient when no Background colour is set.
+
+**Reusability scenarios:**
+- A full = template as shipped.
+- B image-only = delete all blocks.
+- C product + background = delete/hide the content group.
+- D text + background = delete/hide the stage (or its children).
+- E product promotion = hide the tag / description.
+- F minimal = keep heading + button.
+
+**Kept in code (and why):**
+- Tag / chip / CTA gradients and shadows, the badge style, mobile spacing rhythm (12 / 18 / 32, chip row gap 8) and the tablet heading size 32/50: no native gradient, shadow or mobile gap settings, and `group` / `hero` are at 40.
+- Watermark opacity (5%).
+- Background image position: the native hero hardcodes `object-position: center`.
+
+**Limitations / ASSUMED:**
+- The arc's lower half is faded with a mask to imitate the front wave covering it (the wave is drawn behind the content wrapper).
+- Mobile spec order follows the desktop order (row 1 PSI, modes / row 2 tank, heads), because one DOM order can't produce both Figma orders.
+- The watermark "F1" is real text, so screen readers can read it.
+- The merchant must still upload the background image (optional), the product image and the tank/PSI icons, and pick the CTA product.
+- S04/S05 (above S06 in Figma) aren't on this branch; when added they go between `sn_home_trust` and `sn_home_f1`.
+
+**Architecture + media audit (2026-11-11, Dev1), after the merchant's Theme Editor review**
+- **Figma rechecked:** product image layers `190:3859` (desktop: PNG 558 square around the 438 layer) and `190:4173` (mobile: PNG 400 square around the 280 layer). Decorations as recorded above.
+- **Actual section type:** `templates/index.json` → `sn_home_f1` has `"type": "hero"`, the native `sections/hero.liquid`.
+  - No section, block or snippet file was created for S06 (S06 is only `index.json` + `dev1.css`).
+  - It looked like a new section because the instance carried the display name "F1 Banner". That name is removed, so the editor shows the native "Hero" (the merchant can rename it).
+- **Candidates rechecked:** `hero` stays.
+  - `media-with-content` has media beside the content and no background layer under both.
+  - `section` has no mobile background image and no natural-height image-only mode.
+  - No migration needed, no data lost.
+- **Media root causes:**
+  1. The empty product image block renders Horizon's sample t-shirt (`placeholder_svg_tag 'detailed-apparel-1'`) on the editor **and the storefront**.
+  2. The product box was forced to a square (`aspect-ratio: 1`), ignoring the image block's native Aspect ratio setting (a setting overridden by CSS).
+  3. The hero's own Media pickers (generic "Image" labels, two slots) are the **background**. The product picker is the Image block inside "Product stage", so a product uploaded to the hero Media becomes a full-bleed `cover` background (cropped). If both hero slots are filled, the background splits into two columns (native two-media layout).
+- **Fixes (`dev1.css` only):**
+  - Product box sized by height to Figma (desktop 107.31% of the stage = 558/520, mobile 121.21% = 400/330), width from the native Aspect ratio (`--ratio`, Adapt = file's own ratio), scale from the native Width / Mobile width, `object-fit: contain`.
+  - Empty state: the sample illustration is never shown; in the editor a dashed circle marks the slot; on the storefront an empty product block (and a stage left with only empty image blocks) is hidden (`.hero__content-wrapper--design-mode` = editor).
+- **Background:** hero Media ("Image" under Media, desktop) + "Custom mobile media" → mobile Image (falls back to desktop), `cover` centred (native). Background colour (native) or the Figma gradient fallback; native overlay available. Use only the first media slot for this banner.
+- **Not added (and why):**
+  - Background position control: the native hero hardcodes `center center` and is at 40 settings.
+  - A separate mobile product image: the same cutout scales; the mobile size comes from Mobile width.
+- **Files:** `assets/dev1.css` (S06 product image / empty state), `templates/index.json` (removed the S06 display name only).
+- **Static checks:** Theme Check 9 = baseline (stock files only); 27 S06 blocks, 0 unknown or invalid settings; CSS braces balanced; template classes = CSS classes.
+- **PENDING USER REVIEW:**
+  - Upload the background (hero Media) and the product (Product stage → Image) and compare with Figma at 1480 / 390.
+  - Empty states: editor dashed circle; storefront shows nothing.
+  - Aspect ratio Adapt vs Square.
+  - Decoration blocks on/off.
+
 ## F. QA & progress
 
 | ID | Figma analysis | Code checks | Visual desktop | Visual mobile | RTL | Media | Reversibility | Pending issues |
 |---|---|---|---|---|---|---|---|---|
-| S01–S02, S04–S15 | — | — | — | — | — | — | — | Only project-level mapping done; no section-level analysis yet |
+| S01–S02, S04–S05, S07–S15 | — | — | — | — | — | — | — | Only project-level mapping done; no section-level analysis yet |
+| S06 | PASS (`190:3851` + `190:4167` design context + metadata 2026-11-11; no motion) | PASS (local): Theme Check 2026-11-11 = 9 offenses = baseline (all stock files); template: 27 S06 blocks, every setting exists in its schema, selects/ranges valid, block_order consistent; CSS braces balanced, 25 SVG data URIs well-formed; classes in template = classes in CSS | PENDING USER REVIEW | PENDING USER REVIEW | PENDING USER REVIEW | PENDING USER REVIEW (product image, background, tank/PSI icons not uploaded; CTA product not set) | PENDING USER REVIEW (expected `CLASS_PLUS_SETTINGS`: chip background/border/radius/padding, content width/padding, button colours stay when the class is removed) | Manual: 1480 / 390 / 375 / 360 vs Figma; tablet 768–989; scenarios A–F; hide each decoration block; RTL order; CTA hover/focus |
 | S03 | PASS (both nodes re-inspected 2026-11-08 and again 2026-11-09 for the refinement; no motion) | PASS (local only): 2026-11-08 Theme Check at baseline (9); 2026-11-09 refinement + final pass: schema JSON/counts, template keys vs schemas, CSS braces (Theme Check not re-run). PENDING USER REVIEW: console/404, sanitizer output | PENDING USER REVIEW | PENDING USER REVIEW | PENDING USER REVIEW | PENDING USER REVIEW (final product image + icons not uploaded; placeholders in place) | PENDING USER REVIEW (expected `CLASS_PLUS_SETTINGS`, see E) | User's manual checklist: Figma comparison at 1480 / 390 / 375 and tablet 768–989; image-only, text-only, no chips, trust alone, 3 and 5+ trust items; D5 8px readability; `mobile_text` click-to-edit; class on/off. Assisted review once the user sends screenshots |
 
 Give a section its own row here when its work starts, and keep the S01–S15 row only for sections that haven't started.
@@ -341,3 +446,5 @@ Give a section its own row here when its work starts, and keep the S01–S15 row
 | 2026-11-09 | S03 product position + mobile trust typography by Dev1: image `object-position` 87.4% measured from the Figma PNG (Figma stretches it +11%); stage position settings renamed with clear up/down help; new mobile trust title/description size + line-height settings (tile sizes now derived from icon size, mobile padding top+sides merged; section stays 40) | Merchant review: product too low, mobile trust text off | S03; `hero` labels, `section`, `dev1.css`, `index.json` | User-owned visual QA (PENDING USER REVIEW) |
 | 2026-11-09 | S03 mobile trust typography controls fixed by Dev1: per-text-block "Font size — Mobile" / "Line height — Mobile" (text 24, snippet output, 0 = desktop size); trust Figma sizes in dev1.css lowered to element specificity so native Size/Color win; section-level typography settings removed (section 37) | Merchant: mobile trust text size not adjustable | S03; `text`, `snippets/text.liquid`, `section`, `dev1.css`, `index.json` | User-owned visual QA (PENDING USER REVIEW) |
 | 2026-11-09 | S03 mobile Trust card width fixed by Dev1: `auto` width in the centred section column made the card shrink-to-fit; now explicit width from new "Trust card width — Mobile" (346, capped at screen − 16) with Figma 24/20 gutters | Merchant mobile screenshot: card narrow, text wrapping | S03; `section` (38), `dev1.css`, `index.json` | User-owned visual QA (PENDING USER REVIEW) |
+| 2026-11-11 | S06 F1 Banner implemented by Dev1 on the native `hero` (category C, no schema change): content/stage/decoration groups + text/image/icon/button blocks; decorations as hideable blocks drawn with exact Figma SVG shapes in `dev1.css`; inserted after `sn_home_trust` | Figma `190:3851` / `190:4167`; native-first audit (hero > section > media-with-content) | S06; `dev1.css` (appended), `index.json` | User-owned visual QA; merchant media; S04/S05 to be inserted before S06 |
+| 2026-11-11 | S06 audit by Dev1: confirmed native `hero` (no custom files; the "F1 Banner" instance name removed); product image box now follows the image block's native Aspect ratio + Width (height-led, contain), sample t-shirt placeholder replaced by an editor-only dashed slot and hidden on the storefront; background = hero Media (+ mobile) | Merchant: placeholder, image behaviour, apparent custom section | S06; `dev1.css`, `index.json` | User-owned visual QA |

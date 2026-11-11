@@ -791,3 +791,533 @@
     --sn-hero-overlap: var(--next-section-overlap, 49px);
   }
 }
+
+/* ==========================================================================
+   S06 F1 Banner — .sn-home-f1-banner (native `hero` section) | owner: Dev1
+   Figma desktop 190:3851 (1480×520; container 1376 + 20px inner padding), mobile 190:4167 (390×714)
+   Native blocks only:
+   - content group .sn-home-f1-content: tag group .sn-home-f1-tag (text), heading text, description
+     text, specs group .sn-home-f1-specs > chip groups .sn-home-f1-spec (icon + text), button;
+   - stage group .sn-home-f1-stage: watermark group .sn-home-f1-watermark (text), dotted circle group
+     .sn-home-f1-arc, product image block, sparkles group .sn-home-f1-sparkles;
+   - switch groups .sn-home-f1-glow / .sn-home-f1-waves (no content).
+   Every decoration is its own block: hide or delete it in the Theme Editor to turn it off.
+   Decorations are the exact Figma SVG shapes inlined as data URIs (no files, no Figma URLs).
+   Merchant media (background, product, icons) is chosen in the Theme Editor.
+   ========================================================================== */
+.sn-home-f1-banner {
+  /* Figma container 1376px (class-scoped, like S03) */
+  --page-content-width: 1376px;
+  --page-width: calc(var(--page-content-width) + var(--page-margin) * 2);
+
+  @media screen and (max-width: 749px) {
+    /* Figma mobile gutter 24px */
+    --page-margin: max(24px, var(--safe-area-inset-left, 0px), var(--safe-area-inset-right, 0px));
+  }
+
+  /* Background fallback = Figma gradient, used when the hero has no Background colour. An uploaded
+     background image (hero media, optional separate mobile image) covers it. */
+  &:not([class*='color-custom-']) .hero__media-grid {
+    background-image: linear-gradient(68.2deg, #fff 5.73%, #f0fafe 94.27%);
+
+    @media screen and (max-width: 749px) {
+      background-image: linear-gradient(85.61deg, #fff 5.73%, #f0fafe 94.27%);
+    }
+  }
+
+  /* With blocks, the gradient replaces the "no media" placeholder. Without blocks (image-only banner)
+     the native placeholder and the image's natural height are untouched. */
+  &:has(> .hero__container > .hero__content-wrapper > *) .hero__media-grid > svg.hero__media {
+    display: none;
+  }
+
+  /* Glow + waves: one layer above the background image, below the content. Each part exists only
+     while its switch block ("Decoration: glow" / "Decoration: waves") is present and visible. */
+  &:has(.sn-home-f1-glow) {
+    --sn-f1-glow: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 620 580'%3E%3Cfilter id='f' x='0' y='0' width='620' height='580' filterUnits='userSpaceOnUse'%3E%3CfeGaussianBlur stdDeviation='75'/%3E%3C/filter%3E%3Cellipse cx='310' cy='290' rx='160' ry='140' fill='%2363CDFF' fill-opacity='0.2' filter='url(%23f)'/%3E%3C/svg%3E");
+
+    @media screen and (max-width: 989px) {
+      --sn-f1-glow: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 560 520'%3E%3Cfilter id='f' x='0' y='0' width='560' height='520' filterUnits='userSpaceOnUse'%3E%3CfeGaussianBlur stdDeviation='75'/%3E%3C/filter%3E%3Cellipse cx='280' cy='260' rx='130' ry='110' fill='%2363CDFF' fill-opacity='0.2' filter='url(%23f)'/%3E%3C/svg%3E");
+    }
+  }
+
+  &:has(.sn-home-f1-waves) {
+    --sn-f1-wave-back: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1480 170' preserveAspectRatio='none'%3E%3ClinearGradient id='g' x1='0' y1='85' x2='1480' y2='85' gradientUnits='userSpaceOnUse'%3E%3Cstop stop-color='%23DCF2FB' stop-opacity='0.95'/%3E%3Cstop offset='1' stop-color='%23F0FAFE' stop-opacity='0.95'/%3E%3C/linearGradient%3E%3Cpath d='M0 40C240 -40 480 90 740 25C1000 -40 1240 80 1480 0V170H0V40Z' fill='url(%23g)'/%3E%3C/svg%3E");
+    --sn-f1-wave-front: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1480 407' preserveAspectRatio='none'%3E%3ClinearGradient id='g' x1='0' y1='203.5' x2='1480' y2='203.5' gradientUnits='userSpaceOnUse'%3E%3Cstop stop-color='white' stop-opacity='0.95'/%3E%3Cstop offset='1' stop-color='%23DCF2FB' stop-opacity='0.6'/%3E%3C/linearGradient%3E%3Cpath d='M0 125.231C300 -93.9231 560 250.462 820 62.6154C1080 -109.577 1280 187.846 1480 0V407H0V125.231Z' fill='url(%23g)'/%3E%3C/svg%3E");
+
+    @media screen and (max-width: 989px) {
+      --sn-f1-wave-back: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 390 44.7973' preserveAspectRatio='none'%3E%3ClinearGradient id='g' x1='0' y1='22.3986' x2='390' y2='22.3986' gradientUnits='userSpaceOnUse'%3E%3Cstop stop-color='%23DCF2FB' stop-opacity='0.95'/%3E%3Cstop offset='1' stop-color='%23F0FAFE' stop-opacity='0.95'/%3E%3C/linearGradient%3E%3Cpath d='M0 10.5405C63.2432 -10.5405 126.486 23.7162 195 6.58784C263.514 -10.5405 326.757 21.0811 390 0V44.7973H0V10.5405Z' fill='url(%23g)'/%3E%3C/svg%3E");
+      /* Figma mobile has no front wave */
+      --sn-f1-wave-front: none;
+    }
+  }
+
+  &:has(.sn-home-f1-glow, .sn-home-f1-waves) > .hero__container::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+    background-image: var(--sn-f1-wave-front, none), var(--sn-f1-wave-back, none), var(--sn-f1-glow, none);
+    background-repeat: no-repeat;
+    /* Desktop (Figma 1480 frame, centred): front wave 1480×407 from y 203 and back wave 1480×170 from
+       y 390, both running 90 / 40px past the bottom (anchored to the bottom); glow box 620×580 whose
+       left edge is 370px left of the middle, top -290. */
+    background-size: 100% 407px, 100% 170px, 620px 580px;
+    background-position:
+      0 calc(100% + 90px),
+      0 calc(100% + 40px),
+      calc(50% - 60px) -290px;
+
+    @media screen and (max-width: 989px) {
+      /* Mobile: back wave 390×44.8 on the bottom edge; glow box 560×520, right edge 220px past the
+         right side, top -240. */
+      background-size: 100% 407px, 100% 45px, 560px 520px;
+      background-position:
+        0 100%,
+        0 100%,
+        calc(100% + 220px) -240px;
+    }
+  }
+
+  /* Switch blocks carry no content */
+  :is(.sn-home-f1-glow, .sn-home-f1-waves) {
+    display: none;
+  }
+
+  > .hero__container > .hero__content-wrapper {
+    @media screen and (min-width: 990px) {
+      /* Figma container inner padding */
+      padding-inline: 20px;
+      flex-wrap: nowrap;
+    }
+
+    @media screen and (max-width: 989px) {
+      flex-direction: column;
+      flex-wrap: nowrap;
+      align-items: stretch;
+      gap: 0;
+      /* Figma mobile: container bottom padding 36 */
+      padding-block-end: 36px;
+    }
+  }
+
+  /* Only one column left (no stage, or no content): centre it instead of leaving an empty side */
+  > .hero__container > .hero__content-wrapper:not(:has(> .sn-home-f1-stage)),
+  > .hero__container > .hero__content-wrapper:not(:has(> .sn-home-f1-content)) {
+    justify-content: center;
+  }
+}
+
+/* --- Content column ------------------------------------------------------ */
+.sn-home-f1-content {
+  /* Above the stage's watermark, which reaches under the text on mobile */
+  position: relative;
+  z-index: 1;
+
+  @media screen and (min-width: 990px) {
+    /* Width = the group's native Width (S06: Custom 44% of 1336 ≈ Figma 584 incl. its 24px start padding) */
+    flex: 0 0 var(--size-style-width, 44%);
+  }
+
+  @media screen and (max-width: 989px) {
+    inline-size: 100%;
+    /* The native start padding (Figma 24) is a desktop value */
+    padding-inline: 0;
+
+    /* Figma mobile rhythm: tag / heading / description 12, specs 18, CTA 32.
+       Desktop = the group's native Gap (18). */
+    > .group-block-content {
+      gap: 12px;
+    }
+
+    > .group-block-content > .sn-home-f1-specs {
+      margin-block-start: 6px;
+    }
+
+    > .group-block-content > :is(.button, .button-secondary, .button-custom) {
+      margin-block-start: 20px;
+    }
+  }
+
+  /* Hidden when every child is removed or hidden */
+  &:not(:has(> .group-block-content > *)) {
+    display: none;
+  }
+
+  /* CTA (native button). Figma 157×54, radius 10, padding 14/32, gradient #63cdff → #0f64a8 (left to
+     right), shadow, label 16/26 SemiBold white. The gradient ends in the button's Background colour and
+     the label uses its Text colour, so the button settings stay in control. */
+  :is(.button, .button-secondary, .button-custom) {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    box-sizing: border-box;
+    min-inline-size: 157px;
+    min-block-size: 54px;
+    padding-block: 14px;
+    padding-inline: 32px;
+    border: 0;
+    border-radius: 10px;
+    background-color: var(--button-background-color, #0f64a8);
+    background-image: linear-gradient(to right, #63cdff, var(--button-background-color, #0f64a8));
+    color: var(--button-color, #fff);
+    box-shadow: 0 10px 22px rgb(15 100 168 / 0.35);
+    font-size: 16px;
+    line-height: 26px;
+    font-weight: 600;
+  }
+}
+
+/* Product tag (group with a text block). Figma 95×32: padding 7 / 16 = the group's native Padding;
+   pill, gradient #63cdff → #0f64a8 (left to right), shadow. */
+.sn-home-f1-tag {
+  border-radius: 999px;
+  background-image: linear-gradient(to right, #63cdff, #0f64a8);
+  box-shadow: 0 8px 18px rgb(15 100 168 / 0.3);
+}
+
+/* Spec chips. Figma 38 high: white, 1px #dcf2fb, radius 12, padding 6 / 10 (badge side) / 6 / 12,
+   gap 8 = the chip group's native Background, Border, Corner radius, Padding and Gap. */
+.sn-home-f1-specs > .group-block-content {
+  /* Native row groups don't wrap on desktop; chips do (Figma: 3 + 1 at 560px) */
+  flex-wrap: wrap;
+
+  @media screen and (max-width: 749px) {
+    /* Figma mobile: 8 between rows (between chips = native Gap 10) */
+    row-gap: 8px;
+  }
+}
+
+.sn-home-f1-spec {
+  flex: 0 0 auto;
+
+  > .group-block-content {
+    flex-wrap: nowrap;
+    align-items: center;
+  }
+
+  /* Icon badge 26, radius 8, gradient #63cdff → #0f64a8 (top to bottom). Icon size = the icon block's
+     native Width (Figma 15; the setting steps by 2, S06 uses 16), kept inside the badge. */
+  .icon-block {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    box-sizing: border-box;
+    inline-size: 26px;
+    block-size: 26px;
+    padding: 0;
+    border-radius: 8px;
+    background-image: linear-gradient(to bottom, #63cdff, #0f64a8);
+    color: #fff;
+  }
+
+  .icon-block__media {
+    max-inline-size: 20px;
+    max-block-size: 20px;
+    object-fit: contain;
+  }
+}
+
+/* --- Typography: Figma values at element-level specificity (wrapped in :where), so the text blocks'
+   own settings always win: Custom preset Size / Line height, Text color, and "Font size — Mobile" /
+   "Line height — Mobile" (S06 template: heading 24/38, description 13/22). Weights are Figma-fixed. */
+:where(.sn-home-f1-content) :is(h1, h2, h3, h4, p) {
+  margin: 0;
+}
+
+:where(.sn-home-f1-content > .group-block-content > .text-block) :is(h1, h2, h3) {
+  font-family: var(--font-body--family);
+  font-weight: 700;
+  letter-spacing: 0;
+
+  @media screen and (max-width: 749px) {
+    /* Figma mobile heading is SemiBold */
+    font-weight: 600;
+  }
+}
+
+:where(.sn-home-f1-content > .group-block-content > .text-block:not(.custom-font-size)) :is(h1, h2, h3) {
+  font-size: 40px;
+
+  @media screen and (min-width: 750px) and (max-width: 989px) {
+    /* Tablet ASSUMED (no Figma frame) */
+    font-size: 32px;
+  }
+}
+
+:where(.sn-home-f1-content > .group-block-content > .text-block:not(.custom-typography)) :is(h1, h2, h3) {
+  line-height: 64px;
+
+  @media screen and (min-width: 750px) and (max-width: 989px) {
+    line-height: 50px;
+  }
+}
+
+:where(.sn-home-f1-content > .group-block-content > .text-block:not(.custom-color)) :is(h1, h2, h3) {
+  color: #12568d;
+}
+
+/* Accent phrase = <em> in the heading's rich text (Figma #176bb0) */
+:where(.sn-home-f1-content > .group-block-content > .text-block) :is(h1, h2, h3) em {
+  font-style: normal;
+  color: #176bb0;
+}
+
+:where(.sn-home-f1-content > .group-block-content > .text-block) p {
+  font-family: var(--font-body--family);
+  font-weight: 400;
+}
+
+:where(.sn-home-f1-content > .group-block-content > .text-block:not(.custom-font-size)) p {
+  font-size: 16px;
+}
+
+:where(.sn-home-f1-content > .group-block-content > .text-block:not(.custom-typography)) p {
+  line-height: 28px;
+}
+
+:where(.sn-home-f1-content > .group-block-content > .text-block:not(.custom-color)) p {
+  color: #5a5a59;
+}
+
+/* Tag label: Figma 12/18 SemiBold white */
+:where(.sn-home-f1-tag .text-block) :is(h1, h2, h3, h4, p) {
+  font-family: var(--font-body--family);
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+:where(.sn-home-f1-tag .text-block:not(.custom-font-size)) :is(h1, h2, h3, h4, p) {
+  font-size: 12px;
+}
+
+:where(.sn-home-f1-tag .text-block:not(.custom-typography)) :is(h1, h2, h3, h4, p) {
+  line-height: 18px;
+}
+
+:where(.sn-home-f1-tag .text-block:not(.custom-color)) :is(h1, h2, h3, h4, p) {
+  color: #fff;
+}
+
+/* Chip label: Figma 12/20 SemiBold #12568d */
+:where(.sn-home-f1-spec .text-block) :is(h1, h2, h3, h4, p) {
+  font-family: var(--font-body--family);
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+:where(.sn-home-f1-spec .text-block:not(.custom-font-size)) :is(h1, h2, h3, h4, p) {
+  font-size: 12px;
+}
+
+:where(.sn-home-f1-spec .text-block:not(.custom-typography)) :is(h1, h2, h3, h4, p) {
+  line-height: 20px;
+}
+
+:where(.sn-home-f1-spec .text-block:not(.custom-color)) :is(h1, h2, h3, h4, p) {
+  color: #12568d;
+}
+
+/* --- Product stage --------------------------------------------------------
+   Desktop: Figma stage = container inner width minus the copy column (752 × 520 at 1480).
+   Mobile: full-bleed 390 × 330, before the content. Children are positioned in % of the stage, so the
+   composition scales as one unit; the hero's "Product stage … position" settings move it as one unit. */
+.sn-home-f1-stage {
+  position: relative;
+  container-type: inline-size;
+  aspect-ratio: 752 / 520;
+  padding: 0;
+
+  > .group-block-content {
+    position: absolute;
+    inset: 0;
+  }
+
+  @media screen and (min-width: 990px) {
+    flex: 1 1 0;
+    min-inline-size: 0;
+    translate: var(--stage-offset-x, 0px) var(--stage-offset-y, 0px);
+  }
+
+  @media screen and (max-width: 989px) {
+    order: -1;
+    aspect-ratio: 390 / 330;
+    inline-size: 100%;
+    max-inline-size: 560px;
+    align-self: center;
+    translate: 0 var(--stage-offset-y-mobile, 0px);
+  }
+
+  @media screen and (max-width: 749px) {
+    /* Full-bleed: the stage spans the screen; the content keeps the 24px gutters */
+    inline-size: calc(100% + 2 * var(--page-margin));
+    max-inline-size: none;
+    margin-inline: calc(-1 * var(--page-margin));
+  }
+
+  /* Hidden when every child is removed or hidden (no empty reserved column) */
+  &:not(:has(> .group-block-content > *)) {
+    display: none;
+  }
+
+  /* Product image = the stage's own native image block (independent of the hero's background media).
+     Figma (190:3859 / 190:4173): a transparent PNG drawn 558px high on desktop (stage 520 high), centre
+     47.87% / 52.12%; 400px high on mobile (stage 330), centre 50% / 63.64%.
+     - Proportions = the image block's native "Aspect ratio" (Adapt = the uploaded file's own ratio, so no
+       crop and no letterbox; Square / Portrait / Landscape give that box). The box is sized by height and
+       its width follows the ratio, so any product cutout keeps the Figma product height.
+     - Scale = the image block's native Width (Fill = Figma size; Custom % scales it; mobile = Mobile width).
+     - `contain`, never `cover`: a cutout is never cropped or stretched. */
+  .image-block {
+    position: absolute;
+    left: 47.87%;
+    top: 52.12%;
+    block-size: calc(var(--size-style-width, 100%) * 1.0731);
+    inline-size: auto;
+    max-inline-size: none;
+    aspect-ratio: var(--ratio, 1);
+    margin: 0;
+    padding: 0;
+    translate: -50% -50%;
+
+    @media screen and (max-width: 989px) {
+      left: 50%;
+      top: 63.64%;
+      block-size: calc(var(--size-style-width-mobile, 100%) * 1.2121);
+    }
+  }
+
+  .image-block__image {
+    inline-size: 100%;
+    block-size: 100%;
+    aspect-ratio: auto;
+    object-fit: contain;
+  }
+
+  /* Empty product image: never Horizon's sample t-shirt. In the editor a neutral dashed circle marks the
+     slot (click it to pick an image); on the storefront the empty block is not shown (rule below). */
+  .image-block .placeholder-image {
+    inline-size: 100%;
+    block-size: 100%;
+    aspect-ratio: auto;
+    border: 2px dashed rgb(23 107 176 / 0.3);
+    border-radius: 50%;
+    background: none;
+  }
+
+  .image-block__placeholder {
+    display: none;
+  }
+}
+
+/* Storefront only (the hero marks the editor with .hero__content-wrapper--design-mode): hide an empty
+   product image, and hide the stage when nothing but empty image blocks is left in it. */
+.hero__content-wrapper:not(.hero__content-wrapper--design-mode) {
+  .sn-home-f1-stage .image-block:has(> .placeholder-image) {
+    display: none;
+  }
+
+  > .sn-home-f1-stage:not(:has(> .group-block-content > :not(.image-block:has(> .placeholder-image)))) {
+    display: none;
+  }
+}
+
+/* Decoration: dotted circle (group block). Figma Arc (layer opacity 50%): 143 dashes desktop / 87
+   mobile, #63cdff → #176bb0 diagonal at 50%. Desktop 510 at stage (93, 5); mobile 320 at (35, 20).
+   On desktop the Figma front wave covers its lower half; approximated with a fade (ASSUMED). */
+.sn-home-f1-arc {
+  position: absolute;
+  left: 12.37%;
+  top: 0.96%;
+  inline-size: 67.82%;
+  aspect-ratio: 1;
+  padding: 0;
+  opacity: 0.5;
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 510 510'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' y1='0' x2='1' y2='1'%3E%3Cstop offset='0' stop-color='%2363CDFF'/%3E%3Cstop offset='1' stop-color='%23176BB0'/%3E%3C/linearGradient%3E%3C/defs%3E%3Ccircle cx='255' cy='255' r='254' fill='none' stroke='url(%23g)' stroke-opacity='0.5' stroke-width='2' pathLength='143' stroke-dasharray='0.27 0.73'/%3E%3C/svg%3E") center / 100% 100% no-repeat;
+  mask-image: linear-gradient(to bottom, #000 50%, rgb(0 0 0 / 0.15) 68%);
+  pointer-events: none;
+
+  @media screen and (max-width: 989px) {
+    left: 8.97%;
+    top: 6.06%;
+    inline-size: 82.05%;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 320 320'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' y1='0' x2='1' y2='1'%3E%3Cstop offset='0' stop-color='%2363CDFF'/%3E%3Cstop offset='1' stop-color='%23176BB0'/%3E%3C/linearGradient%3E%3C/defs%3E%3Ccircle cx='160' cy='160' r='159' fill='none' stroke='url(%23g)' stroke-opacity='0.5' stroke-width='2' pathLength='87' stroke-dasharray='0.27 0.73'/%3E%3C/svg%3E");
+    mask-image: none;
+  }
+}
+
+/* Decoration: sparkles & bubbles (group block). Figma sparkle-brand ×3 / ×2 and bubbles ×9 / ×4,
+   stage-relative positions. */
+.sn-home-f1-sparkles {
+  position: absolute;
+  inset: 0;
+  padding: 0;
+  pointer-events: none;
+  background-repeat: no-repeat;
+  background-image:
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M12 2.09C12.6 7.49 16.6 11.49 22 12.09C16.6 12.69 12.6 16.69 12 22.09C11.4 16.69 7.4 12.69 2 12.09C7.4 11.49 11.4 7.49 12 2.09Z' fill='%23176BB0' fill-opacity='0.7'/%3E%3C/svg%3E"),
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M12 2.09C12.6 7.49 16.6 11.49 22 12.09C16.6 12.69 12.6 16.69 12 22.09C11.4 16.69 7.4 12.69 2 12.09C7.4 11.49 11.4 7.49 12 2.09Z' fill='%23176BB0' fill-opacity='0.5'/%3E%3C/svg%3E"),
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M12 2.09C12.6 7.49 16.6 11.49 22 12.09C16.6 12.69 12.6 16.69 12 22.09C11.4 16.69 7.4 12.69 2 12.09C7.4 11.49 11.4 7.49 12 2.09Z' fill='%23176BB0' fill-opacity='0.7'/%3E%3C/svg%3E"),
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 18 18'%3E%3Ccircle cx='9' cy='9' r='9' fill='%2363CDFF' fill-opacity='0.22'/%3E%3C/svg%3E"),
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 10 10'%3E%3Ccircle cx='5' cy='5' r='5' fill='%2363CDFF' fill-opacity='0.22'/%3E%3C/svg%3E"),
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 8 8'%3E%3Ccircle cx='4' cy='4' r='3.25' fill='none' stroke='%2363CDFF' stroke-opacity='0.3' stroke-width='1.5'/%3E%3C/svg%3E"),
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 14 14'%3E%3Ccircle cx='7' cy='7' r='6.25' fill='none' stroke='%2363CDFF' stroke-opacity='0.3' stroke-width='1.5'/%3E%3C/svg%3E"),
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 18 18'%3E%3Ccircle cx='9' cy='9' r='9' fill='%2363CDFF' fill-opacity='0.22'/%3E%3C/svg%3E"),
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 8 8'%3E%3Ccircle cx='4' cy='4' r='3.25' fill='none' stroke='%2363CDFF' stroke-opacity='0.3' stroke-width='1.5'/%3E%3C/svg%3E"),
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 14 14'%3E%3Ccircle cx='7' cy='7' r='6.25' fill='none' stroke='%2363CDFF' stroke-opacity='0.3' stroke-width='1.5'/%3E%3C/svg%3E"),
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 6 6'%3E%3Ccircle cx='3' cy='3' r='3' fill='%2363CDFF' fill-opacity='0.22'/%3E%3C/svg%3E"),
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 12'%3E%3Ccircle cx='6' cy='6' r='5.25' fill='none' stroke='%2363CDFF' stroke-opacity='0.3' stroke-width='1.5'/%3E%3C/svg%3E");
+  background-size: 22px, 16px, 22px, 18px, 10px, 8px, 14px, 18px, 8px, 14px, 6px, 12px;
+  background-position: 77.81% 18.07%, 10.6% 79.37%, 11.37% 12.65%, 86.38% 70.12%, 92.99% 58.04%, 82.8% 45.31%, 90.79% 33.2%, 20.3% 64.74%, 17.61% 40.04%, 25.07% 27.87%, 79.36% 23.35%, 6.49% 27.56%;
+
+  @media screen and (max-width: 989px) {
+    background-image:
+      url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M12 2.09C12.6 7.49 16.6 11.49 22 12.09C16.6 12.69 12.6 16.69 12 22.09C11.4 16.69 7.4 12.69 2 12.09C7.4 11.49 11.4 7.49 12 2.09Z' fill='%23176BB0' fill-opacity='0.7'/%3E%3C/svg%3E"),
+      url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M12 2.09C12.6 7.49 16.6 11.49 22 12.09C16.6 12.69 12.6 16.69 12 22.09C11.4 16.69 7.4 12.69 2 12.09C7.4 11.49 11.4 7.49 12 2.09Z' fill='%23176BB0' fill-opacity='0.5'/%3E%3C/svg%3E"),
+      url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 18 18'%3E%3Ccircle cx='9' cy='9' r='9' fill='%2363CDFF' fill-opacity='0.22'/%3E%3C/svg%3E"),
+      url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 10 10'%3E%3Ccircle cx='5' cy='5' r='5' fill='%2363CDFF' fill-opacity='0.22'/%3E%3C/svg%3E"),
+      url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 8 8'%3E%3Ccircle cx='4' cy='4' r='3.25' fill='none' stroke='%2363CDFF' stroke-opacity='0.3' stroke-width='1.5'/%3E%3C/svg%3E"),
+      url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 18 18'%3E%3Ccircle cx='9' cy='9' r='9' fill='%2363CDFF' fill-opacity='0.22'/%3E%3C/svg%3E");
+    background-size: 22px, 16px, 18px, 10px, 8px, 18px;
+    background-position: 89.67% 14.29%, 10.7% 95.54%, 88.71% 96.15%, 92.63% 78.13%, 83.25% 65.22%, 8.06% 70.51%;
+  }
+}
+
+/* Decoration: F1 watermark (group with an editable text block). Figma: Cairo Bold, #176bb0 at 5%,
+   letter-spacing -2%. Desktop 380px at frame (31, -100) = stage (-41, -100); mobile 210px at
+   (-20, 354), below the stage and under the text. Colour = the text block's Text color (default
+   #176bb0), shown at 5%. */
+.sn-home-f1-watermark {
+  position: absolute;
+  left: -5.45%;
+  top: -19.23%;
+  padding: 0;
+  opacity: 0.05;
+  pointer-events: none;
+  user-select: none;
+
+  @media screen and (max-width: 989px) {
+    left: -5.13%;
+    top: 107.27%;
+  }
+
+  .text-block,
+  .text-block > * {
+    margin: 0;
+    direction: ltr;
+    text-align: left;
+    white-space: nowrap;
+    font-family: var(--font-heading--family);
+    font-weight: 700;
+    font-size: 50.53cqi;
+    line-height: normal;
+    letter-spacing: -0.02em;
+    color: var(--color, #176bb0);
+
+    @media screen and (max-width: 989px) {
+      font-size: 53.85cqi;
+    }
+  }
+}
