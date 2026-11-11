@@ -9,12 +9,28 @@
   style="
     {% render 'typography-style', preset: 'custom', settings: block_settings %}
     {% if block_settings.text_color != blank %}--color-utilities: {{ block_settings.text_color }};{% endif %}
+    --copyright-font-weight: {{ block_settings.font_weight | default: 400 }};
+    --copyright-font-size-mobile: {{ block_settings.font_size_mobile | default: 11 }}px;
+    --copyright-font-weight-mobile: {{ block_settings.font_weight_mobile | default: 400 }};
   "
+  {% if block_settings.text_direction != blank %}
+    dir="{{ block_settings.text_direction }}"
+  {% endif %}
   {{ block.shopify_attributes }}
 >
+  {%- comment -%}
+    The year and the name are each isolated (<bdi>) so the line keeps one predictable order in
+    right-to-left and left-to-right text: ©, year, name, then the text after it.
+  {%- endcomment -%}
   <span class="footer-utilities__text">
-    &copy; {{ 'now' | date: '%Y' }}
-    {{ shop.name | link_to: routes.root_url -}}
+    &copy; <bdi>{{ 'now' | date: '%Y' }}</bdi>
+    <bdi>
+      {%- if block_settings.brand_text != blank -%}
+        {{ block_settings.brand_text | escape | link_to: routes.root_url }}
+      {%- else -%}
+        {{ shop.name | link_to: routes.root_url }}
+      {%- endif -%}
+    </bdi>
     {%- if block_settings.suffix_text != blank %} {{ block_settings.suffix_text | escape }}{% endif -%}
     {%- if block_settings.show_powered_by -%}
       , {{ powered_by_link }}
@@ -45,9 +61,15 @@
     },
     {
       "type": "text",
+      "id": "brand_text",
+      "label": "Brand name",
+      "info": "Optional. Replaces the store name. The © symbol and the current year are added automatically."
+    },
+    {
+      "type": "text",
       "id": "suffix_text",
       "label": "Text after store name",
-      "info": "Optional, e.g. \"— All rights reserved.\" The year is added automatically."
+      "info": "Optional, e.g. \"— All rights reserved.\" Don't repeat the ©, year or name here: they are added automatically."
     },
     {
       "type": "header",
@@ -86,6 +108,52 @@
         }
       ],
       "default": "0.75rem"
+    },
+    {
+      "type": "select",
+      "id": "font_weight",
+      "label": "Weight (desktop)",
+      "options": [
+        { "value": "400", "label": "Regular" },
+        { "value": "500", "label": "Medium" },
+        { "value": "600", "label": "SemiBold" },
+        { "value": "700", "label": "Bold" }
+      ],
+      "default": "400"
+    },
+    {
+      "type": "range",
+      "id": "font_size_mobile",
+      "label": "Size (mobile)",
+      "min": 10,
+      "max": 24,
+      "step": 1,
+      "unit": "px",
+      "default": 11
+    },
+    {
+      "type": "select",
+      "id": "font_weight_mobile",
+      "label": "Weight (mobile)",
+      "options": [
+        { "value": "400", "label": "Regular" },
+        { "value": "500", "label": "Medium" },
+        { "value": "600", "label": "SemiBold" },
+        { "value": "700", "label": "Bold" }
+      ],
+      "default": "400"
+    },
+    {
+      "type": "select",
+      "id": "text_direction",
+      "label": "Text direction",
+      "info": "Use \"Right to left\" for an Arabic copyright line so the ©, year, name and text keep the design order.",
+      "options": [
+        { "value": "", "label": "Same as page" },
+        { "value": "rtl", "label": "Right to left" },
+        { "value": "ltr", "label": "Left to right" }
+      ],
+      "default": ""
     },
     {
       "type": "select",

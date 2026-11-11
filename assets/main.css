@@ -348,23 +348,22 @@
     }
   }
 
-  /* Menus: heading 16/600/27 navy, links 14/400/24 grey; 12px rhythm comes from menu_spacing */
+  /* Menus: heading navy / 27px line, links grey / 24px line; 12px rhythm comes from menu_spacing.
+     Size and weight come from the footer section's "Menu typography" settings (inline variables
+     on .footer-content); the fallbacks are the Figma values. */
   .footer-content > .menu {
-    .menu__heading {
-      font-size: 16px;
-      font-weight: 600;
+    .menu__heading,
+    .menu__heading__default {
+      font-size: var(--footer-menu-heading-size, 16px);
+      font-weight: var(--footer-menu-heading-weight, 600);
       line-height: 27px;
       color: var(--sn-footer-heading);
     }
 
-    .menu__heading__default {
-      font-weight: 600;
-    }
-
     .menu__item,
     .menu__item a {
-      font-size: 14px;
-      font-weight: 400;
+      font-size: var(--footer-menu-link-size, 14px);
+      font-weight: var(--footer-menu-link-weight, 400);
       line-height: 24px;
       color: var(--sn-footer-text);
     }
@@ -487,13 +486,16 @@
     }
 
     .footer-content > .menu {
-      .menu__heading {
-        font-size: 14px;
+      .menu__heading,
+      .menu__heading__default {
+        font-size: var(--footer-menu-heading-size-mobile, 14px);
+        font-weight: var(--footer-menu-heading-weight-mobile, 600);
       }
 
       .menu__item,
       .menu__item a {
-        font-size: 12px;
+        font-size: var(--footer-menu-link-size-mobile, 12px);
+        font-weight: var(--footer-menu-link-weight-mobile, 400);
       }
     }
 
@@ -526,6 +528,14 @@
     line-height: 20px;
   }
 
+  /* Copyright: desktop size = the block's native "Size" setting (custom-font-size);
+     weight and the mobile size/weight come from the block's own settings (inline variables) */
+  .footer-utilities__group-copyright,
+  .footer-utilities__group-copyright > * {
+    font-weight: var(--copyright-font-weight, 400);
+    line-height: 20px;
+  }
+
   /* Desktop: divider spans the 1336px inner width, like the footer content above */
   @media screen and (min-width: 750px) {
     .utilities {
@@ -546,7 +556,8 @@
     /* the block's custom-font-size class also sets the size on its child span */
     .footer-utilities__group-copyright,
     .footer-utilities__group-copyright > * {
-      font-size: 11px;
+      font-size: var(--copyright-font-size-mobile, 11px);
+      font-weight: var(--copyright-font-weight-mobile, 400);
       text-align: center;
     }
   }

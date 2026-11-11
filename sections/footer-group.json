@@ -321,9 +321,14 @@
           "type": "footer-copyright",
           "settings": {
             "show_powered_by": false,
-            "suffix_text": "© 2026 SNOSHA — جميع الحقوق محفوظة.",
+            "brand_text": "SNOSHA",
+            "suffix_text": "— جميع الحقوق محفوظة.",
             "text_color": "#5a5a59",
             "font_size": "0.75rem",
+            "font_weight": "400",
+            "font_size_mobile": 11,
+            "font_weight_mobile": "400",
+            "text_direction": "rtl",
             "case": "none"
           },
           "blocks": {}

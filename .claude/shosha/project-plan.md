@@ -217,6 +217,33 @@ Each section gets its own subsection here (with the Native Reuse Audit) when its
 - Shared files: `sections/footer-group.json`, `blocks/email-signup.liquid` (also used outside the footer; blank placeholder = native). Claimed and released by Main 2026-11-11.
 - Category: **B/C**. Approved by user: task request 2026-11-11.
 
+#### S15 fix round 1 (2026-11-11, after user review)
+- **Menu typography controls.**
+  - Cause: the native `menu` block only has `heading_preset` / `link_preset` (global presets, no desktop/mobile split), and the Figma sizes were fixed in `main.css`.
+  - Fix: 8 settings added **once, on the `footer` section** (not ×3 on every `menu` block), under the header "Menu typography": `menu_heading_size` 16, `menu_heading_weight` 600, `menu_heading_size_mobile` 14, `menu_heading_weight_mobile` 600, `menu_link_size` 14, `menu_link_weight` 400, `menu_link_size_mobile` 12, `menu_link_weight_mobile` 400.
+  - Sizes are ranges 10–32px, step 1; weights are selects 400 / 500 / 600 / 700 (Cairo variable font, 200–1000).
+  - Output as inline variables `--footer-menu-{heading,link}-{size,weight}[-mobile]` on `.footer-content`. `main.css` now reads them, with the Figma values as fallbacks: desktop variables from 750px up, mobile variables at ≤749px. Line heights stay 27 / 24.
+  - Only used under `.sn-footer-main`, so without the class the settings have no effect and the footer stays native.
+- **Copyright duplication.**
+  - Cause: the native block always renders `© {year} {shop.name}` (store name `Internal-AH`), and the editor value of `suffix_text` was `© 2026 SNOSHA — جميع الحقوق محفوظة.`, so the output was `© 2026 Internal-AH © 2026 SNOSHA — …`.
+  - Fix: new opt-in `brand_text` on `footer-copyright` replaces `shop.name` when set (blank = native). Data: `brand_text` = `SNOSHA`, `suffix_text` = `— جميع الحقوق محفوظة.`
+  - Output: `© {current year} SNOSHA — جميع الحقوق محفوظة.`, year dynamic, one ©, one line. The setting help text tells merchants not to repeat ©, year or name.
+- Files: `sections/footer.liquid` (8 settings plus variables), `blocks/footer-copyright.liquid` (`brand_text`), `sections/footer-group.json` (copyright data), `assets/main.css` (menu typography reads the variables). The Shopify store name was not changed.
+- Checks: Theme Check = baseline 9; schemas parse (footer 14 settings, copyright 6; no duplicates).
+
+#### S15 fix round 2 (2026-11-11, after user review)
+- **Copyright order.**
+  - Figma (`190:4080` / `190:14516`, screenshots) reads right to left: ©, year, SNOSHA, —, جميع الحقوق محفوظة, ".". That is the logical string laid out with a right-to-left base direction.
+  - Cause: the line was one mixed LTR/RTL text run with no direction of its own, so it inherited the page direction, and the neutral ©, spaces and — attached to neighbouring runs depending on context.
+  - Fix (`footer-copyright`): the year and the name are each in their own `<bdi>`, and an opt-in `text_direction` select ("" = page direction, native; `rtl`; `ltr`) is output as `dir` on the block root. SNOSHA uses `rtl`.
+  - Content: one ©, a dynamic year (`'now' | date: '%Y'`), `brand_text` SNOSHA (`shop.name` only when blank, so `Internal-AH` doesn't appear), one `suffix_text`.
+- **Copyright typography (4 controls, Utilities → Copyright block).**
+  - Desktop size reuses the native `font_size` ("Size", 12px).
+  - New: `font_weight` (desktop, 400), `font_size_mobile` (range 10–24, 11px), `font_weight_mobile` (400).
+  - Output as `--copyright-font-weight`, `--copyright-font-size-mobile`, `--copyright-font-weight-mobile` on the block. `main.css` reads them under `.sn-footer-utilities` (≤749px for mobile); line height stays 20px; alignment unchanged (right on desktop, centred on mobile).
+- Files: `blocks/footer-copyright.liquid`, `sections/footer-group.json` (copyright: `text_direction` rtl plus the 3 new values), `assets/main.css`.
+- Checks: Theme Check = baseline 9; copyright schema 10 settings, no duplicates; JSON valid.
+
 ## F. QA & progress
 
 | ID | Figma analysis | Code checks | Visual desktop | Visual mobile | RTL | Media | Reversibility | Pending issues |
@@ -224,7 +251,7 @@ Each section gets its own subsection here (with the Native Reuse Audit) when its
 | S01 | PASS (get_design_context, 2026-11-11) | PASS: Theme Check = baseline 9, JSON/schema parse OK, assets exist | PENDING USER REVIEW | PENDING USER REVIEW | PENDING USER REVIEW | PENDING USER REVIEW | PENDING USER REVIEW (expected `CLASS_PLUS_SETTINGS`: see E) | custom-class snippet sanitizer matrix untested (needs render); confirm text color is white |
 | S02 | PASS (get_design_context, 2026-11-11; navigation `190:3776` and `Nav Item` variants analysed 2026-11-11) | PASS: Theme Check = baseline 9 (header count 42→43, same offense), JSON/schema parse OK, mask assets exist | PENDING USER REVIEW | PENDING USER REVIEW | PENDING USER REVIEW | N/A (logo is the global native setting; icons are UI) | PENDING USER REVIEW (expected `CLASS_PLUS_SETTINGS: drawer_accordion, drawer_dividers`) | Fix rounds 1–2 applied 2026-11-11 (desktop grid, mobile height, drawer, exact 178×36 logo via native settings); confirm the store has `custom_class` = `sn-header-main` and `logo_height` = 36; desktop nav active marker and colours (added 2026-11-11); nav typography 16 vs 15px not done; account hidden on mobile (Figma); account button width unverified; cart bubble position; uploaded logo file dimensions unverified |
 | S03–S14 | — | — | — | — | — | — | — | Only project-level mapping done; no section-level analysis yet |
-| S15 | PASS (get_design_context, 2026-11-11) | PASS: Theme Check = baseline 9, footer-group JSON and 4 schemas parse, no duplicate IDs | PENDING USER REVIEW | PENDING USER REVIEW | PENDING USER REVIEW | PENDING USER REVIEW (logo via image picker) | PENDING USER REVIEW (expected `CLASS_PLUS_SETTINGS: footer/utilities padding, copyright settings`) | Merchant: pick the logo, assign 3 menus, set the logo link, check the store name; test newsletter submit |
+| S15 | PASS (get_design_context, 2026-11-11) | PASS: Theme Check = baseline 9, footer-group JSON and 4 schemas parse, no duplicate IDs | PENDING USER REVIEW | PENDING USER REVIEW | PENDING USER REVIEW | PENDING USER REVIEW (logo via image picker) | PENDING USER REVIEW (expected `CLASS_PLUS_SETTINGS: footer/utilities padding, copyright settings`) | Fix rounds 1–2 (2026-11-11): menu typography, single copyright line in Figma order (`dir` rtl + `bdi`) with its own desktop/mobile typography; merchant: pick the logo, set the logo link; test newsletter submit; check the settings change the text at both breakpoints |
 
 Give a section its own row here when its work starts, and keep the S01–S15 row only for sections that haven't started.
 
@@ -263,3 +290,5 @@ Give a section its own row here when its work starts, and keep the S01–S15 row
 | 2026-11-11 | S02 desktop navigation Default/Active states: native `link.active` class plus scoped CSS marker (`::before`) and colours | Match the Figma `Nav Item` variants without new markup | S02 | User visual QA; nav typography is a separate decision |
 | 2026-11-11 | `_header-menu` "Top level size" select gets a 15px option (default still 16px) | User request; matches Figma nav 15px | S02 | Merchant picks 15px in the Theme Editor (Header → Menu → Top level size) |
 | 2026-11-11 | S15 footer implemented on the native Footer and Utilities (category B/C): native blocks composed, `custom_class` on both sections, `placeholder` on `email-signup`, `suffix_text` on `footer-copyright` | First global footer | S15 | User visual QA; merchant assigns menus and logo |
+| 2026-11-11 | S15 fix round 1: footer "Menu typography" (8 desktop/mobile size and weight settings on the `footer` section, used via CSS variables); copyright `brand_text` replaces the store name, duplicated content removed | User review | S15 | User visual QA |
+| 2026-11-11 | S15 fix round 2: copyright order fixed (`<bdi>` year and name + opt-in `text_direction` = rtl); copyright desktop/mobile size and weight controls (native size reused + 3 new) | User review | S15 | User visual QA |
