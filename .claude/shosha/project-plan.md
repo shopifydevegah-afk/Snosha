@@ -60,7 +60,7 @@ Logical areas from the Figma homepage, in Figma order. A row isn't necessarily o
 | S08 | Before / After | `190:3903` | `190:4222` | index.json | Dev2 | IMPLEMENTED (2026-11-11; visual QA PENDING USER REVIEW) | B/D | `section` preset `t:names.image_compare` + `comparison-slider` | `sn-home-before-after` | Merchant images, tooth icon, CTA link |
 | S09 | Reels | `190:3935` | `190:4254` | index.json | — | NOT_STARTED | — | — | — | — |
 | S10 | Choose Your Care | `190:3943` | `190:4265` | index.json | — | NOT_STARTED | — | — | — | — |
-| S11 | Bundle | `190:3987` | `190:4318` | index.json | — | NOT_STARTED | — | — | — | — |
+| S11 | Bundle | `190:3987` | `190:4318` | index.json | Dev2 | IMPLEMENTED (rebuilt 2026-11-11 as a dedicated section; visual + commerce QA PENDING USER REVIEW) | E (merchant-approved) | new `sn-product-bundle` ("Product bundle"); reuses `anchored-popover-component`, `image` snippet, cart event | `sn-home-bundle` | Merchant: bundle product, items, image |
 | S12 | Blog | `190:4018` | `190:4349` | index.json | — | NOT_STARTED | — | — | — | — |
 | S13 | Why SNOSHA | `190:4024` | `190:4361` | index.json | — | NOT_STARTED | — | — | — | — |
 | S14 | FAQ | `217:14604` | `217:14813` | index.json | — | NOT_STARTED | — | — | — | — |
@@ -295,12 +295,113 @@ Category **B**: native section + on-demand `custom_class` setting. No Liquid/JS 
   - every new control with two values; class on/off.
   - `index.json` was edited without a pull (rule 13).
 
+### S11 — Bundle ("باقات العناية المناسبة لروتينك") · Dev2 · 2026-11-11
+> **Superseded 2026-11-11:** the `product-hotspots` "Bundle layout" approach below is history only. Native files were restored to HEAD; see "Rebuild (category E)" at the end of this entry.
+- **Figma:**
+  - Desktop `190:3987`: container 1376, inner padding 20, image 640×481.7 (744/560), gap 56, content 640.
+    - Rows: 92 tall = 64 thumbnail + 14 padding, gap 16, `#dcf2fb` bottom border.
+    - Text: title/price 16/27 600 `#12568d`, subtitle 12/20 `#5a5a59`.
+    - Total: pt 16, gap 34; badge 12/18 600 `#176bb0` on `#f0fafe`; old price 14/22 struck through.
+    - Button: `#176bb0`, 13/28 padding, radius 12, 16/26.
+    - Content gap 18.
+  - Mobile `190:4318`: image 342×257 at 24px gutters, gap 20, content gap 14, H2 24/38, body 15/26.
+    - Hotspot: 32px white disc, 1.5px `#60c1e1` ring, 10px dot, soft shadow.
+- **Native reuse audit:**
+  - `product-hotspots` + `_hotspot-product`: image + product-picker markers + popup (`product-hotspot.js`).
+  - The cart drawer renders Shopify Bundles lines (`cart-items__bundle`).
+  - Ruled out: `media-with-content` / `section` (no product picker per row, no hotspots over an image) and `featured-product` (one product).
+  - No native bundle or add-all button exists.
+- **Decision:** category **D**. Native `product-hotspots` keeps its name and preset. One opt-in setting, **Bundle layout** (default off = native), adds:
+  - The two-column layout and the static text blocks `bundle_heading` and `bundle_description`.
+  - Product rows, the total and the button (`snippets/sn-bundle-panel.liquid`), plus `assets/sn-bundle.js`, loaded by the section only in bundle mode, with no importmap change.
+  - Each hotspot block's product picker is the single source for its marker, row, popup and cart line.
+- **User decisions (2026-11-11):**
+  - **Cart:** separate cart lines plus an automatic discount set up in Admin; no Shopify Bundles app.
+  - **Mobile:** tap opens the small popup (not native quick-add).
+- **Checkboxes:** removed, per the merchant. Every configured product is in the bundle.
+- **Section settings added** (15 → 40/40):
+  - Toggle and media: `bundle_layout`, `image_mobile`.
+  - Layout: `media_width` (50), `column_gap` (56), `content_max_width` (1340; step 10, Figma 1336).
+  - Mobile: `mobile_padding_top` (56), `mobile_padding_bottom` (40), `mobile_padding_inline` (8), `mobile_gap` (20).
+  - Rows: `thumb_size` (64), `row_padding` (14), `title_size` (16), `subtitle_size` (12), `accent_color`, `border_color`.
+  - Total: `total_label`, `discount_enabled`, `discount_percent`, `discount_badge` ("[percent]" token).
+  - Button and markers: `button_label`, `button_color`, `button_radius`, `hotspot_size` (32), `unavailable_text`.
+  - `custom_class`.
+- **Hotspot block settings added:** `subtitle`, `quantity` (1–10), `show_hotspot`, `mobile_position`, `x-position-mobile`, `y-position-mobile`.
+- **Commerce:**
+  - **Prices:** row = variant price × quantity; total = sum (`money` filter).
+  - **Discount:** shown only when "Show bundle discount" is ticked; then now = total × (100 − %) / 100. Default is **off**, so the page never shows a discount checkout won't honour.
+  - **Button:** one `/cart/add.js` request with `items[]` (all-or-nothing; Shopify rejects the whole request if any item fails). Each line carries the hidden property `_bundle: <section id>`. Then the native `CartLinesUpdateEvent` fires, so the drawer, its auto-open setting and the count refresh.
+  - **Unavailable products:** a sold-out or short stock (tracked + deny) variant disables the button and shows `unavailable_text`.
+  - **Inventory:** Shopify deducts it at order time. The theme never touches inventory.
+- **JS change to a native file:** `assets/product-hotspot.js` `handleHotspotClick`. Only markers with `data-popup-on-touch` (bundle mode) open the popup on touch; a second tap closes it. All other hotspots are unchanged.
+- **Popup:** the native dialog. In bundle mode quick-add is removed (no single-item add) and a close button is added.
+- **CSS:**
+  - Structure, scoped to `.section-product-hotspots--bundle`, in the section stylesheet.
+  - Figma look in `assets/dev2.css` under `.sn-home-bundle`, with literals commented: content gap 18/14, thumbnail radius 8, badge/button paddings, `#5a5a59` secondary text.
+  - Hotspot: in this class, the native "Hotspot color" is the **ring** and "Bullseye color" the dot (on a white disc).
+- **Template:** `bundle_sn_home` after S08 with the Figma texts and 3 hotspot blocks without products. Positions from Figma: 78/68, 51/54, 23/65 %. Discount off; no image.
+- **Variant:** the first available variant of each product (no variant picker per product).
+- **Limitations:**
+  - **Cart grouping:** lines are separate and grouped only by the hidden `_bundle` property. Visible grouping needs a cart template change (shared, needs approval). It is not a native Shopify bundle line.
+  - **Discount scope:** a Shopify automatic discount isn't limited to "this exact bundle". The merchant should use "Amount off products" on these products with a minimum quantity; buying them separately can also qualify.
+  - **Rounding:** Shopify rounds per line, so the shown discounted total can differ by a few piastres.
+  - **Settings:** at 40/40 the content gaps (18/14) and badge/button paddings are fixed CSS.
+- **Correction (2026-11-11, "bundle product + component rows"):**
+  - **Audit of the first version:**
+    - **Base:** native `product-hotspots` with Bundle layout on, uncommitted locally.
+    - **Why it looked like a plain hotspot image:**
+      - There was no parent "Bundle product" picker.
+      - The component pickers live inside the "Hotspot product" blocks, which wasn't obvious in the editor.
+      - Rows render only for picked products, so with 3 empty blocks the list, total and button were all hidden. No fake data was shown.
+      - The schema had no unconnected settings.
+  - **Fixes:**
+    - **Bundle product:** new section setting `bundle_product` (type `product`; resource settings can't use `visible_if`).
+    - **Purchase model**, set only by that setting (never mixed):
+      - **A** (picked): the button adds the bundle product's variant only. Price = its real price. Old price = its compare-at, else the components' total when higher. Badge % = saving rounded down. The admin discount settings are hidden.
+      - **B** (empty): adds all component variants × quantity, as before. A discount is shown only when the merchant confirms an admin automatic discount.
+    - **Component source:** the Hotspot product blocks, picked explicitly. Liquid can't list a Shopify bundle's components; only the Storefront API's `ProductVariant.components` can, and that needs a token.
+    - **Editor-only help:** a note naming the active purchase model and where to pick products, plus one placeholder row per empty block ("Product N — pick a product…"). Customers never see these.
+    - **Storefront without an image:** the image column and its markers are not output, so no markers sit over a placeholder.
+    - **`unavailable_text` removed** (40/40 budget): uses Horizon's translations `content.product_badge_sold_out` / `content.unavailable`.
+  - **Risk:**
+    - **Model A:** the merchant must list the same products as the bundle's real components; the theme can't verify they match.
+    - **Variants:** the first available variant only.
+- **Checks:** Theme Check 9 = baseline. JS `node --check` OK. Schemas parse. `index.json` diff is additions only.
+- **Visual, Theme Editor and commerce QA:** PENDING USER REVIEW (rule 13; no browser, no test purchases).
+
+- **Rebuild (category E), 2026-11-11, merchant-approved:**
+  - **Why:** the merchant never got a clear bundle setup from the native hotspots section. The product pickers were hidden inside "Hotspot product" blocks, the image was a placeholder, and the list stayed empty. They asked for a dedicated bundle section.
+  - **Native files restored to HEAD:** `sections/product-hotspots.liquid`, `blocks/_hotspot-product.liquid`, `assets/product-hotspot.js`. `snippets/sn-bundle-panel.liquid` removed.
+  - **New section** `sections/sn-product-bundle.liquid` ("Product bundle"; 39 settings + custom class). It reuses:
+    - Horizon's page-width grid and `image` snippet (image focal point = crop position).
+    - `anchored-popover-component` (native popover: top layer, light dismiss, Escape, click/tap), already loaded globally.
+    - `assets/sn-bundle.js` (Horizon's `CartLinesUpdateEvent` refreshes the drawer and count).
+    - Horizon translations.
+  - **Bundle product** (`bundle_product`): the purchase entity, model A only.
+    - The button adds its first available variant × 1.
+    - Price = that variant's price.
+    - Old price = its compare-at, else the items' total when higher; badge % = real saving rounded down (`show_discount`, `discount_badge`).
+    - No bundle product = no price and no button. Components are never added separately, and there is no visual-only discount.
+  - **Bundle item blocks** (`component`, max 12): `product`, `quantity`, `subtitle`, `image` override, `show_hotspot`, `x_position`/`y_position`, `x_position_mobile`/`y_position_mobile`. One block drives its row (with `shopify_attributes`, so clicking it selects the block), its hotspot and its popup (image, title, price, link, close).
+  - **Image:** `image` → else the bundle product's featured image; `image_mobile` optional; heights `image_ratio`/`image_ratio_mobile` (75% = Figma 744:560 and 342:257); `image_radius`. The storefront shows no image column when there is no image; the editor shows a placeholder.
+  - **Editor-only:** a note (the active bundle product, or what to pick) and placeholder rows for empty blocks.
+  - **Template:** `bundle_sn_home` was replaced in place (same key and order position; it had no merchant data). It has 3 empty items with Figma hotspot positions; there are no other `product-hotspots` instances.
+  - **CSS:** structure in the section stylesheet; Figma look in `assets/dev2.css` under `.sn-home-bundle` (the old S11 CSS was removed).
+  - **Limits:**
+    - Liquid can't read a Shopify bundle's real components (Storefront API `ProductVariant.components` only), so the theme can't verify the item blocks match the bundle; the editor note reminds the merchant.
+    - First available variant only.
+    - The cart shows one bundle line, with components shown by Horizon only if it is a real Shopify Bundles product.
+  - **Checks:** Theme Check 9 = baseline; `node --check` OK; `dev2.css` braces balanced; S08 CSS unchanged.
+  - **QA:** visual, editor and add-to-cart PENDING USER REVIEW.
+
 ## F. QA & progress
 
 | ID | Figma analysis | Code checks | Visual desktop | Visual mobile | RTL | Media | Reversibility | Pending issues |
 |---|---|---|---|---|---|---|---|---|
 | S04 | Done (both nodes) | PASS: Theme Check 9 = baseline; schema + template JSON valid | PASS at 1480 (geometry measured in preview: heading +50, cards +142, 292w/24 gap/72 inset, arrows 44px at 50px, top 304) + 1200 | PASS at 390 (35/9 padding, 97w/10 gap/20 inset, progress 350×4, 40%→~100% on scroll); tablet 820 checked | PASS (Arabic `dir=rtl`; arrows/progress direction correct). LTR not tested | Collection image/title (native); placeholders until collections picked | `CLASS_PLUS_SETTINGS` — two-state test PASS (class cleared: all Figma CSS off, native look, no overflow, no new console errors) | Pick real collections; review with final images; user sign-off for VERIFIED. After the preset-alignment fix: Theme Check 9 = baseline, template JSON valid, 1480/820/390 geometry identical to before (screenshots), no new console errors. Two-state test not re-run (CSS unchanged); Theme Editor name not yet seen in the editor UI. **After recovery (2026-11-09), with 5 real collections:** Theme Check 9 = baseline. 1480: cards 292, gap 24, inset 72, titles 24/40/600 on one line, image→title 18, arrows next/prev scroll and disable correctly. 820: cards 209, titles 18/30. 390 and 375: cards 97 (images 97×121, portrait ratio), gap 10, titles 11px in 40px boxes (long names wrap onto 2 compact lines), progress 350/335px, filling 40%→100% from the right. Settings at min (80/10) and max (180/20) applied on mobile only (180 → image 180×225), desktop unchanged, no overflow; defaults restored. Class off: native (320/172 cards, native arrows, no progress, no `--sn-*` vars), no errors; class restored. Theme Editor UI still not opened. **Responsive refinement (2026-11-09):** Theme Check 9 = baseline. Heading: 1480/1200/820 = 32/52 (native block size), 390/375 = 24/38; mobile set to 16/32/40 changed mobile only, desktop stayed 32. Images: mobile square 97×97 (Figma), portrait 97×121, landscape 97×55, adapt = each image's own ratio (97×97 / 97×65), "same as desktop" + size 180 = 180×225; desktop 292×364 in every case; object-fit cover, no stretching, no page overflow. Titles: 1-word (باندل, الأكسسوارات) and 2-word (الرؤوس البديلة) unchanged; 3-word names show "فرشاة الأسنان" / "منتجات العناية" on mobile and in full on desktop; 4-word and repeated-space cases checked with the same Liquid logic in a temporary template (deleted). Links and link accessible names are unchanged. RTL: mobile swipe reaches the end, progress 40%→100%; desktop next arrow scrolls (−217) and disables. Class off: native look, no short-title markup, no `--sn-*` vars. Figma values restored (template identical to the pre-test backup). **QA caveat:** dev theme #190250942577 is shared, and at about 11:36 another session pushed a `layout/theme.liquid` that loads `dev1.css` instead of `dev2.css`. QA therefore injected the synced `dev2.css` in the test browser only; the shared layout was not overwritten. Theme Editor UI still not opened |
 | S08 | Done (both nodes) | PASS: Theme Check 9 = baseline; schemas + template JSON valid | PENDING USER REVIEW | PENDING USER REVIEW | PENDING USER REVIEW (RTL slider mirror) | Pending merchant images | PENDING USER REVIEW (`CLASS_PLUS_SETTINGS`) | Images, tooth icon, CTA link |
+| S11 | Done (both nodes) | PASS: Theme Check 9 = baseline; JS syntax; schema + template JSON valid | PENDING USER REVIEW | PENDING USER REVIEW | PENDING USER REVIEW | Pending merchant bundle product, items, image | PENDING USER REVIEW (section-level class; removing it leaves the structure unstyled) | Bundle product, items, image |
 | S01–S03, S05–S07, S09–S15 | — | — | — | — | — | — | — | Only project-level mapping done; no section-level analysis yet |
 
 Give a section its own row here when its work starts, and keep the S01–S15 row only for sections that haven't started.
@@ -344,3 +445,6 @@ Give a section its own row here when its work starts, and keep the S01–S15 row
 | 2026-11-11 | S08 mobile wrapping: `text` block "Text wrap" gains option Normal (`wrap`, default stays Pretty); S08 heading + description set to Normal | Native `text-wrap: pretty` moved a word to avoid one-word last lines, unlike Figma's greedy wrapping | S08; block `text` | Visual QA by the user |
 | 2026-11-11 | S08 desktop description wrap: investigated, no change. Code width 557.6 vs Figma 557, typography and wrap mode match | Cause needs a browser check (stale preview vs Cairo rendering width); no fragile width tweak | S08 | User console check |
 | 2026-11-11 | S08 desktop wrapping, measured from the user's screenshot: benefit texts Pretty → Normal; description text given Figma's space before the comma (user approved) | Metrics and width match Figma; the differences were the wrap setting (benefits) and the text content (description) | S08 | User screenshot at 1480 / 390 |
+| 2026-11-11 | S11 bundle on native `product-hotspots` with opt-in "Bundle layout" (category D): rows/total/add-all button from the hotspot blocks, `sn-bundle.js`, opt-in touch popup in `product-hotspot.js`, no checkboxes | No native bundle section; product-hotspots already links a product to each marker. User chose separate lines + Admin automatic discount and a mobile popup | S11; `product-hotspots`, `_hotspot-product`, `product-hotspot.js` | Merchant setup; visual + commerce QA by the user |
+| 2026-11-11 | S11 correction: `bundle_product` picker (purchase model A = bundle product only, B = components); editor-only guidance and placeholder rows; image column hidden on the storefront without an image; `unavailable_text` replaced by Horizon translations | First version had no parent bundle picker and showed nothing until products were picked; Liquid can't enumerate bundle components | S11 | Merchant picks bundle product + components; visual + commerce QA by the user |
+| 2026-11-11 | S11 rebuilt as dedicated section `sn-product-bundle` (category E, merchant-approved): bundle product = purchase (model A only), "Bundle item" blocks drive rows + hotspots + popups; native product-hotspots files restored | Native hotspots adaptation did not give the merchant a usable bundle setup | S11; `index.json` `bundle_sn_home` replaced in place | Merchant setup; visual + commerce QA by the user |

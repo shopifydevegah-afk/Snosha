@@ -1304,10 +1304,95 @@
         "mobile_reverse_order": true,
         "custom_class": "sn-home-before-after"
       }
+    },
+    "bundle_sn_home": {
+      "type": "sn-product-bundle",
+      "blocks": {
+        "component_sn_1": {
+          "type": "component",
+          "settings": {
+            "quantity": 1,
+            "subtitle": "",
+            "show_hotspot": true,
+            "x_position": 78,
+            "y_position": 68,
+            "x_position_mobile": 80,
+            "y_position_mobile": 71
+          }
+        },
+        "component_sn_2": {
+          "type": "component",
+          "settings": {
+            "quantity": 1,
+            "subtitle": "",
+            "show_hotspot": true,
+            "x_position": 51,
+            "y_position": 54,
+            "x_position_mobile": 53,
+            "y_position_mobile": 57
+          }
+        },
+        "component_sn_3": {
+          "type": "component",
+          "settings": {
+            "quantity": 1,
+            "subtitle": "",
+            "show_hotspot": true,
+            "x_position": 23,
+            "y_position": 65,
+            "x_position_mobile": 25,
+            "y_position_mobile": 68
+          }
+        }
+      },
+      "block_order": [
+        "component_sn_1",
+        "component_sn_2",
+        "component_sn_3"
+      ],
+      "settings": {
+        "image_ratio": 75,
+        "image_ratio_mobile": 75,
+        "image_radius": 0,
+        "heading": "باقات العناية المناسبة لروتينك",
+        "description": "كمّل روتينك في باقة واحدة بسعر أفضل، اختيارات متكاملة للعناية اليومية.",
+        "heading_size": 32,
+        "heading_size_mobile": 24,
+        "description_size": 18,
+        "description_size_mobile": 15,
+        "content_gap": 18,
+        "content_gap_mobile": 14,
+        "thumb_size": 64,
+        "row_padding": 14,
+        "title_size": 16,
+        "subtitle_size": 12,
+        "total_label": "إجمالي الباندل",
+        "show_discount": true,
+        "discount_badge": "خصم [percent]%",
+        "button_label": "أضف الباندل للسلة",
+        "button_radius": 12,
+        "heading_color": "#12568d",
+        "text_color": "#5a5a59",
+        "border_color": "#dcf2fb",
+        "brand_color": "#176bb0",
+        "hotspot_ring_color": "#60c1e1",
+        "hotspot_size": 32,
+        "content_max_width": 1340,
+        "media_width": 50,
+        "column_gap": 56,
+        "mobile_gap": 20,
+        "padding_top": 60,
+        "padding_bottom": 60,
+        "padding_top_mobile": 56,
+        "padding_bottom_mobile": 40,
+        "mobile_padding_inline": 8,
+        "custom_class": "sn-home-bundle"
+      }
     }
   },
   "order": [
     "collection_list_sn_home",
-    "before_after_sn_home"
+    "before_after_sn_home",
+    "bundle_sn_home"
   ]
 }

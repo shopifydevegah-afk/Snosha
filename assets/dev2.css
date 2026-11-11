@@ -425,3 +425,183 @@
     }
   }
 }
+
+/* ==========================================================================
+   sn-home-bundle — "Product bundle" section (sections/sn-product-bundle.liquid, S11)
+   Figma desktop 190:3987 (1480 frame) · mobile 190:4318 (390 frame) · owner: dev2
+   Sizes and colors come from the section settings (--pb-*). Literals are Figma constants with no
+   setting (line heights, badge/button/popover paddings), each commented.
+   ========================================================================== */
+.sn-home-bundle {
+  .sn-pb__heading {
+    font-size: var(--pb-h-m);
+    font-weight: 600;
+    line-height: 1.583; /* Figma 38 / 24 */
+    color: var(--pb-accent);
+  }
+
+  .sn-pb__description {
+    font-size: var(--pb-d-m);
+    font-weight: 400;
+    line-height: 1.733; /* Figma 26 / 15 */
+    color: var(--pb-text);
+  }
+
+  .sn-pb__editor-note {
+    margin: 0;
+    padding: 8px 12px;
+    font-size: 12px;
+    line-height: 1.5;
+    color: var(--pb-accent);
+    background: color-mix(in srgb, var(--pb-border) 40%, #fff);
+    border: 1px dashed var(--pb-border);
+    border-radius: 8px;
+  }
+
+  /* ---------- Product rows (no checkboxes: every item is part of the bundle) ---------- */
+  .sn-pb__items {
+    padding-block-start: 8px; /* Figma list top inset */
+  }
+
+  .sn-pb__item {
+    gap: 16px;
+    padding-block: var(--pb-row-pad);
+    border-block-end: 1px solid var(--pb-border);
+  }
+
+  .sn-pb__item--empty {
+    opacity: 0.6;
+  }
+
+  .sn-pb__thumb {
+    border-radius: 8px;
+  }
+
+  .sn-pb__text {
+    gap: 2px;
+  }
+
+  .sn-pb__title,
+  .sn-pb__price,
+  .sn-pb__now,
+  .sn-pb__pop-title {
+    font-size: var(--pb-title);
+    font-weight: 600;
+    line-height: 1.6875; /* Figma 27 / 16 */
+    color: var(--pb-accent);
+    text-decoration: none;
+  }
+
+  .sn-pb__subtitle {
+    font-size: var(--pb-sub);
+    line-height: 1.6667; /* Figma 20 / 12 */
+    color: var(--pb-text);
+  }
+
+  /* ---------- Total ---------- */
+  .sn-pb__total {
+    justify-content: space-between;
+    gap: 12px 34px;
+    padding-block-start: 16px;
+  }
+
+  .sn-pb__now,
+  .sn-pb__was {
+    gap: 12px;
+  }
+
+  .sn-pb__old {
+    font-size: 14px;
+    line-height: 22px;
+    color: var(--pb-text);
+  }
+
+  .sn-pb__badge {
+    padding: 4px 12px;
+    font-size: 12px;
+    font-weight: 600;
+    line-height: 18px;
+    color: var(--pb-brand);
+    background: color-mix(in srgb, var(--pb-border) 40%, #fff); /* Figma #f0fafe */
+    border: 1px solid var(--pb-border);
+    border-radius: 8px;
+  }
+
+  /* ---------- Button ---------- */
+  .sn-pb__button {
+    min-height: 52px;
+    padding: 13px 28px;
+    font: inherit;
+    font-size: 16px;
+    font-weight: 600;
+    line-height: 26px;
+    color: #fff;
+    background: var(--pb-brand);
+    border: 0;
+    border-radius: var(--pb-button-radius);
+    cursor: pointer;
+
+    &:hover:not(:disabled) {
+      background: color-mix(in srgb, var(--pb-brand) 88%, #000);
+    }
+
+    &:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+  }
+
+  .sn-pb__status {
+    margin: 8px 0 0;
+    font-size: 14px;
+    text-align: center;
+    color: var(--pb-text);
+  }
+
+  /* ---------- Hotspot: white disc, ring and dot from settings (Figma 32 / 1.5 / 10) ---------- */
+  .sn-pb__marker {
+    background: radial-gradient(circle, var(--pb-brand) 0 calc(var(--pb-spot) * 0.156), #fff 0);
+    border: 1.5px solid var(--pb-ring);
+    box-shadow: 0 12px 32px 0 rgb(15 100 168 / 0.1); /* Figma Shadow/Soft */
+
+    &:focus-visible {
+      outline: 2px solid var(--pb-brand);
+      outline-offset: 2px;
+    }
+  }
+
+  .sn-pb__popover {
+    color: var(--pb-accent);
+    background: #fff;
+    border: 1px solid var(--pb-border);
+    border-radius: 12px;
+    box-shadow: 0 12px 32px 0 rgb(15 100 168 / 0.1);
+  }
+
+  .sn-pb__pop-image {
+    border-radius: 8px;
+  }
+
+  .sn-pb__pop-price {
+    font-size: 14px;
+    color: var(--pb-text);
+  }
+
+  /* ---------- Desktop ≥750 ---------- */
+  @media screen and (min-width: 750px) {
+    .sn-pb__heading {
+      font-size: var(--pb-h);
+      line-height: 1.625; /* Figma 52 / 32 */
+    }
+
+    .sn-pb__description {
+      font-size: var(--pb-d);
+      line-height: 1.778; /* Figma 32 / 18 */
+    }
+
+    /* Figma desktop: the total group is centred */
+    .sn-pb__total {
+      justify-content: center;
+    }
+  }
+}
