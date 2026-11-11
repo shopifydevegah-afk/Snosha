@@ -1,11 +1,11 @@
 /* Dev3 — Shosha Figma CSS. Scoped per class; see figma-to-sections-workflow */
 
 /* ==========================================================================
-   sn-home-bestsellers — product-list on index (S05 Featured Collection)
-   Figma desktop 190:3844 · mobile 190:4149 · owner: Dev3
+   sn-home-bestsellers — product-list on index. Shared by two instances (owner: Dev3):
+   S05 Featured Collection (Figma 190:3844 / 190:4149) and S07 Bundles (Figma 351:4546 / 190:4204).
+   Modifier sn-home-bundles (S07) changes only the mobile section spacing variables below.
    Part classes (on `text` blocks inside the card): -desc, -cta
-   Mobile card typography is an approved readability adaptation (plan S05 R3),
-   not the scaled 6–9px Figma values.
+   Card typography and spacing are block settings (mobile uses the Figma mobile sizes).
    ========================================================================== */
 .sn-home-bestsellers {
   /* Figma colors with no Horizon token */
@@ -15,6 +15,17 @@
   --sn-bs-card-border: #efeded; /* Figma card stroke */
   --sn-bs-soft-border: #dcf2fb; /* palette color 1 */
   --sn-bs-shadow: 0 12px 16px rgb(15 100 168 / 0.1); /* Figma hover card */
+
+  /* Mobile section spacing (Figma S05: padding 56/56, gaps 14). The carousel's 11px shadow padding is added below. */
+  --sn-bs-m-pad-top: 56px;
+  --sn-bs-m-pad-bottom: 56px;
+  --sn-bs-m-gap: 14px;
+
+  /* S07 Bundles (Figma 190:4204): padding 56/40, gaps 11 */
+  &.sn-home-bundles {
+    --sn-bs-m-pad-bottom: 40px;
+    --sn-bs-m-gap: 11px;
+  }
 
   /* Merchant-facing values (image fit/position, radii, badge source/position/colors, quick add style/icon/colors,
      discount badge colors, View All icon) are Theme Editor settings on the blocks; this file keeps the
@@ -32,12 +43,12 @@
       --page-margin: 24px;
 
       position: relative;
-      row-gap: 25px; /* 14 gap + 11 carousel padding */
-      padding-block: calc(56px + var(--section-top-offset, 0px)) 56px;
+      row-gap: calc(var(--sn-bs-m-gap) + 11px); /* gap + 11 carousel padding */
+      padding-block: calc(var(--sn-bs-m-pad-top) + var(--section-top-offset, 0px)) var(--sn-bs-m-pad-bottom);
 
-      /* Room for the View All link placed under the progress bar */
+      /* Room for the View All link (26px tall) placed under the progress bar */
       &:has(.section-resource-list__header .group-block-content > a) {
-        padding-block-end: calc(56px + 14px + 26px);
+        padding-block-end: calc(var(--sn-bs-m-pad-bottom) + var(--sn-bs-m-gap) + 26px);
       }
     }
   }
@@ -84,7 +95,7 @@
       }
 
       .group-block-content {
-        gap: 14px;
+        gap: var(--sn-bs-m-gap);
       }
 
       h2 {
@@ -99,7 +110,7 @@
       }
 
       .group-block-content > a {
-        inset-block-end: 56px;
+        inset-block-end: var(--sn-bs-m-pad-bottom);
         inset-inline: 0;
         margin-inline: auto;
         inline-size: fit-content;

@@ -14,7 +14,7 @@
 | Mobile homepage | `190:4082`, https://www.figma.com/design/1fqyznLFgS65tTjGvBYPBm/Snosha?node-id=190-4082 (390px wide) |
 | Environment | Claude Code in the theme repo. Shopify CLI 4.9.4 (`shopify theme dev` for preview). Git; no auto commit/push/deploy |
 | Delivery | Incremental: one section at a time, after the user's request with its nodes |
-| Current homepage state | `index.json` has only `product-list` (`product_list_fa6P9H`), **enabled and configured as S05** since 2026-11-08 (was disabled) |
+| Current homepage state | `index.json` order: `product_list_fa6P9H` (S05, enabled since 2026-11-08) → `product_list_Rxv4hg` (S07 Bundles, added 2026-11-11). Other homepage sections not built yet |
 
 ## B. Global architecture decisions
 
@@ -39,9 +39,9 @@ Each one is decided; the details are in the referenced Skill file.
 | Main | `assets/main.css` | Initialized 2026-11-08 (loaded once after `custom-cairo.css`) | none assigned explicitly yet |
 | Dev1 | `assets/dev1.css` | Not initialized | — |
 | Dev2 | `assets/dev2.css` | Not initialized | — |
-| Dev3 | `assets/dev3.css` | Initialized 2026-11-08 (loaded once in `layout/theme.liquid`, right after `main.css`) | S05 |
+| Dev3 | `assets/dev3.css` | Initialized 2026-11-08 (loaded once in `layout/theme.liquid`, right after `main.css`) | S05, S07 |
 
-**Custom classes owned:** `sn-home-bestsellers` (+ part classes `sn-home-bestsellers-desc`, `-cta` on `text` blocks; `-badge` retired 2026-11-09) — Dev3, S05.
+**Custom classes owned:** `sn-home-bestsellers` (+ part classes `sn-home-bestsellers-desc`, `-cta` on `text` blocks; `-badge` retired 2026-11-09) — Dev3, S05 + S07. Modifier `sn-home-bundles` (S07 mobile section spacing) — Dev3, 2026-11-11.
 **Shared-file claims (active):** none.
 
 ## D. Section registry
@@ -56,7 +56,7 @@ Logical areas from the Figma homepage, in Figma order. A row isn't necessarily o
 | S04 | Collections | `190:3830` | `190:4133` | index.json | — | NOT_STARTED | — | — | — | — |
 | S05 | Featured Collection | `190:3844` | `190:4149` | index.json | Dev3 | IMPLEMENTED (2026-11-08; visual QA PENDING USER REVIEW) | B + C + D (opt-in) | `product-list` (`product_list_fa6P9H`, enabled) | `sn-home-bestsellers` | Visual QA is user-owned. Data: best-seller collection, review app. Same design as S07 |
 | S06 | F1 Banner | `190:3851` | `190:4167` | index.json | — | NOT_STARTED | — | — | — | — |
-| S07 | Featured Collection 2 | `190:3896` | `190:4204` | index.json | — | NOT_STARTED | — | — | — | Reuse S05's decisions |
+| S07 | Featured Collection 2 / Bundles | `190:3896` (container `351:4546`) | `190:4204` | index.json | Dev3 | IMPLEMENTED (2026-11-11; visual QA PENDING USER REVIEW) | A + modifier class | `product-list` (`product_list_Rxv4hg`) | `sn-home-bestsellers sn-home-bundles` | Collection left for the merchant. Same components as S05 |
 | S08 | Before / After | `190:3903` | `190:4222` | index.json | — | NOT_STARTED | — | — | — | — |
 | S09 | Reels | `190:3935` | `190:4254` | index.json | — | NOT_STARTED | — | — | — | — |
 | S10 | Choose Your Care | `190:3943` | `190:4265` | index.json | — | NOT_STARTED | — | — | — | — |
@@ -478,6 +478,54 @@ Verified in code and docs on 2026-11-08 before deciding:
   - Badge vs cart button.
   - Desktop unchanged, apart from the discount badge now using its own 12px size and colors instead of the h6 preset.
 
+### S07 Bundles — IMPLEMENTED 2026-11-11 (Dev3), visual QA PENDING USER REVIEW
+
+- **Figma read:**
+  - Desktop: section `190:3896` (1480 × 823) and container `351:4546`. Heading `190:3897` design context.
+  - Mobile: `190:4204`, design context and metadata.
+  - **Desktop = S05:**
+    - Container 1376 / content 1336, section padding 60 / 91.1, heading 90 tall.
+    - Title 32/52 SemiBold and subtitle 18/32, gap 6; View All at the heading's inline-end bottom (6 / 5.91).
+    - Heading → products gap 40. Four cards 316 × 541.9 with 24 gaps.
+  - **Mobile differs from S05 only in outer spacing:**
+    - Frame 390 × 545, padding 56 top / **40** bottom.
+    - Title row 44 (3/3 + 24/38) → **11** → subtitle 15/26.
+    - Head → carousel **11** (+ 11 carousel padding). Carousel 305 (cards 165 × 283, gap 12, gutters 24).
+    - **11** → progress 342 × 4 → **11** → link 26. S05 uses 56 / 56 and 14 gaps.
+  - Cards are identical to S05.
+- **Native section:** type `product-list`, file `sections/product-list.liquid`, schema name `t:names.product_list`.
+  - Horizon's own locale translates that key to **"Featured collection"** (en) / **"مجموعة مميزة"** (ar). Presets are "Featured collection: Grid / Carousel / Editorial".
+  - That label is native Horizon naming, not a custom rename. Nothing renamed; no new section file; locales untouched.
+- **Instance:** `product_list_Rxv4hg`, placed right after S05. S06 doesn't exist yet; when it is built, S06 goes between them (Figma order S05 → S06 → S07 → S08).
+- **Composition reuse:**
+  - S05's full block tree and settings were copied with **new unique block IDs** (static `static-header` / `static-product-card` keep their required static IDs).
+  - New block IDs:
+    - Header: `product_list_text_0264pQ` (title), `product_list_text_xxdfAx` (subtitle), `product_list_button_gXF9Gw`.
+    - Card: `product_card_gallery_rHvwew`, `product_card_group_kgOOkQ`, `product_title_674K9w`, `text_sn5desc_Dk2Yfw`, `review_sn5rate_PUrgfA`, `price_SnxctA`.
+    - CTA: `product_card_group_DBXzIQ` → `icon_sn5arrow_2fW6Ag`, `text_JqRMAx`.
+  - Instance-specific changes:
+    - Title `<h2>الباندلز</h2>`, subtitle `<p>كمّل روتينك في باقة واحدة بسعر أفضل</p>`, View All "عرض الكل".
+    - **`collection` removed** (unselected → native editor placeholders until the merchant picks the Bundles collection).
+    - `custom_class: sn-home-bestsellers sn-home-bundles`.
+  - Kept from S05 (same design):
+    - Badge source `custom.product_badge` with fallback "الأكثر مبيعًا" (Figma S07 shows the same badge).
+    - `show_always: false` on View All (as the user set on S05).
+    - The merchant-uploaded `arrow-left.svg` CTA icon.
+  - S05's section object was verified byte-identical before/after.
+- **No new code paths:** no new settings, snippets, JS or section files. It reuses `scroll-progress`, Quick Add, the price/discount extensions, the product badge, the text and title mobile settings, and the View All icon settings.
+- **CSS (`assets/dev3.css`):** the S05 mobile section values (56/56, gap 14) became variables `--sn-bs-m-pad-top`, `--sn-bs-m-pad-bottom` and `--sn-bs-m-gap` with the same S05 defaults (computed S05 values unchanged).
+  - `.sn-home-bestsellers.sn-home-bundles` sets 40 / 11 for S07.
+  - Removing `sn-home-bundles` gives S05 spacing; removing both classes gives native Horizon.
+- **Merchant to do:** select the Bundles collection on S07. Bundle products are ordinary products (no bundle app or pricing logic).
+- **Static validation:**
+  - `index.json` parses; order `[product_list_fa6P9H, product_list_Rxv4hg]`; no duplicate block IDs inside or across sections; all `block_order` refs resolve.
+  - Theme Check = 9 baseline offenses; `dev3.css` braces balanced.
+  - git diff: `index.json` additions only, plus one comma in `order`.
+- **Visual QA — PENDING USER REVIEW:**
+  - With a collection selected: desktop matches S05 and the heading shows the S07 texts.
+  - Mobile at 390: 56 / 40 padding, 11 gaps, progress and View All positions (total ≈ 545 with View All shown).
+  - S05 unchanged; empty-collection placeholders in the editor.
+
 ## F. QA & progress
 
 | ID | Figma analysis | Code checks | Visual desktop | Visual mobile | RTL | Media | Reversibility | Pending issues |
@@ -517,4 +565,5 @@ Give a section its own row here when its work starts, and keep the S01–S15 row
 | 2026-11-09 | S05 Figma fidelity corrections by Dev3: image crop position, responsive card/image radius, metafield product badge, inline price row, native icon-block CTA, Quick Add bar/FAB icon and geometry, View All icon settings. All values moved from CSS to opt-in Theme Editor settings | User fidelity request (Figma re-inspected) | S05; shared opt-in: `_product-card-gallery`, `_product-card`, `_product-card-group` (icon allowed), `price`, `_product-list-button` | Visual QA by the user; merchant creates the `custom.product_badge` metafield definition |
 | 2026-11-09 | S05 final visual alignment by Dev3: discount badge inline (root cause `.text-block > *` width 100%), CTA arrow before the text (user request), mobile badge/description/price/card spacing via new opt-in settings on `price`, `text`, `_product-card`, `_product-card-group` | User request + Figma re-read | S05; shared opt-in blocks | Visual QA by the user |
 | 2026-11-09 | S05 mobile switched to exact Figma type sizes (supersedes R3, user decision). Discount badge color/size bug fixed (base.css `.text-block.h6 > *` outranked the badge rules). Shared `text-responsive-style` snippet; mobile size settings on `product-title`, `review`, `icon` | User request + Figma re-read | S05; shared opt-in blocks | Visual QA by the user, incl. the color picker |
+| 2026-11-11 | S07 Bundles implemented by Dev3 as a second native `product-list` instance (`product_list_Rxv4hg`) cloned from S05 with new IDs; collection left for the merchant; mobile spacing via modifier `sn-home-bundles` (S05 values moved to CSS variables, unchanged) | User request + Figma `351:4546` / `190:4204` | S07; `dev3.css` shared rule set | Merchant selects the Bundles collection; visual QA by the user |
 | 2026-11-09 | Process correction: during S05 Dev3 ran CLI store commands (`theme list`, scratchpad-only `theme pull`, a failed `theme dev`), inspected other sessions' processes, and ran a local headless fixture. This is against skill hard rule 13 (`.agents/skills/…/SKILL.md`). No files were uploaded and no other session was touched | User instruction | All Dev3 work | Local, non-server code checks only from now on; visual QA = PENDING USER REVIEW |
