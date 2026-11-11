@@ -223,6 +223,71 @@ Category **B**: native section + on-demand `custom_class` setting. No Liquid/JS 
   - **Files:** `sections/section.liquid` (setting + var), `assets/dev2.css`, `templates/index.json` (S08 values only; the merchant's images were kept).
   - **Theme Check:** 9 = baseline.
   - **Visual QA:** PENDING USER REVIEW (rule 13).
+- **Mobile text wrapping (2026-11-11):**
+  - **Symptom (user, 390px):**
+    - Heading broke as "…ممكن يغير / شكل ابتسامتك." instead of Figma's "…ممكن يغير شكل / ابتسامتك.".
+    - The description's last line held "وأكثر انتعاشًا." instead of only "انتعاشًا.".
+  - **Root cause (confirmed in code):**
+    - Both S08 text blocks had the native **Text wrap = Pretty**.
+    - `snippets/typography-style.liquid` outputs `--text-wrap: pretty`.
+    - `base.css` `.custom-typography > *` applies `text-wrap: pretty` to the `<h2>`/`<p>`.
+    - `pretty` deliberately pulls a word down so the last line isn't a single word. That is exactly the "شكل" / "وأكثر" move.
+    - Figma breaks lines greedily.
+    - The block is `text-block--full-width` (width 100%, max width none), so no other native wrap rule applies.
+    - The native select offered only Pretty / Balance / None, so no setting could reproduce Figma.
+  - **Ruled out (from code + Figma, not a browser):**
+    - **Width:** 390 − 2×16 page margin − 2×8 section "Mobile side padding" = 342, the same as the Figma text nodes 190:4225 / 190:4226 (342 wide). Content group mobile width Fill; text width 100%, max width none.
+    - **Typography:** Cairo Custom; 24/600 and 18/400; letter spacing normal; case none. Line height 163% (39.1 vs Figma 38) and 178% (32.04) don't affect breaks.
+    - **Text:** identical, except Figma has "الوقت ، لابتسامة" (a space before the comma). Ours has no space, which makes that line shorter, so it is not the cause. Kept as merchant content.
+  - **Fix (category B, native-first):**
+    - `blocks/text.liquid` "Text wrap" select gains an option **Normal** (`wrap`, label `t:options.normal`). The default stays Pretty, so other text blocks are unchanged.
+    - `templates/index.json`: S08 heading + description wrap pretty → wrap.
+    - No CSS, no `<br>`, no nbsp, no font-size change. The merchant can switch it back in the Theme Editor.
+  - **Desktop:** greedy wrapping never produces more lines than `pretty`, so the heading (1 line) and description (3 lines) can't grow. Image/CTA alignment is unaffected.
+  - **Theme Check:** 9 = baseline.
+  - **Browser-computed values and visual QA (375/390/430/820/1480):** NOT measured. Rule 13 forbids preview/DevTools. PENDING USER REVIEW.
+- **Desktop description wrapping (2026-11-11), investigation only, no code change:**
+  - **Report:** at 1480, "انتعاشًا." shares the last line with earlier words. In Figma it is alone.
+  - **Figma 190:3907:**
+    - Box 557×96: 3 lines, Cairo Regular 400, 18/32, letter spacing 0, right-aligned.
+    - Lines: "…بقايا الطعام" / "والتصبغات … تبدو أنظف وأكثر" / "انتعاشًا.".
+    - Parent 190:3905 is 557 wide with no padding; row 1376 (image 774 + gap 27 + content 557).
+  - **Code values at 1480 (computed from code, not measured in a browser):**
+    - Row 1360 (`content_max_width`, section side padding 0). Content group 41% = **557.6**; image 57% + gap 27, so nothing shrinks.
+    - Group padding 0; description width 100%, max width none, padding 0.
+    - 1.125rem = **18px** (no root font-size change); weight 400; letter spacing 0em.
+    - Font "Cairo Custom" (`cairo-variable.woff2`).
+    - `text-wrap: wrap` from the Normal option (desktop and mobile; the setting has no breakpoint). The description is `text-block--full-width`, so the native `.paragraph`/`.rte` pretty/balance rules don't apply. No dev2/main CSS touches text-wrap or spacing.
+  - **Text:** same as Figma except Figma's "الوقت ، لابتسامة" (space before the comma). That makes Figma's line 2 longer, not ours, so it can't push "وأكثر" down. Content not changed.
+  - **Conclusion:** width, padding, size, weight, spacing and wrap mode all match Figma in code. That leaves two possible causes, and only a browser can tell them apart:
+    - (a) The preview showed a version from before the Normal wrap option, i.e. still `pretty`.
+    - (b) The browser renders Cairo's variable font slightly wider than Figma, so line 2 overflows 557.6 and "وأكثر" drops.
+  - **Not confirmed:** no preview/DevTools (rule 13), and no offline font-shaping tool available. No fix applied, to avoid a fragile width tweak.
+  - **Next step:** the user runs the console check in the S08 report. If it shows `pretty`, sync. If it shows `wrap` + 557.6 + Cairo, the cause is (b); decide then whether a ~1% content-width change in the Theme Editor is acceptable (it shifts image/text proportions).
+  - **Mobile fix intact. Theme Check:** 9 = baseline.
+  - **Follow-up (2026-11-11):** the user reports the desktop break is still wrong after the Normal wrap change. The user declined a browser exception (rule 13 kept), so the cause is still unconfirmed and no layout edit was made. Waiting for the console check results (computed text-wrap, width, font, line count).
+- **Desktop wrapping, screenshot analysis (2026-11-11):**
+  - **Evidence:** the user's Shopify screenshot (1900 px, Windows 125% scaling; CTA 242 device px = 194 CSS) and Figma's screenshot (0.639×; CTA 124 px), measured pixel by pixel with an offline PNG script. No browser was opened (rule 13 kept).
+  - **Converted to CSS px:**
+
+    | | Figma | Shopify |
+    |---|---|---|
+    | Heading | 551 | 551 |
+    | Description line 1 | 487 | 488 |
+
+    The row cap (1360), the column (~557) and the Cairo metrics render the same as Figma.
+  - **Benefit 2 ("إشراقًا." not alone):**
+    - **Cause:** all 8 benefit text blocks still had native Text wrap **Pretty**; the earlier fix only covered the heading and description.
+    - Figma line 1 including "أكثر" = 474 px. The text width is ~505, so greedy wrapping keeps it on line 1; Pretty moved it down.
+    - **Fix:** the 8 benefit titles and descriptions set to Normal (`wrap`).
+  - **Description ("انتعاشًا." not alone):**
+    - **Cause:** a content difference. Figma's text is "الوقت ، لابتسامة" (space before the comma); ours had "الوقت، لابتسامة".
+    - Shopify line 2 with "انتعاشًا." = 554 px, under the 557.6 column. Figma's extra space (~5 px) makes the same line overflow 557.
+    - My earlier note ("the space can't be the cause") was wrong: the longer Figma line is exactly what pushes the word down.
+    - **Fix (user approved):** the description text now matches Figma, with the space. Margin is small (~1–5 px), so wrapping can flip with tiny width changes.
+  - **Files:** `templates/index.json` (S08 only: 8 wrap values + 1 description text).
+  - **Theme Check:** 9 = baseline.
+  - **Visual result at 1480 / 390:** PENDING USER REVIEW (needs a new screenshot).
 - **Checks:** Theme Check 9 = baseline. All five schemas parse. `index.json` parses, and only the S08 section and its order entry were added (S04 untouched).
 - **PENDING USER REVIEW:**
   - visual QA at 1480, 1200, 820, 390 and 375, plus RTL.
@@ -276,3 +341,6 @@ Give a section its own row here when its work starts, and keep the S01–S15 row
 | 2026-11-09 | Theme Editor control policy adopted (Skill hard rule 15; details in `references/schema-extension-policy.md`): every merchant-adjustable visual value gets a Theme Editor control (native first, smallest safe extension, separate Desktop/Mobile controls, Figma values as editable defaults); only listed technical exceptions stay in code. Replaces the earlier practice of putting exact Figma values in class-scoped CSS (old hard rule 5). Plan step D now records a control map; Stage F adds a hardcoded-value audit and Stage G a two-value control test | Merchant must be able to adjust the design without code | All future section work | Applies from the next task. S04 is not changed retroactively (user confirmed it is correct); its remaining literals stay as they are |
 | 2026-11-11 | S08 implemented on the native `section` preset "Image compare" + `comparison-slider` (category B/D). `custom_class` added to `section` (rendered in shared `snippets/section.liquid`, opt-in). Opt-in settings added to `section`, `comparison-slider`, `text`, `group`, `button` (see S08). RTL mirror fix for the native slider under the class | Native-first reuse; Theme Editor control policy (rule 15) | S08; blocks `text`, `group`, `button`, `comparison-slider`; `snippets/section.liquid` | Visual QA by the user; merchant images, tooth icon, CTA link |
 | 2026-11-11 | S08 desktop refinement: `section` setting `content_max_width` (row cap, default 1360); slider 57% / content 41%; content group Height Fill + Space between with a class-scoped stretch rule; content gap 20 → 14 so heading/CTA align with the 535px image | Image grew with the 1920px page width; user asked for top/bottom alignment, which Figma itself misses by 8.5px | S08 | Visual QA by the user |
+| 2026-11-11 | S08 mobile wrapping: `text` block "Text wrap" gains option Normal (`wrap`, default stays Pretty); S08 heading + description set to Normal | Native `text-wrap: pretty` moved a word to avoid one-word last lines, unlike Figma's greedy wrapping | S08; block `text` | Visual QA by the user |
+| 2026-11-11 | S08 desktop description wrap: investigated, no change. Code width 557.6 vs Figma 557, typography and wrap mode match | Cause needs a browser check (stale preview vs Cairo rendering width); no fragile width tweak | S08 | User console check |
+| 2026-11-11 | S08 desktop wrapping, measured from the user's screenshot: benefit texts Pretty → Normal; description text given Figma's space before the comma (user approved) | Metrics and width match Figma; the differences were the wrap setting (benefits) and the text content (description) | S08 | User screenshot at 1480 / 390 |
