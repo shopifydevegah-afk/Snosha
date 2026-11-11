@@ -1322,3 +1322,583 @@
     }
   }
 }
+
+/* ==========================================================================
+   S10 Choose Your Care — .sn-home-choose-care (native `carousel` section) | owner: Dev1
+   Figma desktop 190:3943 (1480×1072; container 1376 + 20px inner padding), mobile 190:4265 (390×695)
+   Generic native composition: carousel → header group .sn-home-care-head (2 text blocks) →
+   carousel content → any number of `_card` slides, each holding a `product-card` (product picker) →
+     product gallery · group .sn-home-care-badge (text; shown only on the featured card) · product title ·
+     text (product description) · group .sn-home-care-specs > specification rows (icon + text) ·
+     group .sn-home-care-price (price + custom Liquid discount pill .sn-home-care-discount) ·
+     group .sn-home-care-cta (text).
+   Featured = the `_card` "Featured card" checkbox (class .sn-card-featured, inert without this class);
+   the carousel starts on it. Card widths / mobile gap come from the section's "Card sizes" settings
+   (--carousel-* variables, Figma values as fallbacks).
+   ========================================================================== */
+.sn-home-choose-care {
+  /* Figma container 1376px (class-scoped, like S03 / S06) */
+  --page-content-width: 1376px;
+  --page-width: calc(var(--page-content-width) + var(--page-margin) * 2);
+
+  /* Heading → cards: Figma 56 desktop / 22 mobile */
+  &.gap-style {
+    gap: 56px;
+
+    @media screen and (max-width: 749px) {
+      gap: 22px;
+    }
+  }
+
+  /* Figma section padding: 60 / 60 desktop (native Top / Bottom), 56 / 40 mobile */
+  &.spacing-style {
+    @media screen and (max-width: 749px) {
+      padding-block: calc(56px + var(--section-top-offset, 0px)) 40px;
+    }
+  }
+
+  /* --- Heading ------------------------------------------------------------ */
+  .sn-home-care-head {
+    @media screen and (max-width: 749px) {
+      /* Figma mobile gutter 24 (page margin 16 + 8) */
+      padding-inline: 8px;
+    }
+  }
+
+  /* --- Carousel track ----------------------------------------------------- */
+  slideshow-container {
+    /* native paints the colour-scheme background here; let the section gradient show */
+    background-color: transparent;
+  }
+
+  .carousel-content slideshow-slides {
+    /* room for the card shadows / featured glow (the scroller clips overflow) */
+    padding-block: 48px;
+    margin-block: -48px;
+    align-items: center;
+  }
+
+  .carousel-content slideshow-slides > .card {
+    flex: 0 0 auto;
+    height: auto;
+    overflow: visible;
+  }
+
+  .carousel-content .card__content {
+    background-color: transparent;
+  }
+
+  /* Desktop (≥990): Figma widths (400 / 462 from the section settings), scaled down together when three
+     cards don't fit; centred while they fit ("safe" falls back to start once the row scrolls). */
+  @media screen and (min-width: 990px) {
+    .carousel-content slideshow-slides {
+      --sn-care-w: var(--carousel-card-width, 400);
+      --sn-care-fw: var(--carousel-featured-width, 462);
+      --sn-care-avail: calc(100cqi - 2 * var(--gutter-slide-width, 0px) - 2 * var(--carousel-gap, 40px));
+
+      justify-content: center;
+      justify-content: safe center;
+    }
+
+    .carousel-content slideshow-slides > .card {
+      width: min(
+        calc(var(--sn-care-w) * 1px),
+        calc(var(--sn-care-avail) * var(--sn-care-w) / (2 * var(--sn-care-w) + var(--sn-care-fw)))
+      );
+    }
+
+    .carousel-content slideshow-slides > .card.sn-card-featured {
+      width: min(
+        calc(var(--sn-care-fw) * 1px),
+        calc(var(--sn-care-avail) * var(--sn-care-fw) / (2 * var(--sn-care-w) + var(--sn-care-fw)))
+      );
+    }
+  }
+
+  /* Tablet + mobile (≤989): every card has the same width; the side gutters are half the leftover space,
+     so a start-snapped card is centred and both neighbours peek. The native slideshow scrolls the
+     featured card to that position on load (scroll-padding-inline-start = gutter). */
+  @media screen and (max-width: 989px) {
+    .carousel-content slideshow-slides {
+      --sn-care-slide-w: 340px; /* tablet: no Figma frame (ASSUMED) */
+      --gutter-slide-width: max(0px, calc((100cqi - var(--sn-care-slide-w)) / 2));
+      --slideshow-gap: 16px;
+    }
+
+    .carousel-content slideshow-slides > .card {
+      width: var(--sn-care-slide-w);
+      scroll-snap-align: start;
+    }
+  }
+
+  @media screen and (max-width: 749px) {
+    .carousel-content slideshow-slides {
+      --sn-care-slide-w: min(var(--carousel-card-width-mobile, 262px), calc(100cqi - 48px));
+      --slideshow-gap: var(--carousel-gap-mobile, 12px);
+    }
+
+    /* Figma mobile has no arrows (swipe + progress bar) */
+    .carousel-content slideshow-arrows {
+      display: none;
+    }
+  }
+
+  /* Cards without a product: kept (with native placeholders) in the Theme Editor, hidden on the live store */
+  .carousel-content slideshow-slides > .card:not(:has(> .card__content--design-mode)):has(product-card[data-placeholder='true']) {
+    display: none;
+  }
+
+  /* No fictional placeholder price */
+  product-card[data-placeholder='true'] .sn-home-care-price {
+    display: none;
+  }
+
+  /* --- Card --------------------------------------------------------------- */
+  /* White background, radius and padding: the product card's native settings */
+  .product-card__content.product-grid__card {
+    position: relative;
+    box-shadow: 0 12px 32px rgb(15 100 168 / 0.1);
+
+    @media screen and (min-width: 990px) {
+      min-height: 672px;
+    }
+
+    @media screen and (max-width: 749px) {
+      min-height: 440px;
+      gap: 10.48px;
+      padding: 15.72px 15.72px 4.06px;
+      border-radius: 15.72px;
+      box-shadow: 0 7.86px 20.96px rgb(15 100 168 / 0.1);
+    }
+  }
+
+  /* Figma image box 352×240 when the gallery's native Image ratio is "Landscape" */
+  .card-gallery[data-image-ratio='landscape'] > * {
+    --gallery-aspect-ratio: 352 / 240;
+  }
+
+  .card-gallery {
+    overflow: hidden;
+
+    @media screen and (max-width: 749px) {
+      border-radius: 10.48px;
+    }
+  }
+
+  /* The discount pill sits in the price row, so the native "Sale" image badge is not repeated */
+  .card-gallery .color-custom-badge-sale {
+    display: none;
+  }
+
+  /* Featured badge (text block with native background) on the image's top start corner */
+  .sn-home-care-badge {
+    position: absolute;
+    z-index: 2;
+    inset-block-start: 37px;
+    inset-inline-start: 37px;
+    width: auto;
+    pointer-events: none;
+
+    @media screen and (max-width: 749px) {
+      inset-block-start: 21px;
+      inset-inline-start: 21.4px;
+
+      .text-block--background {
+        padding: 2.27px 6.8px;
+        border-radius: 4.54px;
+      }
+    }
+  }
+
+  .card:not(.sn-card-featured) .sn-home-care-badge {
+    display: none;
+  }
+
+  /* Product description: a short excerpt of the product's own description */
+  .product-card__content > .text-block {
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+    line-clamp: 2;
+    overflow: hidden;
+
+    > * {
+      display: inline;
+      margin: 0;
+    }
+
+    > *:not(:last-child)::after {
+      content: ' ';
+    }
+
+    :is(img, video, iframe, table, figure) {
+      display: none;
+    }
+  }
+
+  /* Specification rows (icon + text) */
+  .sn-home-care-specs {
+    @media screen and (max-width: 749px) {
+      padding-block-start: 2.62px;
+    }
+  }
+
+  .sn-home-care-specs .group-block-content {
+    @media screen and (max-width: 749px) {
+      gap: 6.55px;
+    }
+  }
+
+  .sn-home-care-specs .icon-block__media {
+    @media screen and (max-width: 749px) {
+      width: 13px;
+      height: 13px;
+    }
+  }
+
+  /* Purchase area (price + button) pinned to the bottom of the card */
+  .sn-home-care-price {
+    margin-block-start: auto;
+  }
+
+  .sn-home-care-price .group-block-content {
+    flex-wrap: wrap;
+  }
+
+  .sn-home-care-discount {
+    display: inline-flex;
+    align-items: center;
+    padding: 4px 12px;
+    border: 1px solid #dcf2fb;
+    border-radius: 8px;
+    background-color: #f0fafe;
+    color: #176bb0;
+    font-family: var(--font-body--family);
+    font-size: 12px;
+    font-weight: 600;
+    line-height: 18px;
+    white-space: nowrap;
+
+    @media screen and (max-width: 749px) {
+      padding: 2.27px 6.8px;
+      border-width: 0.57px;
+      border-radius: 4.54px;
+      font-size: 7px;
+      line-height: 10px;
+    }
+  }
+
+  /* Price (native price block): current price first, compare-at struck through */
+  .sn-home-care-price product-price {
+    .price {
+      font-size: 18px;
+      font-weight: 700;
+      line-height: 28px;
+      color: #131311;
+
+      @media screen and (max-width: 749px) {
+        font-size: 11.79px;
+        line-height: 18.34px;
+      }
+    }
+
+    .compare-at-price {
+      font-size: 14px;
+      font-weight: 400;
+      line-height: 22px;
+      color: #5a5a59;
+
+      @media screen and (max-width: 749px) {
+        font-size: 7.94px;
+        line-height: 12.48px;
+      }
+    }
+
+    > div {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 10px;
+
+      @media screen and (max-width: 749px) {
+        gap: 5.67px;
+      }
+    }
+  }
+
+  /* CTA (text block with native background / text colour / radius / padding): full width, outlined */
+  .sn-home-care-cta {
+    width: 100%;
+
+    .text-block {
+      width: 100%;
+      justify-content: center;
+      text-align: center;
+      transition: filter 0.2s ease;
+    }
+
+    .text-block--background {
+      border: 1.5px solid #60c1e1;
+
+      @media screen and (max-width: 749px) {
+        padding: 8.52px 18.34px;
+        border-width: 0.98px;
+        border-radius: 7.86px;
+      }
+    }
+  }
+
+  .product-card:hover .sn-home-care-cta .text-block--background {
+    filter: brightness(0.96);
+  }
+
+  /* --- Featured card (follows the "Featured card" checkbox, whatever its position) ---------------- */
+  .carousel-content slideshow-slides > .card.sn-card-featured {
+    padding: 3px;
+    border-radius: 27px;
+    background: conic-gradient(
+      from 90deg,
+      #63cdff 0%,
+      #3999d4 17.5%,
+      #247ebe 26.25%,
+      #0f64a8 35%,
+      #87b2d4 45%,
+      #ffffff 55%,
+      #87b2d4 65%,
+      #0f64a8 75%,
+      #247ebe 81.25%,
+      #3999d4 87.5%,
+      #63cdff 100%
+    );
+    box-shadow:
+      0 24px 48px rgb(15 100 168 / 0.18),
+      0 0 36px rgb(99 204 255 / 0.45);
+
+    @media screen and (max-width: 749px) {
+      padding: 1.7px;
+      border-radius: 15.31px;
+      box-shadow:
+        0 13.61px 27.22px rgb(15 100 168 / 0.18),
+        0 0 20.42px rgb(99 204 255 / 0.45);
+    }
+
+    .product-card__content.product-grid__card {
+      min-height: 0;
+      box-shadow: none;
+
+      @media screen and (max-width: 749px) {
+        gap: 9.07px;
+        padding: 13.61px;
+        border-radius: 13.61px;
+      }
+    }
+
+    /* Figma featured image box 408×300 */
+    .card-gallery[data-image-ratio='landscape'] > * {
+      --gallery-aspect-ratio: 408 / 300;
+    }
+
+    .card-gallery {
+      @media screen and (max-width: 749px) {
+        border-radius: 9.07px;
+      }
+    }
+
+    .sn-home-care-specs {
+      @media screen and (max-width: 749px) {
+        padding-block-start: 2.27px;
+      }
+    }
+
+    .sn-home-care-specs .group-block-content {
+      @media screen and (max-width: 749px) {
+        gap: 5.67px;
+      }
+    }
+
+    .sn-home-care-specs .icon-block__media {
+      @media screen and (max-width: 749px) {
+        width: 11px;
+        height: 11px;
+      }
+    }
+
+    .sn-home-care-price {
+      margin-block-start: 0;
+      padding-block-start: 6px;
+
+      @media screen and (max-width: 749px) {
+        padding-block-start: 3.4px;
+      }
+    }
+
+    .sn-home-care-price product-price .price {
+      font-size: 24px;
+      font-weight: 600;
+      line-height: 40px;
+
+      @media screen and (max-width: 749px) {
+        font-size: 13.61px;
+        line-height: 22.68px;
+      }
+    }
+
+    /* Filled button: the theme's primary button colours (Theme settings → Colors) */
+    .sn-home-care-cta .text-block--background {
+      border-color: transparent;
+      background-color: var(--color-primary-button-background, #176bb0);
+
+      &,
+      > * {
+        color: var(--color-primary-button-text, #ffffff);
+      }
+
+      @media screen and (max-width: 749px) {
+        padding: 7.37px 15.88px;
+        border-radius: 6.8px;
+      }
+    }
+  }
+}
+
+/* Section background: Figma pale-blue gradient while the section has no Background colour */
+.section-background:has(+ .sn-home-choose-care:not([class*='color-custom-'])) {
+  background: linear-gradient(180deg, #f7fbfe 0%, #dcf2fb 100%);
+}
+
+/* Progress bar (tablet + mobile): a scroll-driven fill tied to the carousel's real scroll position
+   (no JavaScript). Browsers without scroll-driven animations show no bar rather than a fake one. */
+@keyframes sn-care-progress {
+  from {
+    background-size: 0% 100%;
+  }
+
+  to {
+    background-size: 100% 100%;
+  }
+}
+
+@supports (animation-timeline: scroll()) {
+  @media screen and (max-width: 989px) {
+    .sn-home-choose-care {
+      .force-full-width {
+        timeline-scope: --sn-care-scroll;
+      }
+
+      .carousel-content slideshow-slides {
+        scroll-timeline: --sn-care-scroll inline;
+      }
+
+      .force-full-width::after {
+        content: '';
+        display: block;
+        block-size: 4px;
+        margin: 22px 24px 0;
+        border-radius: 99px;
+        background-color: #ffffff;
+        background-image: linear-gradient(90deg, #63cdff 0%, #0f64a8 100%);
+        background-repeat: no-repeat;
+        background-position: left center;
+        background-size: 100% 100%;
+        animation: sn-care-progress linear both;
+        animation-timeline: --sn-care-scroll;
+      }
+
+      .force-full-width:dir(rtl)::after {
+        background-position: right center;
+      }
+
+      /* one card: nothing to scroll, no bar */
+      .force-full-width:not(:has(slideshow-slides > .card ~ .card))::after {
+        display: none;
+      }
+    }
+  }
+}
+
+/* Typography: Figma values at element-level specificity (wrapped in :where), so the text blocks'
+   native Custom preset, colour and "Font size — Mobile" / "Line height — Mobile" settings win. */
+:where(.sn-home-care-head .text-block:not(.custom-typography)) :is(h1, h2, h3) {
+  font-family: var(--font-heading--family);
+  font-size: 32px;
+  font-weight: 600;
+  line-height: 52px;
+}
+
+:where(.sn-home-care-head .text-block:not(.custom-color)) :is(h1, h2, h3) {
+  color: #12568d;
+}
+
+:where(.sn-home-care-head .text-block:not(.custom-typography)) p {
+  font-size: 18px;
+  font-weight: 400;
+  line-height: 32px;
+}
+
+:where(.sn-home-care-head .text-block:not(.custom-color)) p {
+  color: #5a5a59;
+}
+
+/* Product title (native product-title block) */
+:where(.sn-home-choose-care .product-card__content > a > .text-block:not(.custom-typography)) :is(h3, h4, p) {
+  font-size: 24px;
+  font-weight: 600;
+  line-height: 40px;
+}
+
+:where(.sn-home-choose-care .product-card__content > a > .text-block:not(.custom-color)) :is(h3, h4, p) {
+  color: #131311;
+}
+
+:where(.sn-home-choose-care .sn-card-featured .product-card__content > a > .text-block:not(.custom-typography)) :is(h3, h4, p) {
+  font-size: 32px;
+  line-height: 52px;
+}
+
+@media screen and (max-width: 749px) {
+  :where(.sn-home-choose-care .product-card__content > a > .text-block:not(.custom-typography)) :is(h3, h4, p) {
+    font-size: 15.72px;
+    line-height: 26.2px;
+  }
+
+  :where(.sn-home-choose-care .sn-card-featured .product-card__content > a > .text-block:not(.custom-typography)) :is(h3, h4, p) {
+    font-size: 18.15px;
+    line-height: 29.49px;
+  }
+}
+
+/* Product description, specification rows */
+:where(.sn-home-choose-care .product-card__content > .text-block:not(.custom-typography)) :is(p, li, span, div) {
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 24px;
+}
+
+:where(.sn-home-choose-care .product-card__content > .text-block:not(.custom-color)) :is(p, li, span, div) {
+  color: #5a5a59;
+}
+
+:where(.sn-home-care-specs .text-block:not(.custom-typography)) p {
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 24px;
+}
+
+:where(.sn-home-care-specs .text-block:not(.custom-color)) p {
+  color: #131311;
+}
+
+/* Featured badge + CTA labels */
+:where(.sn-home-care-badge .text-block:not(.custom-typography)) p {
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 18px;
+  white-space: nowrap;
+}
+
+:where(.sn-home-care-cta .text-block:not(.custom-typography)) p {
+  font-size: 16px;
+  font-weight: 600;
+  line-height: 26px;
+  white-space: nowrap;
+}

@@ -14,13 +14,20 @@
     section
     section--{{ section.settings.section_width }}
     {% if section.settings.background_color != blank %}color-custom-{{ section.id }}{% endif %}
-    section-carousel
+    section-carousel{% render 'custom-class', value: section.settings.custom_class %}
     spacing-style
     gap-style
   "
   style="
     {% render 'spacing-style', settings: section.settings %}
     {% render 'gap-style', value: 12 %}
+    {%- comment -%} Snosha S10: card sizes for the section's custom-class CSS (output only with a custom class). {%- endcomment -%}
+    {% if section.settings.custom_class != blank %}
+      --carousel-card-width: {{ section.settings.card_width }};
+      --carousel-featured-width: {{ section.settings.featured_card_width }};
+      --carousel-card-width-mobile: {{ section.settings.card_width_mobile }}px;
+      --carousel-gap-mobile: {{ section.settings.columns_gap_mobile }}px;
+    {% endif %}
   "
   data-testid="carousel-section"
 >
@@ -169,6 +176,62 @@
       "step": 1,
       "unit": "px",
       "default": 0
+    },
+    {
+      "type": "text",
+      "id": "custom_class",
+      "label": "Custom CSS class",
+      "info": "Lowercase letters, numbers and hyphens, starting with a letter. Separate multiple classes with spaces."
+    },
+    {
+      "type": "header",
+      "content": "Card sizes (custom class)"
+    },
+    {
+      "type": "range",
+      "id": "card_width",
+      "label": "Card width — Desktop",
+      "info": "Read by the section's custom CSS class. Cards shrink proportionally on narrower screens.",
+      "min": 300,
+      "max": 500,
+      "step": 2,
+      "unit": "px",
+      "default": 400,
+      "visible_if": "{{ section.settings.custom_class != blank }}"
+    },
+    {
+      "type": "range",
+      "id": "featured_card_width",
+      "label": "Featured card width — Desktop",
+      "min": 360,
+      "max": 560,
+      "step": 2,
+      "unit": "px",
+      "default": 462,
+      "visible_if": "{{ section.settings.custom_class != blank }}"
+    },
+    {
+      "type": "range",
+      "id": "card_width_mobile",
+      "label": "Card width — Mobile",
+      "info": "Phones (below 750px). Every card, featured included.",
+      "min": 200,
+      "max": 360,
+      "step": 2,
+      "unit": "px",
+      "default": 262,
+      "visible_if": "{{ section.settings.custom_class != blank }}"
+    },
+    {
+      "type": "range",
+      "id": "columns_gap_mobile",
+      "label": "Horizontal gap — Mobile",
+      "min": 0,
+      "max": 40,
+      "step": 1,
+      "unit": "px",
+      "default": 12,
+      "visible_if": "{{ section.settings.custom_class != blank }}"
     }
   ],
   "presets": [

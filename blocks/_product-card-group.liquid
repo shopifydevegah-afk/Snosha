@@ -4,7 +4,15 @@
   {% content_for 'blocks' %}
 {% endcapture %}
 
-{% render 'group', children: children, settings: block.settings, shopify_attributes: block.shopify_attributes %}
+{%- comment -%} Project extension (Snosha S10): optional custom class; blank = native output. {%- endcomment -%}
+{%- capture group_class -%}{% render 'custom-class', value: block.settings.custom_class %}{%- endcapture -%}
+
+{% render 'group',
+  children: children,
+  settings: block.settings,
+  shopify_attributes: block.shopify_attributes,
+  class: group_class
+%}
 
 {% schema %}
 {
@@ -37,6 +45,9 @@
     },
     {
       "type": "custom-liquid"
+    },
+    {
+      "type": "icon"
     },
     {
       "type": "@app"
@@ -517,6 +528,12 @@
       "step": 1,
       "unit": "px",
       "default": 0
+    },
+    {
+      "type": "text",
+      "id": "custom_class",
+      "label": "Custom CSS class",
+      "info": "Lowercase letters, numbers and hyphens, starting with a letter. Separate multiple classes with spaces."
     }
   ],
   "presets": [

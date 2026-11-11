@@ -581,7 +581,10 @@ export class Slideshow extends Component {
       // This prevents race conditions on Safari mobile when section_width is 'full-width'
       requestAnimationFrame(() => {
         if (this.initialSlideIndex !== 0 && initialSlideId) {
-          this.select({ id: initialSlideId }, undefined, { animate: false });
+          // Project fix (Snosha S10): `current` already equals the initial index here, so select() returned
+          // early ("same slide") and the scroller never moved. Scroll to the initial slide directly; skipped
+          // when that slide isn't displayed. No stock Horizon caller passes a non-zero initial slide.
+          if (this.initialSlide?.offsetParent) this.#scroll?.to(this.initialSlide, { instant: true });
           visibleSlidesAmount = 1;
         } else {
           visibleSlidesAmount = this.#updateVisibleSlides();

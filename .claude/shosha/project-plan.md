@@ -37,11 +37,11 @@ Each one is decided; the details are in the referenced Skill file.
 | Developer | CSS file | Status | Sections assigned |
 |---|---|---|---|
 | Main | `assets/main.css` | Initialized 2026-11-08 (loaded once after `custom-cairo.css`) | none assigned explicitly yet |
-| Dev1 | `assets/dev1.css` | Initialized 2026-11-08 (file created; loaded once in `layout/theme.liquid` after `main.css`, tag count 1, Cairo line unchanged) | S03, S06 |
+| Dev1 | `assets/dev1.css` | Initialized 2026-11-08 (file created; loaded once in `layout/theme.liquid` after `main.css`, tag count 1, Cairo line unchanged) | S03, S06, S10 |
 | Dev2 | `assets/dev2.css` | Not initialized | — |
 | Dev3 | `assets/dev3.css` | Not initialized | — |
 
-**Custom classes owned:** Dev1 (S03, `dev1.css`): `sn-home-hero`, `sn-home-hero-content`, `sn-home-hero-overline`, `sn-home-hero-stage`, `sn-home-hero-chip`, `sn-home-trust-card`, `sn-home-trust-item`, plus the Liquid-generated position classes `sn-float`, `sn-float--*`, `sn-float-m--*` (inert outside `.sn-home-hero-stage`). Dev1 (S06, `dev1.css`): `sn-home-f1-banner`, `sn-home-f1-content`, `sn-home-f1-tag`, `sn-home-f1-specs`, `sn-home-f1-spec`, `sn-home-f1-stage`, `sn-home-f1-watermark`, `sn-home-f1-arc`, `sn-home-f1-sparkles`, `sn-home-f1-glow`, `sn-home-f1-waves` (collision check 2026-11-11: none).
+**Custom classes owned:** Dev1 (S03, `dev1.css`): `sn-home-hero`, `sn-home-hero-content`, `sn-home-hero-overline`, `sn-home-hero-stage`, `sn-home-hero-chip`, `sn-home-trust-card`, `sn-home-trust-item`, plus the Liquid-generated position classes `sn-float`, `sn-float--*`, `sn-float-m--*` (inert outside `.sn-home-hero-stage`). Dev1 (S06, `dev1.css`): `sn-home-f1-banner`, `sn-home-f1-content`, `sn-home-f1-tag`, `sn-home-f1-specs`, `sn-home-f1-spec`, `sn-home-f1-stage`, `sn-home-f1-watermark`, `sn-home-f1-arc`, `sn-home-f1-sparkles`, `sn-home-f1-glow`, `sn-home-f1-waves` (collision check 2026-11-11: none). Dev1 (S10, `dev1.css`): `sn-home-choose-care`, `sn-home-care-head`, `sn-home-care-badge`, `sn-home-care-specs`, `sn-home-care-price`, `sn-home-care-cta`, `sn-home-care-discount` (custom Liquid markup), plus the Liquid-generated `sn-card-featured` (inert without the section class) (collision check 2026-11-11: none).
 **Shared-file claims (active):** none. (Dev1/S03 claims on `templates/index.json`, `blocks/group.liquid`, `blocks/text.liquid`, `snippets/text.liquid`, `snippets/custom-class.liquid`, `layout/theme.liquid` released 2026-11-08 after implementation.)
 
 ## D. Section registry
@@ -59,7 +59,7 @@ Logical areas from the Figma homepage, in Figma order. A row isn't necessarily o
 | S07 | Featured Collection 2 | `190:3896` | `190:4204` | index.json | — | NOT_STARTED | — | — | — | Reuse S05's decisions |
 | S08 | Before / After | `190:3903` | `190:4222` | index.json | — | NOT_STARTED | — | — | — | — |
 | S09 | Reels | `190:3935` | `190:4254` | index.json | — | NOT_STARTED | — | — | — | — |
-| S10 | Choose Your Care | `190:3943` | `190:4265` | index.json | — | NOT_STARTED | — | — | — | — |
+| S10 | Choose Your Care | `190:3943` | `190:4265` | index.json | Dev1 | IMPLEMENTED | C + B/D (small opt-in extensions) | `carousel` → `_carousel-content` → `_card` → `product-card`; blocks `_product-card-gallery`, `product-title`, `text`, `_product-card-group`, `icon`, `price`, `custom-liquid` | `sn-home-choose-care`, `sn-home-care-head`, `-badge`, `-specs`, `-price`, `-cta`, `-discount`; inert `sn-card-featured` | Implemented 2026-11-11 (`sn_home_care`, after `sn_home_f1`). **Visual QA: PENDING USER REVIEW**. Merchant: pick the 3 products in each card, exact spec icons (drop/tank/gauge/timer use native fallbacks). Shared edits: `_card` (26), `_carousel-content`, `_product-card-group` (36, + `icon` child), `carousel` (14), `assets/slideshow.js` (initial-slide fix). 2026-11-11 fix: mobile start position + generic cards |
 | S11 | Bundle | `190:3987` | `190:4318` | index.json | — | NOT_STARTED | — | — | — | — |
 | S12 | Blog | `190:4018` | `190:4349` | index.json | — | NOT_STARTED | — | — | — | — |
 | S13 | Why SNOSHA | `190:4024` | `190:4361` | index.json | — | NOT_STARTED | — | — | — | — |
@@ -422,12 +422,103 @@ Not changed: `sections/section.liquid`, `snippets/section.liquid`, `snippets/gro
 - **Static checks:** Theme Check 9 = baseline; 27 S06 blocks, 0 invalid settings; CSS braces balanced.
 - **PENDING USER REVIEW:** product size and position vs Figma at 1480 and 390; tune Width / Mobile width if the uploaded file's padding differs from the Figma layer export.
 
+### S10 Choose Your Care — IMPLEMENTED 2026-11-11 (Dev1); visual QA pending
+
+**Figma (inspected 2026-11-11 with `get_metadata` + `get_design_context`; both nodes accessible).** The layer is named "08 Choose Your Care"; the registry ID stays S10.
+
+| Element | Desktop `190:3943` (1480×1072) | Mobile `190:4265` (390×695) |
+|---|---|---|
+| Section | gradient `#f7fbfe → #dcf2fb` (top→bottom), padding 60/60, container 1376 + 20 inline | same gradient, padding 56/40 |
+| Heading | column, gap 6, centred; H2 Cairo 32/52 SemiBold `#12568d`; text 18/32 `#5a5a59` | 24/38 and 15/38, inline padding 24 |
+| Heading → cards | 56 | 22 |
+| Cards row | 1336 wide, gap 40, centred, cards vertically centred: 400×672 / 462×806 / 400×672 | carousel, track gap 12, cards 262 wide (440.16 / 460.89 / 440.16), featured centred at x 64 with both neighbours peeking |
+| Regular card | white, radius 24, shadow `0 12 32 rgba(15,100,168,.1)`, padding 24/24/13/24, space-between (info top, purchase bottom); gap 16 | radius 15.72, padding 15.72/15.72/4.06, gap 10.48, shadow 0 7.86 20.96 |
+| Featured card | 3px conic-gradient ring (radius 27) + shadow `0 24 48 rgba(15,100,168,.18), 0 0 36 rgba(99,204,255,.45)`; inner 456, radius 24, padding 24, gap 16 | ring 1.7, radius 15.31; inner padding 13.61, gap 9.07 |
+| Image box | 352×240 (featured 408×300), border 1 `#dcf2fb`, radius 16 | 230.56×157.2 radius 10.48 (featured 231.4×170.13 radius 9.07), same ratios |
+| Badge (featured) | «الأكثر مبيعًا» `#176bb0`, white 12/18 SemiBold, radius 8, padding 4/12, at image top-start +13 | 6.8/10.2, padding 2.27/6.8 |
+| Title | 24/40 SemiBold `#131311` (featured 32/52) | 15.72/26.2 (featured 18.15/29.49) |
+| Description | 14/24 `#5a5a59` | 9.17/15.72 (featured 7.94/13.61) |
+| Spec rows | column gap 10, padding-top 4; row gap 10: icon 20 (start side) + text 14/24 `#131311` | icon 13.1 (featured 11.34), text 9.17 (7.94), gaps 6.55 (5.67) |
+| Price | regular 18/28 Bold; featured row (pt 6, gap 10): price 24/40 SemiBold, compare-at 14/22 struck `#5a5a59`, pill «خصم 20%» `#f0fafe` / border `#dcf2fb` / `#176bb0` 12/18 radius 8 | 11.79/18.34; featured 13.61/22.68, 7.94/12.48, pill 6.8 |
+| Button «عرض المنتج» | full width, padding 13/28, radius 12, 16/26 SemiBold; regular white + border 1.5 `#60c1e1` + `#176bb0` text; featured filled `#176bb0` + white | padding 8.52/18.34 radius 7.86, 10.48/17.03; featured 7.37/15.88 radius 6.8, 9.07/14.75 |
+| Progress | — | track 342×4 white radius 99 at 24 inline, 22 below the carousel; fill `#63cdff → #0f64a8` covering the start half (middle card) |
+
+Tongue cleaner specs (desktop Figma): «يزيل مصدر 90% من رائحة الفم» (sparkle), «فولاذ مقاوم للصدأ 420J2» (shield-check), «تصميم مزدوج: فرشاة + مكشطة» (brush-head), «حافظة سفر + ضمان سنة» (package). The mobile Figma tongue card still has 4 × «مواصفة معتمدة — Placeholder» and a different description, so the desktop texts are used. The Figma copy has «متكامل ,»; the brief's «متكامل،» is used.
+
+**Native Reuse Audit**
+- `product-list` ✗: one collection or a product list feeding a single shared card template, so specs can't differ per product and no card can be singled out as featured.
+- `featured-product` / `product-recommendations` ✗: one product, or algorithmic.
+- `section` + `product-card` ✗: no carousel on mobile.
+- **`carousel` ✅ (selected, category C):** native slideshow (swipe, RTL scroll maths, arrows that hide when disabled, `initial-slide`). Each slide is a `_card` that can hold a `product-card` theme block. `product-card` has its own **product picker** and per-card child blocks (`closest.product` drives gallery, title, price and dynamic sources).
+- Gaps closed with small opt-in extensions (defaults keep native output):
+  - B: `custom_class` on `carousel`.
+  - B: `custom_class` + `icon` child type on `_product-card-group` (specs need native icons + image upload).
+  - B/D: "Featured card" checkbox on `_card`; when on, it outputs `sn-card-featured` and `slide-id`.
+  - D: `_carousel-content` passes the first featured card's index as the native `initial_slide`. The native carousel never set `slide-id` on `_card`, so a non-zero initial slide was impossible.
+
+**Final decisions**
+- Structure per card: `_card` (Featured card) → `product-card` (product, white, radius 24, padding) →
+  - `_product-card-gallery` (Image ratio **Landscape** → Figma 352:240 / 408:300 via CSS; border `#dcf2fb`, radius 16).
+  - [featured only] group `.sn-home-care-badge` → `text` (native background).
+  - `product-title`.
+  - `text` = `{{ closest.product.description }}` (the native dynamic source; CSS shows a 2-line excerpt and hides media).
+  - group `.sn-home-care-specs` → row groups (`icon` + `text`).
+  - group `.sn-home-care-price` → `price` (sale price first) + `custom-liquid` discount pill.
+  - group `.sn-home-care-cta` → `text` (native background / colour / radius).
+- **Product data:** image, title, description, price / compare-at / ranges / currency (native `price` snippet) and link (native `product-card` overlay link + title link) all come from the selected product. Nothing is hardcoded. The cards ship with **no product selected** (product handles unknown: the Shopify tool points to another store); the merchant picks F1, N2 and the tongue cleaner.
+- **Discount pill:** `custom-liquid` computes `round((compare_at − price) × 100 / compare_at)` from `closest.product.selected_or_first_available_variant`, the same variant the price block shows. No compare-at price = no pill. The native gallery "Sale" badge is hidden under the class so the sale isn't shown twice. UNVERIFIED: that `closest.product` resolves inside a `liquid` setting; if it doesn't, the pill simply doesn't render.
+- **Featured:** per-card checkbox, so it stays with its card when reordered and doesn't depend on DOM index. If none is featured, the carousel starts at the first card and no card is highlighted. Ring, glow, size, filled button and larger type all come from `.sn-card-featured` under the section class. The badge is a removable text block (eye icon / edit text). Button colours use the CTA text block's native background / text colour.
+- **Desktop (≥990):** cards 400 / 462 (Figma), gap = native Horizontal gap (40), vertically centred (Card position: Center), centred with auto margins. Regular cards have a min height of 672 with the price + button pinned to the bottom, so longer content grows the card instead of overlapping. More than 3 products → native scroll + arrows (hidden while all fit).
+- **Tablet (750–989, no Figma frame; ASSUMED):** swipe carousel, cards 340 / 380, featured centred.
+- **Mobile (≤749):**
+  - Cards 262, gap 12; side gutters (100cqi − 262)/2, so the featured card is centred and both neighbours peek; snap centre; arrows hidden.
+  - Card typography from the Figma mobile frame: per-text-block native "Font size — Mobile" / "Line height — Mobile"; title, price, pill and icon sizes in CSS. Figma mobile text is the desktop card scaled ×0.655 (desc 9.17, featured 7.94, badge 6.8), recorded as a readability risk as in S03 D5.
+- **Progress bar:** CSS scroll-driven animation (`scroll-timeline` on the native scroller, `timeline-scope` on the wrapper). It reflects the real scroll position with no JS. Browsers without `animation-timeline` (Firefox today) show **no** bar, rather than a static fake one.
+- Background: the Figma gradient on `.section-background` while the section Background colour is blank.
+
+*Files changed*
+| File | Change |
+|---|---|
+| `sections/carousel.liquid` | `custom_class` (9→10), rendered on `.section` |
+| `blocks/_carousel-content.liquid` | `initial_slide` = index of the first featured card (0 when none = native) |
+| `blocks/_card.liquid` | `featured` checkbox (25→26); when on: class `sn-card-featured` + `slide-id` |
+| `blocks/_product-card-group.liquid` | `custom_class` (35→36) passed to the existing `group` snippet `class` param; `icon` added to allowed children |
+| `assets/dev1.css` | S10 block appended (S03 / S06 untouched) |
+| `templates/index.json` | `sn_home_care` (type `carousel`) appended after `sn_home_f1`; nothing else changed |
+
+*Reversibility:* removing `sn-home-choose-care` turns off all S10 CSS (the featured class becomes inert). The native carousel still starts on a featured card (functional, not visual). Settings that stay when the class is removed: card white background / radius / padding, gallery border, text colours and backgrounds, per-block mobile sizes, Landscape image ratio.
+- **Static checks:** Theme Check 9 = baseline; 81 S10 blocks, every setting exists in its schema, selects / ranges / checkboxes valid, child types allowed by parent schemas, block_order consistent; edited schemas parse; `dev1.css` braces balanced; classes in template = classes in CSS.
+- **PENDING USER REVIEW:** select products; 1480 / 1024 / 768 / 390 / 375 / 360 vs Figma; featured card on another position; reorder; 2 and 4+ products; product without compare-at (no pill / no strike) and with variants (price range); discount pill renders; progress bar moves with swipe (Chrome / Safari) and is absent in Firefox; RTL swipe direction; card link + focus; class on/off.
+
+**Mobile carousel fix + generic cards (2026-11-11, Dev1).** Figma `190:3943` / `190:4265` re-checked (metadata; mobile track: cards 262 at x 0 / 274 / 548, gap 12; the track sits at x −210, so the featured card is at x 64 = centred; progress 342×4 at y 595).
+- **Root cause (3 parts):**
+  1. **Native slideshow bug:** `connectedCallback` sets `current = initial-slide` and only then calls `select({ id })`. `select()` returns early when the requested slide is already current, so with any non-zero initial slide the scroller never moved and the first card was shown. No stock caller passes a non-zero `initial_slide`, which is why it never surfaced.
+  2. **S10 CSS:** cards used `scroll-snap-align: center` while Horizon sets a one-sided `scroll-padding-inline-start` (= gutter). The snapport centre was therefore shifted half a gutter (≈32px at 390), and on tablet the featured and regular cards had different widths.
+  3. **RTL order:** Figma is drawn left to right (F1 left, tongue cleaner right). In RTL the first DOM card renders on the right, so the order was mirrored.
+- **Fixes:**
+  1. `assets/slideshow.js` (one branch): when the initial slide isn't 0, scroll to it directly with the native `Scroller.to()` (RTL-aware), skipped if that card isn't displayed.
+  2. ≤989: every card has the same width; gutters = (track width − card width) / 2; `scroll-snap-align: start` matches the native scroll padding, so the featured card is centred with both neighbours peeking. Mobile 262 / gap 12 (section settings), tablet 340 / 16 (ASSUMED).
+  3. Card order reversed in the template (block IDs kept). Desktop (≥990): 400 / 462 from settings, scaled down together when three cards don't fit, `justify-content: safe center` (replaces the auto margins, which broke when a card was hidden).
+- **Progress bar:** unchanged mechanism (CSS scroll timeline on the native scroller). Because the scroller now really starts at the featured card, it opens at ≈50% for the middle card, filled from the start (right) side as in Figma. Hidden with a single card; absent in browsers without scroll-driven animations.
+- **Generic cards:**
+  - Labels: cards "Product card", "Product description", "Product specifications" → "Specification item", "Price", "Discount badge", "Button", "Featured badge". No product names in labels, schema, CSS or Liquid. Block IDs kept (internal, not shown in the editor; they still contain the original prefixes `care_f1_…`).
+  - Every card now has a "Featured badge" block (new: `care_card_1_badge`, `care_card_3_badge`). It is shown only while the card is featured.
+  - All "Button" text blocks share the regular settings (white, `#176bb0`). The featured card fills the button with the theme primary button colours via CSS, so moving "Featured card" moves the whole treatment: ring, glow, size, badge, filled button and start position.
+  - Empty product: card kept with native placeholders in the Theme Editor, hidden on the live store; the placeholder price is never shown.
+  - Spec texts remain card-level template data (not product data) and can be edited independently.
+- **New section settings** (`carousel`, 10→14, visible only with a custom class, output as `--carousel-*` only with a class): Card width — Desktop (400), Featured card width — Desktop (462), Card width — Mobile (262), Horizontal gap — Mobile (12). Desktop gap = native Horizontal gap.
+- **Card shadow** moved to the product card (follows its native corner radius); the featured ring stays on the slide.
+- **Files:** `assets/slideshow.js`, `sections/carousel.liquid`, `assets/dev1.css` (S10 block rewritten; S03 / S06 untouched), `templates/index.json` (S10 only: labels, order, 2 badge blocks, CTA colours, 4 settings).
+- **Static checks:** Theme Check 9 = baseline; 85 S10 blocks valid; `node --check assets/slideshow.js` OK; CSS braces balanced.
+- **PENDING USER REVIEW:** 390 / 375 / 360 start position (featured centred, neighbours peeking on both sides); swipe both ways; progress bar; tablet 768; desktop 1480 / 1024; move "Featured card" to card 1 or 3 and check the centring; 1, 2 and 4+ cards; empty product card in the editor vs live; products with or without compare-at price, description, image; theme editor card selection; RTL. **UNVERIFIED:** `block.blocks[].settings` in `_carousel-content` (if Shopify doesn't expose child settings, the start falls back to the first card), and `closest.product` inside the discount Custom Liquid.
+
 ## F. QA & progress
 
 | ID | Figma analysis | Code checks | Visual desktop | Visual mobile | RTL | Media | Reversibility | Pending issues |
 |---|---|---|---|---|---|---|---|---|
-| S01–S02, S04–S05, S07–S15 | — | — | — | — | — | — | — | Only project-level mapping done; no section-level analysis yet |
+| S01–S02, S04–S05, S07–S09, S11–S15 | — | — | — | — | — | — | — | Only project-level mapping done; no section-level analysis yet |
 | S06 | PASS (`190:3851` + `190:4167` design context + metadata 2026-11-11; no motion) | PASS (local): Theme Check 2026-11-11 = 9 offenses = baseline (all stock files); template: 27 S06 blocks, every setting exists in its schema, selects/ranges valid, block_order consistent; CSS braces balanced, 25 SVG data URIs well-formed; classes in template = classes in CSS | PENDING USER REVIEW | PENDING USER REVIEW | PENDING USER REVIEW | PENDING USER REVIEW (product image, background, tank/PSI icons not uploaded; CTA product not set) | PENDING USER REVIEW (expected `CLASS_PLUS_SETTINGS`: chip background/border/radius/padding, content width/padding, button colours stay when the class is removed) | Manual: 1480 / 390 / 375 / 360 vs Figma; tablet 768–989; scenarios A–F; hide each decoration block; RTL order; CTA hover/focus |
+| S10 | PASS (`190:3943` + `190:4265` design context + metadata 2026-11-11) | PASS (local): Theme Check 2026-11-11 (after the mobile/generic fix) = 9 = baseline; `node --check` slideshow.js; template: 85 S10 blocks valid against schemas incl. allowed child types; edited schemas parse; CSS braces balanced | PENDING USER REVIEW | PENDING USER REVIEW | PENDING USER REVIEW | PENDING USER REVIEW (products not selected; exact spec icons for drop / tank / gauge / timer not uploaded) | PENDING USER REVIEW (expected `CLASS_PLUS_SETTINGS`; featured start slide is functional and stays) | Manual: see S10 E "PENDING USER REVIEW" |
 | S03 | PASS (both nodes re-inspected 2026-11-08 and again 2026-11-09 for the refinement; no motion) | PASS (local only): 2026-11-08 Theme Check at baseline (9); 2026-11-09 refinement + final pass: schema JSON/counts, template keys vs schemas, CSS braces (Theme Check not re-run). PENDING USER REVIEW: console/404, sanitizer output | PENDING USER REVIEW | PENDING USER REVIEW | PENDING USER REVIEW | PENDING USER REVIEW (final product image + icons not uploaded; placeholders in place) | PENDING USER REVIEW (expected `CLASS_PLUS_SETTINGS`, see E) | User's manual checklist: Figma comparison at 1480 / 390 / 375 and tablet 768–989; image-only, text-only, no chips, trust alone, 3 and 5+ trust items; D5 8px readability; `mobile_text` click-to-edit; class on/off. Assisted review once the user sends screenshots |
 
 Give a section its own row here when its work starts, and keep the S01–S15 row only for sections that haven't started.
@@ -469,3 +560,5 @@ Give a section its own row here when its work starts, and keep the S01–S15 row
 | 2026-11-11 | S06 F1 Banner implemented by Dev1 on the native `hero` (category C, no schema change): content/stage/decoration groups + text/image/icon/button blocks; decorations as hideable blocks drawn with exact Figma SVG shapes in `dev1.css`; inserted after `sn_home_trust` | Figma `190:3851` / `190:4167`; native-first audit (hero > section > media-with-content) | S06; `dev1.css` (appended), `index.json` | User-owned visual QA; merchant media; S04/S05 to be inserted before S06 |
 | 2026-11-11 | S06 audit by Dev1: confirmed native `hero` (no custom files; the "F1 Banner" instance name removed); product image box now follows the image block's native Aspect ratio + Width (height-led, contain), sample t-shirt placeholder replaced by an editor-only dashed slot and hidden on the storefront; background = hero Media (+ mobile) | Merchant: placeholder, image behaviour, apparent custom section | S06; `dev1.css`, `index.json` | User-owned visual QA |
 | 2026-11-11 | S06 product image size fixed by Dev1: box = Figma product layer (438 / 280) instead of the internal 558 / 400 fill square; native image Width / Mobile width now literally % of the stage (S06 58% / 72%), height from Aspect ratio, contain | Merchant: uploaded product rendered at the wrong scale | S06; `dev1.css`, `index.json` | User-owned visual QA |
+| 2026-11-11 | S10 Choose Your Care implemented by Dev1 on the native `carousel` section (`_card` → `product-card` per product, category C): product picker per card, dynamic description, native price + custom-Liquid discount pill, spec rows as `_product-card-group` (icon + text); opt-in extensions: `custom_class` on `carousel` / `_product-card-group`, `icon` allowed in `_product-card-group`, `_card` "Featured card" → initial slide + featured style; CSS scroll-driven progress bar | Figma `190:3943` / `190:4265`; `product-list` can't vary specs per product or feature one card | S10; `carousel`, `_carousel-content`, `_card`, `_product-card-group`, `dev1.css`, `index.json` | Merchant selects products; user-owned visual QA |
+| 2026-11-11 | S10 mobile carousel + generic cards by Dev1: native `slideshow.js` initial-slide fix (select() no-op), start-snap with equal card widths ≤989, RTL card order, generic block labels, featured badge/button follow the "Featured card" checkbox, carousel card-size settings (14), empty-product handling | Merchant: wrong mobile start composition; product-specific card names | S10; `slideshow.js`, `carousel`, `dev1.css`, `index.json` | User-owned visual QA |
