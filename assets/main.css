@@ -1,1 +1,20 @@
 /* main css */
+
+/* sn-header-announcement — header-announcements (S01) | Figma desktop 190:3768, mobile 190:4083 | owner: Main */
+.sn-header-announcement {
+  /* Figma: 10px between icon and text (generic default is --gap-xs) */
+  .announcement-bar__slide--has-icon {
+    gap: 10px;
+  }
+
+  /* Figma line heights; the block sets --line-height: 1 inline, so override the property */
+  .announcement-bar__text {
+    line-height: 24px; /* Figma desktop: 14px Medium / 24px */
+  }
+
+  @media screen and (max-width: 749px) {
+    .announcement-bar__text {
+      line-height: 19px; /* Mobile/Caption: 12 / 19 */
+    }
+  }
+}

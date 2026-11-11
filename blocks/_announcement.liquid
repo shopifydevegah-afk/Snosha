@@ -18,6 +18,9 @@
       custom-typography
       {% if block_settings.font_size != "" %}custom-font-size{% endif %}
       {% if block_settings.weight != "" %}custom-font-weight{% endif %}
+      {% if block_settings.show_icon %}announcement-bar__slide--has-icon{% endif %}
+      {% if block_settings.font_size_mobile != blank %}announcement-bar__slide--mobile-size{% endif %}
+      {% if block_settings.weight_mobile != blank %}announcement-bar__slide--mobile-weight{% endif %}
     "
     style="
       {% render 'typography-style', settings: block_settings, preset: 'custom' %}
@@ -25,10 +28,31 @@
       --width: 100%;
       --text-align: center;
       --line-height: 1;
+      {% if block_settings.font_size_mobile != blank %}--font-size-mobile: {{ block_settings.font_size_mobile }};{% endif %}
+      {% if block_settings.weight_mobile != blank %}--font-weight-mobile: {{ block_settings.weight_mobile }};{% endif %}
     "
     {{ block.shopify_attributes }}
     aria-hidden="{% if block_index == 0 %}false{% else %}true{% endif %}"
   >
+    {%- if block_settings.show_icon -%}
+      <span class="announcement-bar__icon" aria-hidden="true">
+        {%- if block_settings.icon_image != blank -%}
+          {{
+            block_settings.icon_image
+            | image_url: width: 96
+            | image_tag: alt: '', width: 24, height: 24, class: 'announcement-bar__icon-image'
+          }}
+        {%- else -%}
+          <img
+            src="{{ 'icon-sparkle-brand.svg' | asset_url }}"
+            alt=""
+            width="24"
+            height="24"
+            class="announcement-bar__icon-image"
+          >
+        {%- endif -%}
+      </span>
+    {%- endif -%}
     <p class="announcement-bar__text">
       {{ block.settings.text }}
     </p>
@@ -45,6 +69,62 @@
     {% endif %}
   </slideshow-slide>
 {%- endunless -%}
+
+{% stylesheet %}
+  /* Optional icon (setting: show_icon). Without it the native layout is unchanged.
+     The slide also carries .text-block, which text.liquid styles as a flex column with
+     full-width children (`.text-block > * { width: var(--width, 100%) }`), so the
+     direction and child widths must be set explicitly with a higher specificity. */
+  .announcement-bar__slide.announcement-bar__slide--has-icon {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    align-items: center;
+    justify-content: center;
+  }
+
+  /* Single class on purpose, so a scoped custom-class rule can set the gap */
+  .announcement-bar__slide--has-icon {
+    gap: var(--gap-xs);
+  }
+
+  /* Beats .text-block > * width, .text-block--align-center > * and .text-block p margins */
+  .announcement-bar__slide.announcement-bar__slide--has-icon > * {
+    width: auto;
+    margin: 0;
+  }
+
+  .announcement-bar__slide.announcement-bar__slide--has-icon > .announcement-bar__text {
+    min-width: 0;
+  }
+
+  .announcement-bar__slide.announcement-bar__slide--has-icon > .announcement-bar__icon {
+    display: flex;
+    flex: 0 0 auto;
+    width: var(--icon-size-lg);
+    height: var(--icon-size-lg);
+  }
+
+  .announcement-bar__icon-image {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+  }
+
+  /* Optional mobile typography (settings: font_size_mobile, weight_mobile). Empty = same as desktop. */
+  @media screen and (max-width: 749px) {
+    .announcement-bar__slide.announcement-bar__slide--mobile-size,
+    .announcement-bar__slide.announcement-bar__slide--mobile-size > * {
+      font-size: var(--font-size-mobile);
+    }
+
+    .announcement-bar__slide.announcement-bar__slide--mobile-weight,
+    .announcement-bar__slide.announcement-bar__slide--mobile-weight > * {
+      font-weight: var(--font-weight-mobile);
+    }
+  }
+{% endstylesheet %}
 
 {% schema %}
 {
@@ -243,6 +323,74 @@
       "default": "none"
     },
     {
+      "type": "select",
+      "id": "font_size_mobile",
+      "label": "Size on mobile",
+      "options": [
+        {
+          "value": "",
+          "label": "Same as desktop"
+        },
+        {
+          "value": "0.625rem",
+          "label": "10px"
+        },
+        {
+          "value": "0.75rem",
+          "label": "12px"
+        },
+        {
+          "value": "0.875rem",
+          "label": "14px"
+        },
+        {
+          "value": "1rem",
+          "label": "16px"
+        },
+        {
+          "value": "1.125rem",
+          "label": "18px"
+        },
+        {
+          "value": "1.25rem",
+          "label": "20px"
+        }
+      ],
+      "default": ""
+    },
+    {
+      "type": "select",
+      "id": "weight_mobile",
+      "label": "Weight on mobile",
+      "options": [
+        {
+          "value": "",
+          "label": "Same as desktop"
+        },
+        {
+          "value": "300",
+          "label": "t:options.light"
+        },
+        {
+          "value": "400",
+          "label": "t:options.regular"
+        },
+        {
+          "value": "500",
+          "label": "t:options.medium"
+        },
+        {
+          "value": "600",
+          "label": "t:options.semibold"
+        },
+        {
+          "value": "700",
+          "label": "t:options.bold"
+        }
+      ],
+      "default": ""
+    },
+    {
       "type": "header",
       "content": "t:content.appearance"
     },
@@ -251,6 +399,23 @@
       "id": "text_color",
       "label": "t:settings.text_color",
       "placeholder": "t:settings.default"
+    },
+    {
+      "type": "header",
+      "content": "Icon"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_icon",
+      "label": "Show icon",
+      "default": false
+    },
+    {
+      "type": "image_picker",
+      "id": "icon_image",
+      "label": "Custom icon image",
+      "info": "Optional. Leave empty to use the SNOSHA sparkle icon.",
+      "visible_if": "{{ block.settings.show_icon }}"
     }
   ],
   "presets": [

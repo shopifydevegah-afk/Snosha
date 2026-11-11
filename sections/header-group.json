@@ -21,10 +21,13 @@
             "link": "",
             "font": "var(--font-heading--family)",
             "font_size": "0.875rem",
-            "weight": "300",
+            "weight": "500",
             "letter_spacing": "normal",
             "case": "none",
-            "text_color": ""
+            "font_size_mobile": "0.75rem",
+            "weight_mobile": "400",
+            "text_color": "",
+            "show_icon": true
           },
           "blocks": {}
         }
@@ -37,10 +40,11 @@
         "speed": 5,
         "section_width": "page-width",
         "background_color": "#176bb0",
-        "divider_width": 1,
+        "divider_width": 0,
         "divider_color": "#ffffff",
-        "padding-block-start": 15,
-        "padding-block-end": 15
+        "padding-block-start": 10,
+        "padding-block-end": 10,
+        "custom_class": "sn-header-announcement"
       }
     },
     "header_section": {

@@ -94,4 +94,6 @@ Add a row for every schema setting added, structural change, or new component. N
 
 | Date | Component (file) | Change | Setting IDs | Category | Reversibility (`CLASS_ONLY` / `CLASS_PLUS_SETTINGS` / `OPT_IN_STRUCTURAL` / `NOT_FULLY_REVERSIBLE`) | Notes / limitations |
 |---|---|---|---|---|---|---|
-| — | — | — | — | — | — | No extensions yet. `snippets/custom-class.liquid` not created yet |
+| 2026-11-11 | `snippets/custom-class.liquid` (new) | Sanitizing class helper (§3 of custom-class-policy) | — | — | n/a | Sanitizer test matrix not run yet (needs a render) |
+| 2026-11-11 | `sections/header-announcements.liquid` | `custom_class` rendered on the `<aside class="announcement-bar …">` root | `custom_class` | B | `CLASS_PLUS_SETTINGS` (expected; untested) | S01 |
+| 2026-11-11 | `blocks/_announcement.liquid` | Optional icon before the text (default `assets/icon-sparkle-brand.svg`, override by image picker) plus mobile size/weight; setting-driven `{% stylesheet %}` | `show_icon`, `icon_image`, `font_size_mobile`, `weight_mobile` | B | `OPT_IN_STRUCTURAL: show_icon` (defaults = native) | S01. Icon mode forces a flex row over the native `.text-block` column (fixed 2026-11-11) |
