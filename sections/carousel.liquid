@@ -16,6 +16,7 @@
     {% if section.settings.background_color != blank %}color-custom-{{ section.id }}{% endif %}
     section-carousel
     {% if section.settings.mobile_centered %}section-carousel--mobile-centered{% endif %}
+    {% if section.settings.mobile_gap_custom %}section-carousel--mobile-gap{% endif %}
     spacing-style
     gap-style
     {%- render 'custom-class', value: section.settings.custom_class %}
@@ -24,6 +25,7 @@
     {% render 'spacing-style', settings: section.settings %}
     {% render 'gap-style', value: 12 %}
     {% if section.settings.mobile_centered %}--carousel-mobile-card-width: {{ section.settings.mobile_card_width }}px;{% endif %}
+    {% if section.settings.mobile_gap_custom %}--carousel-gap-mobile: {{ section.settings.columns_gap_mobile }}px;{% endif %}
   "
   data-testid="carousel-section"
 >
@@ -40,6 +42,11 @@
 {% stylesheet %}
   /* Opt-in: fixed-width cards centered on mobile, neighbours visible on both sides */
   @media screen and (max-width: 749px) {
+    /* Opt-in mobile gap: overrides --carousel-gap on the track, so the slide gap and the card width math both use it */
+    .section-carousel--mobile-gap .carousel-content slideshow-slides {
+      --carousel-gap: var(--carousel-gap-mobile);
+    }
+
     .section-carousel--mobile-centered .carousel-content slideshow-slides {
       padding-inline: max(0px, calc((100% - var(--carousel-mobile-card-width)) / 2));
       scroll-padding-inline: 0;
@@ -127,6 +134,23 @@
       "step": 1,
       "unit": "px",
       "default": 8
+    },
+    {
+      "type": "checkbox",
+      "id": "mobile_gap_custom",
+      "label": "Use a different gap on mobile",
+      "default": false
+    },
+    {
+      "type": "range",
+      "id": "columns_gap_mobile",
+      "label": "Mobile horizontal gap",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 12,
+      "visible_if": "{{ section.settings.mobile_gap_custom }}"
     },
     {
       "type": "color",

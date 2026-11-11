@@ -2589,6 +2589,8 @@
         "mobile_card_width": 290,
         "section_width": "page-width",
         "columns_gap": 24,
+        "mobile_gap_custom": true,
+        "columns_gap_mobile": 12,
         "background_color": "",
         "icons_style": "none",
         "icons_shape": "none",

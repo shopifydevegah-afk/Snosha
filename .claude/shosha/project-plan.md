@@ -568,7 +568,8 @@ Verified in code and docs on 2026-11-08 before deciding:
     - Reels do not pause when scrolled off-screen. This is not supported by the slideshow; only the "one plays at a time" rule exists natively.
   - **Category B + C** (opt-in schema extensions + native composition). No new section; A–D are sufficient, E not needed.
 - **Schema extensions (all opt-in; defaults = native output):**
-  - `sections/carousel.liquid` (9 → 13 settings):
+  - `sections/carousel.liquid` (9 → 15 settings):
+    - `mobile_gap_custom` + `columns_gap_mobile` (0–100, default 12), added 2026-11-11 (gap correction). The native `columns_gap` applied to all viewports, so S09 mobile had 24 instead of Figma's 12. When on, `--carousel-gap` is overridden on the slideshow track below 750px, so the slide gap and the native card-width calculation both use it. Desktop keeps the native `columns_gap`.
     - `mobile_centered` + `mobile_card_width` (200–360, default 290): fixed-width cards that snap to the center on mobile. Scroller padding `(100% − width) / 2`, so the first card starts centered with its neighbor visible.
     - `show_scroll_progress`: renders `scroll-progress`.
     - `custom_class`, rendered with `custom-class.liquid`.
@@ -583,7 +584,7 @@ Verified in code and docs on 2026-11-08 before deciding:
   - No template has an existing `video` block. `carousel` and `product-card` had no instances. Existing behavior is unchanged.
 - **Instance `carousel_sn9Rls`** (`index.json`, after S07; Figma order S07 → S08 → S09, S08 not built):
   - Section:
-    - `columns` 5, `columns_gap` 24, `mobile_columns` 1, `mobile_centered` true / 290, `section_width` page-width.
+    - `columns` 5, `columns_gap` 24 (desktop), `mobile_gap_custom` true + `columns_gap_mobile` 12, `mobile_columns` 1, `mobile_centered` true / 290, `section_width` page-width.
     - `icons_style` none (Figma has no arrows), `show_scroll_progress` true, padding 60 / 60, `custom_class: sn-home-reels`.
   - Header `static-header` (group, column, centered, gap 0, padding 0) → `text_sn9Head` `<h2>اكتشف عالم SNOSHA</h2>`.
   - 5 Reel cards (`card_r9Ka1Q`, `card_r9Lb2W`, `card_r9Mc3E`, `card_r9Nd4R`, `card_r9Oe5T`). Each card: column, gap 12, padding 0, containing:
@@ -599,7 +600,9 @@ Verified in code and docs on 2026-11-08 before deciding:
   - The merchant creates the definition (Settings → Custom data → Products), then in the Theme Editor connects each "Coming soon label" text block to it with "Connect dynamic source". It must not be written into the template before the definition exists (see the visibility incident). No product records changed.
 - **CSS (`assets/dev3.css`, `.sn-home-reels`, collision check: no matches):**
   - Container 1336 and desktop `--peek-next-slide-size: 0` → 5 × 248 cards.
-  - Gaps: 24 desktop; mobile 23 + 20.5 under the heading.
+  - Gaps:
+    - Between cards: 24 desktop and 12 mobile (Figma re-checked 2026-11-11: desktop cards at x 0/272/544, mobile at 0/302/604). Both are section settings; no CSS.
+    - Mobile vertical spacing: 23, plus 20.5 under the heading.
   - Mobile: padding 48.5 / 40, gutters 24.
   - Heading 32/52 → 24/38. Title 14/24 (one-line ellipsis desktop, 2-line clamp mobile). Price Bold 14/24 `#176bb0`.
   - Thumbnail 43 / `#f0fafe`; progress colors.
