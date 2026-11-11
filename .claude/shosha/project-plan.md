@@ -58,7 +58,7 @@ Logical areas from the Figma homepage, in Figma order. A row isn't necessarily o
 | S06 | F1 Banner | `190:3851` | `190:4167` | index.json | — | NOT_STARTED | — | — | — | — |
 | S07 | Featured Collection 2 / Bundles | `190:3896` (container `351:4546`) | `190:4204` | index.json | Dev3 | IMPLEMENTED (2026-11-11; visual QA PENDING USER REVIEW) | A + modifier class | `product-list` (`product_list_Rxv4hg`) | `sn-home-bestsellers sn-home-bundles` | Collection left for the merchant. Same components as S05 |
 | S08 | Before / After | `190:3903` | `190:4222` | index.json | — | NOT_STARTED | — | — | — | — |
-| S09 | Reels | `190:3935` | `190:4254` | index.json | Dev3 | IMPLEMENTED (2026-11-11; visual QA PENDING USER REVIEW) | B + C (opt-in) | `carousel` (`carousel_sn9Rls`) + `_card` / `video` / `product-card` blocks | `sn-home-reels` | Merchant uploads videos and selects products; optional metafield `custom.coming_soon_label` |
+| S09 | Reels | `190:3935` | `190:4254` | index.json | Dev3 | IMPLEMENTED (2026-11-11; template rejected on GitHub sync → fixed locally, needs commit + push; editor visibility NOT VERIFIED; visual QA PENDING USER REVIEW) | B + C (opt-in) | `carousel` (`carousel_sn9Rls`) + `_card` / `video` / `product-card` blocks | `sn-home-reels` | Merchant uploads videos and selects products; optional metafield `custom.coming_soon_label` |
 | S10 | Choose Your Care | `190:3943` | `190:4265` | index.json | — | NOT_STARTED | — | — | — | — |
 | S11 | Bundle | `190:3987` | `190:4318` | index.json | — | NOT_STARTED | — | — | — | — |
 | S12 | Blog | `190:4018` | `190:4349` | index.json | — | NOT_STARTED | — | — | — | — |
@@ -591,12 +591,12 @@ Verified in code and docs on 2026-11-08 before deciding:
     - `product_card_<id>`: **no product** (merchant selects), `hide_when_empty` true, gap 0, containing:
       - `group_info_<id>` (row, gap 14, padding 10):
         - `image_thumb_<id>`: `{{ closest.product.featured_image }}`, square, 1px `#dcf2fb` at 40%, radius 6.
-        - `group_text_<id>` (column, gap 3): `product_title_<id>`, `price_<id>` (discount badge off) and `text_soon_<id>` (`{{ closest.product.metafields.custom.coming_soon_label }}`, part class `sn-home-reels-soon`).
+        - `group_text_<id>` (column, gap 3): `product_title_<id>`, `price_<id>` (discount badge off) and `text_soon_<id>` (part class `sn-home-reels-soon`; text **left empty** since the 2026-11-11 visibility fix, so it renders nothing until the merchant connects it to the metafield in the editor).
   - Nothing is hardcoded: no video files, posters, titles or prices. Empty slots show native placeholders in the editor.
 - **Coming soon:** proposed product metafield **`custom.coming_soon_label`** (single line text, e.g. "قريبًا").
   - When filled, the label shows and the price is hidden (class CSS `.product-card:has(.sn-home-reels-soon) product-price`). When empty, the real price shows.
   - Sold-out products keep their native price (not treated as coming soon).
-  - The merchant creates the definition (Settings → Custom data → Products) to pick it in the editor. No product records changed.
+  - The merchant creates the definition (Settings → Custom data → Products), then in the Theme Editor connects each "Coming soon label" text block to it with "Connect dynamic source". It must not be written into the template before the definition exists (see the visibility incident). No product records changed.
 - **CSS (`assets/dev3.css`, `.sn-home-reels`, collision check: no matches):**
   - Container 1336 and desktop `--peek-next-slide-size: 0` → 5 × 248 cards.
   - Gaps: 24 desktop; mobile 23 + 20.5 under the heading.
@@ -617,6 +617,28 @@ Verified in code and docs on 2026-11-08 before deciding:
   - Upload each Reel's video (and an optional poster) and select its product.
   - Create the `custom.coming_soon_label` definition if needed.
   - Delete or add Reel cards as needed.
+- **Editor visibility incident (2026-11-11) — local fix applied, remote sync PENDING (needs user's commit + push):**
+  - **Symptom:** the user couldn't see S09 in the Theme Editor.
+  - **Sync model:** theme "Snosha/dev3" (shop Internal-AH) is connected to GitHub branch `dev3` (`origin` = `shopifydevegah-afk/Snosha`). Changes reach it only through commit + push. The theme editor writes back as `shopify[bot]` "Update from Shopify" commits. No Shopify CLI session is involved.
+  - **Evidence:**
+    - S09 was committed and pushed in `05242e7` ("start section 7").
+    - Bot commit `b56ecb5` (2026-11-11 19:07 UTC, header/footer edits in the editor) re-committed `carousel.liquid`, `video.liquid`, `product-card.liquid` and `dev3.css` unchanged. So the theme accepted the S09 code files.
+    - The same commit replaced `index.json` with a copy byte-identical to the pre-S09 version (−821 lines, S09 removed). The theme never accepted the S09 template.
+    - `b56ecb5` was pulled locally (fast-forward, 21:07 local), which removed S09 from the working copy.
+  - **Root cause (most likely):** Shopify rejected the S09 `index.json` on GitHub sync. Probable invalid values:
+    - The `text` richtext setting held a metafield dynamic source `{{ closest.product.metafields.custom.coming_soon_label }}`. That metafield has no definition, and the source was not wrapped in `<p>`. Shopify requires dynamic sources to match a compatible definition.
+    - Empty-string resource pickers (`"video": ""`, `"uploaded_poster": ""`, `"product": ""`), which no Shopify-written template uses.
+    - Not confirmed from the store: the Shopify connector in this session is linked to another store, and no CLI was run. The sync error itself is visible in Shopify admin → Online Store → Themes (theme "Snosha/dev3").
+  - **Local fix:**
+    - `carousel_sn9Rls` restored into `index.json` from `05242e7`, identical except for 20 removed values: per Reel, `video`, `uploaded_poster`, `product` and the `text_soon` `text`.
+    - Kept the file's CRLF line endings; the diff versus HEAD only adds S09 plus one comma.
+    - Theme Check = 9 baseline. Template parses; S09 type `carousel`, enabled, in `order` after S07; 5 cards; heading present; all `block_order` refs resolve; S05/S07 unchanged.
+  - **Remaining:**
+    1. The user commits and pushes `templates/index.json` to `dev3` (remote write; not done by Claude).
+    2. Check the theme's GitHub sync status in admin for errors.
+    3. Confirm S09 "Reels" appears in the editor.
+    4. Avoid saving the homepage in an editor tab opened before the sync, or it may write the old template back.
+  - **Status:** code IMPLEMENTED; editor visibility NOT VERIFIED.
 - **Visual QA — PENDING USER REVIEW:**
   - Desktop 1480: 5 × 248 cards, 440 video, 24 gaps, centered heading.
   - Mobile 390: 290 × 516 centered card with neighbors visible, swipe and snap in RTL, progress 342 × 4 following the scroll.
@@ -665,4 +687,5 @@ Give a section its own row here when its work starts, and keep the S01–S15 row
 | 2026-11-09 | S05 mobile switched to exact Figma type sizes (supersedes R3, user decision). Discount badge color/size bug fixed (base.css `.text-block.h6 > *` outranked the badge rules). Shared `text-responsive-style` snippet; mobile size settings on `product-title`, `review`, `icon` | User request + Figma re-read | S05; shared opt-in blocks | Visual QA by the user, incl. the color picker |
 | 2026-11-11 | S07 Bundles implemented by Dev3 as a second native `product-list` instance (`product_list_Rxv4hg`) cloned from S05 with new IDs; collection left for the merchant; mobile spacing via modifier `sn-home-bundles` (S05 values moved to CSS variables, unchanged) | User request + Figma `351:4546` / `190:4204` | S07; `dev3.css` shared rule set | Merchant selects the Bundles collection; visual QA by the user |
 | 2026-11-11 | S09 Reels implemented by Dev3 with the native `carousel` section (`carousel_sn9Rls`): one `_card` per Reel holding a `video` block and a `product-card` block (title, price, featured-image thumbnail from the product). Opt-in extensions: carousel `mobile_centered`/`mobile_card_width`/`show_scroll_progress`/`custom_class`; video `uploaded_poster`/`uploaded_aspect_ratio`/play-button settings; product-card `hide_when_empty`. Reuses `scroll-progress` | User request + Figma `190:3935` / `190:4254` | S09; shared opt-in: `carousel`, `video`, `product-card` | Merchant uploads videos and selects products; optional `custom.coming_soon_label` definition; visual QA by the user |
+| 2026-11-11 | S09 missing from the Theme Editor. Theme "Snosha/dev3" syncs from GitHub `dev3`; its bot commit `b56ecb5` showed the theme kept the pre-S09 `index.json` (code files were accepted). Likely cause: a metafield dynamic source without a definition, plus empty-string resource pickers. S09 restored locally from `05242e7` without those values. **Rule:** never write metafield dynamic sources into templates before the definition exists, and omit empty resource pickers instead of writing `""` | User report + git history | S09; all future template edits | User commits + pushes `index.json`; checks the theme's GitHub sync status; confirms S09 in the editor |
 | 2026-11-09 | Process correction: during S05 Dev3 ran CLI store commands (`theme list`, scratchpad-only `theme pull`, a failed `theme dev`), inspected other sessions' processes, and ran a local headless fixture. This is against skill hard rule 13 (`.agents/skills/…/SKILL.md`). No files were uploaded and no other session was touched | User instruction | All Dev3 work | Local, non-server code checks only from now on; visual QA = PENDING USER REVIEW |
