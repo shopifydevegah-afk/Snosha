@@ -4,12 +4,21 @@
   {% content_for 'blocks' %}
 {% endcapture %}
 
+{%- comment -%} Snosha (opt-in): phone gap as a CSS var, only when the section has a custom class; read by that class's CSS at ≤749px. {%- endcomment -%}
+{%- liquid
+  assign sn_group_style = ''
+  if section.settings.custom_class != blank
+    assign sn_group_style = '--sn-gap-mobile: ' | append: block.settings.gap_mobile | append: 'px;'
+  endif
+-%}
+
 {% render 'group',
   children: children,
   settings: block.settings,
   shopify_attributes: block.shopify_attributes,
   background_color: block.settings.background_color,
-  block_id: block.id
+  block_id: block.id,
+  style: sn_group_style
 %}
 
 {% schema %}
@@ -158,6 +167,17 @@
       "type": "range",
       "id": "gap",
       "label": "t:settings.gap",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 12
+    },
+    {
+      "type": "range",
+      "id": "gap_mobile",
+      "label": "Mobile gap",
+      "info": "Phones only (≤749px), in sections with a custom class. Gap above = desktop.",
       "min": 0,
       "max": 100,
       "step": 1,

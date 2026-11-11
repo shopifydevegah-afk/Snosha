@@ -11,6 +11,22 @@
   background_color: section.settings.background_color
 %}
 
+{%- comment -%}
+  Snosha (opt-in): phone layout values, output only when the section has a custom class.
+  They are read by that class's CSS at ≤749px; without a class the section renders natively.
+{%- endcomment -%}
+{%- if section.settings.custom_class != blank -%}
+  {% style %}
+    #shopify-section-{{ section.id }} {
+      --sn-padding-block-start-mobile: {{ section.settings['padding-block-start-mobile'] }}px;
+      --sn-padding-block-end-mobile: {{ section.settings['padding-block-end-mobile'] }}px;
+      --sn-padding-inline-mobile: {{ section.settings['padding-inline-mobile'] }}px;
+      --sn-gap-mobile: {{ section.settings.gap_mobile }}px;
+      --sn-mobile-direction: {% if section.settings.mobile_reverse_order %}column-reverse{% else %}column{% endif %};
+    }
+  {% endstyle %}
+{%- endif -%}
+
 {% schema %}
 {
   "name": "t:names.section",
@@ -435,6 +451,89 @@
       "step": 1,
       "unit": "px",
       "default": 0
+    },
+    {
+      "type": "range",
+      "id": "padding-inline-start",
+      "label": "t:settings.left",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "padding-inline-end",
+      "label": "t:settings.right",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 0
+    },
+    {
+      "type": "header",
+      "content": "Mobile layout",
+      "info": "Phones only (≤749px). Applies when a custom class is set."
+    },
+    {
+      "type": "range",
+      "id": "padding-block-start-mobile",
+      "label": "Mobile top padding",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 40
+    },
+    {
+      "type": "range",
+      "id": "padding-block-end-mobile",
+      "label": "Mobile bottom padding",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 40
+    },
+    {
+      "type": "range",
+      "id": "padding-inline-mobile",
+      "label": "Mobile side padding",
+      "info": "Added to the page margin.",
+      "min": 0,
+      "max": 40,
+      "step": 1,
+      "unit": "px",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "gap_mobile",
+      "label": "Mobile gap",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 20
+    },
+    {
+      "type": "checkbox",
+      "id": "mobile_reverse_order",
+      "label": "Reverse order on mobile",
+      "info": "Shows the last block first, e.g. media above text.",
+      "default": false
+    },
+    {
+      "type": "header",
+      "content": "Advanced"
+    },
+    {
+      "type": "text",
+      "id": "custom_class",
+      "label": "Custom CSS class",
+      "info": "Lowercase letters, numbers and hyphens, starting with a letter. Separate multiple classes with spaces."
     }
   ],
   "presets": [

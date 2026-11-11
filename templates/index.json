@@ -184,9 +184,865 @@
         "mobile_image_ratio": "square",
         "mobile_title_word_limit": "two"
       }
+    },
+    "before_after_sn_home": {
+      "type": "section",
+      "name": "t:names.image_compare",
+      "blocks": {
+        "group_sn_ba_content": {
+          "type": "group",
+          "name": "t:names.content",
+          "settings": {
+            "content_direction": "column",
+            "vertical_on_mobile": true,
+            "horizontal_alignment": "flex-start",
+            "vertical_alignment": "center",
+            "horizontal_alignment_flex_direction_column": "flex-start",
+            "vertical_alignment_flex_direction_column": "center",
+            "width": "custom",
+            "width_mobile": "fill",
+            "height": "fit",
+            "background_media": "none",
+            "border": "none",
+            "border_radius": 0,
+            "padding-block-start": 0,
+            "padding-block-end": 0,
+            "padding-inline-start": 0,
+            "padding-inline-end": 0,
+            "gap": 20,
+            "gap_mobile": 14,
+            "custom_width": 41
+          },
+          "blocks": {
+            "text_sn_ba_heading": {
+              "type": "text",
+              "name": "t:names.heading",
+              "settings": {
+                "text": "<h2>روتينك اليومي ممكن يغير شكل ابتسامتك.</h2>",
+                "width": "100%",
+                "max_width": "none",
+                "alignment": "left",
+                "type_preset": "custom",
+                "font": "var(--font-heading--family)",
+                "line_height": "normal",
+                "letter_spacing": "normal",
+                "case": "none",
+                "wrap": "pretty",
+                "background": false,
+                "padding-block-start": 0,
+                "padding-block-end": 0,
+                "padding-inline-start": 0,
+                "padding-inline-end": 0,
+                "font_size": "2rem",
+                "mobile_font_size": 24,
+                "font_weight": "600",
+                "line_height_exact": 163,
+                "text_color": "#12568d"
+              },
+              "blocks": {}
+            },
+            "text_sn_ba_description": {
+              "type": "text",
+              "name": "t:names.description",
+              "settings": {
+                "text": "<p>التنظيف المنتظم مع فرشاة SNOSHA يساعدك على إزالة بقايا الطعام والتصبغات السطحية التي تتراكم مع الوقت، لابتسامة تبدو أنظف وأكثر انتعاشًا.</p>",
+                "width": "100%",
+                "max_width": "none",
+                "alignment": "left",
+                "type_preset": "custom",
+                "font": "var(--font-body--family)",
+                "line_height": "normal",
+                "letter_spacing": "normal",
+                "case": "none",
+                "wrap": "pretty",
+                "background": false,
+                "padding-block-start": 0,
+                "padding-block-end": 0,
+                "padding-inline-start": 0,
+                "padding-inline-end": 0,
+                "font_size": "1.125rem",
+                "mobile_font_size": 18,
+                "font_weight": "400",
+                "line_height_exact": 178,
+                "text_color": "#5a5a59"
+              },
+              "blocks": {}
+            },
+            "group_sn_ba_benefits": {
+              "type": "group",
+              "name": "Benefits",
+              "settings": {
+                "content_direction": "column",
+                "vertical_on_mobile": true,
+                "horizontal_alignment": "flex-start",
+                "vertical_alignment": "center",
+                "horizontal_alignment_flex_direction_column": "flex-start",
+                "vertical_alignment_flex_direction_column": "center",
+                "width": "fill",
+                "width_mobile": "fill",
+                "height": "fit",
+                "background_media": "none",
+                "border": "none",
+                "border_radius": 0,
+                "padding-block-start": 6,
+                "padding-block-end": 8,
+                "padding-inline-start": 0,
+                "padding-inline-end": 0,
+                "gap": 14,
+                "gap_mobile": 14
+              },
+              "blocks": {
+                "group_sn_benefit_1": {
+                  "type": "group",
+                  "name": "Benefit",
+                  "settings": {
+                    "content_direction": "row",
+                    "vertical_on_mobile": false,
+                    "horizontal_alignment": "flex-start",
+                    "vertical_alignment": "flex-start",
+                    "horizontal_alignment_flex_direction_column": "flex-start",
+                    "vertical_alignment_flex_direction_column": "center",
+                    "width": "fill",
+                    "width_mobile": "fill",
+                    "height": "fit",
+                    "background_media": "none",
+                    "border": "none",
+                    "border_radius": 0,
+                    "padding-block-start": 0,
+                    "padding-block-end": 0,
+                    "padding-inline-start": 0,
+                    "padding-inline-end": 0,
+                    "gap": 12,
+                    "gap_mobile": 12
+                  },
+                  "blocks": {
+                    "group_sn_benefit_1_tile": {
+                      "type": "group",
+                      "name": "Icon tile",
+                      "settings": {
+                        "content_direction": "column",
+                        "vertical_on_mobile": true,
+                        "horizontal_alignment": "flex-start",
+                        "vertical_alignment": "center",
+                        "horizontal_alignment_flex_direction_column": "center",
+                        "vertical_alignment_flex_direction_column": "center",
+                        "width": "fit-content",
+                        "width_mobile": "fit-content",
+                        "height": "fit",
+                        "background_media": "none",
+                        "border": "solid",
+                        "border_radius": 13,
+                        "padding-block-start": 8,
+                        "padding-block-end": 8,
+                        "padding-inline-start": 8,
+                        "padding-inline-end": 8,
+                        "gap": 0,
+                        "gap_mobile": 0,
+                        "border_width": 1,
+                        "border_opacity": 100,
+                        "border_color": "#dcf2fb",
+                        "background_color": "#ffffff",
+                        "toggle_overlay": true,
+                        "overlay_color": "#f0fafe",
+                        "overlay_style": "gradient",
+                        "gradient_direction": "to top"
+                      },
+                      "blocks": {
+                        "icon_sn_benefit_1": {
+                          "type": "icon",
+                          "name": "t:names.icon",
+                          "settings": {
+                            "icon": "none",
+                            "width": 22,
+                            "icon_color": "#176bb0"
+                          },
+                          "blocks": {}
+                        }
+                      },
+                      "block_order": [
+                        "icon_sn_benefit_1"
+                      ]
+                    },
+                    "group_sn_benefit_1_text": {
+                      "type": "group",
+                      "name": "t:names.text",
+                      "settings": {
+                        "content_direction": "column",
+                        "vertical_on_mobile": true,
+                        "horizontal_alignment": "flex-start",
+                        "vertical_alignment": "center",
+                        "horizontal_alignment_flex_direction_column": "flex-start",
+                        "vertical_alignment_flex_direction_column": "center",
+                        "width": "fill",
+                        "width_mobile": "fill",
+                        "height": "fit",
+                        "background_media": "none",
+                        "border": "none",
+                        "border_radius": 0,
+                        "padding-block-start": 0,
+                        "padding-block-end": 0,
+                        "padding-inline-start": 0,
+                        "padding-inline-end": 0,
+                        "gap": 2,
+                        "gap_mobile": 2
+                      },
+                      "blocks": {
+                        "text_sn_benefit_1_title": {
+                          "type": "text",
+                          "name": "t:names.heading",
+                          "settings": {
+                            "text": "<p>تنظيف يومي أعمق</p>",
+                            "width": "100%",
+                            "max_width": "none",
+                            "alignment": "left",
+                            "type_preset": "custom",
+                            "font": "var(--font-heading--family)",
+                            "line_height": "normal",
+                            "letter_spacing": "normal",
+                            "case": "none",
+                            "wrap": "pretty",
+                            "background": false,
+                            "padding-block-start": 0,
+                            "padding-block-end": 0,
+                            "padding-inline-start": 0,
+                            "padding-inline-end": 0,
+                            "font_size": "1rem",
+                            "mobile_font_size": 16,
+                            "font_weight": "600",
+                            "line_height_exact": 169,
+                            "text_color": "#131311"
+                          },
+                          "blocks": {}
+                        },
+                        "text_sn_benefit_1_description": {
+                          "type": "text",
+                          "name": "t:names.description",
+                          "settings": {
+                            "text": "<p>يساعد على إزالة بقايا الطعام والتراكمات التي تتجمع مع الوقت.</p>",
+                            "width": "100%",
+                            "max_width": "none",
+                            "alignment": "left",
+                            "type_preset": "custom",
+                            "font": "var(--font-body--family)",
+                            "line_height": "normal",
+                            "letter_spacing": "normal",
+                            "case": "none",
+                            "wrap": "pretty",
+                            "background": false,
+                            "padding-block-start": 0,
+                            "padding-block-end": 0,
+                            "padding-inline-start": 0,
+                            "padding-inline-end": 0,
+                            "font_size": "0.875rem",
+                            "mobile_font_size": 14,
+                            "font_weight": "400",
+                            "line_height_exact": 171,
+                            "text_color": "#5a5a59"
+                          },
+                          "blocks": {}
+                        }
+                      },
+                      "block_order": [
+                        "text_sn_benefit_1_title",
+                        "text_sn_benefit_1_description"
+                      ]
+                    }
+                  },
+                  "block_order": [
+                    "group_sn_benefit_1_tile",
+                    "group_sn_benefit_1_text"
+                  ]
+                },
+                "group_sn_benefit_2": {
+                  "type": "group",
+                  "name": "Benefit",
+                  "settings": {
+                    "content_direction": "row",
+                    "vertical_on_mobile": false,
+                    "horizontal_alignment": "flex-start",
+                    "vertical_alignment": "flex-start",
+                    "horizontal_alignment_flex_direction_column": "flex-start",
+                    "vertical_alignment_flex_direction_column": "center",
+                    "width": "fill",
+                    "width_mobile": "fill",
+                    "height": "fit",
+                    "background_media": "none",
+                    "border": "none",
+                    "border_radius": 0,
+                    "padding-block-start": 0,
+                    "padding-block-end": 0,
+                    "padding-inline-start": 0,
+                    "padding-inline-end": 0,
+                    "gap": 12,
+                    "gap_mobile": 12
+                  },
+                  "blocks": {
+                    "group_sn_benefit_2_tile": {
+                      "type": "group",
+                      "name": "Icon tile",
+                      "settings": {
+                        "content_direction": "column",
+                        "vertical_on_mobile": true,
+                        "horizontal_alignment": "flex-start",
+                        "vertical_alignment": "center",
+                        "horizontal_alignment_flex_direction_column": "center",
+                        "vertical_alignment_flex_direction_column": "center",
+                        "width": "fit-content",
+                        "width_mobile": "fit-content",
+                        "height": "fit",
+                        "background_media": "none",
+                        "border": "solid",
+                        "border_radius": 13,
+                        "padding-block-start": 8,
+                        "padding-block-end": 8,
+                        "padding-inline-start": 8,
+                        "padding-inline-end": 8,
+                        "gap": 0,
+                        "gap_mobile": 0,
+                        "border_width": 1,
+                        "border_opacity": 100,
+                        "border_color": "#dcf2fb",
+                        "background_color": "#ffffff",
+                        "toggle_overlay": true,
+                        "overlay_color": "#f0fafe",
+                        "overlay_style": "gradient",
+                        "gradient_direction": "to top"
+                      },
+                      "blocks": {
+                        "icon_sn_benefit_2": {
+                          "type": "icon",
+                          "name": "t:names.icon",
+                          "settings": {
+                            "icon": "star",
+                            "width": 22,
+                            "icon_color": "#176bb0"
+                          },
+                          "blocks": {}
+                        }
+                      },
+                      "block_order": [
+                        "icon_sn_benefit_2"
+                      ]
+                    },
+                    "group_sn_benefit_2_text": {
+                      "type": "group",
+                      "name": "t:names.text",
+                      "settings": {
+                        "content_direction": "column",
+                        "vertical_on_mobile": true,
+                        "horizontal_alignment": "flex-start",
+                        "vertical_alignment": "center",
+                        "horizontal_alignment_flex_direction_column": "flex-start",
+                        "vertical_alignment_flex_direction_column": "center",
+                        "width": "fill",
+                        "width_mobile": "fill",
+                        "height": "fit",
+                        "background_media": "none",
+                        "border": "none",
+                        "border_radius": 0,
+                        "padding-block-start": 0,
+                        "padding-block-end": 0,
+                        "padding-inline-start": 0,
+                        "padding-inline-end": 0,
+                        "gap": 2,
+                        "gap_mobile": 2
+                      },
+                      "blocks": {
+                        "text_sn_benefit_2_title": {
+                          "type": "text",
+                          "name": "t:names.heading",
+                          "settings": {
+                            "text": "<p>إزالة التصبغات السطحية</p>",
+                            "width": "100%",
+                            "max_width": "none",
+                            "alignment": "left",
+                            "type_preset": "custom",
+                            "font": "var(--font-heading--family)",
+                            "line_height": "normal",
+                            "letter_spacing": "normal",
+                            "case": "none",
+                            "wrap": "pretty",
+                            "background": false,
+                            "padding-block-start": 0,
+                            "padding-block-end": 0,
+                            "padding-inline-start": 0,
+                            "padding-inline-end": 0,
+                            "font_size": "1rem",
+                            "mobile_font_size": 16,
+                            "font_weight": "600",
+                            "line_height_exact": 169,
+                            "text_color": "#131311"
+                          },
+                          "blocks": {}
+                        },
+                        "text_sn_benefit_2_description": {
+                          "type": "text",
+                          "name": "t:names.description",
+                          "settings": {
+                            "text": "<p>وضع White مصمم للمساعدة في تنظيف التصبغات السطحية والحفاظ على مظهر أكثر إشراقًا.</p>",
+                            "width": "100%",
+                            "max_width": "none",
+                            "alignment": "left",
+                            "type_preset": "custom",
+                            "font": "var(--font-body--family)",
+                            "line_height": "normal",
+                            "letter_spacing": "normal",
+                            "case": "none",
+                            "wrap": "pretty",
+                            "background": false,
+                            "padding-block-start": 0,
+                            "padding-block-end": 0,
+                            "padding-inline-start": 0,
+                            "padding-inline-end": 0,
+                            "font_size": "0.875rem",
+                            "mobile_font_size": 14,
+                            "font_weight": "400",
+                            "line_height_exact": 171,
+                            "text_color": "#5a5a59"
+                          },
+                          "blocks": {}
+                        }
+                      },
+                      "block_order": [
+                        "text_sn_benefit_2_title",
+                        "text_sn_benefit_2_description"
+                      ]
+                    }
+                  },
+                  "block_order": [
+                    "group_sn_benefit_2_tile",
+                    "group_sn_benefit_2_text"
+                  ]
+                },
+                "group_sn_benefit_3": {
+                  "type": "group",
+                  "name": "Benefit",
+                  "settings": {
+                    "content_direction": "row",
+                    "vertical_on_mobile": false,
+                    "horizontal_alignment": "flex-start",
+                    "vertical_alignment": "flex-start",
+                    "horizontal_alignment_flex_direction_column": "flex-start",
+                    "vertical_alignment_flex_direction_column": "center",
+                    "width": "fill",
+                    "width_mobile": "fill",
+                    "height": "fit",
+                    "background_media": "none",
+                    "border": "none",
+                    "border_radius": 0,
+                    "padding-block-start": 0,
+                    "padding-block-end": 0,
+                    "padding-inline-start": 0,
+                    "padding-inline-end": 0,
+                    "gap": 12,
+                    "gap_mobile": 12
+                  },
+                  "blocks": {
+                    "group_sn_benefit_3_tile": {
+                      "type": "group",
+                      "name": "Icon tile",
+                      "settings": {
+                        "content_direction": "column",
+                        "vertical_on_mobile": true,
+                        "horizontal_alignment": "flex-start",
+                        "vertical_alignment": "center",
+                        "horizontal_alignment_flex_direction_column": "center",
+                        "vertical_alignment_flex_direction_column": "center",
+                        "width": "fit-content",
+                        "width_mobile": "fit-content",
+                        "height": "fit",
+                        "background_media": "none",
+                        "border": "solid",
+                        "border_radius": 13,
+                        "padding-block-start": 8,
+                        "padding-block-end": 8,
+                        "padding-inline-start": 8,
+                        "padding-inline-end": 8,
+                        "gap": 0,
+                        "gap_mobile": 0,
+                        "border_width": 1,
+                        "border_opacity": 100,
+                        "border_color": "#dcf2fb",
+                        "background_color": "#ffffff",
+                        "toggle_overlay": true,
+                        "overlay_color": "#f0fafe",
+                        "overlay_style": "gradient",
+                        "gradient_direction": "to top"
+                      },
+                      "blocks": {
+                        "icon_sn_benefit_3": {
+                          "type": "icon",
+                          "name": "t:names.icon",
+                          "settings": {
+                            "icon": "stopwatch",
+                            "width": 22,
+                            "icon_color": "#176bb0"
+                          },
+                          "blocks": {}
+                        }
+                      },
+                      "block_order": [
+                        "icon_sn_benefit_3"
+                      ]
+                    },
+                    "group_sn_benefit_3_text": {
+                      "type": "group",
+                      "name": "t:names.text",
+                      "settings": {
+                        "content_direction": "column",
+                        "vertical_on_mobile": true,
+                        "horizontal_alignment": "flex-start",
+                        "vertical_alignment": "center",
+                        "horizontal_alignment_flex_direction_column": "flex-start",
+                        "vertical_alignment_flex_direction_column": "center",
+                        "width": "fill",
+                        "width_mobile": "fill",
+                        "height": "fit",
+                        "background_media": "none",
+                        "border": "none",
+                        "border_radius": 0,
+                        "padding-block-start": 0,
+                        "padding-block-end": 0,
+                        "padding-inline-start": 0,
+                        "padding-inline-end": 0,
+                        "gap": 2,
+                        "gap_mobile": 2
+                      },
+                      "blocks": {
+                        "text_sn_benefit_3_title": {
+                          "type": "text",
+                          "name": "t:names.heading",
+                          "settings": {
+                            "text": "<p>روتين منتظم</p>",
+                            "width": "100%",
+                            "max_width": "none",
+                            "alignment": "left",
+                            "type_preset": "custom",
+                            "font": "var(--font-heading--family)",
+                            "line_height": "normal",
+                            "letter_spacing": "normal",
+                            "case": "none",
+                            "wrap": "pretty",
+                            "background": false,
+                            "padding-block-start": 0,
+                            "padding-block-end": 0,
+                            "padding-inline-start": 0,
+                            "padding-inline-end": 0,
+                            "font_size": "1rem",
+                            "mobile_font_size": 16,
+                            "font_weight": "600",
+                            "line_height_exact": 169,
+                            "text_color": "#131311"
+                          },
+                          "blocks": {}
+                        },
+                        "text_sn_benefit_3_description": {
+                          "type": "text",
+                          "name": "t:names.description",
+                          "settings": {
+                            "text": "<p>مؤقت دقيقتين يساعدك تكملي وقت التنظيف الموصى به في كل مرة.</p>",
+                            "width": "100%",
+                            "max_width": "none",
+                            "alignment": "left",
+                            "type_preset": "custom",
+                            "font": "var(--font-body--family)",
+                            "line_height": "normal",
+                            "letter_spacing": "normal",
+                            "case": "none",
+                            "wrap": "pretty",
+                            "background": false,
+                            "padding-block-start": 0,
+                            "padding-block-end": 0,
+                            "padding-inline-start": 0,
+                            "padding-inline-end": 0,
+                            "font_size": "0.875rem",
+                            "mobile_font_size": 14,
+                            "font_weight": "400",
+                            "line_height_exact": 171,
+                            "text_color": "#5a5a59"
+                          },
+                          "blocks": {}
+                        }
+                      },
+                      "block_order": [
+                        "text_sn_benefit_3_title",
+                        "text_sn_benefit_3_description"
+                      ]
+                    }
+                  },
+                  "block_order": [
+                    "group_sn_benefit_3_tile",
+                    "group_sn_benefit_3_text"
+                  ]
+                },
+                "group_sn_benefit_4": {
+                  "type": "group",
+                  "name": "Benefit",
+                  "settings": {
+                    "content_direction": "row",
+                    "vertical_on_mobile": false,
+                    "horizontal_alignment": "flex-start",
+                    "vertical_alignment": "flex-start",
+                    "horizontal_alignment_flex_direction_column": "flex-start",
+                    "vertical_alignment_flex_direction_column": "center",
+                    "width": "fill",
+                    "width_mobile": "fill",
+                    "height": "fit",
+                    "background_media": "none",
+                    "border": "none",
+                    "border_radius": 0,
+                    "padding-block-start": 0,
+                    "padding-block-end": 0,
+                    "padding-inline-start": 0,
+                    "padding-inline-end": 0,
+                    "gap": 12,
+                    "gap_mobile": 12
+                  },
+                  "blocks": {
+                    "group_sn_benefit_4_tile": {
+                      "type": "group",
+                      "name": "Icon tile",
+                      "settings": {
+                        "content_direction": "column",
+                        "vertical_on_mobile": true,
+                        "horizontal_alignment": "flex-start",
+                        "vertical_alignment": "center",
+                        "horizontal_alignment_flex_direction_column": "center",
+                        "vertical_alignment_flex_direction_column": "center",
+                        "width": "fit-content",
+                        "width_mobile": "fit-content",
+                        "height": "fit",
+                        "background_media": "none",
+                        "border": "solid",
+                        "border_radius": 13,
+                        "padding-block-start": 8,
+                        "padding-block-end": 8,
+                        "padding-inline-start": 8,
+                        "padding-inline-end": 8,
+                        "gap": 0,
+                        "gap_mobile": 0,
+                        "border_width": 1,
+                        "border_opacity": 100,
+                        "border_color": "#dcf2fb",
+                        "background_color": "#ffffff",
+                        "toggle_overlay": true,
+                        "overlay_color": "#f0fafe",
+                        "overlay_style": "gradient",
+                        "gradient_direction": "to top"
+                      },
+                      "blocks": {
+                        "icon_sn_benefit_4": {
+                          "type": "icon",
+                          "name": "t:names.icon",
+                          "settings": {
+                            "icon": "heart",
+                            "width": 22,
+                            "icon_color": "#176bb0"
+                          },
+                          "blocks": {}
+                        }
+                      },
+                      "block_order": [
+                        "icon_sn_benefit_4"
+                      ]
+                    },
+                    "group_sn_benefit_4_text": {
+                      "type": "group",
+                      "name": "t:names.text",
+                      "settings": {
+                        "content_direction": "column",
+                        "vertical_on_mobile": true,
+                        "horizontal_alignment": "flex-start",
+                        "vertical_alignment": "center",
+                        "horizontal_alignment_flex_direction_column": "flex-start",
+                        "vertical_alignment_flex_direction_column": "center",
+                        "width": "fill",
+                        "width_mobile": "fill",
+                        "height": "fit",
+                        "background_media": "none",
+                        "border": "none",
+                        "border_radius": 0,
+                        "padding-block-start": 0,
+                        "padding-block-end": 0,
+                        "padding-inline-start": 0,
+                        "padding-inline-end": 0,
+                        "gap": 2,
+                        "gap_mobile": 2
+                      },
+                      "blocks": {
+                        "text_sn_benefit_4_title": {
+                          "type": "text",
+                          "name": "t:names.heading",
+                          "settings": {
+                            "text": "<p>تنظيف يناسبك</p>",
+                            "width": "100%",
+                            "max_width": "none",
+                            "alignment": "left",
+                            "type_preset": "custom",
+                            "font": "var(--font-heading--family)",
+                            "line_height": "normal",
+                            "letter_spacing": "normal",
+                            "case": "none",
+                            "wrap": "pretty",
+                            "background": false,
+                            "padding-block-start": 0,
+                            "padding-block-end": 0,
+                            "padding-inline-start": 0,
+                            "padding-inline-end": 0,
+                            "font_size": "1rem",
+                            "mobile_font_size": 16,
+                            "font_weight": "600",
+                            "line_height_exact": 169,
+                            "text_color": "#131311"
+                          },
+                          "blocks": {}
+                        },
+                        "text_sn_benefit_4_description": {
+                          "type": "text",
+                          "name": "t:names.description",
+                          "settings": {
+                            "text": "<p>اختاري الوضع المناسب لاحتياجك، من التنظيف اليومي إلى Sensitive للعناية اللطيفة.</p>",
+                            "width": "100%",
+                            "max_width": "none",
+                            "alignment": "left",
+                            "type_preset": "custom",
+                            "font": "var(--font-body--family)",
+                            "line_height": "normal",
+                            "letter_spacing": "normal",
+                            "case": "none",
+                            "wrap": "pretty",
+                            "background": false,
+                            "padding-block-start": 0,
+                            "padding-block-end": 0,
+                            "padding-inline-start": 0,
+                            "padding-inline-end": 0,
+                            "font_size": "0.875rem",
+                            "mobile_font_size": 14,
+                            "font_weight": "400",
+                            "line_height_exact": 171,
+                            "text_color": "#5a5a59"
+                          },
+                          "blocks": {}
+                        }
+                      },
+                      "block_order": [
+                        "text_sn_benefit_4_title",
+                        "text_sn_benefit_4_description"
+                      ]
+                    }
+                  },
+                  "block_order": [
+                    "group_sn_benefit_4_tile",
+                    "group_sn_benefit_4_text"
+                  ]
+                }
+              },
+              "block_order": [
+                "group_sn_benefit_1",
+                "group_sn_benefit_2",
+                "group_sn_benefit_3",
+                "group_sn_benefit_4"
+              ]
+            },
+            "button_sn_ba_cta": {
+              "type": "button",
+              "name": "t:names.button",
+              "settings": {
+                "label": "اكتشف SNOSHA N2",
+                "link": "",
+                "open_in_new_tab": false,
+                "style_class": "button-custom",
+                "custom_button_background": "#ffffff",
+                "custom_button_text": "#176bb0",
+                "custom_button_border": "#60c1e1",
+                "width": "fit-content",
+                "width_mobile": "fit-content",
+                "font_size": 16,
+                "font_weight": "600",
+                "border_width": 1.5,
+                "border_radius": 12,
+                "padding_block": 13,
+                "padding_inline": 28
+              },
+              "blocks": {}
+            }
+          },
+          "block_order": [
+            "text_sn_ba_heading",
+            "text_sn_ba_description",
+            "group_sn_ba_benefits",
+            "button_sn_ba_cta"
+          ]
+        },
+        "comparison_slider_sn_ba": {
+          "type": "comparison-slider",
+          "name": "t:names.comparison_slider",
+          "settings": {
+            "slider_style": "horizontal",
+            "show_text": true,
+            "before_text": "قبل",
+            "after_text": "بعد",
+            "text_preset": "paragraph",
+            "text_position_horizontal": "start",
+            "text_background": true,
+            "text_background_color": "#ffffff",
+            "text_corner_radius": 10,
+            "text_color": "#12568d",
+            "text_size": 13,
+            "text_size_mobile": 12,
+            "text_padding_block": 6,
+            "text_padding_block_mobile": 2,
+            "text_padding_inline": 16,
+            "image_ratio": "custom",
+            "custom_ratio": 69,
+            "custom_ratio_mobile": 73,
+            "width": "custom",
+            "custom_width": 56,
+            "width_mobile": "fill",
+            "height": "fit",
+            "slider_bg_color": "#ffffff",
+            "slider_handle_color": "#131311d9",
+            "border": "none",
+            "border_radius": 18,
+            "border_radius_mobile": 24,
+            "padding-block-start": 0,
+            "padding-block-end": 0,
+            "padding-inline-start": 0,
+            "padding-inline-end": 0
+          },
+          "blocks": {}
+        }
+      },
+      "block_order": [
+        "group_sn_ba_content",
+        "comparison_slider_sn_ba"
+      ],
+      "settings": {
+        "content_direction": "row",
+        "vertical_on_mobile": true,
+        "horizontal_alignment": "space-between",
+        "vertical_alignment": "center",
+        "gap": 27,
+        "section_width": "page-width",
+        "section_height": "",
+        "background_media": "none",
+        "border": "none",
+        "border_radius": 0,
+        "padding-block-start": 60,
+        "padding-block-end": 60,
+        "padding-inline-start": 10,
+        "padding-inline-end": 10,
+        "padding-block-start-mobile": 56,
+        "padding-block-end-mobile": 40,
+        "padding-inline-mobile": 8,
+        "gap_mobile": 20,
+        "mobile_reverse_order": true,
+        "custom_class": "sn-home-before-after"
+      }
     }
   },
   "order": [
-    "collection_list_sn_home"
+    "collection_list_sn_home",
+    "before_after_sn_home"
   ]
 }

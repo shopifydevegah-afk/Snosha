@@ -38,10 +38,10 @@ Each one is decided; the details are in the referenced Skill file.
 |---|---|---|---|
 | Main | `assets/main.css` | Initialized 2026-11-08 (loaded once after `custom-cairo.css`) | none assigned explicitly yet |
 | Dev1 | `assets/dev1.css` | Not initialized | — |
-| Dev2 | `assets/dev2.css` | Initialized 2026-11-08 (loaded once after `main.css`) | S04 |
+| Dev2 | `assets/dev2.css` | Initialized 2026-11-08 (loaded once after `main.css`) | S04, S08 |
 | Dev3 | `assets/dev3.css` | Not initialized | — |
 
-**Custom classes owned:** `sn-home-collections` (Dev2, S04, `collection-list` on index).
+**Custom classes owned:** `sn-home-collections` (Dev2, S04, `collection-list` on index); `sn-home-before-after` (Dev2, S08, `section` "Image compare" on index).
 **Shared-file claims (active):** none. (Dev2 claimed and released `layout/theme.liquid`, `templates/index.json`, `snippets/custom-class.liquid` on 2026-11-08.)
 
 ## D. Section registry
@@ -57,7 +57,7 @@ Logical areas from the Figma homepage, in Figma order. A row isn't necessarily o
 | S05 | Featured Collection | `190:3844` | `190:4149` | index.json | — | NOT_STARTED | — | — | — | Same design as S07 |
 | S06 | F1 Banner | `190:3851` | `190:4167` | index.json | — | NOT_STARTED | — | — | — | — |
 | S07 | Featured Collection 2 | `190:3896` | `190:4204` | index.json | — | NOT_STARTED | — | — | — | Reuse S05's decisions |
-| S08 | Before / After | `190:3903` | `190:4222` | index.json | — | NOT_STARTED | — | — | — | — |
+| S08 | Before / After | `190:3903` | `190:4222` | index.json | Dev2 | IMPLEMENTED (2026-11-11; visual QA PENDING USER REVIEW) | B/D | `section` preset `t:names.image_compare` + `comparison-slider` | `sn-home-before-after` | Merchant images, tooth icon, CTA link |
 | S09 | Reels | `190:3935` | `190:4254` | index.json | — | NOT_STARTED | — | — | — | — |
 | S10 | Choose Your Care | `190:3943` | `190:4265` | index.json | — | NOT_STARTED | — | — | — | — |
 | S11 | Bundle | `190:3987` | `190:4318` | index.json | — | NOT_STARTED | — | — | — | — |
@@ -134,12 +134,91 @@ Category **B**: native section + on-demand `custom_class` setting. No Liquid/JS 
   - class on/off
   - (resolved 2026-11-09: `section.settings` removed from the block `visible_if`, since theme blocks are not tied to one section; "Mobile size" now shows whenever the preset is Custom. The CSS var is still output only when the section has a custom class, so other sections stay native.)
 
+### S08 — Before / After ("روتينك اليومي ممكن يغير شكل ابتسامتك.") · Dev2 · 2026-11-11
+
+**Figma (read with `get_design_context`, both nodes accessible):**
+
+| Property | Desktop `190:3903` (1480) | Mobile `190:4222` (390) |
+|---|---|---|
+| Section padding | 60 / 60 | 56 / 40 |
+| Content area / gutters | max 1376 + inline padding 20 (items overflow; measured: image starts at x 50) | 24 |
+| Layout | row: content right (RTL), image left, gap 27, vertically centred | column: image first, gap 20 |
+| Comparison image | 774 × 535 (height 69% of width), radius 18 | 342 × 248.38 (72.6%), radius 24 |
+| Divider / handle | 3px white line · white pill 34×58, radius 17, three 2×16 grips `#131311d9`, Shadow/Soft | same line · pill 29×48 |
+| Labels | "قبل" right, "بعد" left · 13/18 SemiBold `#12568d`, white chip, padding 6/16, radius 10, inset 16, Shadow/Soft | 12/18, chip 45×21, radius 20, top 12 |
+| Content column | width 557, gap 20 | gap 14 |
+| Heading | 32/52 SemiBold `#12568d` | 24/38 |
+| Description | 18/32 Regular `#5a5a59` | 18/32 |
+| Benefits | gap 14, padding-top 6, bottom 8 · row gap 12 · text gap 2 · title 16/27 SemiBold `#131311` · text 14/24 `#5a5a59` | same |
+| Icon tile | 40×40, radius 13, border 1 `#dcf2fb`, gradient white → `#f0fafe`, icon 22, stroke `#176bb0` (tooth, sparkle, timer, heart) | same |
+| CTA | "اكتشف SNOSHA N2", white, border 1.5 `#60c1e1`, radius 12, padding 13/28, 16/26 SemiBold `#176bb0`, aligned right | same, aligned right |
+
+**Native Reuse Audit:** inspected `section` (and its presets), `media-with-content`, block `comparison-slider` + `assets/comparison-slider.js`, `group`, `text`, `icon`, `button`, `snippets/section.liquid`, `snippets/group.liquid`, `snippets/button.liquid`.
+- Horizon 4.4 has no `comparison-slider` *section*; it's a theme block. The native `section` section has the preset **`t:names.image_compare`** ("Image compare": a content group plus a `comparison-slider`). Chosen: same type, same preset name, same block hierarchy (content `group` + slider).
+- `media-with-content` rejected: its media is the static `_media-without-appearance` (image/video only), so it can't hold the slider.
+- Category **B/D**: schema extensions on `section`, `comparison-slider`, `text`, `group` and `button`, plus one opt-in class render in the shared `snippets/section.liquid` (callers `section` and `_blocks`; `_blocks` has no `custom_class`, so its output is unchanged). No new section, block, JS or library.
+
+**Decisions:**
+- Class `sn-home-before-after` (collision check: none). CSS is in `assets/dev2.css`, all selectors under the class.
+- **Composition (Theme Editor):** section (row, space-between, gap 27) contains:
+  - `group` "Content" (custom width 41%) with: heading `text`, description `text`, `group` "Benefits", and `button`.
+    - "Benefits" holds 4× `group` "Benefit" (row). Each has `group` "Icon tile" → `icon`, and `group` "Text" → title `text` + description `text`.
+  - `comparison-slider` (custom width 56%).
+  - Benefits are group blocks, so they can be added, removed and reordered.
+- **RTL slider fix:** the native range input follows the page direction (its value grows right → left), but the handle, divider and clipping are positioned from the left, so in RTL the handle moved opposite to the drag.
+  - Under the class, in RTL, the visuals are mirrored: `left: (100 − compare)%` and the clip-paths are swapped.
+  - The handle now follows pointer, touch and keyboard, and image 1 sits on the inline-start side under its "قبل" label (as in Figma).
+  - The native JS was not changed.
+- **Image alignment:** both images stay in the same grid cell and frame (`object-fit: cover`, same aspect ratio). Only `clip-path` changes, so nothing shifts or re-crops while dragging.
+- **Settings added.** All are opt-in. Their CSS vars are output only when the section has a custom class, unless marked "works everywhere".
+  - `section` (28 → 36 settings):
+    - `padding-inline-start/end`: native spacing pattern, default 0, works everywhere.
+    - Header "Mobile layout": `padding-block-start-mobile`, `padding-block-end-mobile`, `padding-inline-mobile`, `gap_mobile`, `mobile_reverse_order`.
+    - Header "Advanced": `custom_class`.
+  - `comparison-slider` (30 → **40**, the Theme Check limit):
+    - `before_image_mobile`, `after_image_mobile`: optional, `<picture>` falls back to the desktop image, works everywhere.
+    - `image_ratio` option "Custom" + `custom_ratio` (works everywhere) and `custom_ratio_mobile`.
+    - `border_radius_mobile`.
+    - Labels: `text_size`, `text_size_mobile`, `text_padding_block`, `text_padding_block_mobile`, `text_padding_inline`.
+  - `text` (20 → 22): `font_weight` (default = theme weight) and `line_height_exact` (% of size). The existing `mobile_font_size` is reused.
+  - `group` (36 → 37): `gap_mobile`.
+  - `button` (12 → 18): header "Button shape" with `font_size`, `font_weight`, `border_width` (step 0.5), `border_radius`, `padding_block`, `padding_inline`.
+- **Native settings reused:**
+  - section: direction, alignment, gap, padding, width.
+  - group: gap, width, padding, border, radius, background, gradient overlay (gives the icon tile gradient).
+  - text: Size, colour, alignment.
+  - icon: `heart`, `stopwatch`, `star`, `width` 22, colour `#176bb0`.
+  - button: label, link, `button-custom` colours.
+  - slider: labels, colours, radius, handle colours.
+- **Fixed in CSS (exceptions, each commented):**
+  - handle pill size and grips, 3px divider, Shadow/Soft.
+  - label weight 600, label line box 18px, label inset 16 (12 from the top on mobile).
+  - The slider block is at 40/40 settings, so no more label controls fit.
+- **Template:**
+  - `before_after_sn_home` was appended to `templates/index.json` after S04. S05–S07 aren't on the page yet; move it when they are added.
+  - Images are empty: the merchant uploads them, and the editor shows placeholders until then.
+  - The CTA link is empty: the merchant picks it.
+  - Benefit 1 icon = none: Horizon has no tooth icon, so upload one through the icon block's image setting. Sparkle = native `star` (closest match).
+- **Known deviations:**
+  - Figma's CTA is right-aligned on mobile. The task text said centred; Figma was followed.
+  - Mobile heading line height is 1.63 × 24 = 39 vs Figma 38, because one ratio covers both devices.
+  - Mobile label chip is about 50×22 vs Figma 45×21.
+  - Content column is 41% ≈ 566 vs 557 at 1480.
+  - Tablet (750–989) keeps the desktop row at 56/41%. There is no Figma frame for it, and the content column is narrow there.
+- **Checks:** Theme Check 9 = baseline. All five schemas parse. `index.json` parses, and only the S08 section and its order entry were added (S04 untouched).
+- **PENDING USER REVIEW:**
+  - visual QA at 1480, 1200, 820, 390 and 375, plus RTL.
+  - slider drag, touch and keyboard with two real images; empty-image placeholders; label positions.
+  - every new control with two values; class on/off.
+  - `index.json` was edited without a pull (rule 13).
+
 ## F. QA & progress
 
 | ID | Figma analysis | Code checks | Visual desktop | Visual mobile | RTL | Media | Reversibility | Pending issues |
 |---|---|---|---|---|---|---|---|---|
 | S04 | Done (both nodes) | PASS: Theme Check 9 = baseline; schema + template JSON valid | PASS at 1480 (geometry measured in preview: heading +50, cards +142, 292w/24 gap/72 inset, arrows 44px at 50px, top 304) + 1200 | PASS at 390 (35/9 padding, 97w/10 gap/20 inset, progress 350×4, 40%→~100% on scroll); tablet 820 checked | PASS (Arabic `dir=rtl`; arrows/progress direction correct). LTR not tested | Collection image/title (native); placeholders until collections picked | `CLASS_PLUS_SETTINGS` — two-state test PASS (class cleared: all Figma CSS off, native look, no overflow, no new console errors) | Pick real collections; review with final images; user sign-off for VERIFIED. After the preset-alignment fix: Theme Check 9 = baseline, template JSON valid, 1480/820/390 geometry identical to before (screenshots), no new console errors. Two-state test not re-run (CSS unchanged); Theme Editor name not yet seen in the editor UI. **After recovery (2026-11-09), with 5 real collections:** Theme Check 9 = baseline. 1480: cards 292, gap 24, inset 72, titles 24/40/600 on one line, image→title 18, arrows next/prev scroll and disable correctly. 820: cards 209, titles 18/30. 390 and 375: cards 97 (images 97×121, portrait ratio), gap 10, titles 11px in 40px boxes (long names wrap onto 2 compact lines), progress 350/335px, filling 40%→100% from the right. Settings at min (80/10) and max (180/20) applied on mobile only (180 → image 180×225), desktop unchanged, no overflow; defaults restored. Class off: native (320/172 cards, native arrows, no progress, no `--sn-*` vars), no errors; class restored. Theme Editor UI still not opened. **Responsive refinement (2026-11-09):** Theme Check 9 = baseline. Heading: 1480/1200/820 = 32/52 (native block size), 390/375 = 24/38; mobile set to 16/32/40 changed mobile only, desktop stayed 32. Images: mobile square 97×97 (Figma), portrait 97×121, landscape 97×55, adapt = each image's own ratio (97×97 / 97×65), "same as desktop" + size 180 = 180×225; desktop 292×364 in every case; object-fit cover, no stretching, no page overflow. Titles: 1-word (باندل, الأكسسوارات) and 2-word (الرؤوس البديلة) unchanged; 3-word names show "فرشاة الأسنان" / "منتجات العناية" on mobile and in full on desktop; 4-word and repeated-space cases checked with the same Liquid logic in a temporary template (deleted). Links and link accessible names are unchanged. RTL: mobile swipe reaches the end, progress 40%→100%; desktop next arrow scrolls (−217) and disables. Class off: native look, no short-title markup, no `--sn-*` vars. Figma values restored (template identical to the pre-test backup). **QA caveat:** dev theme #190250942577 is shared, and at about 11:36 another session pushed a `layout/theme.liquid` that loads `dev1.css` instead of `dev2.css`. QA therefore injected the synced `dev2.css` in the test browser only; the shared layout was not overwritten. Theme Editor UI still not opened |
-| S01–S03, S05–S15 | — | — | — | — | — | — | — | Only project-level mapping done; no section-level analysis yet |
+| S08 | Done (both nodes) | PASS: Theme Check 9 = baseline; schemas + template JSON valid | PENDING USER REVIEW | PENDING USER REVIEW | PENDING USER REVIEW (RTL slider mirror) | Pending merchant images | PENDING USER REVIEW (`CLASS_PLUS_SETTINGS`) | Images, tooth icon, CTA link |
+| S01–S03, S05–S07, S09–S15 | — | — | — | — | — | — | — | Only project-level mapping done; no section-level analysis yet |
 
 Give a section its own row here when its work starts, and keep the S01–S15 row only for sections that haven't started.
 
@@ -177,3 +256,4 @@ Give a section its own row here when its work starts, and keep the S01–S15 row
 | 2026-11-08 | Preview QA tooling: `shopify theme dev` + headless system Chrome. Avoid `sed -i` on theme files while `theme dev` runs (its temp file triggers an upload-error overlay) | Lesson from S04 QA | All | **Replaced 2026-11-09** (next row) |
 | 2026-11-09 | No previews, server processes, push/pull or browser automation by agents; visual QA belongs to the user (`PENDING USER REVIEW`). Rule copied from `.agents/skills/…/SKILL.md` into `.claude/skills/…/SKILL.md` (hard rule 13, Stages F/G/H); the Desktop/Mobile rule became 14. The Dev2 preview (`theme dev` on #190250942577) was stopped | User instruction | All | — |
 | 2026-11-09 | Theme Editor control policy adopted (Skill hard rule 15; details in `references/schema-extension-policy.md`): every merchant-adjustable visual value gets a Theme Editor control (native first, smallest safe extension, separate Desktop/Mobile controls, Figma values as editable defaults); only listed technical exceptions stay in code. Replaces the earlier practice of putting exact Figma values in class-scoped CSS (old hard rule 5). Plan step D now records a control map; Stage F adds a hardcoded-value audit and Stage G a two-value control test | Merchant must be able to adjust the design without code | All future section work | Applies from the next task. S04 is not changed retroactively (user confirmed it is correct); its remaining literals stay as they are |
+| 2026-11-11 | S08 implemented on the native `section` preset "Image compare" + `comparison-slider` (category B/D). `custom_class` added to `section` (rendered in shared `snippets/section.liquid`, opt-in). Opt-in settings added to `section`, `comparison-slider`, `text`, `group`, `button` (see S08). RTL mirror fix for the native slider under the class | Native-first reuse; Theme Editor control policy (rule 15) | S08; blocks `text`, `group`, `button`, `comparison-slider`; `snippets/section.liquid` | Visual QA by the user; merchant images, tooth icon, CTA link |

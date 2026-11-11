@@ -1,10 +1,14 @@
 
 
 {% render 'text', block: block %}
-{%- comment -%} Snosha (opt-in): phone font size, passed as a CSS var only when the section has a custom class; consumed by that class's CSS at ≤749px. {%- endcomment -%}
+{%- comment -%} Snosha (opt-in): phone font size, exact line height and weight, passed as CSS vars only when the section has a custom class; consumed by that class's CSS. {%- endcomment -%}
 {%- if section.settings.custom_class != blank and block.settings.type_preset == 'custom' -%}
   {% style %}
-    .text-block--{{ block.id }} { --sn-mobile-font-size: {{ block.settings.mobile_font_size }}px; }
+    .text-block--{{ block.id }} {
+      --sn-mobile-font-size: {{ block.settings.mobile_font_size }}px;
+      --sn-line-height: {{ block.settings.line_height_exact | divided_by: 100.0 }};
+      {%- if block.settings.font_weight != blank %} --sn-font-weight: {{ block.settings.font_weight }};{% endif %}
+    }
   {% endstyle %}
 {%- endif -%}
 
@@ -230,6 +234,36 @@
     },
     {
       "type": "select",
+      "id": "font_weight",
+      "label": "Weight",
+      "info": "In sections with a custom class. Default = the font's theme weight.",
+      "options": [
+        {
+          "value": "",
+          "label": "t:options.default"
+        },
+        {
+          "value": "400",
+          "label": "400"
+        },
+        {
+          "value": "500",
+          "label": "500"
+        },
+        {
+          "value": "600",
+          "label": "600"
+        },
+        {
+          "value": "700",
+          "label": "700"
+        }
+      ],
+      "default": "",
+      "visible_if": "{{ block.settings.type_preset == 'custom' }}"
+    },
+    {
+      "type": "select",
       "id": "line_height",
       "label": "t:settings.line_height",
       "options": [
@@ -247,6 +281,18 @@
         }
       ],
       "default": "normal",
+      "visible_if": "{{ block.settings.type_preset == 'custom' }}"
+    },
+    {
+      "type": "range",
+      "id": "line_height_exact",
+      "label": "Exact line height",
+      "info": "Line height as % of the font size (163 = 1.63), desktop and mobile. In sections whose custom-class CSS uses it; otherwise the option above applies.",
+      "min": 100,
+      "max": 200,
+      "step": 1,
+      "unit": "%",
+      "default": 140,
       "visible_if": "{{ block.settings.type_preset == 'custom' }}"
     },
     {

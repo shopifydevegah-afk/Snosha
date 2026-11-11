@@ -237,3 +237,171 @@
     background-size: 100% 100%;
   }
 }
+
+/* ==========================================================================
+   sn-home-before-after — section "Image compare" preset on index (S08)
+   Figma desktop 190:3903 (1480 frame) · mobile 190:4222 (390 frame) · owner: dev2
+   Every size, gap, padding, color and ratio comes from Theme Editor settings (native or the opt-in
+   Snosha settings, passed as --sn-* vars only when the section has this class). Literals left here
+   are UI constants (handle, divider, shadow, label inset/line box), each with a reason.
+   ========================================================================== */
+.sn-home-before-after {
+  /* Text blocks: weight and exact line height (text block "Weight" / "Exact line height");
+     size = native "Size" on desktop. Without those vars the native custom-typography values apply. */
+  .text-block.custom-typography,
+  .text-block.custom-typography > * {
+    font-weight: var(--sn-font-weight, var(--font-weight));
+    line-height: var(--sn-line-height, var(--line-height));
+  }
+
+  .text-block.custom-typography > * {
+    margin-block: 0;
+  }
+
+  /* CTA: shape from the button block's "Button shape" settings (theme button tokens as fallback) */
+  :is(.button, .button-secondary, .button-custom) {
+    font-size: var(--sn-button-font-size, var(--font-paragraph--size));
+    font-weight: var(--sn-button-font-weight, var(--button-font-weight-primary));
+    border-radius: var(--sn-button-radius, var(--style-border-radius-buttons-primary));
+    padding-block: var(--sn-button-padding-block, var(--button-padding-block));
+    padding-inline: var(--sn-button-padding-inline, var(--button-padding-inline));
+    --button-border-width: var(--sn-button-border-width, var(--style-border-width-secondary));
+  }
+
+  /* ---------- Comparison slider ---------- */
+
+  /* RTL: the native range input follows the page direction (value grows right → left) while the
+     handle, divider and clipping are positioned from the left, so dragging moved the handle the
+     opposite way. Mirror the visuals in RTL: the handle follows the pointer and keyboard, and image 1
+     ("before") sits on the inline-start side, under its own label. Both layers keep one frame. */
+  [dir='rtl'] & {
+    [data-orientation='horizontal'] .comparison-slider__layer--before {
+      clip-path: inset(0 0 0 calc((100 - var(--compare)) * 1%));
+    }
+
+    [data-orientation='horizontal'] .comparison-slider__layer--after {
+      clip-path: inset(0 calc(var(--compare) * 1%) 0 0);
+    }
+
+    .comparison-slider__media-wrapper[data-orientation='horizontal']::after,
+    [data-orientation='horizontal'] .cs-slider__handle {
+      left: calc((100 - var(--compare)) * 1%);
+    }
+  }
+
+  /* Divider: Figma 3px line (native 4px). UI constant. */
+  .comparison-slider__media-wrapper[data-orientation='horizontal']::after {
+    width: 3px;
+  }
+
+  /* Handle: Figma pill 34×58 (mobile 29×48) with three 2×16 grips instead of chevrons. Colors come
+     from the native "Slider color" (pill) and "Slider inner color" (grips) settings. UI constants. */
+  .cs-slider__handle {
+    --sn-grip: linear-gradient(currentcolor 0 0);
+
+    width: 34px;
+    height: 58px;
+    padding: 0;
+    border-radius: 17px;
+    background:
+      var(--sn-grip) calc(50% - 6px) 50% / 2px 16px no-repeat,
+      var(--sn-grip) 50% 50% / 2px 16px no-repeat,
+      var(--sn-grip) calc(50% + 6px) 50% / 2px 16px no-repeat,
+      var(--color-background);
+    box-shadow: 0 12px 32px 0 rgb(15 100 168 / 0.1); /* Figma Shadow/Soft */
+
+    .cs-slider__chevron {
+      display: none;
+    }
+  }
+
+  /* Labels ("قبل" / "بعد"): text, colors, background and radius are native block settings;
+     size and padding come from the block's "Label …" settings. */
+  .comparison-slider__text {
+    padding: var(--sn-label-padding-block, var(--padding-xs)) var(--sn-label-padding-inline, var(--padding-xs));
+    box-shadow: 0 12px 32px 0 rgb(15 100 168 / 0.1); /* Figma Shadow/Soft */
+
+    > div {
+      font-size: var(--sn-label-size, inherit);
+      font-weight: 600; /* Figma Cairo SemiBold; block is at the 40-setting limit, so no weight control */
+      line-height: 18px; /* Figma 18px line box on both devices */
+      white-space: nowrap;
+    }
+  }
+
+  /* Label offset from the image edge: Figma 16px. Fixed because the block has no settings left (40/40). */
+  [data-orientation='horizontal'] .comparison-slider__text--before,
+  [data-orientation='horizontal'] .comparison-slider__text--after {
+    --sn-label-inset: 16px;
+  }
+
+  [data-orientation='horizontal'] .comparison-slider__text--before {
+    inset-inline-start: var(--sn-label-inset);
+  }
+
+  [data-orientation='horizontal'] .comparison-slider__text--after {
+    inset-inline-end: var(--sn-label-inset);
+  }
+
+  [data-orientation='horizontal'][data-text-position='start'] .comparison-slider__text {
+    inset-block-start: var(--sn-label-inset);
+  }
+
+  [data-orientation='horizontal'][data-text-position='end'] .comparison-slider__text {
+    inset-block-end: var(--sn-label-inset);
+  }
+
+  /* ---------- Mobile ≤749 (Figma 190:4222) ---------- */
+  @media screen and (max-width: 749px) {
+    /* Section: order, gap and padding from the section's "Mobile layout" settings */
+    > .custom-section-content > .section-content-wrapper {
+      flex-direction: var(--sn-mobile-direction, column);
+      gap: var(--sn-gap-mobile, var(--gap));
+      padding-block: calc(var(--sn-padding-block-start-mobile, var(--padding-block-start)) + var(--section-top-offset, 0px))
+        var(--sn-padding-block-end-mobile, var(--padding-block-end));
+      padding-inline: var(--sn-padding-inline-mobile, var(--padding-inline-start));
+    }
+
+    /* Groups: gap from each group's "Mobile gap" */
+    .group-block-content {
+      gap: var(--sn-gap-mobile, var(--gap));
+    }
+
+    /* Text: phone size from each text block's "Mobile size" */
+    .text-block.custom-typography.custom-font-size,
+    .text-block.custom-typography.custom-font-size > * {
+      font-size: var(--sn-mobile-font-size, var(--font-size));
+    }
+
+    /* Slider: phone ratio ("Mobile height") and radius ("Mobile border radius"). Both layers share
+       the frame, so the two images stay aligned at any ratio. */
+    .comparison-slider,
+    .comparison-slider .before-image,
+    .comparison-slider .after-image,
+    .comparison-slider .comparison-slider__placeholder {
+      aspect-ratio: var(--sn-ratio-mobile, var(--ratio));
+    }
+
+    .comparison-slider {
+      border-radius: var(--sn-radius-mobile, var(--border-radius));
+    }
+
+    .cs-slider__handle {
+      width: 29px;
+      height: 48px;
+    }
+
+    .comparison-slider__text {
+      padding-block: var(--sn-label-padding-block-mobile, var(--sn-label-padding-block, var(--padding-xs)));
+
+      > div {
+        font-size: var(--sn-label-size-mobile, var(--sn-label-size, inherit));
+      }
+    }
+
+    /* Figma mobile: labels 12px from the top (16px from the sides) */
+    [data-orientation='horizontal'][data-text-position='start'] .comparison-slider__text {
+      inset-block-start: 12px;
+    }
+  }
+}

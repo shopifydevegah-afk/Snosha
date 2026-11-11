@@ -14,6 +14,9 @@
       assign ratio = '16 / 9'
     when 'portrait'
       assign ratio = '4 / 5'
+    when 'custom'
+      # Snosha: height as % of width (e.g. 69 → 100 / 69)
+      assign ratio = '100 / ' | append: block.settings.custom_ratio
     when 'adapt'
       if block.settings.before_image
         assign ratio = block.settings.before_image.aspect_ratio
@@ -29,8 +32,26 @@
   render 'contrast-override', background_color: block.settings.slider_bg_color, section_id: block.id
 %}
 
+{%- comment -%}
+  Snosha (opt-in): phone ratio/radius and label sizing, output only when the section has a custom class;
+  read by that class's CSS. Without a class the block renders natively.
+{%- endcomment -%}
+{%- if section.settings.custom_class != blank -%}
+  {% style %}
+    .comparison-slider--{{ block.id }} {
+      {% if block.settings.image_ratio == 'custom' %}--sn-ratio-mobile: 100 / {{ block.settings.custom_ratio_mobile }};{% endif %}
+      --sn-radius-mobile: {{ block.settings.border_radius_mobile }}px;
+      --sn-label-size: {{ block.settings.text_size }}px;
+      --sn-label-size-mobile: {{ block.settings.text_size_mobile }}px;
+      --sn-label-padding-block: {{ block.settings.text_padding_block }}px;
+      --sn-label-padding-block-mobile: {{ block.settings.text_padding_block_mobile }}px;
+      --sn-label-padding-inline: {{ block.settings.text_padding_inline }}px;
+    }
+  {% endstyle %}
+{%- endif -%}
+
 <comparison-slider-component
-  class="comparison-slider comparison-slider--{{ block.settings.slider_style }} spacing-style size-style border-style {% if block.settings.slider_bg_color != blank %} color-custom-{{ block.id }} {% endif %}"
+  class="comparison-slider comparison-slider--{{ block.settings.slider_style }} comparison-slider--{{ block.id }} spacing-style size-style border-style {% if block.settings.slider_bg_color != blank %} color-custom-{{ block.id }} {% endif %}"
   style="
     --ratio: {{ ratio }}; --text-background-color: {{ block.settings.text_background_color }}; --text-corner-radius: {{ block.settings.text_corner_radius }}px;
     {% if block.settings.slider_bg_color != blank %} --color-background: {{ block.settings.slider_bg_color }};{% endif %}
@@ -58,7 +79,29 @@
       {% endif %}
     >
       <div class="comparison-slider__layer comparison-slider__layer--before">
-        {%- if block.settings.before_image != blank -%}
+        {%- if block.settings.before_image != blank and block.settings.before_image_mobile != blank -%}
+          {%- comment -%} Snosha: optional phone image in the same frame, so both layers stay aligned. {%- endcomment -%}
+          <picture style="display: contents">
+            <source
+              media="(max-width: 749px)"
+              srcset="{{ block.settings.before_image_mobile | image_url: width: 1500 }}"
+              width="{{ block.settings.before_image_mobile.width }}"
+              height="{{ block.settings.before_image_mobile.height }}"
+            >
+            {{
+            block.settings.before_image
+            | image_url: width: 3840
+            | image_tag:
+              loading: 'lazy',
+              class: 'before-image',
+              alt: block.settings.before_image.alt,
+              sizes: 'auto, 100vw',
+              width: block.settings.before_image.width,
+              height: block.settings.before_image.height,
+              ref: 'beforeImage'
+          }}
+          </picture>
+        {%- elsif block.settings.before_image != blank -%}
           {{
             block.settings.before_image
             | image_url: width: 3840
@@ -69,6 +112,19 @@
               sizes: 'auto, 100vw',
               width: block.settings.before_image.width,
               height: block.settings.before_image.height,
+              ref: 'beforeImage'
+          }}
+        {%- elsif block.settings.before_image_mobile != blank -%}
+          {{
+            block.settings.before_image_mobile
+            | image_url: width: 1500
+            | image_tag:
+              loading: 'lazy',
+              class: 'before-image',
+              alt: block.settings.before_image_mobile.alt,
+              sizes: 'auto, 100vw',
+              width: block.settings.before_image_mobile.width,
+              height: block.settings.before_image_mobile.height,
               ref: 'beforeImage'
           }}
         {%- else -%}
@@ -93,7 +149,29 @@
       </div>
 
       <div class="comparison-slider__layer comparison-slider__layer--after">
-        {%- if block.settings.after_image != blank -%}
+        {%- if block.settings.after_image != blank and block.settings.after_image_mobile != blank -%}
+          {%- comment -%} Snosha: optional phone image in the same frame, so both layers stay aligned. {%- endcomment -%}
+          <picture style="display: contents">
+            <source
+              media="(max-width: 749px)"
+              srcset="{{ block.settings.after_image_mobile | image_url: width: 1500 }}"
+              width="{{ block.settings.after_image_mobile.width }}"
+              height="{{ block.settings.after_image_mobile.height }}"
+            >
+            {{
+            block.settings.after_image
+            | image_url: width: 3840
+            | image_tag:
+              loading: 'lazy',
+              class: 'after-image',
+              alt: block.settings.after_image.alt,
+              sizes: 'auto, 100vw',
+              width: block.settings.after_image.width,
+              height: block.settings.after_image.height,
+              ref: 'afterImage'
+          }}
+          </picture>
+        {%- elsif block.settings.after_image != blank -%}
           {{
             block.settings.after_image
             | image_url: width: 3840
@@ -104,6 +182,19 @@
               sizes: 'auto, 100vw',
               width: block.settings.after_image.width,
               height: block.settings.after_image.height,
+              ref: 'afterImage'
+          }}
+        {%- elsif block.settings.after_image_mobile != blank -%}
+          {{
+            block.settings.after_image_mobile
+            | image_url: width: 1500
+            | image_tag:
+              loading: 'lazy',
+              class: 'after-image',
+              alt: block.settings.after_image_mobile.alt,
+              sizes: 'auto, 100vw',
+              width: block.settings.after_image_mobile.width,
+              height: block.settings.after_image_mobile.height,
               ref: 'afterImage'
           }}
         {%- else -%}
@@ -428,6 +519,18 @@
       "label": "t:settings.image_2"
     },
     {
+      "type": "image_picker",
+      "id": "before_image_mobile",
+      "label": "Image 1 on mobile",
+      "info": "Optional. Phones only (≤749px); empty uses image 1."
+    },
+    {
+      "type": "image_picker",
+      "id": "after_image_mobile",
+      "label": "Image 2 on mobile",
+      "info": "Optional. Phones only (≤749px); empty uses image 2."
+    },
+    {
       "type": "select",
       "id": "slider_style",
       "label": "t:settings.direction",
@@ -565,6 +668,62 @@
       "visible_if": "{{ block.settings.text_background and block.settings.show_text }}"
     },
     {
+      "type": "range",
+      "id": "text_size",
+      "label": "Label size",
+      "info": "Sizes and padding below apply in sections with a custom class.",
+      "min": 10,
+      "max": 32,
+      "step": 1,
+      "unit": "px",
+      "default": 13,
+      "visible_if": "{{ block.settings.show_text }}"
+    },
+    {
+      "type": "range",
+      "id": "text_size_mobile",
+      "label": "Mobile label size",
+      "min": 10,
+      "max": 32,
+      "step": 1,
+      "unit": "px",
+      "default": 12,
+      "visible_if": "{{ block.settings.show_text }}"
+    },
+    {
+      "type": "range",
+      "id": "text_padding_block",
+      "label": "Label vertical padding",
+      "min": 0,
+      "max": 20,
+      "step": 1,
+      "unit": "px",
+      "default": 6,
+      "visible_if": "{{ block.settings.show_text }}"
+    },
+    {
+      "type": "range",
+      "id": "text_padding_block_mobile",
+      "label": "Mobile label vertical padding",
+      "min": 0,
+      "max": 20,
+      "step": 1,
+      "unit": "px",
+      "default": 2,
+      "visible_if": "{{ block.settings.show_text }}"
+    },
+    {
+      "type": "range",
+      "id": "text_padding_inline",
+      "label": "Label side padding",
+      "min": 0,
+      "max": 40,
+      "step": 1,
+      "unit": "px",
+      "default": 16,
+      "visible_if": "{{ block.settings.show_text }}"
+    },
+    {
       "type": "color",
       "id": "text_color",
       "label": "t:settings.text_color",
@@ -595,9 +754,36 @@
         {
           "value": "landscape",
           "label": "t:options.landscape"
+        },
+        {
+          "value": "custom",
+          "label": "t:options.custom"
         }
       ],
       "default": "adapt"
+    },
+    {
+      "type": "range",
+      "id": "custom_ratio",
+      "label": "Height (% of width)",
+      "min": 40,
+      "max": 140,
+      "step": 1,
+      "unit": "%",
+      "default": 69,
+      "visible_if": "{{ block.settings.image_ratio == 'custom' }}"
+    },
+    {
+      "type": "range",
+      "id": "custom_ratio_mobile",
+      "label": "Mobile height (% of width)",
+      "info": "Phones only, in sections with a custom class.",
+      "min": 40,
+      "max": 140,
+      "step": 1,
+      "unit": "%",
+      "default": 73,
+      "visible_if": "{{ block.settings.image_ratio == 'custom' }}"
     },
     {
       "type": "select",
@@ -743,6 +929,17 @@
       "type": "range",
       "id": "border_radius",
       "label": "t:settings.border_radius",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "border_radius_mobile",
+      "label": "Mobile border radius",
+      "info": "Phones only, in sections with a custom class.",
       "min": 0,
       "max": 100,
       "step": 1,
