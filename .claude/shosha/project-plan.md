@@ -415,6 +415,19 @@ Category **B**: native section + on-demand `custom_class` setting. No Liquid/JS 
   - **Theme Check:** 9 = baseline.
   - **QA:** browser and editor QA PENDING USER REVIEW.
   - **Warning:** pushing local `index.json` would overwrite the online editor's product picks. Pull or re-apply first.
+- **Mobile description typography (2026-11-11):**
+  - **Figma 190:4329:** Cairo Regular 15/26, right-aligned, 342 wide; 14px gap below the 24/38 heading (190:4328). Desktop 190:3997 is 18/32.
+  - **Code before the change** (from code and settings; no browser):
+    - 15px (`description_size_mobile` = 15), line height 1.733 × 15 = 26px, weight 400, inherited Cairo Custom.
+    - Width 390 − 2×16 − 2×8 = 342; gap 14 (`content_gap_mobile`).
+    - No text-wrap, letter-spacing or word-spacing rule applies; Horizon's base paragraph rule only targets `body`/`.paragraph`.
+  - **Result:** no code-level mismatch found. The "too small" report is unconfirmed; it needs a screenshot.
+  - **Change:**
+    - New settings `description_line_height` (32) and `description_line_height_mobile` (26), in px, read by `dev2.css` instead of fixed ratios.
+    - `show_discount` removed (settings cap): an empty `discount_badge` now hides the old price and badge.
+    - Values are unchanged, so rendering is the same as before.
+  - **Theme Check:** 9 = baseline (40/40 settings).
+  - **QA:** PENDING USER REVIEW.
 
 ## F. QA & progress
 
@@ -469,3 +482,4 @@ Give a section its own row here when its work starts, and keep the S01–S15 row
 | 2026-11-11 | S11 bundle on native `product-hotspots` with opt-in "Bundle layout" (category D): rows/total/add-all button from the hotspot blocks, `sn-bundle.js`, opt-in touch popup in `product-hotspot.js`, no checkboxes | No native bundle section; product-hotspots already links a product to each marker. User chose separate lines + Admin automatic discount and a mobile popup | S11; `product-hotspots`, `_hotspot-product`, `product-hotspot.js` | Merchant setup; visual + commerce QA by the user |
 | 2026-11-11 | S11 correction: `bundle_product` picker (purchase model A = bundle product only, B = components); editor-only guidance and placeholder rows; image column hidden on the storefront without an image; `unavailable_text` replaced by Horizon translations | First version had no parent bundle picker and showed nothing until products were picked; Liquid can't enumerate bundle components | S11 | Merchant picks bundle product + components; visual + commerce QA by the user |
 | 2026-11-11 | S11 rebuilt as dedicated section `sn-product-bundle` (category E, merchant-approved): bundle product = purchase (model A only), "Bundle item" blocks drive rows + hotspots + popups; native product-hotspots files restored | Native hotspots adaptation did not give the merchant a usable bundle setup | S11; `index.json` `bundle_sn_home` replaced in place | Merchant setup; visual + commerce QA by the user |
+| 2026-11-11 | S11: editor-only note (bundle data box) removed at the merchant's request; placeholder rows for empty "Bundle item" blocks kept | The note cluttered the Theme Editor preview; product data is now correct (LE 2,499 / compare-at 3,100, available, 7 in stock) | S11 | — |

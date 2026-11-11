@@ -112,6 +112,8 @@
     --pb-h-m: {{ section.settings.heading_size_mobile }}px;
     --pb-d: {{ section.settings.description_size }}px;
     --pb-d-m: {{ section.settings.description_size_mobile }}px;
+    --pb-d-lh: {{ section.settings.description_line_height }}px;
+    --pb-d-lh-m: {{ section.settings.description_line_height_mobile }}px;
     --pb-accent: {{ section.settings.heading_color }};
     --pb-text: {{ section.settings.text_color }};
     --pb-border: {{ section.settings.border_color }};
@@ -208,32 +210,6 @@
         <p class="sn-pb__description">{{ section.settings.description | escape }}</p>
       {%- endif -%}
 
-      {%- if request.design_mode -%}
-        {%- comment -%} Theme Editor only, never shown to customers {%- endcomment -%}
-        <p class="sn-pb__editor-note">
-          {%- if parent == blank -%}
-            Pick the "Bundle product" (the Shopify product the button adds). Until then the price and button stay hidden.
-          {%- else -%}
-            The button adds "{{ parent.title | escape }}" at its own price. Make sure the component blocks below list the products that are really inside it.
-            <br>
-            Shopify data: variant "{{ pv.title | escape }}" · price {{ pv.price | money }}
-            {%- if pv.compare_at_price > 0 %} · compare-at {{ pv.compare_at_price | money }}{% endif %}
-            · {% if pv.available %}available{% else %}NOT available{% endif %}
-            · inventory {% if pv.inventory_management == 'shopify' %}tracked ({{ pv.inventory_quantity }} in stock, {% if pv.inventory_policy == 'continue' %}continue selling when out of stock{% else %}stop selling at 0{% endif %}){% else %}not tracked{% endif %}
-            {%- unless pv.available -%}
-              <br>
-              Why "sold out": Shopify reports this variant as unavailable on the Online Store. Check in admin that the bundle
-              product is Active and published to Online Store, has stock (or "Continue selling when out of stock"), and, if it
-              is a Shopify Bundles product, that each component has stock.
-            {%- endunless -%}
-            {%- if pv.price <= 0 -%}
-              <br>
-              Price is 0: set the bundle product's price in admin. No saving or badge is shown until it has a real price.
-            {%- endif -%}
-          {%- endif %}
-          Add one "Bundle item" block per product (Add block, under this section).
-        </p>
-      {%- endif -%}
 
       {%- if count > 0 or request.design_mode and empty_blocks > 0 -%}
         <ul class="sn-pb__items list-unstyled" role="list">
@@ -294,7 +270,7 @@
             <span>{{ section.settings.total_label | escape }}</span>
             <span class="sn-pb__now-price">{{ pv.price | money }}</span>
           </p>
-          {%- if section.settings.show_discount and was_total > 0 -%}
+          {%- if section.settings.discount_badge != blank and was_total > 0 -%}
             <p class="sn-pb__was">
               <s class="sn-pb__old">{{ was_total | money }}</s>
               {%- if percent > 0 and section.settings.discount_badge != blank -%}
@@ -771,6 +747,26 @@
     },
     {
       "type": "range",
+      "id": "description_line_height",
+      "label": "Description line height (desktop)",
+      "min": 16,
+      "max": 60,
+      "step": 1,
+      "unit": "px",
+      "default": 32
+    },
+    {
+      "type": "range",
+      "id": "description_line_height_mobile",
+      "label": "Description line height (mobile)",
+      "min": 14,
+      "max": 48,
+      "step": 1,
+      "unit": "px",
+      "default": 26
+    },
+    {
+      "type": "range",
       "id": "content_gap",
       "label": "Content spacing (desktop)",
       "min": 0,
@@ -844,17 +840,10 @@
       "default": "إجمالي الباندل"
     },
     {
-      "type": "checkbox",
-      "id": "show_discount",
-      "label": "Show old price and discount badge",
-      "info": "Uses the bundle product's real compare-at price, or the items' total when it is higher than the bundle price.",
-      "default": true
-    },
-    {
       "type": "text",
       "id": "discount_badge",
       "label": "Discount badge",
-      "info": "[percent] = the real saving.",
+      "info": "Shows the real old price and saving. [percent] = the saving. Leave empty to hide the old price and badge.",
       "default": "خصم [percent]%"
     },
     {

@@ -1373,7 +1373,6 @@
         "title_size": 16,
         "subtitle_size": 12,
         "total_label": "إجمالي الباندل",
-        "show_discount": true,
         "discount_badge": "خصم [percent]%",
         "button_label": "أضف الباندل للسلة",
         "button_radius": 12,
@@ -1392,7 +1391,9 @@
         "padding_top_mobile": 56,
         "padding_bottom_mobile": 40,
         "mobile_padding_inline": 8,
-        "custom_class": "sn-home-bundle"
+        "custom_class": "sn-home-bundle",
+        "description_line_height": 32,
+        "description_line_height_mobile": 26
       }
     }
   },

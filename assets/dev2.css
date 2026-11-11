@@ -443,19 +443,8 @@
   .sn-pb__description {
     font-size: var(--pb-d-m);
     font-weight: 400;
-    line-height: 1.733; /* Figma 26 / 15 */
+    line-height: var(--pb-d-lh-m); /* "Description line height (mobile)", Figma 26 */
     color: var(--pb-text);
-  }
-
-  .sn-pb__editor-note {
-    margin: 0;
-    padding: 8px 12px;
-    font-size: 12px;
-    line-height: 1.5;
-    color: var(--pb-accent);
-    background: color-mix(in srgb, var(--pb-border) 40%, #fff);
-    border: 1px dashed var(--pb-border);
-    border-radius: 8px;
   }
 
   /* ---------- Product rows (no checkboxes: every item is part of the bundle) ---------- */
@@ -596,7 +585,7 @@
 
     .sn-pb__description {
       font-size: var(--pb-d);
-      line-height: 1.778; /* Figma 32 / 18 */
+      line-height: var(--pb-d-lh); /* "Description line height (desktop)", Figma 32 */
     }
 
     /* Figma desktop: the total group is centred */
