@@ -114,14 +114,14 @@ Each section gets its own subsection here (with the Native Reuse Audit) when its
 - Icon colours: desktop `#12568d`, mobile `#176bb0`.
 - Matching Horizon: section `header` (name `t:names.header`, kept, `presets: []` unchanged), already in `header-group.json` (`header_section`). Reused with its static `_header-logo`/`_header-menu` blocks and the native `header-actions`, `search` and `header-drawer` controls. No new section, no duplicated markup, no JS changes.
 - Native settings reused: `logo_position` center, `menu_row` bottom (navigation stays in its own row), `search_row` top, `actions_display_style` icon, `section_width` page-width, `enable_sticky_header` always. Logo image: global `settings.logo` (already the SNOSHA SVG).
-- Setting changed (Level 3): `search_position` left→**right** (Horizon's default), so search sits in the same column as the actions.
+- ~~Setting changed (Level 3): `search_position` left→**right** (Horizon's default), so search sits in the same column as the actions.~~ **SUPERSEDED 2026-11-11 (fix round 1):** reverted to `left`. The desktop CSS no longer depends on it.
 - Setting added (category B): `custom_class` on `header` → rendered on `<header-component id="header-component">`.
 - Icons: Horizon's glyphs differ (bag instead of cart, 2-line menu, different search and account). The Figma SVGs were saved as `assets/icon-header-{account,search,cart,menu}.svg` and painted over the **native** `<svg>` elements with CSS masks. Buttons, links, `aria-*`, drawer, search modal, cart drawer and bubble are unchanged, and tap targets stay 44px (40px on mobile).
 - CSS (`assets/main.css`, owner Main, under `#header-component.sn-header-main`; the ID is needed to beat Horizon's drawer-mode rules):
   - desktop: top-row container 86rem (1376px), 22px vertical padding (88px row), grid areas swapped to `'right center left'`, `header-actions` flattened (`display: contents`) and ordered cart / search / account with no gap, logo 36px high and nudged 18px;
   - mobile and drawer mode: 40px edge columns, 20px side padding, 9.5px vertical padding plus a 1px `#dcf2fb` border through Horizon's own `--border-bottom-*-mobile` variables (64px), search moved next to the cart (`rightA`), account hidden, cart and search glyphs pinned to the outer edge (18px gap), menu glyph pinned, logo 28px high.
 - Logo size: done in scoped CSS because the native size settings (`logo_height` 37 / `logo_height_mobile` 36) are global, in protected `settings_data.json`.
-- Settings to reset to undo (Level 3): `search_position` → left, `custom_class` → empty. Expected reversibility: `CLASS_PLUS_SETTINGS: search_position` (untested).
+- ~~Settings to reset to undo (Level 3): `search_position` → left, `custom_class` → empty.~~ **SUPERSEDED, see fix round 1.**
 - Shared files touched: `sections/header-group.json` (header instance only: 2 settings; S01 untouched), `sections/header.liquid` (class render + 1 setting). Claimed and released by Main 2026-11-11.
 - Dependencies and limits:
   - the mobile border relies on the top row having `divider--page-width` (true while the menu is in the bottom row and `divider_size` = page-width);
@@ -129,12 +129,30 @@ Each section gets its own subsection here (with the Native Reuse Audit) when its
   - in touch drawer mode at ≥750px (tablets) the mobile layout and 28px logo apply.
 - Category: **B**. Approved by user: task request 2026-11-11.
 
+#### S02 fix round 1 (2026-11-11, after user review)
+- **Desktop icons split** (search on the visual right, account and cart on the visual left). The first version needed both `search_position = right` and the class in the store's live data, otherwise search and actions sat in separate native columns. The user's Theme Editor almost certainly doesn't have the repo values yet: what they saw is exactly native output with `search_position = left` and no class.
+  - Fix: own desktop grid under the class, like Horizon's mobile layout. `.header__column` and `header-actions` use `display: contents`, with areas `'sn-cart sn-search sn-account . center . .'` (three 44px cells at inline-start, logo centred, a balancing 132px block at inline-end).
+  - It now works with either `search_position`, so the setting is back to the merchant's original `left`.
+- **Mobile logo looked small.**
+  - The previous CSS fixed a 28px height. With the logo's assumed ratio of about 4.94 that's about 138px, the Figma width. It also blocked the native size setting.
+  - Now width-based: 138px (the Figma frame), `height: auto`, `max-width: 100%`, and `min-width: 0` on the link so it shrinks on narrow screens instead of overlapping the icons.
+  - The uploaded file couldn't be inspected (the Shopify MCP is connected to a different store), so internal padding in the file is unverified. If the logo still looks small, check the file's padding first.
+- **Mobile row height:** Horizon's `.header__drawer` has a 60px min-height, which made the row about 80px. Set to `--button-size` (44px) in scope, so the row is 64px.
+- **Mobile drawer:**
+  - Cause of the oversized text: `snippets/menu-font-styles.liquid` hard-codes drawer top-level links to `--menu-font-2xl` (28px). The block's size setting only affects desktop. Rows were at least 45.6px tall plus flat-list margins, and the child lists were fully expanded.
+  - Fix, native settings: `drawer_accordion` true (children collapse), `drawer_dividers` true with `#dcf2fb`.
+  - Fix, scoped CSS: drawer width `85vw` (max 360px); top level 16px / 600 / line height 1.5; child links 14px; 48px top-level rows and 44px child rows; no list margins.
+  - **Product cards:** they come from `_header-menu.menu_style = featured_products`, which shows up to 4 products from the menu's first collection link. The same setting drives the desktop mega menu and there's no mobile-only switch, so the cards are hidden **only in the drawer** with scoped CSS (`.menu-drawer__featured-content`). The native alternative, `menu_style` → text, would also remove them from the desktop mega menu; that's the merchant's choice.
+- Files: `assets/main.css`, `sections/header-group.json` (`search_position` right→left, `drawer_accordion` false→true, `drawer_dividers` false→true, `drawer_divider_color` ""→`#dcf2fb`). No Liquid or JS changes.
+- Reversibility now: `CLASS_PLUS_SETTINGS: drawer_accordion, drawer_dividers` (untested). Removing the class restores the native header layout, icons, logo and drawer typography; the accordion and dividers remain until those settings are reset.
+- **User action needed:** the Theme Editor (store) data must contain Header → Advanced → Custom CSS class = `sn-header-main`, otherwise none of S02 applies. The repo has it; the editor screenshot suggests the store doesn't.
+
 ## F. QA & progress
 
 | ID | Figma analysis | Code checks | Visual desktop | Visual mobile | RTL | Media | Reversibility | Pending issues |
 |---|---|---|---|---|---|---|---|---|
 | S01 | PASS (get_design_context, 2026-11-11) | PASS: Theme Check = baseline 9, JSON/schema parse OK, assets exist | PENDING USER REVIEW | PENDING USER REVIEW | PENDING USER REVIEW | PENDING USER REVIEW | PENDING USER REVIEW (expected `CLASS_PLUS_SETTINGS`: see E) | custom-class snippet sanitizer matrix untested (needs render); confirm text color is white |
-| S02 | PASS (get_design_context, 2026-11-11; navigation `190:3776` not analysed) | PASS: Theme Check = baseline 9 (header count 42→43, same offense), JSON/schema parse OK, mask assets exist | PENDING USER REVIEW | PENDING USER REVIEW | PENDING USER REVIEW | N/A (logo is the global native setting; icons are UI) | PENDING USER REVIEW (expected `CLASS_PLUS_SETTINGS: search_position`) | Account hidden on mobile (Figma), so check how mobile users reach account; account button width (Shopify web component) unverified; cart bubble position over the new glyph |
+| S02 | PASS (get_design_context, 2026-11-11; navigation `190:3776` not analysed) | PASS: Theme Check = baseline 9 (header count 42→43, same offense), JSON/schema parse OK, mask assets exist | PENDING USER REVIEW | PENDING USER REVIEW | PENDING USER REVIEW | N/A (logo is the global native setting; icons are UI) | PENDING USER REVIEW (expected `CLASS_PLUS_SETTINGS: drawer_accordion, drawer_dividers`) | Fix round 1 applied 2026-11-11 (desktop grid, mobile logo and height, drawer); confirm the store has `custom_class` = `sn-header-main`; account hidden on mobile (Figma); account button width unverified; cart bubble position; logo file padding unverified |
 | S03–S15 | — | — | — | — | — | — | — | Only project-level mapping done; no section-level analysis yet |
 
 Give a section its own row here when its work starts, and keep the S01–S15 row only for sections that haven't started.
@@ -169,3 +187,4 @@ Give a section its own row here when its work starts, and keep the S01–S15 row
 | 2026-11-11 | UI icons that differ from Horizon's are replaced with Figma SVG assets painted over the native `<svg>` by CSS masks (no markup or JS changes) | Exact Figma glyphs while keeping native controls | S02 (`icon-header-*.svg`) | Reuse the same pattern and assets elsewhere |
 | 2026-11-11 | `header` schema to 43 settings (`custom_class`) | Required by the custom-class policy; the user's S02 task asked for it | S02 | Theme Check warning only; no further `header` settings without need |
 | 2026-11-11 | S02 header row implemented (category B) | — | S02 | User visual QA; desktop navigation `190:3776` is a separate task |
+| 2026-11-11 | S02 fix round 1: desktop grid independent of `search_position` (setting reverted to `left`), mobile logo width-based 138px, mobile row 64px, drawer tidied (native accordion and dividers plus scoped CSS; featured cards hidden in the drawer only) | User review | S02 | User visual QA; make sure the store's header has the class `sn-header-main` |

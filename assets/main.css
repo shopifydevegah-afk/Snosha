@@ -23,8 +23,9 @@
    The native header (buttons, links, drawer, search, cart, account, JS) is untouched. This block:
    - paints the Figma glyphs over the native <svg> elements with CSS masks (assets/icon-header-*.svg);
    - places the actions, sizes the rows and the logo as in Figma.
-   Relies on the native setting search_position = right (Horizon's default).
-   `#header-component` is part of the selectors because Horizon's touch/drawer rules use that ID. */
+   - tidies the native mobile navigation drawer (it renders inside #header-component).
+   Works with either search_position value. `#header-component` is part of the selectors
+   because Horizon's touch/drawer rules use that ID. */
 #header-component.sn-header-main {
   --sn-header-icon-color: #12568d; /* Figma desktop icon stroke */
 
@@ -85,33 +86,37 @@
         /* Figma: glyphs end 20px inside the container; native buttons are 44px around a 22px glyph */
         padding-inline: calc(20px - (var(--button-size) - var(--icon-size-md)) / 2);
 
-        /* Figma: actions at the inline-start side (visual right in RTL) */
-        grid-template-areas: 'right center left';
+        /* Own grid, like Horizon's mobile layout: three 44px icon cells at inline-start
+           (visual right in RTL; 44px cells = 22px between the 22px glyphs), the logo centred,
+           and an equal empty block at inline-end so the logo stays centred.
+           Independent of which column search_position puts the search in. */
+        grid-template-columns: repeat(3, var(--button-size)) 1fr auto 1fr calc(var(--button-size) * 3);
+        grid-template-areas: 'sn-cart sn-search sn-account . center . .';
+        column-gap: 0;
       }
 
-      .header__column--right {
-        gap: 0; /* 44px buttons side by side = 22px between the 22px glyphs */
-      }
-
+      .header__column,
       header-actions {
         display: contents;
       }
 
       /* Figma order from inline-start: cart, search, account */
       header-actions > .header-actions__action:not(.account-button) {
-        order: 1;
+        grid-area: sn-cart;
       }
 
-      .header__column--right .search-action {
-        order: 2;
+      .search-action {
+        grid-area: sn-search;
         margin-inline: 0;
       }
 
       .account-button {
-        order: 3;
+        grid-area: sn-account;
+        justify-self: center;
       }
 
       .header-logo {
+        grid-area: center;
         translate: 18px 0; /* Figma: logo centre sits 18px right of the frame centre */
       }
 
@@ -153,9 +158,21 @@
       margin-inline: 0; /* pin the menu glyph to the edge */
     }
 
+    /* Horizon gives the menu-toggle wrapper a 60px min-height, which made the row ~80px */
+    .header__drawer {
+      --header-drawer-min-height: var(--button-size);
+    }
+
+    /* Figma logo frame: 138px wide (27.9px high). Width-based so the image ratio sets the height;
+       shrinks on very narrow screens instead of overlapping the icons. */
+    .header-logo {
+      min-width: 0;
+    }
+
     .header-logo__image {
-      height: 28px; /* Figma logo 138 x 27.9 */
-      width: auto;
+      width: 138px;
+      max-width: 100%;
+      height: auto;
     }
   }
 
@@ -188,9 +205,56 @@
       margin-inline: 0;
     }
 
-    .header-logo__image {
-      height: 28px;
-      width: auto;
+    .header__drawer {
+      --header-drawer-min-height: var(--button-size);
     }
+
+    .header-logo {
+      min-width: 0;
+    }
+
+    .header-logo__image {
+      width: 138px;
+      max-width: 100%;
+      height: auto;
+    }
+  }
+
+  /* Mobile navigation drawer (native header-drawer; only rendered/visible in drawer mode).
+     Native settings also used: drawer_accordion and drawer_dividers (#dcf2fb) on the menu block. */
+  .menu-drawer {
+    --drawer-width: 85vw;
+    --drawer-max-width: 22.5rem; /* 360px; Horizon's 25rem desktop-width rule still applies at >=750px */
+  }
+
+  .menu-drawer__menu {
+    /* Horizon hard-codes 28px (--menu-font-2xl) for drawer top-level links; set inline on the nav,
+       so redefine the variables on the lists inside it */
+    --menu-top-level-font-size: var(--menu-font-md--size); /* 16px */
+    --menu-top-level-font-line-height: 1.5;
+    --menu-top-level-font-weight: 600;
+    --menu-child-font-size: var(--menu-font-sm--size); /* 14px */
+    --menu-child-font-line-height: 1.5;
+  }
+
+  /* Even rows: no extra list margins, a 48px top-level row, 44px child rows */
+  .menu-drawer__menu > li {
+    min-height: 0;
+    margin-block-end: 0;
+  }
+
+  .menu-drawer__menu-item--mainlist {
+    min-height: 3rem;
+    padding-block: var(--padding-sm);
+  }
+
+  :is(.menu-drawer__menu-item--parent, .menu-drawer__menu-item--child) {
+    min-height: var(--minimum-touch-target);
+  }
+
+  /* Navigation-first: hide the menu's featured product/collection cards in the drawer
+     (they come from the menu block's "menu_style" setting, which also drives the desktop mega menu) */
+  .menu-drawer__featured-content {
+    display: none;
   }
 }
