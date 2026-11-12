@@ -1,0 +1,2217 @@
+/* Dev1 — Shosha Figma CSS. Scoped per class; see figma-to-sections-workflow */
+
+/* ==========================================================================
+   S03 Hero — .sn-home-hero (sections/hero.liquid, root .hero)
+   Figma desktop 190:3789 (1480), mobile 335:3959 (390) | owner: Dev1
+   Parts (group block custom_class): .sn-home-hero-content, .sn-home-hero-overline,
+   .sn-home-hero-stage, .sn-home-hero-chip (+ inert .sn-float* position classes from group settings)
+   Breakpoints: ≤989 stacked (mobile composition, approved D3), ≥990 side by side.
+   ========================================================================== */
+.sn-home-hero {
+  /* Bottom space kept free for an overlapping Trust Strip (set below, only when one follows). */
+  --sn-hero-overlap: 0px;
+
+  /* Figma container: 1376px (52px margins at 1480). Class-scoped container override. */
+  --page-content-width: 1376px;
+  --page-width: calc(var(--page-content-width) + var(--page-margin) * 2);
+
+  @media screen and (max-width: 749px) {
+    /* Figma mobile gutter 24px (Horizon default 16px) */
+    --page-margin: max(24px, var(--safe-area-inset-left, 0px), var(--safe-area-inset-right, 0px));
+  }
+
+  /* Background fallback: Figma gradient when no merchant colour is set. Merchant media renders above it. */
+  &:not([class*='color-custom-']) .hero__media-grid {
+    background-image: linear-gradient(57.82deg, #63cdff 7.84%, #176bb0 50%, #0f64a8 92.16%);
+
+    @media screen and (max-width: 749px) {
+      background-image: linear-gradient(83.14deg, #63cdff 7.84%, #176bb0 50%, #0f64a8 92.16%);
+    }
+  }
+
+  /* With blocks, the gradient replaces the "no media" placeholder (only rendered when no media is selected).
+     A hero without blocks keeps the native placeholder so the empty image-only state stays visible. */
+  &:has(> .hero__container > .hero__content-wrapper > *) .hero__media-grid > svg.hero__media {
+    display: none;
+  }
+
+  > .hero__container > .hero__content-wrapper {
+    @media screen and (min-width: 990px) {
+      /* Figma Hero Container inner padding */
+      padding-inline: 20px;
+      flex-wrap: nowrap;
+    }
+
+    @media screen and (max-width: 989px) {
+      flex-direction: column;
+      flex-wrap: nowrap;
+      align-items: center;
+      justify-content: flex-start;
+      gap: 12px;
+      /* Figma mobile: 6px top; 87px bottom = 38px + 49px Trust overlap */
+      padding-block: 6px calc(38px + var(--sn-hero-overlap));
+    }
+  }
+}
+
+/* --- Content column ------------------------------------------------------ */
+.sn-home-hero-content {
+  > .group-block-content > .text-block {
+    color: #fff;
+
+    :is(h1, h2, h3, p) {
+      margin: 0;
+      color: inherit;
+    }
+
+    /* Figma Desktop/Display Hero 56/84 Bold; scales down from 1480 to 990 */
+    h1 {
+      font-family: var(--font-heading--family);
+      font-size: clamp(2.25rem, 3.784vw, 3.5rem);
+      line-height: 1.5;
+      font-weight: 700;
+      letter-spacing: 0;
+    }
+
+    /* Accent word: <em> in the rich text */
+    em {
+      font-style: normal;
+      color: #63cdff;
+    }
+
+    /* Figma Desktop/Body Large 18/32 */
+    p {
+      font-size: 18px;
+      line-height: 32px;
+      font-weight: 400;
+      color: rgb(255 255 255 / 0.86);
+    }
+
+    &:not(:has(h1)) {
+      max-inline-size: 500px;
+    }
+  }
+
+  /* CTA: Figma 122×48 (padding 13/28), radius 10, 1px border, 16/26 SemiBold, brand-gradient label.
+     Plate, border and fallback text colours come from the button's own editor settings (button-custom vars).
+     Root cause of the former invisible label: the white plate was a ::before at z-index -1 inside an
+     isolated button, which paints ABOVE the button's own background, i.e. over the text-clipped gradient.
+     Now the plate is a second background layer under the gradient, nothing is painted over the text. */
+  :is(.button, .button-secondary, .button-custom) {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    box-sizing: border-box;
+    min-block-size: 48px;
+    padding-block: 11px;
+    padding-inline: 28px;
+    border-radius: 10px;
+    font-size: 16px;
+    line-height: 26px;
+    font-weight: 600;
+    background-color: var(--button-background-color, #fff);
+    color: var(--button-color, #176bb0);
+    box-shadow: inset 0 0 0 1px var(--button-border-color, rgb(255 255 255 / 0.86));
+  }
+
+  @supports (background-clip: text) or (-webkit-background-clip: text) {
+    :is(.button, .button-secondary, .button-custom) {
+      --sn-cta-plate: var(--button-background-color, #fff);
+
+      background-color: transparent;
+      background-image:
+        linear-gradient(160.14deg, #63cdff 0%, #0f64a8 70.71%),
+        linear-gradient(var(--sn-cta-plate), var(--sn-cta-plate));
+      background-origin: content-box, padding-box;
+      -webkit-background-clip: text, padding-box;
+      background-clip: text, padding-box;
+      color: transparent;
+      -webkit-text-fill-color: transparent;
+    }
+  }
+
+  @media screen and (max-width: 989px) {
+    inline-size: 100%;
+    max-inline-size: 600px;
+    /* The group's own padding (desktop values from the editor) is not used when stacked */
+    padding: 0;
+
+    > .group-block-content {
+      gap: 12px;
+    }
+
+    /* Tablet 750–989 (no Figma tablet frame, ASSUMED): centred like the mobile frame.
+       Below 750 the editor decides: group "Content position (mobile)" + text "Text alignment (mobile)". */
+    @media (min-width: 750px) {
+      > .group-block-content {
+        align-items: center;
+      }
+
+      > .group-block-content > .text-block > * {
+        text-align: center;
+      }
+    }
+
+    > .group-block-content > .text-block {
+      /* Figma Mobile/H1 28/44 */
+      h1 {
+        font-size: 28px;
+        line-height: 44px;
+      }
+
+      /* Figma mobile subtitle 14/24 */
+      p {
+        font-size: 14px;
+        line-height: 24px;
+      }
+    }
+  }
+}
+
+/* Overline pill (group: icon + text). Figma 275×34, padding 5 / 10 (icon side) / 5 / 14, gap 8 */
+.sn-home-hero-overline {
+  padding-block: 5px;
+  padding-inline: 10px 14px;
+  border-radius: 999px;
+  background-color: rgb(255 255 255 / 0.1);
+
+  > .group-block-content {
+    flex-direction: row;
+    flex-wrap: nowrap;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .icon-block {
+    color: #fff;
+  }
+
+  .icon-block__media {
+    inline-size: 24px;
+    block-size: 24px;
+  }
+
+  .text-block {
+    color: #fff;
+
+    :is(p, h1, h2, h3) {
+      margin: 0;
+      font-size: 12px;
+      line-height: 18px;
+      font-weight: 600;
+      color: inherit;
+    }
+  }
+}
+
+/* --- Product stage --------------------------------------------------------
+   Flow mode (no image block): chips wrap in a centred row, no decor.
+   Stage mode (has an image block): fixed Figma aspect, absolute product + floating chips + decor. */
+.sn-home-hero-stage {
+  > .group-block-content {
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+    gap: 8px;
+  }
+
+  &:has(> .group-block-content > .image-block) {
+    /* Desktop: Figma stage 749×500 out of the 1336px inner row */
+    --sn-stage-ratio: 749 / 500;
+    /* Decor ring radii (fractions of the outer ring) and geometry, Figma 190:3792–3795 */
+    --sn-r2: 78.95%;
+    --sn-r3: 57.89%;
+
+    position: relative;
+    isolation: isolate;
+    aspect-ratio: var(--sn-stage-ratio);
+    padding: 0;
+
+    @media screen and (min-width: 990px) {
+      flex: 0 0 56.06%;
+      inline-size: 56.06%;
+      /* Figma: the stage fills the hero to its bottom edge, where the Trust card overlaps it. When the
+         text column is taller than the stage (narrower desktops, the editor preview), the hero grows;
+         a centred stage then left empty blue under the product and the card looked "below" the hero. */
+      align-self: flex-end;
+      /* Hero settings "Product stage … offset — Desktop". translate moves the stage box with everything
+         inside it (image, chips, ::before glow, ::after rings) as one unit, without changing layout, so
+         chip slots stay stage-relative and the hero height / Trust overlap don't change. */
+      translate: var(--stage-offset-x, 0px) var(--stage-offset-y, 0px);
+    }
+
+    @media screen and (max-width: 989px) {
+      /* Mobile: Figma stage 342×330 (full container width); tablet capped (ASSUMED 480px) */
+      --sn-stage-ratio: 342 / 330;
+      --sn-r2: 76.32%;
+      --sn-r3: 52.63%;
+
+      inline-size: 100%;
+      max-inline-size: 480px;
+      order: -1;
+      /* Hero setting "Product stage vertical offset — Mobile". No horizontal offset on mobile: the stage
+         spans the full content width, so any sideways shift would push chips off the screen edge. */
+      translate: 0 var(--stage-offset-y-mobile, 0px);
+    }
+
+    > .group-block-content {
+      position: absolute;
+      inset: 0;
+      z-index: 1;
+      align-content: flex-end;
+      padding-block-end: 4%;
+    }
+
+    /* Highlight: white 35%, blur 55 (Figma Highlight ellipse) */
+    &::before {
+      content: '';
+      position: absolute;
+      z-index: -1;
+      inset-inline-start: 41.25%;
+      inset-block-start: 8%;
+      inline-size: 50.73%;
+      block-size: 60%;
+      border-radius: 50%;
+      background-color: rgb(255 255 255 / 0.35);
+      filter: blur(55px);
+      pointer-events: none;
+
+      @media screen and (max-width: 989px) {
+        inset-inline-start: 14.91%;
+        inset-block-start: 23.94%;
+        inline-size: 70.18%;
+        block-size: 54.55%;
+      }
+    }
+
+    /* Three concentric rings: 1.5px white at 18% / 12% / 8% (Figma Ring ellipses) */
+    &::after {
+      content: '';
+      position: absolute;
+      z-index: -1;
+      inset-inline-start: 6.01%;
+      inset-block-start: 50%;
+      inline-size: 101.47%;
+      aspect-ratio: 1;
+      margin-block-start: -50.735%;
+      border-radius: 50%;
+      background-image: radial-gradient(
+        circle closest-side,
+        transparent calc(var(--sn-r3) - 1.5px),
+        rgb(255 255 255 / 0.18) calc(var(--sn-r3) - 1.5px) var(--sn-r3),
+        transparent var(--sn-r3) calc(var(--sn-r2) - 1.5px),
+        rgb(255 255 255 / 0.12) calc(var(--sn-r2) - 1.5px) var(--sn-r2),
+        transparent var(--sn-r2) calc(100% - 1.5px),
+        rgb(255 255 255 / 0.08) calc(100% - 1.5px) 100%,
+        transparent 100%
+      );
+      pointer-events: none;
+
+      @media screen and (max-width: 989px) {
+        inset-inline-start: -16.67%;
+        inset-block-start: 53.03%;
+        inline-size: 133.33%;
+        margin-block-start: -66.67%;
+      }
+    }
+
+    /* Product image = the VISIBLE image box inside the Figma photo frame (frame × image fill offsets
+       left 7.31% / top 5.94% / 97.2% × 88.22%), not the frame itself.
+       Desktop: frame 728×594 at -9,-50 → image 707.6×524 at x 44.2, y -14.7 (stage 749×500).
+       Mobile:  frame 348×284.4 at -3,37 → image 338.3×250.9 at x 22.4, y 53.9 (stage 342×330).
+       inset-inline-start = distance from the stage's start edge (right in Arabic). */
+    .image-block {
+      position: absolute;
+      inset-inline-start: -0.38%;
+      inset-block-start: -2.94%;
+      inline-size: 94.47%;
+      block-size: 104.81%;
+      margin: 0;
+      padding: 0;
+
+      @media screen and (max-width: 989px) {
+        inset-inline-start: -5.47%;
+        inset-block-start: 16.33%;
+        inline-size: 98.9%;
+        block-size: 76.03%;
+      }
+    }
+
+    .image-block__image,
+    .image-block .placeholder-image {
+      inline-size: 100%;
+      block-size: 100%;
+      aspect-ratio: auto;
+      object-fit: contain;
+      /* Measured from the Figma file (190:3796 / 335:3966): the product PNG is 1537×1023 (transparent,
+         product rows 60–894), but Figma STRETCHES it into a 707.6×524 box (+11% height). `contain` keeps
+         the real proportions, leaving 53px (mobile 25.7px) of spare height in the box. 87.4% places the
+         product's base exactly where Figma has it: desktop y 443 / 500, mobile y 273 / 330.
+         (50% put it 20px too high, 100% 7px too low.) Move the whole stage with the hero's
+         "Product stage vertical position" settings. */
+      object-position: 50% 87.4%;
+    }
+
+    .image-block__image {
+      filter: drop-shadow(0 30px 50px rgb(8 51 115 / 0.35));
+    }
+
+    .image-block__placeholder {
+      inline-size: 100%;
+      block-size: 100%;
+    }
+
+    /* Floating chips. Outer-edge anchoring keeps chips inside the stage edge whatever the label length.
+       Exact Figma slots: top-start, middle-start, top-end, bottom-end (desktop); top-start, middle-start,
+       middle-end, bottom-end (mobile). Other slots are ASSUMED mirrored values. */
+    @media screen and (min-width: 990px) {
+      .sn-float {
+        position: absolute;
+        margin: 0;
+      }
+
+      .sn-float--top-start { inset-inline-start: 18.56%; inset-block-start: 24.4%; }
+      .sn-float--middle-start { inset-inline-start: 24.3%; inset-block-start: 51.4%; }
+      .sn-float--bottom-start { inset-inline-start: 21.4%; inset-block-start: 70%; }
+      .sn-float--top-end { inset-inline-end: -3.87%; inset-block-start: 31.2%; }
+      .sn-float--middle-end { inset-inline-end: -3.1%; inset-block-start: 47.2%; }
+      .sn-float--bottom-end { inset-inline-end: -2.4%; inset-block-start: 63.2%; }
+    }
+
+    @media screen and (max-width: 989px) {
+      .sn-float {
+        position: absolute;
+        margin: 0;
+      }
+
+      .sn-float-m--none { position: static; }
+      .sn-float-m--top-start { inset-inline-start: 0; inset-block-start: 11.21%; }
+      .sn-float-m--middle-start { inset-inline-start: -0.88%; inset-block-start: 46.97%; }
+      .sn-float-m--bottom-start { inset-inline-start: -0.88%; inset-block-start: 86.97%; }
+      .sn-float-m--top-end { inset-inline-end: -5.56%; inset-block-start: 11.21%; }
+      .sn-float-m--middle-end { inset-inline-end: -5.56%; inset-block-start: 45.45%; }
+      .sn-float-m--bottom-end { inset-inline-end: -2.05%; inset-block-start: 86.97%; }
+    }
+  }
+}
+
+/* Spec chip (group: icon badge + text label). Figma 190:3797 */
+.sn-home-hero-chip {
+  > .group-block-content {
+    flex-direction: row;
+    flex-wrap: nowrap;
+    align-items: center;
+    gap: 0;
+  }
+
+  /* Badge: 32px circle, brand gradient, 1.5px white border, pulse ring 44px */
+  .icon-block {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    box-sizing: border-box;
+    inline-size: 32px;
+    block-size: 32px;
+    border: 1.5px solid rgb(255 255 255 / 0.9);
+    border-radius: 50%;
+    background-image: linear-gradient(to bottom, #63cdff, #0f64a8);
+    color: #fff;
+    filter: drop-shadow(0 6px 7px rgb(15 100 168 / 0.35));
+
+    &::after {
+      content: '';
+      position: absolute;
+      inset: -7.5px;
+      border: 1.5px solid rgb(99 205 255 / 0.55);
+      border-radius: 50%;
+      pointer-events: none;
+    }
+  }
+
+  /* Figma: 17px icon slot holding a 24×24 vector box (vector overflows the slot, centred in the badge).
+     max-* caps the size even when the icon block's Width setting writes a larger inline width
+     (e.g. Width 200 on an uploaded image); a smaller Width setting is still respected. */
+  .icon-block__media {
+    flex-shrink: 0;
+    max-inline-size: 24px;
+    max-block-size: 24px;
+    object-fit: contain;
+  }
+
+  /* Label pill (Figma 190:3798): 34px tall incl. 1px inside stroke, padding 7 / 20 (badge side) / 7 / 14,
+     translucent white + blur 9, overlapped 9px by the badge. Chip total = label + 32 - 9. */
+  .text-block {
+    margin-inline-start: -9px;
+    padding-block: 7px;
+    padding-inline: 20px 14px;
+    border-radius: 999px;
+    background-color: rgb(255 255 255 / 0.78);
+    box-shadow: inset 0 0 0 1px rgb(255 255 255 / 0.95);
+    -webkit-backdrop-filter: blur(9px);
+    backdrop-filter: blur(9px);
+    color: #12568d;
+    white-space: nowrap;
+
+    :is(p, h1, h2, h3) {
+      margin: 0;
+      font-size: 12px;
+      line-height: 20px;
+      font-weight: 600;
+      color: inherit;
+    }
+  }
+}
+
+/* ==========================================================================
+   S03 Trust Strip — .sn-home-trust-card (group in a native `section`), items .sn-home-trust-item
+   Figma desktop 190:4081 (wrapper 108 = 3 + card 1236×102 + 3), mobile 335:4229 (346×100) | owner: Dev1
+   DOM: section › .custom-section-content › .section-content-wrapper › .sn-home-trust-card (group)
+        › .group-block-content › .sn-home-trust-item (group) › .group-block-content › icon + copy group › text
+   Editor-driven (native): card padding / gap / radius / border / background, item gap, text-group gap,
+   icon Width, text alignment. Editor-driven (section "Card sizes"): tile sizes and the mobile padding,
+   gaps and icon size, via --card-* variables with the Figma values as fallbacks.
+   ========================================================================== */
+.sn-home-trust-card {
+  --sn-card-bg: #fff;
+
+  position: relative;
+  inline-size: 100%;
+  /* Figma 3px wrapper around the card (holds the glint) */
+  margin-block: 3px;
+  margin-inline: auto;
+  background-color: var(--sn-card-bg);
+  filter: drop-shadow(0 14px 16px rgb(15 100 168 / 0.1));
+  /* A native corner radius adds an inline `overflow: clip`; keep the 3px glint band above the card visible */
+  overflow-clip-margin: 4px;
+
+  /* Native Background colour wins over the Figma white */
+  &[class*='color-custom-'] {
+    --sn-card-bg: var(--color-background);
+  }
+
+  /* Native Border "none" → Figma 1.5px inside stroke #63cdff 40%. Any native border replaces it. */
+  &[style*='--border-style: none'] {
+    box-shadow: inset 0 0 0 1.5px rgb(99 205 255 / 0.4);
+  }
+
+  /* Desktop: items in one row; space between items = card Gap (Figma 0, dividers instead) */
+  > .group-block-content {
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+  }
+
+  /* Glint on the top edge (Figma Glint 170×22, #63cdff 90%, blur 7), visible only in the 3px band above */
+  &::before {
+    content: '';
+    position: absolute;
+    inset-inline-end: 61.33%;
+    inset-block-start: -13px;
+    inline-size: 170px;
+    block-size: 22px;
+    border-radius: 50%;
+    background-color: rgb(99 205 255 / 0.9);
+    filter: blur(7px);
+    clip-path: inset(10px -40px 9px -40px);
+    pointer-events: none;
+  }
+
+  @media screen and (max-width: 989px) {
+    margin-block: 0;
+    padding-block: var(--card-padding-mobile, 10px) var(--card-padding-bottom-mobile, 4px);
+    padding-inline: var(--card-padding-mobile, 10px);
+    /* Figma mobile 20 (desktop 22): 2px smaller than the native radius */
+    border-radius: max(0px, calc(var(--border-radius, 22px) - 2px));
+    filter: none;
+
+    &::before {
+      display: none;
+    }
+
+    /* Figma mobile 335:4229: equal columns (flex 1 / min-width 1px), one row, no slider.
+       Grid keeps every column the same width whatever the text length, so text wraps inside its
+       column instead of pushing an item to a new row. 5+ items: rows of four. */
+    > .group-block-content {
+      display: grid;
+      grid-auto-flow: column;
+      grid-auto-columns: minmax(0, 1fr);
+      align-items: start;
+      /* Section setting "Trust item gap — Mobile" (Figma 2). Capped at 6% of the card's inner width
+         (≈19px at 390) so columns never get too narrow to read; grid columns never overflow. */
+      column-gap: min(var(--card-gap-mobile, 2px), 6%);
+      row-gap: 12px;
+    }
+
+    > .group-block-content:has(> .sn-home-trust-item:nth-child(5)) {
+      grid-auto-flow: row;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+  }
+
+  @media screen and (max-width: 749px) {
+    /* Figma 335:4229: 346 wide at 390, gutters 24 (visual left) / 20 (visual right).
+       Width = section setting "Trust card width — Mobile" (default 346), never wider than the screen
+       minus 16px. It is set explicitly: the Trust section centres its content (column flex,
+       align-items: center), so an `auto` width shrank the card to its content and squeezed the columns.
+       Centred in the content column, then shifted 2px to the start edge for Figma's 24 / 20 gutters;
+       a width above the column (358 at 390) extends into the page margins, never past the screen. */
+    --sn-card-w: min(var(--card-width-mobile, 346px), 100vw - 16px);
+
+    align-self: flex-start;
+    inline-size: var(--sn-card-w);
+    max-inline-size: none;
+    margin-inline: calc((100% - var(--sn-card-w)) / 2 - 2px) auto;
+  }
+}
+
+/* Mobile "border beam" ring (Figma Beam Disk conic gradient, static), only when no native border is set */
+@media screen and (max-width: 989px) {
+  .sn-home-trust-card[style*='--border-style: none'] {
+    border: 2px solid transparent;
+    background:
+      linear-gradient(var(--sn-card-bg), var(--sn-card-bg)) padding-box,
+      conic-gradient(
+          from 90deg at 50% calc(50% + 6px),
+          rgb(99 205 255 / 0) 0% 42%,
+          rgb(99 205 255 / 0.65) 46.5%,
+          #fff 50%,
+          rgb(99 205 255 / 0.65) 53.5%,
+          rgb(99 205 255 / 0) 58% 100%
+        )
+        border-box,
+      /* Figma 335:4229: the white card (radius 18) sits 2px inside a radius-20 frame that CLIPS the card's
+         shadow (0 16 34 rgb(13 64 128 / .18)). So the visible outline is that shadow seen through the 2px
+         ring: faint at the top, strongest along the bottom (sampled ≈ rgb(218 226 235) over white), and
+         nothing spreads below the card. Approximated as a vertical tint of the same shadow colour. */
+      linear-gradient(rgb(13 64 128 / 0.03), rgb(13 64 128 / 0.15)) border-box;
+    /* No outer shadow: Figma's frame clips it (a soft glow below the card is not in the design) */
+    box-shadow: none;
+  }
+}
+
+.sn-home-trust-item {
+  position: relative;
+  flex: 1 1 0;
+  min-inline-size: 220px;
+
+  /* Desktop: tile + text in a row; space = the item's Gap (Figma 14) */
+  > .group-block-content {
+    flex-direction: row;
+    flex-wrap: nowrap;
+    align-items: center;
+    justify-content: center;
+  }
+
+  /* Divider before every item except the first (Figma 1×52 #dcf2fb, centred); any item count */
+  & + &::before {
+    content: '';
+    position: absolute;
+    inset-inline-start: 0;
+    inset-block-start: 50%;
+    inline-size: 1px;
+    block-size: 52px;
+    background-color: #dcf2fb;
+    translate: 0 -50%;
+  }
+
+  /* Icon tile (Figma 58 = 30 icon + 2×13 + 2×1 border, radius 17, white → #f0fafe, 1px #dcf2fb, shadow).
+     The tile wraps the icon, so it follows the icon size: desktop = the icon block's Width setting. */
+  .icon-block {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    box-sizing: border-box;
+    inline-size: auto;
+    block-size: auto;
+    aspect-ratio: 1;
+    padding: 13px;
+    border: 1px solid #dcf2fb;
+    border-radius: 17px;
+    background-image: linear-gradient(to bottom, #fff, #f0fafe);
+    color: #176bb0;
+    filter: drop-shadow(0 8px 9px rgb(15 100 168 / 0.1));
+  }
+
+  .icon-block__media {
+    max-inline-size: 64px;
+    max-block-size: 64px;
+    object-fit: contain;
+  }
+
+  /* Weights are Figma-fixed (the text block has no weight setting; a Custom preset would otherwise
+     reset titles to the body weight). Sizes, line heights, family and colour: see the :where() rules below. */
+  .text-block {
+    :is(h1, h2, h3, h4, p) {
+      margin: 0;
+    }
+
+    :is(h1, h2, h3, h4) {
+      font-weight: 600;
+    }
+
+    p {
+      font-weight: 400;
+    }
+  }
+
+  @media screen and (max-width: 989px) {
+    /* Grid cell: no flex sizing, may shrink below its text's min-content */
+    flex: none;
+    min-inline-size: 0;
+    inline-size: auto;
+
+    /* Figma cell: tile, 3, title, 3, description, centred */
+    > .group-block-content {
+      flex-direction: column;
+      align-items: center;
+      gap: var(--card-item-gap-mobile, 3px);
+    }
+
+    & + &::before {
+      display: none;
+    }
+
+    /* Copy group fills the column so the text wraps at the column width, never wider */
+    .group-block {
+      inline-size: 100%;
+      min-inline-size: 0;
+    }
+
+    /* Alignment below 750px = the copy group's "Content position (mobile)" */
+    .group-block > .group-block-content {
+      gap: var(--card-item-gap-mobile, 3px);
+    }
+
+    /* Figma mobile tile 38 = 20 icon + 2×8 + 2×1 border, radius 12 */
+    .icon-block {
+      padding: 8px;
+      border-radius: 12px;
+    }
+
+    /* Section setting "Icon size — Mobile": set exactly (min + max beat the icon block's inline Width) */
+    .icon-block__media {
+      min-inline-size: var(--card-icon-size-mobile, 20px);
+      max-inline-size: var(--card-icon-size-mobile, 20px);
+      block-size: var(--card-icon-size-mobile, 20px);
+      max-block-size: var(--card-icon-size-mobile, 20px);
+    }
+
+    .text-block {
+      max-inline-size: 100%;
+
+      /* Figma: plain wrapping at the column width (word-break: break-word), no balancing */
+      > * {
+        max-inline-size: 100%;
+        overflow-wrap: break-word;
+        text-wrap: wrap;
+      }
+    }
+  }
+
+  /* Tablet 750–989 (no Figma tablet frame, ASSUMED): centred, slightly larger text */
+  @media screen and (min-width: 750px) and (max-width: 989px) {
+    .group-block > .group-block-content {
+      align-items: center;
+    }
+
+    .text-block > * {
+      text-align: center;
+    }
+  }
+}
+
+
+/* Trust text: Figma defaults at element-level specificity (0,0,1: wrapper in :where), so every Theme Editor
+   setting wins (they use classes) while Horizon's plain h3 / p base rules are matched and dev1.css, loaded later, wins the tie:
+   - text block Custom preset → its Size / Line height / Font replace the desktop values;
+   - text block "Text color" replaces the colours;
+   - text block "Font size — Mobile" / "Line height — Mobile" (snippets/text.liquid) replace them below 750px.
+   Figma desktop 190:4081: title 16/27, description 14/24. Tablet 750–989 ASSUMED 14/22, 12/18.
+   Mobile Figma 335:4229 (10/19, 8/19) is set on the S03 text blocks, not here. */
+:where(.sn-home-trust-item .text-block) :is(h1, h2, h3, h4, p) {
+  font-family: var(--font-body--family);
+  letter-spacing: 0;
+  text-transform: none;
+}
+
+:where(.sn-home-trust-item .text-block:not(.custom-font-size)) :is(h1, h2, h3, h4) {
+  font-size: 16px;
+}
+
+:where(.sn-home-trust-item .text-block:not(.custom-font-size)) p {
+  font-size: 14px;
+}
+
+:where(.sn-home-trust-item .text-block:not(.custom-typography)) :is(h1, h2, h3, h4) {
+  line-height: 27px;
+}
+
+:where(.sn-home-trust-item .text-block:not(.custom-typography)) p {
+  line-height: 24px;
+}
+
+:where(.sn-home-trust-item .text-block:not(.custom-color)) :is(h1, h2, h3, h4) {
+  color: #131311;
+}
+
+:where(.sn-home-trust-item .text-block:not(.custom-color)) p {
+  color: #5a5a59;
+}
+
+@media screen and (min-width: 750px) and (max-width: 989px) {
+  :where(.sn-home-trust-item .text-block:not(.custom-font-size)) :is(h1, h2, h3, h4) {
+    font-size: 14px;
+  }
+
+  :where(.sn-home-trust-item .text-block:not(.custom-font-size)) p {
+    font-size: 12px;
+  }
+
+  :where(.sn-home-trust-item .text-block:not(.custom-typography)) :is(h1, h2, h3, h4) {
+    line-height: 22px;
+  }
+
+  :where(.sn-home-trust-item .text-block:not(.custom-typography)) p {
+    line-height: 18px;
+  }
+}
+
+/* ==========================================================================
+   S03 Hero + Trust overlap
+   The overlap is a Theme Editor setting on the Trust section (`section` → "Overlap previous section":
+   desktop 58 / mobile 49 = Figma), output by sections/section.liquid, which also gives the previous
+   section --next-section-overlap. On mobile/tablet the hero keeps that much room under the CTA.
+   Applies only when a Trust Strip directly follows a classed hero WITH blocks.
+   ========================================================================== */
+.shopify-section:has(.sn-home-hero > .hero__container > .hero__content-wrapper > *):has(
+    + .shopify-section .sn-home-trust-card
+  )
+  .sn-home-hero {
+  @media screen and (max-width: 989px) {
+    --sn-hero-overlap: var(--next-section-overlap, 49px);
+  }
+}
+
+/* ==========================================================================
+   S06 F1 Banner — .sn-home-f1-banner (native `hero` section) | owner: Dev1
+   Figma desktop 190:3851 (1480×520; container 1376 + 20px inner padding), mobile 190:4167 (390×714)
+   Native blocks only:
+   - content group .sn-home-f1-content: tag group .sn-home-f1-tag (text), heading text, description
+     text, specs group .sn-home-f1-specs > chip groups .sn-home-f1-spec (icon + text), button;
+   - stage group .sn-home-f1-stage: watermark group .sn-home-f1-watermark (text), dotted circle group
+     .sn-home-f1-arc, product image block, sparkles group .sn-home-f1-sparkles;
+   - switch groups .sn-home-f1-glow / .sn-home-f1-waves (no content).
+   Every decoration is its own block: hide or delete it in the Theme Editor to turn it off.
+   Decorations are the exact Figma SVG shapes inlined as data URIs (no files, no Figma URLs).
+   Merchant media (background, product, icons) is chosen in the Theme Editor.
+   ========================================================================== */
+.sn-home-f1-banner {
+  /* Figma container 1376px (class-scoped, like S03) */
+  --page-content-width: 1376px;
+  --page-width: calc(var(--page-content-width) + var(--page-margin) * 2);
+
+  @media screen and (max-width: 749px) {
+    /* Figma mobile gutter 24px */
+    --page-margin: max(24px, var(--safe-area-inset-left, 0px), var(--safe-area-inset-right, 0px));
+  }
+
+  /* Background fallback = Figma gradient, used when the hero has no Background colour. An uploaded
+     background image (hero media, optional separate mobile image) covers it. */
+  &:not([class*='color-custom-']) .hero__media-grid {
+    background-image: linear-gradient(68.2deg, #fff 5.73%, #f0fafe 94.27%);
+
+    @media screen and (max-width: 749px) {
+      background-image: linear-gradient(85.61deg, #fff 5.73%, #f0fafe 94.27%);
+    }
+  }
+
+  /* With blocks, the gradient replaces the "no media" placeholder. Without blocks (image-only banner)
+     the native placeholder and the image's natural height are untouched. */
+  &:has(> .hero__container > .hero__content-wrapper > *) .hero__media-grid > svg.hero__media {
+    display: none;
+  }
+
+  /* Glow + waves: one layer above the background image, below the content. Each part exists only
+     while its switch block ("Decoration: glow" / "Decoration: waves") is present and visible. */
+  &:has(.sn-home-f1-glow) {
+    --sn-f1-glow: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 620 580'%3E%3Cfilter id='f' x='0' y='0' width='620' height='580' filterUnits='userSpaceOnUse'%3E%3CfeGaussianBlur stdDeviation='75'/%3E%3C/filter%3E%3Cellipse cx='310' cy='290' rx='160' ry='140' fill='%2363CDFF' fill-opacity='0.2' filter='url(%23f)'/%3E%3C/svg%3E");
+
+    @media screen and (max-width: 989px) {
+      --sn-f1-glow: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 560 520'%3E%3Cfilter id='f' x='0' y='0' width='560' height='520' filterUnits='userSpaceOnUse'%3E%3CfeGaussianBlur stdDeviation='75'/%3E%3C/filter%3E%3Cellipse cx='280' cy='260' rx='130' ry='110' fill='%2363CDFF' fill-opacity='0.2' filter='url(%23f)'/%3E%3C/svg%3E");
+    }
+  }
+
+  &:has(.sn-home-f1-waves) {
+    --sn-f1-wave-back: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1480 170' preserveAspectRatio='none'%3E%3ClinearGradient id='g' x1='0' y1='85' x2='1480' y2='85' gradientUnits='userSpaceOnUse'%3E%3Cstop stop-color='%23DCF2FB' stop-opacity='0.95'/%3E%3Cstop offset='1' stop-color='%23F0FAFE' stop-opacity='0.95'/%3E%3C/linearGradient%3E%3Cpath d='M0 40C240 -40 480 90 740 25C1000 -40 1240 80 1480 0V170H0V40Z' fill='url(%23g)'/%3E%3C/svg%3E");
+    --sn-f1-wave-front: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1480 407' preserveAspectRatio='none'%3E%3ClinearGradient id='g' x1='0' y1='203.5' x2='1480' y2='203.5' gradientUnits='userSpaceOnUse'%3E%3Cstop stop-color='white' stop-opacity='0.95'/%3E%3Cstop offset='1' stop-color='%23DCF2FB' stop-opacity='0.6'/%3E%3C/linearGradient%3E%3Cpath d='M0 125.231C300 -93.9231 560 250.462 820 62.6154C1080 -109.577 1280 187.846 1480 0V407H0V125.231Z' fill='url(%23g)'/%3E%3C/svg%3E");
+
+    @media screen and (max-width: 989px) {
+      --sn-f1-wave-back: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 390 44.7973' preserveAspectRatio='none'%3E%3ClinearGradient id='g' x1='0' y1='22.3986' x2='390' y2='22.3986' gradientUnits='userSpaceOnUse'%3E%3Cstop stop-color='%23DCF2FB' stop-opacity='0.95'/%3E%3Cstop offset='1' stop-color='%23F0FAFE' stop-opacity='0.95'/%3E%3C/linearGradient%3E%3Cpath d='M0 10.5405C63.2432 -10.5405 126.486 23.7162 195 6.58784C263.514 -10.5405 326.757 21.0811 390 0V44.7973H0V10.5405Z' fill='url(%23g)'/%3E%3C/svg%3E");
+      /* Figma mobile has no front wave */
+      --sn-f1-wave-front: none;
+    }
+  }
+
+  &:has(.sn-home-f1-glow, .sn-home-f1-waves) > .hero__container::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+    background-image: var(--sn-f1-wave-front, none), var(--sn-f1-wave-back, none), var(--sn-f1-glow, none);
+    background-repeat: no-repeat;
+    /* Desktop (Figma 1480 frame, centred): front wave 1480×407 from y 203 and back wave 1480×170 from
+       y 390, both running 90 / 40px past the bottom (anchored to the bottom); glow box 620×580 whose
+       left edge is 370px left of the middle, top -290. */
+    background-size: 100% 407px, 100% 170px, 620px 580px;
+    background-position:
+      0 calc(100% + 90px),
+      0 calc(100% + 40px),
+      calc(50% - 60px) -290px;
+
+    @media screen and (max-width: 989px) {
+      /* Mobile: back wave 390×44.8 on the bottom edge; glow box 560×520, right edge 220px past the
+         right side, top -240. */
+      background-size: 100% 407px, 100% 45px, 560px 520px;
+      background-position:
+        0 100%,
+        0 100%,
+        calc(100% + 220px) -240px;
+    }
+  }
+
+  /* Switch blocks carry no content */
+  :is(.sn-home-f1-glow, .sn-home-f1-waves) {
+    display: none;
+  }
+
+  > .hero__container > .hero__content-wrapper {
+    @media screen and (min-width: 990px) {
+      /* Figma container inner padding */
+      padding-inline: 20px;
+      flex-wrap: nowrap;
+    }
+
+    @media screen and (max-width: 989px) {
+      flex-direction: column;
+      flex-wrap: nowrap;
+      align-items: stretch;
+      gap: 0;
+      /* Figma mobile: container bottom padding 36 */
+      padding-block-end: 36px;
+    }
+  }
+
+  /* Only one column left (no stage, or no content): centre it instead of leaving an empty side */
+  > .hero__container > .hero__content-wrapper:not(:has(> .sn-home-f1-stage)),
+  > .hero__container > .hero__content-wrapper:not(:has(> .sn-home-f1-content)) {
+    justify-content: center;
+  }
+}
+
+/* --- Content column ------------------------------------------------------ */
+.sn-home-f1-content {
+  /* Above the stage's watermark, which reaches under the text on mobile */
+  position: relative;
+  z-index: 1;
+
+  @media screen and (min-width: 990px) {
+    /* Width = the group's native Width (S06: Custom 44% of 1336 ≈ Figma 584 incl. its 24px start padding) */
+    flex: 0 0 var(--size-style-width, 44%);
+  }
+
+  @media screen and (max-width: 989px) {
+    inline-size: 100%;
+    /* The native start padding (Figma 24) is a desktop value */
+    padding-inline: 0;
+
+    /* Figma mobile rhythm: tag / heading / description 12, specs 18, CTA 32.
+       Desktop = the group's native Gap (18). */
+    > .group-block-content {
+      gap: 12px;
+    }
+
+    > .group-block-content > .sn-home-f1-specs {
+      margin-block-start: 6px;
+    }
+
+    > .group-block-content > :is(.button, .button-secondary, .button-custom) {
+      margin-block-start: 20px;
+    }
+  }
+
+  /* Hidden when every child is removed or hidden */
+  &:not(:has(> .group-block-content > *)) {
+    display: none;
+  }
+
+  /* CTA (native button). Figma 157×54, radius 10, padding 14/32, gradient #63cdff → #0f64a8 (left to
+     right), shadow, label 16/26 SemiBold white. The gradient ends in the button's Background colour and
+     the label uses its Text colour, so the button settings stay in control. */
+  :is(.button, .button-secondary, .button-custom) {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    box-sizing: border-box;
+    min-inline-size: 157px;
+    min-block-size: 54px;
+    padding-block: 14px;
+    padding-inline: 32px;
+    border: 0;
+    border-radius: 10px;
+    background-color: var(--button-background-color, #0f64a8);
+    background-image: linear-gradient(to right, #63cdff, var(--button-background-color, #0f64a8));
+    color: var(--button-color, #fff);
+    box-shadow: 0 10px 22px rgb(15 100 168 / 0.35);
+    font-size: 16px;
+    line-height: 26px;
+    font-weight: 600;
+  }
+}
+
+/* Product tag (group with a text block). Figma 95×32: padding 7 / 16 = the group's native Padding;
+   pill, gradient #63cdff → #0f64a8 (left to right), shadow. */
+.sn-home-f1-tag {
+  border-radius: 999px;
+  background-image: linear-gradient(to right, #63cdff, #0f64a8);
+  box-shadow: 0 8px 18px rgb(15 100 168 / 0.3);
+}
+
+/* Spec chips. Figma 38 high: white, 1px #dcf2fb, radius 12, padding 6 / 10 (badge side) / 6 / 12,
+   gap 8 = the chip group's native Background, Border, Corner radius, Padding and Gap. */
+.sn-home-f1-specs > .group-block-content {
+  /* Native row groups don't wrap on desktop; chips do (Figma: 3 + 1 at 560px) */
+  flex-wrap: wrap;
+
+  @media screen and (max-width: 749px) {
+    /* Figma mobile: 8 between rows (between chips = native Gap 10) */
+    row-gap: 8px;
+
+    /* Figma mobile order differs from desktop: each chip's native group setting "Mobile display order"
+       (--sn-order-mobile, output for classed sections; 0 = block order). Visual only; Tab and screen
+       readers keep the block order. */
+    > * {
+      order: var(--sn-order-mobile, 0);
+    }
+  }
+}
+
+.sn-home-f1-spec {
+  flex: 0 0 auto;
+
+  > .group-block-content {
+    flex-wrap: nowrap;
+    align-items: center;
+  }
+
+  /* Icon badge 26, radius 8, gradient #63cdff → #0f64a8 (top to bottom). Icon size = the icon block's
+     native Width (Figma 15; the setting steps by 2, S06 uses 16), kept inside the badge. */
+  .icon-block {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    box-sizing: border-box;
+    inline-size: 26px;
+    block-size: 26px;
+    padding: 0;
+    border-radius: 8px;
+    background-image: linear-gradient(to bottom, #63cdff, #0f64a8);
+    color: #fff;
+  }
+
+  .icon-block__media {
+    max-inline-size: 20px;
+    max-block-size: 20px;
+    object-fit: contain;
+
+    /* Figma mobile 190:4167: the icon's vector box is 24px inside the 26px badge (its 15px frame
+       overflows). Size = the icon block's "Mobile width" (S06: 24); the cap only keeps it in the badge. */
+    @media screen and (max-width: 749px) {
+      max-inline-size: 24px;
+      max-block-size: 24px;
+    }
+  }
+}
+
+/* --- Typography: Figma values at element-level specificity (wrapped in :where), so the text blocks'
+   own settings always win: Custom preset Size / Line height, Text color, and "Font size — Mobile" /
+   "Line height — Mobile" (S06 template: heading 24/38, description 13/22). Weights are Figma-fixed. */
+:where(.sn-home-f1-content) :is(h1, h2, h3, h4, p) {
+  margin: 0;
+}
+
+:where(.sn-home-f1-content > .group-block-content > .text-block) :is(h1, h2, h3) {
+  font-family: var(--font-body--family);
+  font-weight: 700;
+  letter-spacing: 0;
+
+  @media screen and (max-width: 749px) {
+    /* Figma mobile heading is SemiBold */
+    font-weight: 600;
+  }
+}
+
+:where(.sn-home-f1-content > .group-block-content > .text-block:not(.custom-font-size)) :is(h1, h2, h3) {
+  font-size: 40px;
+
+  @media screen and (min-width: 750px) and (max-width: 989px) {
+    /* Tablet ASSUMED (no Figma frame) */
+    font-size: 32px;
+  }
+}
+
+:where(.sn-home-f1-content > .group-block-content > .text-block:not(.custom-typography)) :is(h1, h2, h3) {
+  line-height: 64px;
+
+  @media screen and (min-width: 750px) and (max-width: 989px) {
+    line-height: 50px;
+  }
+}
+
+:where(.sn-home-f1-content > .group-block-content > .text-block:not(.custom-color)) :is(h1, h2, h3) {
+  color: #12568d;
+}
+
+/* Accent phrase = <em> in the heading's rich text (Figma #176bb0) */
+:where(.sn-home-f1-content > .group-block-content > .text-block) :is(h1, h2, h3) em {
+  font-style: normal;
+  color: #176bb0;
+}
+
+:where(.sn-home-f1-content > .group-block-content > .text-block) p {
+  font-family: var(--font-body--family);
+  font-weight: 400;
+}
+
+:where(.sn-home-f1-content > .group-block-content > .text-block:not(.custom-font-size)) p {
+  font-size: 16px;
+}
+
+:where(.sn-home-f1-content > .group-block-content > .text-block:not(.custom-typography)) p {
+  line-height: 28px;
+}
+
+:where(.sn-home-f1-content > .group-block-content > .text-block:not(.custom-color)) p {
+  color: #5a5a59;
+}
+
+/* Tag label: Figma 12/18 SemiBold white */
+:where(.sn-home-f1-tag .text-block) :is(h1, h2, h3, h4, p) {
+  font-family: var(--font-body--family);
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+:where(.sn-home-f1-tag .text-block:not(.custom-font-size)) :is(h1, h2, h3, h4, p) {
+  font-size: 12px;
+}
+
+:where(.sn-home-f1-tag .text-block:not(.custom-typography)) :is(h1, h2, h3, h4, p) {
+  line-height: 18px;
+}
+
+:where(.sn-home-f1-tag .text-block:not(.custom-color)) :is(h1, h2, h3, h4, p) {
+  color: #fff;
+}
+
+/* Chip label: Figma 12/20 SemiBold #12568d */
+:where(.sn-home-f1-spec .text-block) :is(h1, h2, h3, h4, p) {
+  font-family: var(--font-body--family);
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+:where(.sn-home-f1-spec .text-block:not(.custom-font-size)) :is(h1, h2, h3, h4, p) {
+  font-size: 12px;
+}
+
+:where(.sn-home-f1-spec .text-block:not(.custom-typography)) :is(h1, h2, h3, h4, p) {
+  line-height: 20px;
+}
+
+:where(.sn-home-f1-spec .text-block:not(.custom-color)) :is(h1, h2, h3, h4, p) {
+  color: #12568d;
+}
+
+/* --- Product stage --------------------------------------------------------
+   Desktop: Figma stage = container inner width minus the copy column (752 × 520 at 1480).
+   Mobile: full-bleed 390 × 330, before the content. Children are positioned in % of the stage, so the
+   composition scales as one unit; the hero's "Product stage … position" settings move it as one unit. */
+.sn-home-f1-stage {
+  position: relative;
+  container-type: inline-size;
+  aspect-ratio: 752 / 520;
+  padding: 0;
+
+  > .group-block-content {
+    position: absolute;
+    inset: 0;
+  }
+
+  @media screen and (min-width: 990px) {
+    flex: 1 1 0;
+    min-inline-size: 0;
+    translate: var(--stage-offset-x, 0px) var(--stage-offset-y, 0px);
+  }
+
+  @media screen and (max-width: 989px) {
+    order: -1;
+    aspect-ratio: 390 / 330;
+    inline-size: 100%;
+    max-inline-size: 560px;
+    align-self: center;
+    translate: 0 var(--stage-offset-y-mobile, 0px);
+  }
+
+  @media screen and (max-width: 749px) {
+    /* Full-bleed: the stage spans the screen; the content keeps the 24px gutters */
+    inline-size: calc(100% + 2 * var(--page-margin));
+    max-inline-size: none;
+    margin-inline: calc(-1 * var(--page-margin));
+  }
+
+  /* Hidden when every child is removed or hidden (no empty reserved column) */
+  &:not(:has(> .group-block-content > *)) {
+    display: none;
+  }
+
+  /* Product image = the stage's own native image block (independent of the hero's background media).
+     Figma "Product Image" layer (190:3859 / 190:4173) = what exporting the product from Figma gives:
+     desktop 438 × 438 at stage (141, 22) → centre 47.87% / 46.35% of the 752 × 520 stage;
+     mobile 280 × 280 at (55, 40) → centre 50% / 54.55% of the 390 × 330 stage.
+     - Width = the image block's native Width (desktop) / Mobile width, literally the image's width as a %
+       of the stage. S06: Custom 58% (≈ 438px) / 72% (≈ 281px). Fill = full stage width.
+     - Height follows the native Aspect ratio (Adapt = the file's own proportions: no crop, no empty box).
+     - Centred on the Figma product centre; `contain`, never `cover`, so a cutout is never cropped or
+       stretched. The whole stage (with circle and watermark) moves with the hero's stage position settings. */
+  .image-block {
+    position: absolute;
+    left: 47.87%;
+    top: 46.35%;
+    inline-size: var(--size-style-width, 58.24%);
+    block-size: auto;
+    max-inline-size: none;
+    aspect-ratio: var(--ratio, 1);
+    margin: 0;
+    padding: 0;
+    translate: -50% -50%;
+
+    @media screen and (max-width: 989px) {
+      left: 50%;
+      top: 54.55%;
+      inline-size: var(--size-style-width-mobile, 71.79%);
+    }
+  }
+
+  .image-block__image {
+    inline-size: 100%;
+    block-size: 100%;
+    aspect-ratio: auto;
+    object-fit: contain;
+  }
+
+  /* Empty product image: never Horizon's sample t-shirt. In the editor a neutral dashed circle marks the
+     slot (click it to pick an image); on the storefront the empty block is not shown (rule below). */
+  .image-block .placeholder-image {
+    inline-size: 100%;
+    block-size: 100%;
+    aspect-ratio: auto;
+    border: 2px dashed rgb(23 107 176 / 0.3);
+    border-radius: 50%;
+    background: none;
+  }
+
+  .image-block__placeholder {
+    display: none;
+  }
+}
+
+/* Storefront only (the hero marks the editor with .hero__content-wrapper--design-mode): hide an empty
+   product image, and hide the stage when nothing but empty image blocks is left in it. */
+.hero__content-wrapper:not(.hero__content-wrapper--design-mode) {
+  .sn-home-f1-stage .image-block:has(> .placeholder-image) {
+    display: none;
+  }
+
+  > .sn-home-f1-stage:not(:has(> .group-block-content > :not(.image-block:has(> .placeholder-image)))) {
+    display: none;
+  }
+}
+
+/* Decoration: dotted circle (group block). Figma Arc (layer opacity 50%): 143 dashes desktop / 87
+   mobile, #63cdff → #176bb0 diagonal at 50%. Desktop 510 at stage (93, 5); mobile 320 at (35, 20).
+   On desktop the Figma front wave covers its lower half; approximated with a fade (ASSUMED). */
+.sn-home-f1-arc {
+  position: absolute;
+  left: 12.37%;
+  top: 0.96%;
+  inline-size: 67.82%;
+  aspect-ratio: 1;
+  padding: 0;
+  opacity: 0.5;
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 510 510'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' y1='0' x2='1' y2='1'%3E%3Cstop offset='0' stop-color='%2363CDFF'/%3E%3Cstop offset='1' stop-color='%23176BB0'/%3E%3C/linearGradient%3E%3C/defs%3E%3Ccircle cx='255' cy='255' r='254' fill='none' stroke='url(%23g)' stroke-opacity='0.5' stroke-width='2' pathLength='143' stroke-dasharray='0.27 0.73'/%3E%3C/svg%3E") center / 100% 100% no-repeat;
+  mask-image: linear-gradient(to bottom, #000 50%, rgb(0 0 0 / 0.15) 68%);
+  pointer-events: none;
+
+  @media screen and (max-width: 989px) {
+    left: 8.97%;
+    top: 6.06%;
+    inline-size: 82.05%;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 320 320'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' y1='0' x2='1' y2='1'%3E%3Cstop offset='0' stop-color='%2363CDFF'/%3E%3Cstop offset='1' stop-color='%23176BB0'/%3E%3C/linearGradient%3E%3C/defs%3E%3Ccircle cx='160' cy='160' r='159' fill='none' stroke='url(%23g)' stroke-opacity='0.5' stroke-width='2' pathLength='87' stroke-dasharray='0.27 0.73'/%3E%3C/svg%3E");
+    mask-image: none;
+  }
+}
+
+/* Decoration: sparkles & bubbles (group block). Figma sparkle-brand ×3 / ×2 and bubbles ×9 / ×4,
+   stage-relative positions. */
+.sn-home-f1-sparkles {
+  position: absolute;
+  inset: 0;
+  padding: 0;
+  pointer-events: none;
+  background-repeat: no-repeat;
+  background-image:
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M12 2.09C12.6 7.49 16.6 11.49 22 12.09C16.6 12.69 12.6 16.69 12 22.09C11.4 16.69 7.4 12.69 2 12.09C7.4 11.49 11.4 7.49 12 2.09Z' fill='%23176BB0' fill-opacity='0.7'/%3E%3C/svg%3E"),
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M12 2.09C12.6 7.49 16.6 11.49 22 12.09C16.6 12.69 12.6 16.69 12 22.09C11.4 16.69 7.4 12.69 2 12.09C7.4 11.49 11.4 7.49 12 2.09Z' fill='%23176BB0' fill-opacity='0.5'/%3E%3C/svg%3E"),
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M12 2.09C12.6 7.49 16.6 11.49 22 12.09C16.6 12.69 12.6 16.69 12 22.09C11.4 16.69 7.4 12.69 2 12.09C7.4 11.49 11.4 7.49 12 2.09Z' fill='%23176BB0' fill-opacity='0.7'/%3E%3C/svg%3E"),
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 18 18'%3E%3Ccircle cx='9' cy='9' r='9' fill='%2363CDFF' fill-opacity='0.22'/%3E%3C/svg%3E"),
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 10 10'%3E%3Ccircle cx='5' cy='5' r='5' fill='%2363CDFF' fill-opacity='0.22'/%3E%3C/svg%3E"),
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 8 8'%3E%3Ccircle cx='4' cy='4' r='3.25' fill='none' stroke='%2363CDFF' stroke-opacity='0.3' stroke-width='1.5'/%3E%3C/svg%3E"),
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 14 14'%3E%3Ccircle cx='7' cy='7' r='6.25' fill='none' stroke='%2363CDFF' stroke-opacity='0.3' stroke-width='1.5'/%3E%3C/svg%3E"),
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 18 18'%3E%3Ccircle cx='9' cy='9' r='9' fill='%2363CDFF' fill-opacity='0.22'/%3E%3C/svg%3E"),
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 8 8'%3E%3Ccircle cx='4' cy='4' r='3.25' fill='none' stroke='%2363CDFF' stroke-opacity='0.3' stroke-width='1.5'/%3E%3C/svg%3E"),
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 14 14'%3E%3Ccircle cx='7' cy='7' r='6.25' fill='none' stroke='%2363CDFF' stroke-opacity='0.3' stroke-width='1.5'/%3E%3C/svg%3E"),
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 6 6'%3E%3Ccircle cx='3' cy='3' r='3' fill='%2363CDFF' fill-opacity='0.22'/%3E%3C/svg%3E"),
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 12'%3E%3Ccircle cx='6' cy='6' r='5.25' fill='none' stroke='%2363CDFF' stroke-opacity='0.3' stroke-width='1.5'/%3E%3C/svg%3E");
+  background-size: 22px, 16px, 22px, 18px, 10px, 8px, 14px, 18px, 8px, 14px, 6px, 12px;
+  background-position: 77.81% 18.07%, 10.6% 79.37%, 11.37% 12.65%, 86.38% 70.12%, 92.99% 58.04%, 82.8% 45.31%, 90.79% 33.2%, 20.3% 64.74%, 17.61% 40.04%, 25.07% 27.87%, 79.36% 23.35%, 6.49% 27.56%;
+
+  @media screen and (max-width: 989px) {
+    background-image:
+      url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M12 2.09C12.6 7.49 16.6 11.49 22 12.09C16.6 12.69 12.6 16.69 12 22.09C11.4 16.69 7.4 12.69 2 12.09C7.4 11.49 11.4 7.49 12 2.09Z' fill='%23176BB0' fill-opacity='0.7'/%3E%3C/svg%3E"),
+      url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M12 2.09C12.6 7.49 16.6 11.49 22 12.09C16.6 12.69 12.6 16.69 12 22.09C11.4 16.69 7.4 12.69 2 12.09C7.4 11.49 11.4 7.49 12 2.09Z' fill='%23176BB0' fill-opacity='0.5'/%3E%3C/svg%3E"),
+      url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 18 18'%3E%3Ccircle cx='9' cy='9' r='9' fill='%2363CDFF' fill-opacity='0.22'/%3E%3C/svg%3E"),
+      url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 10 10'%3E%3Ccircle cx='5' cy='5' r='5' fill='%2363CDFF' fill-opacity='0.22'/%3E%3C/svg%3E"),
+      url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 8 8'%3E%3Ccircle cx='4' cy='4' r='3.25' fill='none' stroke='%2363CDFF' stroke-opacity='0.3' stroke-width='1.5'/%3E%3C/svg%3E"),
+      url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 18 18'%3E%3Ccircle cx='9' cy='9' r='9' fill='%2363CDFF' fill-opacity='0.22'/%3E%3C/svg%3E");
+    background-size: 22px, 16px, 18px, 10px, 8px, 18px;
+    background-position: 89.67% 14.29%, 10.7% 95.54%, 88.71% 96.15%, 92.63% 78.13%, 83.25% 65.22%, 8.06% 70.51%;
+  }
+}
+
+/* Decoration: F1 watermark (group with an editable text block). Figma: Cairo Bold, #176bb0 at 5%,
+   letter-spacing -2%. Desktop 380px at frame (31, -100) = stage (-41, -100); mobile 210px at
+   (-20, 354), below the stage and under the text. Colour = the text block's Text color (default
+   #176bb0), shown at 5%. */
+.sn-home-f1-watermark {
+  position: absolute;
+  left: -5.45%;
+  top: -19.23%;
+  padding: 0;
+  opacity: 0.05;
+  pointer-events: none;
+  user-select: none;
+
+  @media screen and (max-width: 989px) {
+    left: -5.13%;
+    top: 107.27%;
+  }
+
+  .text-block,
+  .text-block > * {
+    margin: 0;
+    direction: ltr;
+    text-align: left;
+    white-space: nowrap;
+    font-family: var(--font-heading--family);
+    font-weight: 700;
+    font-size: 50.53cqi;
+    line-height: normal;
+    letter-spacing: -0.02em;
+    color: var(--color, #176bb0);
+
+    @media screen and (max-width: 989px) {
+      font-size: 53.85cqi;
+    }
+  }
+}
+
+/* ==========================================================================
+   S10 Choose Your Care — .sn-home-choose-care (native `carousel` section) | owner: Dev1
+   Figma desktop 190:3943 (1480×1072; container 1376 + 20px inner padding), mobile 190:4265 (390×695)
+   Generic native composition: carousel → header group .sn-home-care-head (2 text blocks) →
+   carousel content → any number of `_card` slides, each holding a `product-card` (product picker) →
+     product gallery · optional group .sn-home-care-badge (text; stays with its own card) · product title ·
+     text (product description) · group .sn-home-care-specs > specification rows (icon + text) ·
+     group .sn-home-care-price (price + custom Liquid discount pill .sn-home-care-discount) ·
+     group .sn-home-care-cta (text).
+   Active card: assets/carousel-active-card.js (section setting "Highlight centred card") marks the card
+   closest to the centre of the real scroller (slideshow-slides) with .is-active-card and writes
+   --carousel-progress; the ring, glow and filled button follow that class. When every card fits
+   (desktop) the "Featured card" checkbox (.sn-card-featured) is the active one. The Featured card also
+   is centred on load. All cards share one width (no layout change when the active card moves); the
+   active card is emphasised with paint + a transform zoom only. Desktop keeps the carousel inside the
+   1376 container; tablet/mobile use the full-width track. Section settings → --carousel-* (Figma fallbacks).
+   ========================================================================== */
+.sn-home-choose-care {
+  /* Figma container 1376px (class-scoped, like S03 / S06) */
+  --page-content-width: 1376px;
+  --page-width: calc(var(--page-content-width) + var(--page-margin) * 2);
+
+  /* Heading → cards: Figma 56 desktop / 22 mobile */
+  /* Row gap only, like native `.section-carousel { row-gap }`. The section is a 3-column grid
+     (margin | content | margin); a `gap` shorthand would add two column gaps, make the grid wider than
+     the screen on mobile (content column = 100% − 2 margins) and push everything sideways (left in RTL). */
+  &.gap-style {
+    row-gap: 56px;
+
+    @media screen and (max-width: 749px) {
+      row-gap: 22px;
+    }
+  }
+
+  /* Figma section padding: 60 / 60 desktop (native Top / Bottom), 56 / 40 mobile */
+  &.spacing-style {
+    @media screen and (max-width: 749px) {
+      padding-block: calc(56px + var(--section-top-offset, 0px)) 40px;
+    }
+  }
+
+  /* --- Heading ------------------------------------------------------------ */
+  .sn-home-care-head {
+    @media screen and (max-width: 749px) {
+      /* Figma mobile gutter 24 (page margin 16 + 8) */
+      padding-inline: 8px;
+    }
+  }
+
+  /* --- Carousel track ----------------------------------------------------- */
+  slideshow-container {
+    /* native paints the colour-scheme background here; let the section gradient show */
+    background-color: transparent;
+  }
+
+  /* Arrows are off through the section's native "Icon: None"; this keeps them off if re-enabled */
+  slideshow-arrows {
+    display: none;
+  }
+
+  .carousel-content slideshow-slides {
+    /* room for the card shadows / glow (the scroller clips overflow) */
+    padding-block: 48px;
+    margin-block: -48px;
+    align-items: center;
+  }
+
+  .carousel-content slideshow-slides > .card {
+    position: relative;
+    isolation: isolate;
+    flex: 0 0 auto;
+    height: auto;
+    overflow: visible;
+    padding: 3px; /* ring space on every card: changing the active card never changes layout */
+    border-radius: 27px;
+    box-shadow: var(--sn-care-shadow);
+    transform-origin: center;
+    transition:
+      box-shadow 0.25s ease,
+      scale 0.25s ease;
+
+    &::before {
+      content: '';
+      position: absolute;
+      z-index: -1;
+      inset: 0;
+      border-radius: inherit;
+      background: var(--sn-care-ring);
+      opacity: 0;
+      transition: opacity 0.25s ease;
+      pointer-events: none;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      transition: none;
+
+      &::before {
+        transition: none;
+      }
+    }
+
+    @media screen and (max-width: 749px) {
+      padding: 1.7px;
+      border-radius: 17.42px;
+    }
+  }
+
+  .carousel-content .card__content {
+    background-color: transparent;
+  }
+
+  /* Side gutters as flex spacers instead of the native scroller padding: a flex item always belongs to
+     the scrollable range, so the last card (far left in RTL) can reach the centre in every browser
+     (inline-end padding of a scroll container is not reliably scrollable). Width = gutter − one gap,
+     because the spacer itself is followed by a gap. */
+  .carousel-content slideshow-slides {
+    padding-inline: 0;
+
+    &::before,
+    &::after {
+      content: '';
+      flex: 0 0 max(0px, calc(var(--gutter-slide-width, 0px) - var(--slideshow-gap, 0px)));
+    }
+  }
+
+  /* Desktop (≥990): the carousel stays inside the 1376 container (native wraps it in a full-bleed
+     .force-full-width, which let 4+ cards run to the screen edges). Equal cards: Card width — Desktop
+     (400), shrunk so three always fit. Up to 3 cards: centred, nothing scrolls. 4+ cards: side gutters
+     of half the leftover width + centre snap, so any card (first and last too) can be centred. */
+  @media screen and (min-width: 990px) {
+    > .force-full-width {
+      grid-column: 2;
+    }
+
+    .carousel-content slideshow-slides {
+      --sn-care-card: min(
+        calc(var(--carousel-card-width, 400) * 1px),
+        calc((100cqi - 2 * var(--carousel-gap, 40px)) / 3)
+      );
+      --gutter-slide-width: 0px;
+
+      justify-content: center;
+      justify-content: safe center;
+
+      /* up to 3 cards: no gutters, no spacers */
+      &::before,
+      &::after {
+        display: none;
+      }
+    }
+
+    .carousel-content slideshow-slides:has(> .card ~ .card ~ .card ~ .card) {
+      --gutter-slide-width: max(0px, calc((100cqi - var(--sn-care-card)) / 2));
+
+      justify-content: flex-start;
+      scroll-padding-inline: 0;
+
+      &::before,
+      &::after {
+        display: block;
+      }
+
+      > .card {
+        scroll-snap-align: center;
+      }
+    }
+
+    .carousel-content slideshow-slides > .card {
+      width: var(--sn-care-card);
+    }
+  }
+
+  /* Tablet + mobile (≤989): equal card widths; each side gutter is half the space left beside one card, so
+     the first and last cards can reach the centre too. Cards snap by their centre to the centre of the
+     whole scroller (native one-sided scroll-padding removed), so the snapped card is always symmetric. */
+  @media screen and (max-width: 989px) {
+    .carousel-content slideshow-slides {
+      --sn-care-slide-w: 340px; /* tablet: no Figma frame (ASSUMED) */
+      --gutter-slide-width: max(0px, calc((100cqi - var(--sn-care-slide-w)) / 2));
+      --slideshow-gap: 16px;
+
+      scroll-padding-inline: 0;
+    }
+
+    .carousel-content slideshow-slides > .card {
+      width: var(--sn-care-slide-w);
+      scroll-snap-align: center;
+    }
+  }
+
+  @media screen and (max-width: 749px) {
+    .carousel-content slideshow-slides {
+      --sn-care-slide-w: min(var(--carousel-card-width-mobile, 262px), calc(100cqi - 48px));
+      --slideshow-gap: var(--carousel-gap-mobile, 12px);
+    }
+  }
+
+  /* Cards without a product: kept (with native placeholders) in the Theme Editor, hidden on the live store */
+  .carousel-content slideshow-slides > .card:not(:has(> .card__content--design-mode)):has(product-card[data-placeholder='true']) {
+    display: none;
+  }
+
+  /* No fictional placeholder price */
+  product-card[data-placeholder='true'] .sn-home-care-price {
+    display: none;
+  }
+
+  /* --- Card --------------------------------------------------------------- */
+  /* White background, radius and padding: the product card's native settings */
+  .product-card__content.product-grid__card {
+    position: relative;
+
+    @media screen and (min-width: 990px) {
+      min-height: 672px;
+    }
+
+    @media screen and (max-width: 749px) {
+      min-height: 440px;
+      gap: 10.48px;
+      /* Bottom: never less than the side padding (Figma's regular mobile card had 4px, which put the
+         button on the card edge); a larger native "Padding bottom" on the product card is scaled ×0.655
+         like the rest of the Figma mobile card. */
+      padding: 15.72px 15.72px max(15.72px, calc(var(--padding-block-end, 0px) * 0.655));
+      border-radius: 15.72px;
+    }
+  }
+
+  /* Figma image box 352×240 when the gallery's native Image ratio is "Landscape" */
+  .card-gallery[data-image-ratio='landscape'] > * {
+    --gallery-aspect-ratio: 352 / 240;
+  }
+
+  .card-gallery {
+    overflow: hidden;
+
+    @media screen and (max-width: 749px) {
+      border-radius: 10.48px;
+    }
+  }
+
+  /* Whole product visible: the native card gallery hardcodes object-fit cover; the section's
+     "Product image fit" (Fit = contain, default) replaces it here only. */
+  .card-gallery .product-media-container img {
+    object-fit: var(--carousel-image-fit, contain);
+    object-position: center;
+  }
+
+  /* The discount pill sits in the price row, so the native "Sale" image badge is not repeated */
+  .card-gallery .color-custom-badge-sale {
+    display: none;
+  }
+
+  /* Product badge (text block with native background) on the image's top start corner.
+     It belongs to its own card: shown whenever the block exists and isn't hidden. */
+  .sn-home-care-badge {
+    position: absolute;
+    z-index: 2;
+    inset-block-start: 37px;
+    inset-inline-start: 37px;
+    width: auto;
+    pointer-events: none;
+
+    @media screen and (max-width: 749px) {
+      inset-block-start: 23.1px;
+      inset-inline-start: 23.5px;
+
+      .text-block--background {
+        padding: 2.27px 6.8px;
+        border-radius: 4.54px;
+      }
+    }
+  }
+
+  /* Product description: a short excerpt of the product's own description */
+  .product-card__content > .text-block {
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+    line-clamp: 2;
+    overflow: hidden;
+
+    > * {
+      display: inline;
+      margin: 0;
+    }
+
+    > *:not(:last-child)::after {
+      content: ' ';
+    }
+
+    :is(img, video, iframe, table, figure) {
+      display: none;
+    }
+  }
+
+  /* Specification rows (icon + text) */
+  .sn-home-care-specs {
+    @media screen and (max-width: 749px) {
+      padding-block-start: 2.62px;
+    }
+  }
+
+  .sn-home-care-specs .group-block-content {
+    @media screen and (max-width: 749px) {
+      gap: 6.55px;
+    }
+  }
+
+  .sn-home-care-specs .icon-block__media {
+    @media screen and (max-width: 749px) {
+      width: 13px;
+      height: 13px;
+    }
+  }
+
+  /* Purchase area (price + button) pinned to the bottom of the card */
+  .sn-home-care-price {
+    margin-block-start: auto;
+  }
+
+  .sn-home-care-price .group-block-content {
+    flex-wrap: wrap;
+  }
+
+  /* Phones: Horizon gives every .text-block in a row group `flex: 1 1 …` (base.css), so the price block
+     stretched across the row and pushed the discount pill to the far (left) end. Figma 190:4265: the
+     pill sits right beside the prices. Keep the price at its own width (its native Width "Fit"). */
+  @media screen and (max-width: 749px) {
+    .sn-home-care-price > .group-block-content > product-price.text-block {
+      flex: 0 0 auto;
+    }
+  }
+
+  .sn-home-care-discount {
+    display: inline-flex;
+    align-items: center;
+    padding: 4px 12px;
+    border: 1px solid #dcf2fb;
+    border-radius: 8px;
+    background-color: #f0fafe;
+    color: #176bb0;
+    font-family: var(--font-body--family);
+    font-size: 12px;
+    font-weight: 600;
+    line-height: 18px;
+    white-space: nowrap;
+
+    @media screen and (max-width: 749px) {
+      padding: 2.27px 6.8px;
+      border-width: 0.57px;
+      border-radius: 4.54px;
+      font-size: 7px;
+      line-height: 10px;
+    }
+  }
+
+  /* Price (native price block): current price first, compare-at struck through */
+  .sn-home-care-price product-price {
+    .price {
+      font-size: 18px;
+      font-weight: 700;
+      line-height: 28px;
+      color: #131311;
+
+      @media screen and (max-width: 749px) {
+        font-size: 11.79px;
+        line-height: 18.34px;
+      }
+    }
+
+    .compare-at-price {
+      font-size: 14px;
+      font-weight: 400;
+      line-height: 22px;
+      color: #5a5a59;
+
+      @media screen and (max-width: 749px) {
+        font-size: 7.94px;
+        line-height: 12.48px;
+      }
+    }
+
+    > div {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 10px;
+
+      @media screen and (max-width: 749px) {
+        gap: 5.67px;
+      }
+    }
+  }
+
+  /* CTA (text block with native background / text colour / radius / padding): full width, outlined */
+  .sn-home-care-cta {
+    width: 100%;
+
+    .text-block {
+      width: 100%;
+      justify-content: center;
+      text-align: center;
+      transition: filter 0.2s ease;
+    }
+
+    .text-block--background {
+      border: 1.5px solid #60c1e1;
+
+      @media screen and (max-width: 749px) {
+        padding: 8.52px 18.34px;
+        border-width: 0.98px;
+        border-radius: 7.86px;
+      }
+    }
+  }
+
+  .product-card:hover .sn-home-care-cta .text-block--background {
+    filter: brightness(0.96);
+  }
+
+  /* --- Active card (paint only): ring, glow, filled button ----------------------------------------
+     .is-active-card comes from carousel-active-card.js. Before the script runs (or without it) the
+     "Featured card" shows the look, so there is never a moment without a highlighted card. */
+  .carousel-content slideshow-slides > .card.is-active-card,
+  &:not(:has(.is-active-card)) .carousel-content slideshow-slides > .card.sn-card-featured {
+    z-index: 1;
+    scale: var(--sn-care-zoom);
+    box-shadow: var(--sn-care-glow);
+
+    &::before {
+      opacity: 1;
+    }
+
+    .sn-home-care-cta .text-block--background {
+      border-color: transparent;
+      background-color: var(--color-primary-button-background, #176bb0);
+      color: var(--color-primary-button-text, #ffffff);
+    }
+  }
+
+  .sn-home-care-cta .text-block--background {
+    transition:
+      filter 0.2s ease,
+      background-color 0.25s ease,
+      border-color 0.25s ease,
+      color 0.25s ease;
+
+    @media (prefers-reduced-motion: reduce) {
+      transition: none;
+    }
+  }
+
+  --sn-care-ring: conic-gradient(
+    from 90deg,
+    #63cdff 0%,
+    #3999d4 17.5%,
+    #247ebe 26.25%,
+    #0f64a8 35%,
+    #87b2d4 45%,
+    #ffffff 55%,
+    #87b2d4 65%,
+    #0f64a8 75%,
+    #247ebe 81.25%,
+    #3999d4 87.5%,
+    #63cdff 100%
+  );
+  /* Active zoom: section setting "Active card zoom" (106%); a quarter less on phones, where the gap is 12 */
+  --sn-care-zoom: var(--carousel-active-zoom, 1.06);
+  --sn-care-shadow: 0 12px 32px rgb(15 100 168 / 0.1), 0 0 0 rgb(99 204 255 / 0);
+  --sn-care-glow: 0 24px 48px rgb(15 100 168 / 0.18), 0 0 36px rgb(99 204 255 / 0.45);
+
+  @media screen and (max-width: 749px) {
+    --sn-care-zoom: calc(1 + (var(--carousel-active-zoom, 1.06) - 1) * 0.75);
+    --sn-care-shadow: 0 7.86px 20.96px rgb(15 100 168 / 0.1), 0 0 0 rgb(99 204 255 / 0);
+    --sn-care-glow: 0 13.61px 27.22px rgb(15 100 168 / 0.18), 0 0 20.42px rgb(99 204 255 / 0.45);
+  }
+
+  /* --- Progress bar (tablet + mobile, only while the cards scroll; none on desktop, as in Figma) ---
+     Width = --carousel-progress, written by carousel-active-card.js from the same scroller and in the
+     same frame as the active card, so position, highlight and bar always agree. Shown only while the
+     cards actually scroll. Fill starts at the inline start (right in Arabic). */
+  @media screen and (max-width: 989px) {
+    &.carousel--scrollable .force-full-width::after {
+      content: '';
+      display: block;
+      block-size: 4px;
+      margin: 22px max(24px, calc((100% - 342px) / 2)) 0;
+      border-radius: 99px;
+      background-color: #ffffff;
+      background-image: linear-gradient(90deg, #63cdff 0%, #0f64a8 100%);
+      background-repeat: no-repeat;
+      background-position: left center;
+      background-size: max(8%, calc(var(--carousel-progress, 0) * 100%)) 100%;
+      transition: background-size 0.15s linear;
+
+      @media (prefers-reduced-motion: reduce) {
+        transition: none;
+      }
+    }
+
+    &.carousel--scrollable .force-full-width:dir(rtl)::after {
+      background-position: right center;
+    }
+  }
+}
+
+/* Section background: Figma pale-blue gradient while the section has no Background colour */
+.section-background:has(+ .sn-home-choose-care:not([class*='color-custom-'])) {
+  background: linear-gradient(180deg, #f7fbfe 0%, #dcf2fb 100%);
+}
+
+/* Typography: Figma values at element-level specificity (wrapped in :where), so the text blocks'
+   native Custom preset, colour and "Font size — Mobile" / "Line height — Mobile" settings win. */
+:where(.sn-home-care-head .text-block:not(.custom-typography)) :is(h1, h2, h3) {
+  font-family: var(--font-heading--family);
+  font-size: 32px;
+  font-weight: 600;
+  line-height: 52px;
+}
+
+:where(.sn-home-care-head .text-block:not(.custom-color)) :is(h1, h2, h3) {
+  color: #12568d;
+}
+
+:where(.sn-home-care-head .text-block:not(.custom-typography)) p {
+  font-size: 18px;
+  font-weight: 400;
+  line-height: 32px;
+}
+
+:where(.sn-home-care-head .text-block:not(.custom-color)) p {
+  color: #5a5a59;
+}
+
+/* Product title (native product-title block) */
+:where(.sn-home-choose-care .product-card__content > a > .text-block:not(.custom-typography)) :is(h3, h4, p) {
+  font-size: 24px;
+  font-weight: 600;
+  line-height: 40px;
+}
+
+:where(.sn-home-choose-care .product-card__content > a > .text-block:not(.custom-color)) :is(h3, h4, p) {
+  color: #131311;
+}
+
+@media screen and (max-width: 749px) {
+  :where(.sn-home-choose-care .product-card__content > a > .text-block:not(.custom-typography)) :is(h3, h4, p) {
+    font-size: 15.72px;
+    line-height: 26.2px;
+  }
+}
+
+/* Product description, specification rows */
+:where(.sn-home-choose-care .product-card__content > .text-block:not(.custom-typography)) :is(p, li, span, div) {
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 24px;
+}
+
+:where(.sn-home-choose-care .product-card__content > .text-block:not(.custom-color)) :is(p, li, span, div) {
+  color: #5a5a59;
+}
+
+:where(.sn-home-care-specs .text-block:not(.custom-typography)) p {
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 24px;
+}
+
+:where(.sn-home-care-specs .text-block:not(.custom-color)) p {
+  color: #131311;
+}
+
+/* Product badge + CTA labels */
+:where(.sn-home-care-badge .text-block:not(.custom-typography)) p {
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 18px;
+  white-space: nowrap;
+}
+
+:where(.sn-home-care-cta .text-block:not(.custom-typography)) p {
+  font-size: 16px;
+  font-weight: 600;
+  line-height: 26px;
+  white-space: nowrap;
+}
+
+/* ==========================================================================
+   S12 Blog — .sn-home-blog (native `featured-blog-posts` section) | owner: Dev1
+   Figma desktop 190:4018 (1480×664; container 1376 with 20px inner padding → 1336 content),
+   mobile 190:4349 (390×734).
+   Native "Grid" preset configuration: Layout Grid (3 columns, Horizontal gap 24) on tablet / desktop and
+   Horizon's own "Carousel on mobile" slideshow below 750px. Article data is native (image, title, date,
+   excerpt, article.url). Opt-in extensions: card "Read more label" (.featured-blog-posts-card__read-more →
+   article.url), section "View all" (.featured-blog-posts__view-all → blog.url, automatic when the blog has
+   more posts than shown), progress bar (carousel-progress.js) and --blog-* variables from the section
+   settings (image height, mobile card width, mobile heading gap).
+   ========================================================================== */
+.sn-home-blog {
+  --page-content-width: 1336px;
+  --page-width: calc(var(--page-content-width) + var(--page-margin) * 2);
+
+  /* Figma mobile section padding 56 / 40 (desktop 60 / 60 = native Top / Bottom) */
+  &.spacing-style {
+    @media screen and (max-width: 749px) {
+      padding-block: calc(56px + var(--section-top-offset, 0px)) 40px;
+    }
+  }
+
+  /* Rows only (the section is a 3-column grid; never set column gaps here).
+     Desktop heading → cards = native Gap (40). Mobile: 14 between rows (Figma). */
+  &.gap-style {
+    @media screen and (max-width: 749px) {
+      row-gap: 14px;
+    }
+  }
+
+  /* --- Heading ------------------------------------------------------------ */
+  > :first-child {
+    grid-row: 1;
+
+    @media screen and (max-width: 749px) {
+      padding-inline: 8px; /* Figma mobile gutter 24 = page margin 16 + 8 */
+    }
+  }
+
+  /* Heading (h2) + subtitle (p) in the title block's rich text. Horizon's `.rte :is(h1…h6)` adds the theme
+     heading spacing below the heading, which made the gap bigger than Figma; reset it here, the gap is the
+     subtitle's top margin: 6px desktop (Figma), "Heading and subtitle gap — Mobile" (6) on phones. */
+  > :first-child .text-block {
+    :is(h1, h2, h3) {
+      margin-block: 0;
+    }
+
+    :is(h1, h2, h3) + p {
+      margin-block: 6px 0;
+
+      @media screen and (max-width: 749px) {
+        margin-block-start: var(--blog-heading-gap-mobile, 6px);
+      }
+    }
+  }
+
+  /* --- View all ----------------------------------------------------------- */
+  .featured-blog-posts__view-all {
+    display: inline-flex;
+    align-items: center;
+    justify-self: center;
+    gap: 10px;
+    color: #176bb0;
+    font-family: var(--font-body--family);
+    font-size: 16px;
+    font-weight: 600;
+    line-height: 26px;
+    text-decoration: none;
+
+    &:hover {
+      text-decoration: underline;
+      text-underline-offset: 4px;
+    }
+
+    /* Tablet / desktop: on the heading row, at the inline end (left in Arabic), aligned to the subtitle.
+       Taken out of the flow of that row, so the centred heading never shifts and nothing is reserved
+       when the link is hidden. */
+    @media screen and (min-width: 750px) {
+      grid-row: 1;
+      justify-self: end;
+      align-self: end;
+      margin-block-end: 6px;
+      margin-inline-end: 6px;
+    }
+  }
+
+  /* --- Cards ---------------------------------------------------------------- */
+  .featured-blog-posts-card__inner {
+    gap: 16px; /* image → text (Figma); the text column keeps the card's native Gap (8) */
+  }
+
+  /* Image box: fixed Figma height ("Image height", 268) at every width, full card width, cover crop;
+     corner radius = the image block's native Corner radius (16). */
+  .featured-blog-posts-card__image {
+    aspect-ratio: auto;
+    block-size: var(--blog-image-height, 268px);
+    max-block-size: none;
+
+    .resource-image__image,
+    .blog-placeholder-svg {
+      aspect-ratio: auto;
+      block-size: 100%;
+      object-fit: cover;
+    }
+  }
+
+  .featured-blog-posts-card__content {
+    padding-inline: 4px;
+
+    /* Figma order (date, title, excerpt, read more) = the card's "Date position: Before title" setting.
+       (A CSS `order` can't do it: Shopify wraps the date block in its own .shopify-block element.) */
+    .blog-post-details {
+      color: var(--color-details, #176bb0);
+      font-size: 12px;
+      font-weight: 600;
+      line-height: 18px;
+    }
+
+    /* Article title: no theme heading spacing (`.rte :is(h1…h6)`) inside the card */
+    > h4,
+    > h4 :is(h1, h2, h3, h4, h5, h6, p) {
+      margin-block: 0;
+    }
+
+    /* Mobile article-title wrapping (Figma 190:4349 › Blog Card › title: 20/34 SemiBold in a 272px box,
+       greedy line breaks, e.g. «أفضل فرشاة أسنان كهربائية» / «للتقويم»). Horizon gives non-custom text
+       presets `text-wrap: pretty` (.text-block.rte in text-block-styles), which makes Chrome pull a second
+       word down so the last line is never a single word. Phones use normal wrapping instead; a Custom
+       preset keeps its own "Text wrap" setting. Works for any article title; desktop untouched. */
+    @media screen and (max-width: 749px) {
+      > h4 .text-block:not(.custom-typography),
+      > h4 .text-block:not(.custom-typography) :is(h1, h2, h3, h4, h5, h6, p) {
+        text-wrap: wrap;
+      }
+    }
+  }
+
+  /* Excerpt: plain text from the native block, kept to two lines */
+  .blog-post-card__content-text {
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+    line-clamp: 2;
+    overflow: hidden;
+  }
+
+  /* --- Arrow links (Read more, View all) -----------------------------------
+     Figma: the arrow sits on the reading-start side of the label (right of it in Arabic) and points forward
+     (left in Arabic). The arrow is first in the DOM, so normal RTL flow puts it on the right; the shared
+     icon points right, so it is mirrored in RTL only. */
+  .featured-blog-posts-card__read-more {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    color: #176bb0;
+    font-size: 16px;
+    font-weight: 600;
+    line-height: 26px;
+    text-decoration: none;
+
+    &:hover {
+      text-decoration: underline;
+      text-underline-offset: 4px;
+    }
+  }
+
+  :is(.featured-blog-posts__view-all, .featured-blog-posts-card__read-more) {
+    .svg-wrapper {
+      display: inline-flex;
+      flex: 0 0 auto;
+      inline-size: 18px;
+      block-size: 18px;
+    }
+
+    svg {
+      inline-size: 100%;
+      block-size: 100%;
+    }
+
+    &:dir(rtl) svg {
+      scale: -1 1;
+    }
+  }
+
+  /* --- Mobile carousel (native "Carousel on mobile", start-aligned) -------- */
+  @media screen and (max-width: 749px) {
+    .resource-list__carousel slideshow-slides {
+      --gutter-slide-width: 24px; /* Figma: first card 24px from the screen edge */
+
+      gap: 12px; /* Figma (the native Horizontal gap is the desktop 24) */
+    }
+
+    .resource-list__carousel .resource-list__slide {
+      --slide-width: min(var(--blog-card-width-mobile, 280px), calc(100cqi - 48px));
+    }
+  }
+
+  /* --- Progress bar (mobile carousel only) --------------------------------- */
+  .carousel-progress {
+    position: relative;
+    display: block;
+    block-size: 4px;
+    margin-block-start: 24px; /* Figma: carousel bottom padding 24, then the row gap */
+    margin-inline: 8px;
+    overflow: hidden;
+    border-radius: 99px;
+    background-color: #dcf2fb;
+
+    &[hidden] {
+      display: none;
+    }
+
+    @media screen and (min-width: 750px) {
+      display: none;
+    }
+  }
+
+  /* Scrollbar-like thumb: width = visible share, offset = scroll position (inline start = right in Arabic) */
+  .carousel-progress__fill {
+    position: absolute;
+    inset-block: 0;
+    inset-inline-start: calc(var(--carousel-progress, 0) * (100% - var(--carousel-thumb-size, 1) * 100%));
+    inline-size: calc(var(--carousel-thumb-size, 1) * 100%);
+    border-radius: inherit;
+    background: linear-gradient(90deg, #63cdff 0%, #0f64a8 100%);
+  }
+}
+
+/* Typography: Figma values at element-level specificity (wrapped in :where), so native Custom typography,
+   colours and presets on the blocks still win. Margins are set above with normal specificity. */
+:where(.sn-home-blog > :first-child .text-block:not(.custom-typography)) :is(h1, h2, h3) {
+  font-family: var(--font-heading--family);
+  font-size: 32px;
+  font-weight: 600;
+  line-height: 52px;
+
+  @media screen and (max-width: 749px) {
+    font-size: 24px;
+    line-height: 38px;
+  }
+}
+
+:where(.sn-home-blog > :first-child .text-block:not(.custom-color)) :is(h1, h2, h3) {
+  color: #12568d;
+}
+
+:where(.sn-home-blog > :first-child .text-block:not(.custom-typography)) p {
+  font-size: 18px;
+  font-weight: 400;
+  line-height: 32px;
+
+  @media screen and (max-width: 749px) {
+    font-size: 13px;
+    line-height: 22px;
+  }
+}
+
+:where(.sn-home-blog > :first-child .text-block:not(.custom-color)) p {
+  color: #5a5a59;
+}
+
+/* Article title (native _heading block inside the card's h4) */
+:where(.sn-home-blog .featured-blog-posts-card__content > h4),
+:where(.sn-home-blog .featured-blog-posts-card__content > h4 .text-block:not(.custom-typography)) :is(h1, h2, h3, h4, h5, h6, p) {
+  font-family: var(--font-heading--family);
+  font-size: 20px;
+  font-weight: 600;
+  line-height: 34px;
+}
+
+:where(.sn-home-blog .featured-blog-posts-card__content > h4 .text-block:not(.custom-color)) :is(h1, h2, h3, h4, h5, h6, p) {
+  color: #12568d;
+}
+
+/* Excerpt */
+:where(.sn-home-blog .blog-post-card__content-text:not(.custom-typography)) {
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 28px;
+}
+
+:where(.sn-home-blog .blog-post-card__content-text) {
+  color: var(--color, #5a5a59);
+}

@@ -1,10 +1,38 @@
-
-
 {% capture children %}
   {% content_for 'blocks' %}
 {% endcapture %}
 
-{% render 'group', children: children, settings: block.settings, shopify_attributes: block.shopify_attributes %}
+{%- comment -%}
+  Snosha S10: both extensions share one native group render.
+  Preserve the optional sanitized custom class and an independent, opt-in
+  mobile-spacing hook. Defaults render using Horizon's native group settings.
+{%- endcomment -%}
+{%- capture group_class -%}{% render 'custom-class', value: block.settings.custom_class %}{%- endcapture -%}
+{%- assign group_class = group_class | strip -%}
+{%- if block.settings.mobile_spacing_custom -%}
+  {%- assign mobile_spacing_class = 'group-block--' | append: block.id -%}
+  {%- if group_class != blank -%}
+    {%- assign group_class = group_class | append: ' ' | append: mobile_spacing_class -%}
+  {%- else -%}
+    {%- assign group_class = mobile_spacing_class -%}
+  {%- endif -%}
+{%- endif -%}
+
+{% render 'group', children: children, settings: block.settings, shopify_attributes: block.shopify_attributes, class: group_class %}
+
+{%- if block.settings.mobile_spacing_custom -%}
+  {% style %}
+    @media screen and (max-width: 749px) {
+      #shopify-section-{{ section.id }} .group-block--{{ block.id }} {
+        padding-inline: {{ block.settings.padding_inline_mobile }}px;
+        padding-block-end: {{ block.settings.padding_block_end_mobile }}px;
+      }
+      #shopify-section-{{ section.id }} .group-block--{{ block.id }} > .group-block-content {
+        gap: {{ block.settings.gap_mobile }}px;
+      }
+    }
+  {% endstyle %}
+{%- endif -%}
 
 {% schema %}
 {
@@ -34,6 +62,9 @@
     },
     {
       "type": "product-title"
+    },
+    {
+      "type": "icon"
     },
     {
       "type": "custom-liquid"
@@ -517,6 +548,55 @@
       "step": 1,
       "unit": "px",
       "default": 0
+    },
+    {
+      "type": "text",
+      "id": "custom_class",
+      "label": "Custom CSS class",
+      "info": "Lowercase letters, numbers and hyphens, starting with a letter. Separate multiple classes with spaces."
+    },
+    {
+      "type": "header",
+      "content": "Mobile spacing"
+    },
+    {
+      "type": "checkbox",
+      "id": "mobile_spacing_custom",
+      "label": "Use different spacing on mobile",
+      "default": false
+    },
+    {
+      "type": "range",
+      "id": "gap_mobile",
+      "label": "Mobile gap",
+      "min": 0,
+      "max": 40,
+      "step": 1,
+      "unit": "px",
+      "default": 12,
+      "visible_if": "{{ block.settings.mobile_spacing_custom }}"
+    },
+    {
+      "type": "range",
+      "id": "padding_inline_mobile",
+      "label": "Mobile side padding",
+      "min": 0,
+      "max": 50,
+      "step": 1,
+      "unit": "px",
+      "default": 0,
+      "visible_if": "{{ block.settings.mobile_spacing_custom }}"
+    },
+    {
+      "type": "range",
+      "id": "padding_block_end_mobile",
+      "label": "Mobile bottom padding",
+      "min": 0,
+      "max": 50,
+      "step": 1,
+      "unit": "px",
+      "default": 0,
+      "visible_if": "{{ block.settings.mobile_spacing_custom }}"
     }
   ],
   "presets": [

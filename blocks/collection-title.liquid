@@ -1,14 +1,31 @@
-
-
 {% if closest.collection == blank %}
   {% assign text = 'placeholders.collection_title' | t %}
   {% assign collection_title = '<p>' | append: text | append: '</p>' %}
   {% render 'text', fallback_text: collection_title, block: block %}
 {% elsif closest.collection != blank %}
   {% assign collection_title = '<p>' | append: closest.collection.title | append: '</p>' %}
+  {% comment %}
+    Snosha (opt-in): section setting "Mobile title length" = First 2 words, only with a custom class.
+    The full name stays in the DOM (visually hidden on phones by the class CSS) and the short copy is
+    aria-hidden + [hidden], so without the class CSS the output looks native. split: ' ' collapses repeated spaces.
+  {% endcomment %}
+  {% if section.settings.mobile_title_word_limit == 'two' and section.settings.custom_class != blank %}
+    {% assign sn_title_words = closest.collection.title | strip | split: ' ' %}
+    {% if sn_title_words.size > 2 %}
+      {% assign sn_title_short = sn_title_words | slice: 0, 2 | join: ' ' %}
+      {% capture collection_title -%}
+        <p><span class="sn-collection-title__full">{{ closest.collection.title }}</span><span class="sn-collection-title__short" aria-hidden="true" hidden>{{ sn_title_short }}</span></p>
+      {%- endcapture %}
+    {% endif %}
+  {% endif %}
   {% render 'text', fallback_text: collection_title, block: block %}
 {% endif %}
-
+{%- comment -%} Snosha (opt-in): phone font size, passed as a CSS var only when the section has a custom class; consumed by that class's CSS at ≤749px. {%- endcomment -%}
+{%- if section.settings.custom_class != blank and block.settings.type_preset == 'custom' -%}
+  {% style %}
+    .text-block--{{ block.id }} { --sn-mobile-font-size: {{ block.settings.mobile_font_size }}px; }
+  {% endstyle %}
+{%- endif -%}
 {% schema %}
 {
   "name": "t:names.collection_title",
@@ -214,6 +231,18 @@
         }
       ],
       "default": "1rem",
+      "visible_if": "{{ block.settings.type_preset == 'custom' }}"
+    },
+    {
+      "type": "range",
+      "id": "mobile_font_size",
+      "label": "Mobile size",
+      "info": "Phones only (≤749px), same on every card, in sections with a custom class. Size above = desktop.",
+      "min": 10,
+      "max": 32,
+      "step": 1,
+      "unit": "px",
+      "default": 11,
       "visible_if": "{{ block.settings.type_preset == 'custom' }}"
     },
     {

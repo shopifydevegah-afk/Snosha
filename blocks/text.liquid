@@ -1,7 +1,19 @@
 
-
-{% render 'text', block: block %}
-
+{%- comment -%} Snosha (opt-in): phone font size, exact line height and weight, passed as CSS vars only when the section has a custom class; consumed by that class's CSS. {%- endcomment -%}
+{%- if section.settings.custom_class != blank and block.settings.type_preset == 'custom' -%}
+  {% style %}
+    .text-block--{{ block.id }} {
+      --sn-mobile-font-size: {{ block.settings.mobile_font_size }}px;
+      --sn-line-height: {{ block.settings.line_height_exact | divided_by: 100.0 }};
+      {%- if block.settings.line_height_exact_mobile > 0 %} --sn-line-height-mobile: {{ block.settings.line_height_exact_mobile | divided_by: 100.0 }};{% endif %}
+      {%- if block.settings.alignment_mobile != blank %} --sn-text-align-mobile: {{ block.settings.alignment_mobile }};{% endif %}
+      {%- if block.settings.font_weight != blank %} --sn-font-weight: {{ block.settings.font_weight }};{% endif %}
+    }
+  {% endstyle %}
+{%- endif -%}
+{%- capture custom_class -%}{% render 'custom-class', value: block.settings.custom_class %}{%- endcapture -%}
+{% render 'text', block: block, class: custom_class %}
+{% render 'text-responsive-style', block: block %}
 {% schema %}
 {
   "name": "t:names.text",
@@ -11,6 +23,12 @@
       "type": "richtext",
       "id": "text",
       "label": "t:settings.text"
+    },
+    {
+      "type": "richtext",
+      "id": "mobile_text",
+      "label": "Mobile text",
+      "info": "Optional. Replaces the text above on mobile (below 750px). Leave empty to show the same text on all devices."
     },
     {
       "type": "header",
@@ -58,6 +76,19 @@
       "label": "t:settings.alignment",
       "default": "left",
       "visible_if": "{{ block.settings.width == '100%' }}"
+    },
+    {
+      "type": "select",
+      "id": "mobile_alignment",
+      "label": "Text alignment (mobile)",
+      "info": "Below 750px.",
+      "options": [
+        { "value": "same", "label": "Same as desktop" },
+        { "value": "start", "label": "Start (right in Arabic)" },
+        { "value": "center", "label": "Center" },
+        { "value": "end", "label": "End (left in Arabic)" }
+      ],
+      "default": "same"
     },
     {
       "type": "header",
@@ -151,6 +182,10 @@
           "label": "12px"
         },
         {
+          "value": "0.8125rem",
+          "label": "13px"
+        },
+        {
           "value": "0.875rem",
           "label": "14px"
         },
@@ -211,6 +246,48 @@
       "visible_if": "{{ block.settings.type_preset == 'custom' }}"
     },
     {
+      "type": "range",
+      "id": "mobile_font_size",
+      "label": "Mobile size",
+      "info": "Phones only (≤749px), in sections with a custom class. Size above = desktop.",
+      "min": 12,
+      "max": 64,
+      "step": 1,
+      "unit": "px",
+      "default": 24,
+      "visible_if": "{{ block.settings.type_preset == 'custom' and section.settings.custom_class != blank }}"
+    },
+    {
+      "type": "select",
+      "id": "font_weight",
+      "label": "Weight",
+      "info": "In sections with a custom class. Default = the font's theme weight.",
+      "options": [
+        {
+          "value": "",
+          "label": "t:options.default"
+        },
+        {
+          "value": "400",
+          "label": "400"
+        },
+        {
+          "value": "500",
+          "label": "500"
+        },
+        {
+          "value": "600",
+          "label": "600"
+        },
+        {
+          "value": "700",
+          "label": "700"
+        }
+      ],
+      "default": "",
+      "visible_if": "{{ block.settings.type_preset == 'custom' }}"
+    },
+    {
       "type": "select",
       "id": "line_height",
       "label": "t:settings.line_height",
@@ -229,6 +306,44 @@
         }
       ],
       "default": "normal",
+      "visible_if": "{{ block.settings.type_preset == 'custom' }}"
+    },
+    {
+      "type": "range",
+      "id": "line_height_exact",
+      "label": "Exact line height",
+      "info": "Line height as % of the font size (163 = 1.63), desktop and mobile. In sections whose custom-class CSS uses it; otherwise the option above applies.",
+      "min": 100,
+      "max": 200,
+      "step": 1,
+      "unit": "%",
+      "default": 140,
+      "visible_if": "{{ block.settings.type_preset == 'custom' }}"
+    },
+    {
+      "type": "range",
+      "id": "line_height_exact_mobile",
+      "label": "Mobile exact line height",
+      "info": "0 = same as above. Phones only, in sections with a custom class.",
+      "min": 0,
+      "max": 200,
+      "step": 2,
+      "unit": "%",
+      "default": 0,
+      "visible_if": "{{ block.settings.type_preset == 'custom' }}"
+    },
+    {
+      "type": "select",
+      "id": "alignment_mobile",
+      "label": "Mobile alignment",
+      "info": "Phones only, in sections with a custom class.",
+      "options": [
+        { "value": "", "label": "Same as desktop" },
+        { "value": "start", "label": "Start (right in Arabic)" },
+        { "value": "center", "label": "Center" },
+        { "value": "end", "label": "End (left in Arabic)" }
+      ],
+      "default": "",
       "visible_if": "{{ block.settings.type_preset == 'custom' }}"
     },
     {
@@ -285,9 +400,55 @@
         {
           "value": "nowrap",
           "label": "t:options.none"
+        },
+        {
+          "value": "wrap",
+          "label": "t:options.normal"
         }
       ],
       "visible_if": "{{ block.settings.type_preset == 'custom' }}"
+    },
+    {
+      "type": "range",
+      "id": "max_lines",
+      "label": "Maximum lines",
+      "info": "0 = show all text. Longer text ends with an ellipsis.",
+      "min": 0,
+      "max": 10,
+      "step": 1,
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "max_lines_mobile",
+      "label": "Mobile maximum lines",
+      "info": "0 = same as desktop.",
+      "min": 0,
+      "max": 10,
+      "step": 1,
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "font_size_mobile",
+      "label": "Mobile text size",
+      "info": "0 = same as desktop.",
+      "min": 0,
+      "max": 40,
+      "step": 0.5,
+      "unit": "px",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "line_height_mobile",
+      "label": "Mobile line height",
+      "info": "0 = same as desktop.",
+      "min": 0,
+      "max": 50,
+      "step": 0.5,
+      "unit": "px",
+      "default": 0
     },
     {
       "type": "header",
@@ -366,6 +527,16 @@
       "step": 1,
       "unit": "px",
       "default": 0
+    },
+    {
+      "type": "header",
+      "content": "Advanced"
+    },
+    {
+      "type": "text",
+      "id": "custom_class",
+      "label": "Custom CSS class",
+      "info": "Lowercase letters, numbers and hyphens, starting with a letter. Separate multiple classes with spaces."
     }
   ],
   "presets": [

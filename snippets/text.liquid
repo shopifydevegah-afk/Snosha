@@ -28,6 +28,14 @@
     assign is_rte = true
   endif
 
+  # Optional mobile override (project extension, Snosha S03). Only the text block defines `mobile_text`;
+  # for every other caller it is nil, so has_mobile_text stays false and the output is unchanged.
+  assign has_mobile_text = false
+  assign visible_mobile_text = block_settings.mobile_text | strip_html | strip
+  if visible_mobile_text != blank
+    assign has_mobile_text = true
+  endif
+
   capture text_block_classes
     if text_width == '100%'
       echo 'text-block--align-' | append: block_settings.alignment
@@ -50,6 +58,20 @@
     if is_rte
       echo ' rte '
     endif
+    if has_mobile_text
+      echo ' text-block--desktop-text '
+    endif
+    # Optional mobile alignment (project extension, Snosha S03). Only the text block defines it.
+    if block_settings.mobile_alignment != blank and block_settings.mobile_alignment != 'same'
+      echo ' text-block--m-align-' | append: block_settings.mobile_alignment | append: ' '
+    endif
+    # Optional mobile typography (project extension, Snosha S03). 0 / unset = no class, desktop size applies.
+    if block_settings.font_size_mobile > 0
+      echo ' text-block--m-size '
+    endif
+    if block_settings.line_height_mobile > 0
+      echo ' text-block--m-lh '
+    endif
   endcapture
 %}
 
@@ -66,6 +88,8 @@
       --color-rgb: {{ block_settings.text_color.rgb }};
     {% endif %}
 
+    {% if block_settings.font_size_mobile > 0 %}--font-size-mobile: {{ block_settings.font_size_mobile }}px;{% endif %}
+    {% if block_settings.line_height_mobile > 0 %}--line-height-mobile: {{ block_settings.line_height_mobile }}px;{% endif %}
     --width: {{ text_width }};
     --max-width: var(--max-width--{{ type }}-{{ block_settings.max_width }});
     {% if text_width == "100%" %}
@@ -100,11 +124,67 @@
   <{{ element }} {{ attributes | strip_newlines | strip }}>
     {{ block.settings.text }}
   </{{ element }}>
+  {% if has_mobile_text %}
+    {%- liquid
+      # Mobile copy: same element and classes, without the editor attributes (the original element keeps
+      # click-to-edit). Only one of the two is displayed at a time, so assistive tech reads it once.
+      assign editor_attributes = block.shopify_attributes | strip_newlines | strip
+      assign mobile_attributes = attributes | strip_newlines | strip | replace: 'text-block--desktop-text', 'text-block--mobile-text'
+      if editor_attributes != blank
+        assign mobile_attributes = mobile_attributes | remove: editor_attributes
+      endif
+    -%}
+    <{{ element }} {{ mobile_attributes }}>
+      {{ block.settings.mobile_text }}
+    </{{ element }}>
+  {% endif %}
 {% endif %}
 
 {% stylesheet %}
   :root {
     --text-align-default: start;
+  }
+
+  /* Optional mobile text (only rendered when a text block sets `mobile_text`). */
+  @media screen and (max-width: 749px) {
+    .text-block.text-block--desktop-text {
+      display: none;
+    }
+  }
+
+  @media screen and (min-width: 750px) {
+    .text-block.text-block--mobile-text {
+      display: none;
+    }
+  }
+
+  /* Optional mobile alignment (text block `mobile_alignment`); overrides the inline --text-align. */
+  @media screen and (max-width: 749px) {
+    .text-block.text-block--m-align-start > * {
+      text-align: start;
+    }
+
+    .text-block.text-block--m-align-center > * {
+      text-align: center;
+    }
+
+    .text-block.text-block--m-align-end > * {
+      text-align: end;
+    }
+
+    /* Optional mobile typography (text block "Font size — Mobile" / "Line height — Mobile").
+       The doubled class outranks the type presets (e.g. `.text-block.h3 :is(h3)`) and section CSS. */
+    .text-block.text-block--m-size.text-block--m-size,
+    .text-block.text-block--m-size.text-block--m-size > *,
+    .text-block.text-block--m-size.text-block--m-size :is(h1, h2, h3, h4, h5, h6, p) {
+      font-size: var(--font-size-mobile);
+    }
+
+    .text-block.text-block--m-lh.text-block--m-lh,
+    .text-block.text-block--m-lh.text-block--m-lh > *,
+    .text-block.text-block--m-lh.text-block--m-lh :is(h1, h2, h3, h4, h5, h6, p) {
+      line-height: var(--line-height-mobile);
+    }
   }
 
   /* Base text-block sizing, spacing, wrapping, and helper classes live in text-block-styles.liquid. */

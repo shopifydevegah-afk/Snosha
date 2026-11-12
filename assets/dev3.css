@@ -1,0 +1,559 @@
+/* Dev3 — Shosha Figma CSS. Scoped per class; see figma-to-sections-workflow */
+
+/* ==========================================================================
+   sn-home-bestsellers — product-list on index. Shared by two instances (owner: Dev3):
+   S05 Featured Collection (Figma 190:3844 / 190:4149) and S07 Bundles (Figma 351:4546 / 190:4204).
+   Modifier sn-home-bundles (S07) changes only the mobile section spacing variables below.
+   Part classes (on `text` blocks inside the card): -desc, -cta
+   Card typography and spacing are block settings (mobile uses the Figma mobile sizes).
+   ========================================================================== */
+.sn-home-bestsellers {
+  /* Figma colors with no Horizon token */
+  --sn-bs-ink: #12568d; /* Figma color/state-hover: titles and prices */
+  --sn-bs-link: #176bb0; /* Figma brand-secondary (= theme primary button) */
+  --sn-bs-muted: #5a5a59; /* Figma text-secondary */
+  --sn-bs-card-border: #efeded; /* Figma card stroke */
+  --sn-bs-soft-border: #dcf2fb; /* palette color 1 */
+  --sn-bs-shadow: 0 12px 16px rgb(15 100 168 / 0.1); /* Figma hover card */
+
+  /* Mobile section spacing (Figma S05: padding 56/56, gaps 14). The carousel's 11px shadow padding is added below. */
+  --sn-bs-m-pad-top: 56px;
+  --sn-bs-m-pad-bottom: 56px;
+  --sn-bs-m-gap: 14px;
+
+  /* S07 Bundles (Figma 190:4204): padding 56/40, gaps 11 */
+  &.sn-home-bundles {
+    --sn-bs-m-pad-bottom: 40px;
+    --sn-bs-m-gap: 11px;
+  }
+
+  /* Merchant-facing values (image fit/position, radii, badge source/position/colors, quick add style/icon/colors,
+     discount badge colors, View All icon) are Theme Editor settings on the blocks; this file keeps the
+     Figma typography and fine geometry only. */
+
+  /* ---------- Container: Figma content 1336 = 1376 container − 2 × 20 ---------- */
+  &.section {
+    @media screen and (min-width: 750px) {
+      --page-content-width: 83.5rem;
+      --page-width: calc(var(--page-content-width) + var(--page-margin) * 2);
+    }
+
+    /* Figma mobile gutters 24px (Horizon 16px). Also drives the carousel gutters. */
+    @media screen and (max-width: 749px) {
+      --page-margin: 24px;
+
+      position: relative;
+      row-gap: calc(var(--sn-bs-m-gap) + 11px); /* gap + 11 carousel padding */
+      padding-block: calc(var(--sn-bs-m-pad-top) + var(--section-top-offset, 0px)) var(--sn-bs-m-pad-bottom);
+
+      /* Room for the View All link (26px tall) placed under the progress bar */
+      &:has(.section-resource-list__header .group-block-content > a) {
+        padding-block-end: calc(var(--sn-bs-m-pad-bottom) + var(--sn-bs-m-gap) + 26px);
+      }
+    }
+  }
+
+  /* ---------- Heading ---------- */
+  .section-resource-list__header {
+    h2 {
+      margin: 0;
+      font-size: 32px;
+      line-height: 52px;
+      font-weight: 600;
+      color: var(--sn-bs-ink);
+    }
+
+    p {
+      margin: 0;
+      font-size: 18px;
+      line-height: 32px;
+      font-weight: 400;
+      color: var(--sn-bs-muted);
+    }
+
+    /* View All (native _product-list-button, links to the selected collection).
+       Icon, its side (desktop/mobile), size and gap are block settings. */
+    .group-block-content > a {
+      position: absolute;
+      inset-block-end: 6px;
+      inset-inline-end: 6px;
+      display: inline-flex;
+      align-items: center;
+      padding: 0;
+      font-size: 16px;
+      line-height: 26px;
+      font-weight: 600;
+      color: var(--sn-bs-link);
+      text-decoration: none;
+    }
+
+    @media screen and (max-width: 749px) {
+      /* Let the link position against the section (moved under the progress bar) */
+      .group-block,
+      .group-block-content {
+        position: static;
+      }
+
+      .group-block-content {
+        gap: var(--sn-bs-m-gap);
+      }
+
+      h2 {
+        padding-block: 3px;
+        font-size: 24px;
+        line-height: 38px;
+      }
+
+      p {
+        font-size: 15px;
+        line-height: 26px;
+      }
+
+      .group-block-content > a {
+        inset-block-end: var(--sn-bs-m-pad-bottom);
+        inset-inline: 0;
+        margin-inline: auto;
+        inline-size: fit-content;
+      }
+    }
+  }
+
+  /* ---------- Grid: 2 × 2 on tablet so cards stay readable ---------- */
+  .resource-list--grid {
+    @media screen and (min-width: 750px) and (max-width: 989px) {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+
+  /* ---------- Mobile carousel geometry (Figma: 165px cards, 12px gap, 24px gutters) ---------- */
+  .resource-list__carousel > slideshow-container > slideshow-slides {
+    align-items: stretch;
+  }
+
+  @media screen and (max-width: 749px) {
+    .resource-list__carousel .resource-list__slide {
+      /* 2 cards + 12px gap between the 24px gutters → 165px at 390px */
+      --slide-width: calc((100cqw - var(--util-page-margin-offset) * 2 - 12px) / 2);
+    }
+  }
+
+  /* ---------- Progress bar (scroll-progress component) ---------- */
+  scroll-progress {
+    --scroll-progress-track: var(--sn-bs-soft-border);
+    --scroll-progress-thumb: linear-gradient(to right, #63cdff, #0f64a8); /* Figma Progress Fill */
+  }
+
+  /* ---------- Card ---------- */
+  .resource-list__item,
+  .product-card {
+    height: 100%;
+  }
+
+  .product-card__content {
+    position: relative;
+    height: 100%;
+    background: var(--color-background);
+    transition: box-shadow var(--animation-speed, 0.2s) var(--animation-easing, ease);
+  }
+
+  .product-card:is(:hover, :focus-within) .product-card__content {
+    box-shadow: var(--sn-bs-shadow);
+  }
+
+  /* Image radius (desktop 16 / mobile 8, top corners) and crop position are image-block settings */
+
+  /* Native Sale badge is replaced by the discount badge in the price row; Sold out stays */
+  .product-badges:has(.color-custom-badge-sale) {
+    display: none;
+  }
+
+  /* Text area grows so the CTA sits on the same line in every card */
+  .product-card__content > .group-block {
+    flex: 1 1 auto;
+  }
+
+  /* View product row (native group: text + icon) pinned to the bottom */
+  .group-block:has(> .group-block-content > .sn-home-bestsellers-cta) {
+    margin-block-start: auto;
+  }
+
+  /* Product badge (image-block setting, text from the product metafield). Text size (desktop/mobile) is a
+     product-card setting; position, offset and colors are image-block settings; padding/radius scale with the text. */
+  .product-badges__badge--custom {
+    font-weight: 600;
+  }
+
+  /* Title (native product-title block) */
+  a[ref='productTitleLink'] :is(.text-block, p) {
+    margin: 0;
+    font-size: 16px;
+    line-height: 27px;
+    font-weight: 600;
+    color: var(--sn-bs-ink);
+  }
+
+  /* Short description: product description (or a metafield) shown as an excerpt.
+     Line limits and mobile size/line height are text-block settings. */
+  .sn-home-bestsellers-desc {
+    font-size: 14px;
+    line-height: 24px;
+    font-weight: 400;
+    color: var(--sn-bs-muted);
+
+    * {
+      margin: 0;
+      font: inherit;
+      color: inherit;
+    }
+  }
+
+  /* Rating (native review block; renders only with real rating data) */
+  .rating-wrapper {
+    gap: 6px;
+
+    .stars {
+      --star-size: 22.9px;
+    }
+  }
+
+  .rating-label {
+    font-size: 12px;
+    line-height: 20px;
+    font-weight: 400;
+    color: var(--sn-bs-muted);
+  }
+
+  /* Price row: price, compare-at, discount badge on one row (price block, discount badge on).
+     Gaps, alignment, top padding, badge colors/size and mobile price size are price-block settings. */
+  [ref='priceContainer'] {
+    .price {
+      font-size: 18px;
+      line-height: 28px;
+      font-weight: 700;
+      color: var(--sn-bs-ink);
+    }
+
+    .compare-at-price {
+      font-size: 14px;
+      line-height: 22px;
+      font-weight: 400;
+      color: var(--sn-bs-muted);
+      text-decoration: line-through;
+    }
+  }
+
+  /* Text size, padding ratio, radius and colors are price-block settings (Figma SemiBold here) */
+  product-price > .price-discount-badge {
+    font-weight: 600;
+  }
+
+  /* "View product" text (native text block in a horizontal group with a native icon block;
+     the card link handles the click). Gap, alignment, icon and its size/color are settings. */
+  .sn-home-bestsellers-cta {
+    font-size: 16px;
+    line-height: 26px;
+    font-weight: 600;
+    color: var(--sn-bs-link);
+
+    * {
+      margin: 0;
+      font: inherit;
+      color: inherit;
+    }
+  }
+
+  /* Horizon's arrow icon points right; in RTL the CTA arrow points the reading direction (Figma arrow-left) */
+  [dir='rtl'] & .group-block-content:has(> .sn-home-bestsellers-cta) .icon-block__media.icon-default {
+    scale: -1 1;
+  }
+
+  /* ---------- Native quick add (style, icon, colors and mobile geometry are image-block settings) ---------- */
+  @media screen and (min-width: 750px) {
+    .quick-add {
+      --quick-add-offset: 14px; /* Figma bar inset */
+    }
+
+    button.quick-add__button {
+      font-family: var(--font-body--family);
+      font-size: 16px;
+      line-height: 26px;
+      font-weight: 600;
+    }
+  }
+
+  /* ---------- Mobile (≤749). Figma mobile type sizes are block settings (2026-11-09, supersedes R3):
+     title = product-title, description / CTA label = text block, prices / discount = price block,
+     rating label = review block, badge = product card, CTA arrow = icon block mobile width. ---------- */
+  @media screen and (max-width: 749px) {
+    /* Card gap, text padding and gaps are product-card / group settings (Customize mobile card / Mobile spacing) */
+
+    .product-badges--custom {
+      max-inline-size: calc(100% - 56px); /* keep clear of the cart button */
+    }
+
+    .rating-wrapper .stars {
+      --star-size: 12px; /* Figma 12.3 star */
+    }
+
+    /* Prices follow the price block's Mobile price size (Figma 9.4/14.62); compare-at keeps the
+       Figma ratio 7.31/9.4 = 0.78 with line height 11.49/7.31 */
+    [ref='priceContainer'] {
+      .price {
+        font-size: 1em;
+        line-height: 1.55;
+      }
+
+      .compare-at-price {
+        font-size: 0.78em;
+        line-height: 1.57;
+      }
+    }
+
+    /* Quick add circle: size, icon, side and offset are image-block settings; Figma shadow here */
+    button.quick-add__button {
+      box-shadow: 0 6px 12px rgb(15 100 168 / 0.35);
+    }
+  }
+}
+
+/* ==========================================================================
+   sn-home-reels — S09 Reels (owner: Dev3). Native `carousel` section on index.
+   Figma desktop 190:3935, mobile 190:4254.
+   Each Reel is a native card block: video block (poster, ratio, play button are block settings)
+   + product-card block (product picker; title, price and thumbnail come from the product).
+   Part class (text block): -soon = "coming soon" label from custom.coming_soon_label.
+   Card count, columns, gaps, mobile card width, progress bar are section settings.
+   ========================================================================== */
+.sn-home-reels {
+  /* Figma colors with no Horizon token */
+  --sn-rl-ink: #12568d; /* Figma color/state-hover: heading, product title */
+  --sn-rl-link: #176bb0; /* Figma brand-secondary: price, label */
+  --sn-rl-thumb-bg: #f0fafe; /* Figma thumbnail fill */
+  --sn-rl-thumb-size: 43px;
+
+  /* ---------- Container: Figma content 1336 = 1376 container − 2 × 20 ---------- */
+  &.section {
+    row-gap: 24px; /* Figma heading → carousel */
+
+    @media screen and (min-width: 750px) {
+      --page-content-width: 83.5rem;
+      --page-width: calc(var(--page-content-width) + var(--page-margin) * 2);
+      --peek-next-slide-size: 0px; /* Figma: 5 full cards (248px), no peek */
+    }
+
+    /* Figma mobile: padding 48.5 / 40, 24px gutters, gap 23 (carousel → progress) */
+    @media screen and (max-width: 749px) {
+      --page-margin: 24px;
+
+      row-gap: 23px;
+      padding-block: calc(48.5px + var(--section-top-offset, 0px)) 40px;
+    }
+  }
+
+  /* ---------- Heading ---------- */
+  .group-block h2 {
+    margin: 0;
+    font-size: 32px;
+    line-height: 52px;
+    font-weight: 600;
+    color: var(--sn-rl-ink);
+
+    @media screen and (max-width: 749px) {
+      font-size: 24px;
+      line-height: 38px;
+    }
+  }
+
+  @media screen and (max-width: 749px) {
+    /* Figma Section Head bottom padding 20.5 (+ 23 gap = 43.5 heading → carousel) */
+    &.section > .group-block:first-child {
+      margin-block-end: 20.5px;
+    }
+  }
+
+  /* ---------- Reel card: transparent, video then product row ---------- */
+  .card {
+    background: transparent;
+  }
+
+  /* Poster + video fill the 9:16 frame (ratio, radius, play button are video-block settings) */
+  deferred-media {
+    display: block;
+  }
+
+  /* ---------- Product row (product-card block) ---------- */
+  .product-card__content {
+    background: transparent;
+  }
+
+  /* Thumbnail: the selected product's featured image */
+  .product-card .image-block {
+    flex: 0 0 var(--sn-rl-thumb-size);
+    inline-size: var(--sn-rl-thumb-size);
+    block-size: var(--sn-rl-thumb-size);
+    background: var(--sn-rl-thumb-bg);
+    border-radius: 6px;
+
+    img,
+    .placeholder-image {
+      inline-size: 100%;
+      block-size: 100%;
+      aspect-ratio: 1;
+      object-fit: cover;
+    }
+  }
+
+  /* Title: Figma Body Small, one line with ellipsis on desktop, wraps on mobile */
+  a[ref='productTitleLink'] :is(.text-block, p) {
+    margin: 0;
+    font-size: 14px;
+    line-height: 24px;
+    font-weight: 400;
+    color: var(--sn-rl-ink);
+  }
+
+  @media screen and (min-width: 750px) {
+    a[ref='productTitleLink'] p {
+      overflow: hidden;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+    }
+  }
+
+  @media screen and (max-width: 749px) {
+    a[ref='productTitleLink'] p {
+      display: -webkit-box;
+      -webkit-box-orient: vertical;
+      -webkit-line-clamp: 2;
+      overflow: hidden;
+    }
+  }
+
+  /* Price: Figma Bold 14/24 */
+  [ref='priceContainer'] {
+    .price {
+      font-size: 14px;
+      line-height: 24px;
+      font-weight: 700;
+      color: var(--sn-rl-link);
+    }
+
+    .compare-at-price {
+      font-size: 12px;
+      line-height: 24px;
+      font-weight: 400;
+      text-decoration: line-through;
+    }
+  }
+
+  /* "Coming soon" label (text block linked to the product metafield; renders only when filled).
+     When present it replaces the price, as in the Figma mobile reel. */
+  .sn-home-reels-soon {
+    font-size: 14px;
+    line-height: 24px;
+    font-weight: 700;
+    color: var(--sn-rl-link);
+
+    * {
+      margin: 0;
+      font: inherit;
+      color: inherit;
+    }
+  }
+
+  .product-card:has(.sn-home-reels-soon) product-price {
+    display: none;
+  }
+
+  /* ---------- Progress bar (native scroll-progress, section setting) ---------- */
+  scroll-progress {
+    --scroll-progress-track: #dcf2fb; /* Figma Progress */
+    --scroll-progress-thumb: linear-gradient(to right, #63cdff, #0f64a8); /* Figma Progress Fill */
+  }
+}
+
+/* ==========================================================================
+   sn-home-faq — S14 FAQ (owner: Dev3). Native `section` (FAQ preset structure) on index.
+   Figma desktop 217:14604, mobile 217:14813.
+   Questions/answers are native accordion rows; card look, question typography and the
+   chevron are accordion-block settings ("Row cards", heading preset "Custom", icon color).
+   Desktop: two accordion blocks in a row group (questions 1–3 | 4–6).
+   Mobile: the same blocks stack into one list in content order 1 → 6.
+   Part class (text block): -subtitle.
+   ========================================================================== */
+.sn-home-faq {
+  /* Figma colors with no Horizon token */
+  --sn-faq-heading: #12568d; /* Figma color/state-hover */
+
+  /* ---------- Container: Figma content 1336 = 1376 container − 2 × 20 ---------- */
+  &.section {
+    @media screen and (min-width: 750px) {
+      --page-content-width: 83.5rem;
+      --page-width: calc(var(--page-content-width) + var(--page-margin) * 2);
+    }
+
+    /* Figma mobile: 20px gutters (content 350) */
+    @media screen and (max-width: 749px) {
+      --page-margin: 20px;
+    }
+  }
+
+  /* Figma mobile: padding 56 / 40, heading → list gap 12 (desktop values are section settings) */
+  @media screen and (max-width: 749px) {
+    .section-content-wrapper {
+      row-gap: 12px;
+      padding-block: calc(56px + var(--section-top-offset, 0px)) 40px;
+    }
+  }
+
+  /* ---------- Heading (text block, <h2>) ---------- */
+  .group-block h2 {
+    margin: 0;
+    font-size: 32px;
+    line-height: 52px;
+    font-weight: 600;
+    color: var(--sn-faq-heading);
+
+    @media screen and (max-width: 749px) {
+      font-size: 24px;
+      line-height: 38px;
+    }
+  }
+
+  /* Subtitle: size, mobile size/line height and color are text-block settings; Figma desktop line height 32 */
+  @media screen and (min-width: 750px) {
+    .sn-home-faq-subtitle {
+      line-height: 32px;
+    }
+  }
+
+  .sn-home-faq-subtitle > * {
+    margin: 0;
+  }
+
+  /* ---------- FAQ columns (row group holding the two accordion blocks) ---------- */
+  /* Figma desktop: questions 1–3 in the left column, 4–6 in the right column.
+     The DOM keeps the reading order 1 → 6 (= mobile order and tab order); only the
+     desktop columns are swapped visually. */
+  .group-block-content:has(> .accordion) {
+    @media screen and (min-width: 750px) {
+      flex-direction: row-reverse;
+    }
+
+    /* Figma mobile: one list, 12px between cards (also between the two stacked accordions) */
+    @media screen and (max-width: 749px) {
+      gap: 12px;
+    }
+  }
+
+  /* Answers: Figma Desktop/Body 16/28 Regular (color is the text block's setting) */
+  .accordion .details-content .text-block {
+    font-size: 16px;
+    line-height: 28px;
+    font-weight: 400;
+
+    > * {
+      margin: 0;
+    }
+  }
+}

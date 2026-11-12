@@ -461,7 +461,7 @@
 
 <div
   id="Hero-{{ section.id }}"
-  class="hero{% if section.settings.background_color != blank %} color-custom-{{ section.id }}{% endif %}{% if section.blocks.size == 0 and section.settings.section_height == 'auto' %} hero--no-blocks-auto-height{% endif %}{% if section.settings.stack_media_on_mobile %} hero--stack-mobile{% endif %}"
+  class="hero{% if section.settings.background_color != blank %} color-custom-{{ section.id }}{% endif %}{% if section.blocks.size == 0 and section.settings.section_height == 'auto' %} hero--no-blocks-auto-height{% endif %}{% if section.settings.stack_media_on_mobile %} hero--stack-mobile{% endif %}{% render 'custom-class', value: section.settings.custom_class %}"
   style="
     --hero-border-style: {{ section.settings.border }};
     --hero-border-width: {{ section.settings.border_width }}px;
@@ -473,6 +473,12 @@
        --hero-min-height: 100svh;
     {% else %}
       --hero-min-height: var(--section-height-{{ section.settings.section_height }});
+    {% endif %}
+    {%- comment -%} Snosha (opt-in): product stage offsets, read only by the custom class's CSS (assets/dev1.css) {%- endcomment -%}
+    {% if section.settings.custom_class != blank %}
+      --stage-offset-x: {{ section.settings.stage_offset_x | default: 0 }}px;
+      --stage-offset-y: {{ section.settings.stage_offset_y | default: 0 }}px;
+      --stage-offset-y-mobile: {{ section.settings.stage_offset_y_mobile | default: 0 }}px;
     {% endif %}
   "
   {% if request.visual_preview_mode %}
@@ -1258,6 +1264,52 @@
       "step": 1,
       "unit": "px",
       "default": 0
+    },
+    {
+      "type": "header",
+      "content": "Advanced"
+    },
+    {
+      "type": "text",
+      "id": "custom_class",
+      "label": "Custom CSS class",
+      "info": "Lowercase letters, numbers and hyphens, starting with a letter. Separate multiple classes with spaces."
+    },
+    {
+      "type": "range",
+      "id": "stage_offset_y",
+      "label": "Product stage vertical position — Desktop",
+      "info": "Moves the product image, chips and rings together. Negative = UP, 0 = Figma position, positive = DOWN.",
+      "min": -60,
+      "max": 60,
+      "step": 2,
+      "unit": "px",
+      "default": 0,
+      "visible_if": "{{ section.settings.custom_class != blank }}"
+    },
+    {
+      "type": "range",
+      "id": "stage_offset_x",
+      "label": "Product stage horizontal position — Desktop",
+      "info": "Moves the product image, chips and rings together. Negative = LEFT, 0 = Figma position, positive = RIGHT.",
+      "min": -60,
+      "max": 60,
+      "step": 2,
+      "unit": "px",
+      "default": 0,
+      "visible_if": "{{ section.settings.custom_class != blank }}"
+    },
+    {
+      "type": "range",
+      "id": "stage_offset_y_mobile",
+      "label": "Product stage vertical position — Mobile",
+      "info": "Mobile & tablet (below 990px). Negative = UP, 0 = Figma position, positive = DOWN.",
+      "min": -60,
+      "max": 60,
+      "step": 2,
+      "unit": "px",
+      "default": 0,
+      "visible_if": "{{ section.settings.custom_class != blank }}"
     }
   ],
   "presets": [

@@ -19,13 +19,18 @@
     section
     section--{{ section.settings.section_width }}
     {% if section.settings.background_color != blank %}color-custom-{{ section.id }}{% endif %}
-    section-resource-list
+    section-resource-list{% render 'custom-class', value: section.settings.custom_class %}
     spacing-style
     gap-style
   "
   style="
     {%- render 'spacing-style', settings: section.settings -%}
     {%- render 'gap-style', value: section.settings.gap -%}
+    {%- if section.settings.custom_class != blank -%}
+      --blog-image-height: {{ section.settings.image_height }}px;
+      --blog-card-width-mobile: {{ section.settings.mobile_card_width }}px;
+      --blog-heading-gap-mobile: {{ section.settings.heading_gap_mobile }}px;
+    {%- endif -%}
   "
 >
   {% content_for 'block', id: 'static-blog-title', type: '_featured-blog-posts-title' %}
@@ -66,6 +71,47 @@
     content_type: 'articles',
     test_id: 'featured-blog-posts'
   %}
+
+  {%- comment -%}
+    Snosha S12 (opt-in):
+    - progress bar for the mobile carousel (custom class + "Show progress bar"), driven by the real scroller;
+    - one "View all" link to the selected blog (blog.url). Automatic = only when the blog has more articles
+      than the section shows. Placed after the list (under the carousel on mobile); the section's custom
+      class can move it next to the heading on larger screens.
+  {%- endcomment -%}
+  {%- liquid
+    assign show_progress = false
+    if section.settings.custom_class != blank and section.settings.show_progress
+      if section.settings.layout_type == 'carousel' or section.settings.carousel_on_mobile
+        assign show_progress = true
+      endif
+    endif
+
+    assign view_all_blog = section.settings.blog
+    assign show_view_all = false
+    if section.settings.view_all_label != blank and view_all_blog != blank
+      case section.settings.view_all_visibility
+        when 'always'
+          assign show_view_all = true
+        when 'auto'
+          if view_all_blog.articles_count > max_items
+            assign show_view_all = true
+          endif
+      endcase
+    endif
+  -%}
+  {%- if show_progress -%}
+    <carousel-progress class="carousel-progress" scroller=".resource-list__carousel slideshow-slides" hidden>
+      <span class="carousel-progress__fill"></span>
+    </carousel-progress>
+    <script src="{{ 'carousel-progress.js' | asset_url }}" type="module"></script>
+  {%- endif -%}
+  {%- if show_view_all -%}
+    <a class="featured-blog-posts__view-all" href="{{ view_all_blog.url }}">
+      <span class="svg-wrapper" aria-hidden="true">{{- 'icon-arrow.svg' | inline_asset_content -}}</span>
+      <span>{{ section.settings.view_all_label | escape }}</span>
+    </a>
+  {%- endif -%}
 </div>
 
 {% schema %}
@@ -313,6 +359,90 @@
       "step": 1,
       "unit": "px",
       "default": 32
+    },
+    {
+      "type": "header",
+      "content": "View all link"
+    },
+    {
+      "type": "text",
+      "id": "view_all_label",
+      "label": "Label",
+      "info": "Links to the selected blog. Leave empty to hide."
+    },
+    {
+      "type": "select",
+      "id": "view_all_visibility",
+      "label": "Show",
+      "options": [
+        {
+          "value": "auto",
+          "label": "When the blog has more posts than shown"
+        },
+        {
+          "value": "always",
+          "label": "Always"
+        },
+        {
+          "value": "never",
+          "label": "Never"
+        }
+      ],
+      "default": "auto"
+    },
+    {
+      "type": "header",
+      "content": "Custom class"
+    },
+    {
+      "type": "text",
+      "id": "custom_class",
+      "label": "Custom CSS class",
+      "info": "Lowercase letters, numbers and hyphens, starting with a letter. Separate multiple classes with spaces."
+    },
+    {
+      "type": "checkbox",
+      "id": "show_progress",
+      "label": "Show progress bar",
+      "info": "Under the mobile carousel. Follows the swipe position. Styled by the custom CSS class.",
+      "default": false,
+      "visible_if": "{{ section.settings.custom_class != blank }}"
+    },
+    {
+      "type": "range",
+      "id": "image_height",
+      "label": "Image height",
+      "info": "Read by the custom CSS class (desktop and mobile).",
+      "min": 160,
+      "max": 400,
+      "step": 4,
+      "unit": "px",
+      "default": 268,
+      "visible_if": "{{ section.settings.custom_class != blank }}"
+    },
+    {
+      "type": "range",
+      "id": "mobile_card_width",
+      "label": "Card width — Mobile",
+      "info": "Read by the custom CSS class.",
+      "min": 200,
+      "max": 360,
+      "step": 4,
+      "unit": "px",
+      "default": 280,
+      "visible_if": "{{ section.settings.custom_class != blank }}"
+    },
+    {
+      "type": "range",
+      "id": "heading_gap_mobile",
+      "label": "Heading and subtitle gap — Mobile",
+      "info": "Space between the title's heading and the line under it on phones. Read by the custom CSS class.",
+      "min": 0,
+      "max": 24,
+      "step": 1,
+      "unit": "px",
+      "default": 6,
+      "visible_if": "{{ section.settings.custom_class != blank }}"
     }
   ],
   "presets": [

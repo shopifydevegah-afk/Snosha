@@ -1,0 +1,1056 @@
+{%- comment -%}
+  Snosha S11 — Product bundle (category E, approved by the merchant 2026-11-11).
+  Bundle product (section setting) = what the button buys, at its own Shopify price.
+  Component blocks = the products inside it. Each block drives its list row, its image hotspot and its popup.
+  Reuses Horizon: page-width grid, `image` snippet, `anchored-popover-component` (native popover, top layer, light
+  dismiss, Escape), the cart event used by the product form (via assets/sn-bundle.js), translations.
+  Brand look: assets/dev2.css under the section's custom class. Structure: this file's stylesheet.
+{%- endcomment -%}
+
+<script src="{{ 'sn-bundle.js' | asset_url }}" type="module" fetchpriority="low"></script>
+
+{%- liquid
+  assign parent = section.settings.bundle_product
+  assign pv = parent.selected_or_first_available_variant
+
+  assign image_desktop = section.settings.image | default: parent.featured_image
+  assign image_mobile = section.settings.image_mobile
+
+  assign components_total = 0
+  assign count = 0
+  assign empty_blocks = 0
+  for block in section.blocks
+    if block.settings.product == blank
+      assign empty_blocks = empty_blocks | plus: 1
+      continue
+    endif
+    assign v = block.settings.product.selected_or_first_available_variant
+    assign qty = block.settings.quantity | default: 1
+    assign components_total = v.price | times: qty | plus: components_total
+    assign count = count | plus: 1
+  endfor
+
+  # Pricing. The bundle variant's own price is what Shopify charges. A comparison ("was") price and a
+  # saving % are shown only when both prices are real and the bundle price is above 0 and below the
+  # comparison: a 0 price (unset, or a product the storefront can't sell) never becomes a "100%" discount.
+  # Percent is rounded down so the badge never overstates the saving.
+  assign was_total = 0
+  assign percent = 0
+  if parent != blank and pv.price > 0
+    if pv.compare_at_price > pv.price
+      assign was_total = pv.compare_at_price
+    elsif components_total > pv.price
+      assign was_total = components_total
+    endif
+    if was_total > 0
+      assign saved = was_total | minus: pv.price
+      assign percent = saved | times: 100 | divided_by: was_total
+    endif
+  endif
+
+  assign show_media = false
+  if image_desktop != blank or image_mobile != blank or request.design_mode
+    assign show_media = true
+  endif
+
+  # Hotspot geometry. Positions are % of the uploaded picture. The frame crops it (object-fit: cover,
+  # anchored at the image focal point), so each marker is mapped through the same crop:
+  # k = how much larger than the frame the picture is drawn on that axis; p = focal point %.
+  # left% = k·x − (k − 1)·p. The mobile values use the mobile picture (or the main one) and mobile frame.
+  assign kx_d = 1
+  assign ky_d = 1
+  assign px_d = 50
+  assign py_d = 50
+  if image_desktop != blank
+    assign frame_r = 100.0 | divided_by: section.settings.image_ratio
+    assign img_r = image_desktop.aspect_ratio | times: 1.0
+    if img_r > frame_r
+      assign kx_d = img_r | divided_by: frame_r | round: 4
+    else
+      assign ky_d = frame_r | divided_by: img_r | round: 4
+    endif
+    assign px_d = image_desktop.presentation.focal_point.x | default: 50
+    assign py_d = image_desktop.presentation.focal_point.y | default: 50
+  endif
+
+  assign image_for_mobile = image_mobile | default: image_desktop
+  assign kx_m = 1
+  assign ky_m = 1
+  assign px_m = 50
+  assign py_m = 50
+  if image_for_mobile != blank
+    assign frame_r = 100.0 | divided_by: section.settings.image_ratio_mobile
+    assign img_r = image_for_mobile.aspect_ratio | times: 1.0
+    if img_r > frame_r
+      assign kx_m = img_r | divided_by: frame_r | round: 4
+    else
+      assign ky_m = frame_r | divided_by: img_r | round: 4
+    endif
+    assign px_m = image_for_mobile.presentation.focal_point.x | default: 50
+    assign py_m = image_for_mobile.presentation.focal_point.y | default: 50
+  endif
+-%}
+
+<div
+  class="section section--page-width sn-product-bundle{% render 'custom-class', value: section.settings.custom_class %}"
+  style="
+    --pb-pt: {{ section.settings.padding_top }}px;
+    --pb-pb: {{ section.settings.padding_bottom }}px;
+    --pb-pt-m: {{ section.settings.padding_top_mobile }}px;
+    --pb-pb-m: {{ section.settings.padding_bottom_mobile }}px;
+    --pb-pi-m: {{ section.settings.mobile_padding_inline }}px;
+    --pb-max: {{ section.settings.content_max_width }}px;
+    --pb-gap: {{ section.settings.column_gap }}px;
+    --pb-gap-m: {{ section.settings.mobile_gap }}px;
+    --pb-media: {{ section.settings.media_width }};
+    --pb-ratio: {{ section.settings.image_ratio }};
+    --pb-ratio-m: {{ section.settings.image_ratio_mobile }};
+    --pb-radius: {{ section.settings.image_radius }}px;
+    --pb-content-gap: {{ section.settings.content_gap }}px;
+    --pb-content-gap-m: {{ section.settings.content_gap_mobile }}px;
+    --pb-h: {{ section.settings.heading_size }}px;
+    --pb-h-m: {{ section.settings.heading_size_mobile }}px;
+    --pb-d: {{ section.settings.description_size }}px;
+    --pb-d-m: {{ section.settings.description_size_mobile }}px;
+    --pb-d-lh: {{ section.settings.description_line_height }}px;
+    --pb-d-lh-m: {{ section.settings.description_line_height_mobile }}px;
+    --pb-accent: {{ section.settings.heading_color }};
+    --pb-text: {{ section.settings.text_color }};
+    --pb-border: {{ section.settings.border_color }};
+    --pb-brand: {{ section.settings.brand_color }};
+    --pb-ring: {{ section.settings.hotspot_ring_color }};
+    --pb-spot: {{ section.settings.hotspot_size }}px;
+    --pb-thumb: {{ section.settings.thumb_size }}px;
+    --pb-row-pad: {{ section.settings.row_padding }}px;
+    --pb-title: {{ section.settings.title_size }}px;
+    --pb-sub: {{ section.settings.subtitle_size }}px;
+    --pb-button-radius: {{ section.settings.button_radius }}px;
+    --kx-d: {{ kx_d }}; --ky-d: {{ ky_d }}; --px-d: {{ px_d }}; --py-d: {{ py_d }};
+    --kx-m: {{ kx_m }}; --ky-m: {{ ky_m }}; --px-m: {{ px_m }}; --py-m: {{ py_m }};
+  "
+>
+  <div class="sn-pb">
+    {%- if show_media -%}
+      <div class="sn-pb__media">
+        {%- comment -%}
+          Two <img> when a mobile picture is set, so each keeps its own focal point (object-position),
+          which the hotspot mapping above relies on. The hidden one is lazy and display:none.
+        {%- endcomment -%}
+        {%- if image_desktop != blank and image_mobile != blank -%}
+          {% render 'image', image: image_desktop, class: 'sn-pb__image sn-pb__image--desktop' %}
+          {{ image_mobile | image_url: width: 1100 | image_tag: loading: 'lazy', class: 'sn-pb__image sn-pb__image--mobile', sizes: '100vw', widths: '400, 750, 1100' }}
+        {%- elsif image_desktop != blank or image_mobile != blank -%}
+          {%- assign only_image = image_desktop | default: image_mobile -%}
+          {% render 'image', image: only_image, class: 'sn-pb__image' %}
+        {%- else -%}
+          {%- comment -%} Theme Editor only: no bundle image and no bundle product image yet {%- endcomment -%}
+          {{ 'product-apparel-1' | placeholder_svg_tag: 'sn-pb__image sn-pb__image--placeholder' }}
+        {%- endif -%}
+
+        {%- for block in section.blocks -%}
+          {%- liquid
+            assign p = block.settings.product
+            if p == blank or block.settings.show_hotspot == false
+              continue
+            endif
+            assign v = p.selected_or_first_available_variant
+            assign key = block.id | handleize
+            assign pop_image = block.settings.image | default: v.featured_image | default: p.featured_image
+          -%}
+          <anchored-popover-component
+            class="sn-pb__hotspot"
+            data-close-on-resize="true"
+            style="--x: {{ block.settings.x_position }}; --y: {{ block.settings.y_position }}; --xm: {{ block.settings.x_position_mobile }}; --ym: {{ block.settings.y_position_mobile }};"
+          >
+            <button
+              type="button"
+              class="sn-pb__marker"
+              ref="trigger"
+              popovertarget="SnPbPop-{{ key }}"
+              aria-label="{{ 'accessibility.show_product_details' | t: product_name: p.title | escape }}"
+              style="anchor-name: --sn-pb-{{ key }};"
+            ></button>
+            <div
+              id="SnPbPop-{{ key }}"
+              class="sn-pb__popover"
+              ref="popover"
+              popover="auto"
+              aria-label="{{ p.title | escape }}"
+              style="position-anchor: --sn-pb-{{ key }};"
+            >
+              <a class="sn-pb__pop-link" href="{{ p.url }}">
+                {%- if pop_image != blank -%}
+                  {{ pop_image | image_url: width: 200 | image_tag: loading: 'lazy', sizes: '80px', alt: '', class: 'sn-pb__pop-image' }}
+                {%- endif -%}
+                <span class="sn-pb__pop-text">
+                  <span class="sn-pb__pop-title">{{ p.title | escape }}</span>
+                  <span class="sn-pb__pop-price">{{ v.price | money_without_trailing_zeros }}</span>
+                </span>
+              </a>
+              <button
+                type="button"
+                class="sn-pb__pop-close"
+                popovertarget="SnPbPop-{{ key }}"
+                popovertargetaction="hide"
+                aria-label="{{ 'actions.close' | t }}"
+              >
+                <span class="svg-wrapper">{{- 'icon-close.svg' | inline_asset_content -}}</span>
+              </button>
+            </div>
+          </anchored-popover-component>
+        {%- endfor -%}
+      </div>
+    {%- endif -%}
+
+    <div class="sn-pb__content">
+      {%- if section.settings.heading != blank -%}
+        <h2 class="sn-pb__heading">{{ section.settings.heading | escape }}</h2>
+      {%- endif -%}
+      {%- if section.settings.description != blank -%}
+        <p class="sn-pb__description">{{ section.settings.description | escape }}</p>
+      {%- endif -%}
+
+
+      {%- if count > 0 or request.design_mode and empty_blocks > 0 -%}
+        <ul class="sn-pb__items list-unstyled" role="list">
+          {%- for block in section.blocks -%}
+            {%- liquid
+              assign p = block.settings.product
+              if p == blank and request.design_mode == false
+                continue
+              endif
+            -%}
+            {%- if p == blank -%}
+              <li class="sn-pb__item sn-pb__item--empty" {{ block.shopify_attributes }}>
+                <span class="sn-pb__thumb">{{ 'product-apparel-1' | placeholder_svg_tag }}</span>
+                <span class="sn-pb__text">
+                  <span class="sn-pb__title">Bundle item {{ forloop.index }}</span>
+                  <span class="sn-pb__subtitle">Pick a product in this block</span>
+                </span>
+              </li>
+              {%- continue -%}
+            {%- endif -%}
+            {%- liquid
+              assign v = p.selected_or_first_available_variant
+              assign qty = block.settings.quantity | default: 1
+              assign line_price = v.price | times: qty
+              assign thumb = block.settings.image | default: v.featured_image | default: p.featured_image
+            -%}
+            <li class="sn-pb__item" {{ block.shopify_attributes }}>
+              <a class="sn-pb__thumb" href="{{ p.url }}" tabindex="-1" aria-hidden="true">
+                {%- if thumb != blank -%}
+                  {{ thumb | image_url: width: 256 | image_tag: loading: 'lazy', sizes: '128px', alt: '' }}
+                {%- else -%}
+                  {{ 'product-apparel-1' | placeholder_svg_tag }}
+                {%- endif -%}
+              </a>
+              <span class="sn-pb__text">
+                <a class="sn-pb__title" href="{{ p.url }}">{{ p.title | escape }}</a>
+                {%- if block.settings.subtitle != blank -%}
+                  <span class="sn-pb__subtitle">{{ block.settings.subtitle | escape }}</span>
+                {%- endif -%}
+                {%- unless v.available -%}
+                  <span class="sn-pb__subtitle">{{ 'content.product_badge_sold_out' | t }}</span>
+                {%- endunless -%}
+              </span>
+              <span class="sn-pb__price">
+                {%- if qty > 1 %}{{ qty }} × {% endif -%}
+                {{- line_price | money_without_trailing_zeros -}}
+              </span>
+            </li>
+          {%- endfor -%}
+        </ul>
+      {%- endif -%}
+
+      {%- if parent != blank -%}
+        {%- comment -%} A 0 price on an unavailable variant = not set up yet: no price is shown (the editor note says why) {%- endcomment -%}
+        {%- if pv.price > 0 or pv.available -%}
+        <div class="sn-pb__total">
+          <p class="sn-pb__now">
+            <span>{{ section.settings.total_label | escape }}</span>
+            <span class="sn-pb__now-price">{{ pv.price | money_without_trailing_zeros }}</span>
+          </p>
+          {%- if section.settings.discount_badge != blank and was_total > 0 -%}
+            <p class="sn-pb__was">
+              <s class="sn-pb__old">{{ was_total | money_without_trailing_zeros }}</s>
+              {%- if percent > 0 and section.settings.discount_badge != blank -%}
+                <span class="sn-pb__badge">
+                  {{- section.settings.discount_badge | replace: '[percent]', percent | escape -}}
+                </span>
+              {%- endif -%}
+            </p>
+          {%- endif -%}
+        </div>
+        {%- endif -%}
+
+        <sn-bundle-cart class="sn-pb__cart" data-error-text="{{ 'content.unavailable' | t | escape }}">
+          <script type="application/json" ref="data">[{"id":{{ pv.id }},"quantity":1}]</script>
+          <button
+            type="button"
+            class="sn-pb__button"
+            ref="button"
+            on:click="/addBundle"
+            {% unless pv.available %}
+              disabled
+            {% endunless %}
+          >
+            {{ section.settings.button_label | escape }}
+          </button>
+          <p class="sn-pb__status" ref="status" role="status" aria-live="polite">
+            {%- unless pv.available -%}
+              {{ 'content.product_badge_sold_out' | t }}
+            {%- endunless -%}
+          </p>
+        </sn-bundle-cart>
+      {%- endif -%}
+    </div>
+  </div>
+</div>
+
+{% stylesheet %}
+  /* Structure only; the Figma look is in the developer CSS file under the custom class. */
+  .sn-product-bundle {
+    padding-block: var(--pb-pt-m) var(--pb-pb-m);
+  }
+
+  .sn-pb {
+    display: flex;
+    flex-direction: column;
+    gap: var(--pb-gap-m);
+    padding-inline: var(--pb-pi-m);
+  }
+
+  .sn-pb__media {
+    position: relative;
+    aspect-ratio: 100 / var(--pb-ratio-m);
+    border-radius: var(--pb-radius);
+  }
+
+  .sn-pb__image {
+    display: block;
+    width: 100%;
+    height: 100%;
+    border-radius: inherit;
+    object-fit: cover;
+  }
+
+  .sn-pb__image--desktop {
+    display: none;
+  }
+
+  /* Hotspot centre = % of the uploaded picture, mapped through the frame's cover crop
+     (k and focal point p come from the section, per breakpoint). Physical left/top: the image
+     does not mirror in RTL. */
+  .sn-pb__hotspot {
+    position: absolute;
+    left: calc((var(--kx-m) * var(--xm) - (var(--kx-m) - 1) * var(--px-m)) * 1%);
+    top: calc((var(--ky-m) * var(--ym) - (var(--ky-m) - 1) * var(--py-m)) * 1%);
+    translate: -50% -50%;
+    z-index: 1;
+  }
+
+  /* Phones: never smaller than a 32px touch target (Figma mobile marker = 32px) */
+  .sn-pb__marker {
+    display: block;
+    width: max(var(--pb-spot), 32px);
+    height: max(var(--pb-spot), 32px);
+    padding: 0;
+    border-radius: 50%;
+    cursor: pointer;
+  }
+
+  .sn-pb__popover {
+    --pop-w: min(300px, calc(100vw - 32px));
+
+    width: var(--pop-w);
+    margin: 0;
+    padding: 0;
+    inset: auto;
+    top: calc(anchor(bottom) + 8px);
+    left: clamp(16px, calc(anchor(center) - var(--pop-w) / 2), calc(100vw - var(--pop-w) - 16px));
+    position-try-fallbacks: flip-block;
+  }
+
+  @supports not (position-anchor: --a) {
+    .sn-pb__popover {
+      position: fixed;
+      top: calc((var(--anchor-top) + var(--anchor-height)) * 1px + 8px);
+      left: clamp(
+        16px,
+        calc((var(--anchor-left) + var(--anchor-width) / 2) * 1px - var(--pop-w) / 2),
+        calc(100vw - var(--pop-w) - 16px)
+      );
+    }
+  }
+
+  .sn-pb__pop-link {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px;
+    padding-inline-end: 40px;
+    text-decoration: none;
+    color: inherit;
+  }
+
+  .sn-pb__pop-image {
+    flex: 0 0 auto;
+    width: 64px;
+    height: 64px;
+    object-fit: cover;
+  }
+
+  .sn-pb__pop-text {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+  }
+
+  .sn-pb__pop-close {
+    position: absolute;
+    inset-block-start: 6px;
+    inset-inline-end: 6px;
+    display: grid;
+    place-items: center;
+    width: 28px;
+    height: 28px;
+    padding: 0;
+    background: none;
+    border: 0;
+    color: inherit;
+    cursor: pointer;
+  }
+
+  .sn-pb__content {
+    display: flex;
+    flex-direction: column;
+    gap: var(--pb-content-gap-m);
+    min-width: 0;
+  }
+
+  .sn-pb__heading,
+  .sn-pb__description {
+    margin: 0;
+  }
+
+  .sn-pb__items {
+    margin: 0;
+    padding: 0;
+  }
+
+  .sn-pb__item {
+    display: flex;
+    align-items: center;
+  }
+
+  .sn-pb__thumb {
+    flex: 0 0 auto;
+    width: var(--pb-thumb);
+    aspect-ratio: 1;
+    overflow: hidden;
+
+    img,
+    svg {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+  }
+
+  .sn-pb__text {
+    display: flex;
+    flex: 1 1 auto;
+    flex-direction: column;
+    min-width: 0;
+  }
+
+  .sn-pb__price {
+    white-space: nowrap;
+  }
+
+  .sn-pb__total,
+  .sn-pb__now,
+  .sn-pb__was {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    margin: 0;
+  }
+
+  .sn-pb__button {
+    width: 100%;
+  }
+
+  .sn-pb__status:empty {
+    display: none;
+  }
+
+  @media screen and (min-width: 750px) {
+    .sn-product-bundle {
+      padding-block: var(--pb-pt) var(--pb-pb);
+    }
+
+    .sn-pb {
+      /* RTL row-reverse: image on the left, content on the right */
+      flex-direction: row-reverse;
+      align-items: center;
+      gap: var(--pb-gap);
+      max-inline-size: var(--pb-max);
+      margin-inline: auto;
+      padding-inline: 0;
+      width: 100%;
+    }
+
+    .sn-pb__media {
+      flex: 0 0 calc((100% - var(--pb-gap)) * var(--pb-media) / 100);
+      aspect-ratio: 100 / var(--pb-ratio);
+    }
+
+    .sn-pb__image--desktop {
+      display: block;
+    }
+
+    .sn-pb__image--mobile {
+      display: none;
+    }
+
+    .sn-pb__hotspot {
+      left: calc((var(--kx-d) * var(--x) - (var(--kx-d) - 1) * var(--px-d)) * 1%);
+      top: calc((var(--ky-d) * var(--y) - (var(--ky-d) - 1) * var(--py-d)) * 1%);
+    }
+
+    .sn-pb__marker {
+      width: var(--pb-spot);
+      height: var(--pb-spot);
+    }
+
+    .sn-pb__content {
+      flex: 1 1 0;
+      gap: var(--pb-content-gap);
+    }
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "Product bundle",
+  "tag": "section",
+  "class": "sn-product-bundle-section",
+  "disabled_on": {
+    "groups": [
+      "header",
+      "footer"
+    ]
+  },
+  "max_blocks": 12,
+  "blocks": [
+    {
+      "type": "component",
+      "name": "Bundle item",
+      "settings": [
+        {
+          "type": "product",
+          "id": "product",
+          "label": "Product"
+        },
+        {
+          "type": "range",
+          "id": "quantity",
+          "label": "Quantity in the bundle",
+          "min": 1,
+          "max": 10,
+          "step": 1,
+          "default": 1
+        },
+        {
+          "type": "text",
+          "id": "subtitle",
+          "label": "Subtitle",
+          "info": "Short line under the product title."
+        },
+        {
+          "type": "image_picker",
+          "id": "image",
+          "label": "Image override",
+          "info": "Optional. Uses the product image when empty."
+        },
+        {
+          "type": "header",
+          "content": "Hotspot on the bundle image"
+        },
+        {
+          "type": "checkbox",
+          "id": "show_hotspot",
+          "label": "Show hotspot",
+          "default": true
+        },
+        {
+          "type": "range",
+          "id": "x_position",
+          "label": "Desktop horizontal position",
+          "min": 0,
+          "max": 100,
+          "step": 1,
+          "unit": "%",
+          "default": 50,
+          "visible_if": "{{ block.settings.show_hotspot }}",
+          "info": "% of the picture width (the whole uploaded image, not the cropped frame)."
+        },
+        {
+          "type": "range",
+          "id": "y_position",
+          "label": "Desktop vertical position",
+          "min": 0,
+          "max": 100,
+          "step": 1,
+          "unit": "%",
+          "default": 50,
+          "visible_if": "{{ block.settings.show_hotspot }}",
+          "info": "% of the picture height."
+        },
+        {
+          "type": "range",
+          "id": "x_position_mobile",
+          "label": "Mobile horizontal position",
+          "min": 0,
+          "max": 100,
+          "step": 1,
+          "unit": "%",
+          "default": 50,
+          "visible_if": "{{ block.settings.show_hotspot }}",
+          "info": "% of the mobile picture (or the main picture) width."
+        },
+        {
+          "type": "range",
+          "id": "y_position_mobile",
+          "label": "Mobile vertical position",
+          "min": 0,
+          "max": 100,
+          "step": 1,
+          "unit": "%",
+          "default": 50,
+          "visible_if": "{{ block.settings.show_hotspot }}",
+          "info": "% of the mobile picture (or the main picture) height."
+        }
+      ]
+    }
+  ],
+  "settings": [
+    {
+      "type": "header",
+      "content": "Bundle",
+      "info": "Bundle product = the Shopify product the button adds (e.g. made with the Shopify Bundles app). Add a 'Bundle item' block for each product inside it."
+    },
+    {
+      "type": "product",
+      "id": "bundle_product",
+      "label": "Bundle product"
+    },
+    {
+      "type": "image_picker",
+      "id": "image",
+      "label": "Bundle image",
+      "info": "Uses the bundle product image when empty. Set the focal point on the image to control cropping."
+    },
+    {
+      "type": "image_picker",
+      "id": "image_mobile",
+      "label": "Mobile bundle image",
+      "info": "Optional. Uses the bundle image when empty."
+    },
+    {
+      "type": "range",
+      "id": "image_ratio",
+      "label": "Image height (desktop)",
+      "info": "% of its width. Figma: 75 (744 × 560). The picture is cropped to this frame around its focal point; hotspots follow the crop.",
+      "min": 40,
+      "max": 140,
+      "step": 1,
+      "unit": "%",
+      "default": 75
+    },
+    {
+      "type": "range",
+      "id": "image_ratio_mobile",
+      "label": "Image height (mobile)",
+      "min": 40,
+      "max": 140,
+      "step": 1,
+      "unit": "%",
+      "default": 75
+    },
+    {
+      "type": "range",
+      "id": "image_radius",
+      "label": "Image corner radius",
+      "min": 0,
+      "max": 40,
+      "step": 1,
+      "unit": "px",
+      "default": 16
+    },
+    {
+      "type": "header",
+      "content": "Content"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "باقات العناية المناسبة لروتينك"
+    },
+    {
+      "type": "textarea",
+      "id": "description",
+      "label": "Description",
+      "default": "كمّل روتينك في باقة واحدة بسعر أفضل، اختيارات متكاملة للعناية اليومية."
+    },
+    {
+      "type": "range",
+      "id": "heading_size",
+      "label": "Heading size (desktop)",
+      "min": 16,
+      "max": 60,
+      "step": 1,
+      "unit": "px",
+      "default": 32
+    },
+    {
+      "type": "range",
+      "id": "heading_size_mobile",
+      "label": "Heading size (mobile)",
+      "min": 14,
+      "max": 48,
+      "step": 1,
+      "unit": "px",
+      "default": 24
+    },
+    {
+      "type": "range",
+      "id": "description_size",
+      "label": "Description size (desktop)",
+      "min": 12,
+      "max": 28,
+      "step": 1,
+      "unit": "px",
+      "default": 18
+    },
+    {
+      "type": "range",
+      "id": "description_size_mobile",
+      "label": "Description size (mobile)",
+      "min": 12,
+      "max": 24,
+      "step": 1,
+      "unit": "px",
+      "default": 15
+    },
+    {
+      "type": "range",
+      "id": "description_line_height",
+      "label": "Description line height (desktop)",
+      "min": 16,
+      "max": 60,
+      "step": 1,
+      "unit": "px",
+      "default": 32
+    },
+    {
+      "type": "range",
+      "id": "description_line_height_mobile",
+      "label": "Description line height (mobile)",
+      "min": 14,
+      "max": 48,
+      "step": 1,
+      "unit": "px",
+      "default": 26
+    },
+    {
+      "type": "range",
+      "id": "content_gap",
+      "label": "Content spacing (desktop)",
+      "min": 0,
+      "max": 60,
+      "step": 1,
+      "unit": "px",
+      "default": 18
+    },
+    {
+      "type": "range",
+      "id": "content_gap_mobile",
+      "label": "Content spacing (mobile)",
+      "min": 0,
+      "max": 60,
+      "step": 1,
+      "unit": "px",
+      "default": 14
+    },
+    {
+      "type": "header",
+      "content": "Product list"
+    },
+    {
+      "type": "range",
+      "id": "thumb_size",
+      "label": "Product image size",
+      "min": 40,
+      "max": 120,
+      "step": 2,
+      "unit": "px",
+      "default": 64
+    },
+    {
+      "type": "range",
+      "id": "row_padding",
+      "label": "Row padding",
+      "min": 0,
+      "max": 40,
+      "step": 1,
+      "unit": "px",
+      "default": 14
+    },
+    {
+      "type": "range",
+      "id": "title_size",
+      "label": "Product title and price size",
+      "min": 10,
+      "max": 32,
+      "step": 1,
+      "unit": "px",
+      "default": 16
+    },
+    {
+      "type": "range",
+      "id": "subtitle_size",
+      "label": "Subtitle size",
+      "min": 10,
+      "max": 24,
+      "step": 1,
+      "unit": "px",
+      "default": 12
+    },
+    {
+      "type": "header",
+      "content": "Price and button"
+    },
+    {
+      "type": "text",
+      "id": "total_label",
+      "label": "Total label",
+      "default": "إجمالي الباندل"
+    },
+    {
+      "type": "text",
+      "id": "discount_badge",
+      "label": "Discount badge",
+      "info": "Shows the real old price and saving. [percent] = the saving. Leave empty to hide the old price and badge.",
+      "default": "خصم [percent]%"
+    },
+    {
+      "type": "text",
+      "id": "button_label",
+      "label": "Button label",
+      "default": "أضف الباندل للسلة"
+    },
+    {
+      "type": "range",
+      "id": "button_radius",
+      "label": "Button corner radius",
+      "min": 0,
+      "max": 40,
+      "step": 1,
+      "unit": "px",
+      "default": 12
+    },
+    {
+      "type": "header",
+      "content": "Colors and hotspots"
+    },
+    {
+      "type": "color",
+      "id": "heading_color",
+      "label": "Heading, titles and prices",
+      "default": "#12568d"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Secondary text",
+      "default": "#5a5a59"
+    },
+    {
+      "type": "color",
+      "id": "border_color",
+      "label": "Dividers and badge border",
+      "default": "#dcf2fb"
+    },
+    {
+      "type": "color",
+      "id": "brand_color",
+      "label": "Button, badge text and hotspot dot",
+      "default": "#176bb0"
+    },
+    {
+      "type": "color",
+      "id": "hotspot_ring_color",
+      "label": "Hotspot ring",
+      "default": "#60c1e1"
+    },
+    {
+      "type": "range",
+      "id": "hotspot_size",
+      "label": "Hotspot size",
+      "min": 20,
+      "max": 60,
+      "step": 2,
+      "unit": "px",
+      "default": 28,
+      "info": "Desktop size. Phones use at least 32px (touch target). Figma: 28 desktop, 32 mobile."
+    },
+    {
+      "type": "header",
+      "content": "Layout"
+    },
+    {
+      "type": "range",
+      "id": "content_max_width",
+      "label": "Content max width",
+      "min": 800,
+      "max": 1800,
+      "step": 10,
+      "unit": "px",
+      "default": 1340
+    },
+    {
+      "type": "range",
+      "id": "media_width",
+      "label": "Image width (desktop)",
+      "min": 30,
+      "max": 70,
+      "step": 1,
+      "unit": "%",
+      "default": 50
+    },
+    {
+      "type": "range",
+      "id": "column_gap",
+      "label": "Gap between image and content (desktop)",
+      "min": 0,
+      "max": 120,
+      "step": 2,
+      "unit": "px",
+      "default": 56
+    },
+    {
+      "type": "range",
+      "id": "mobile_gap",
+      "label": "Gap between image and content (mobile)",
+      "min": 0,
+      "max": 60,
+      "step": 1,
+      "unit": "px",
+      "default": 20
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "label": "Top padding (desktop)",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 60
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "label": "Bottom padding (desktop)",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 60
+    },
+    {
+      "type": "range",
+      "id": "padding_top_mobile",
+      "label": "Top padding (mobile)",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 56
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom_mobile",
+      "label": "Bottom padding (mobile)",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 40
+    },
+    {
+      "type": "range",
+      "id": "mobile_padding_inline",
+      "label": "Side padding (mobile)",
+      "info": "Added to the page margin. Figma: 8 (24 in total).",
+      "min": 0,
+      "max": 40,
+      "step": 1,
+      "unit": "px",
+      "default": 8
+    },
+    {
+      "type": "header",
+      "content": "Advanced"
+    },
+    {
+      "type": "text",
+      "id": "custom_class",
+      "label": "Custom class",
+      "info": "Design styling class (Snosha: sn-home-bundle)."
+    }
+  ],
+  "presets": [
+    {
+      "name": "Product bundle",
+      "settings": {
+        "custom_class": "sn-home-bundle",
+        "hotspot_size": 28,
+        "image_radius": 16
+      },
+      "blocks": [
+        {
+          "type": "component",
+          "settings": {
+            "x_position": 77,
+            "y_position": 68,
+            "x_position_mobile": 79,
+            "y_position_mobile": 71
+          }
+        },
+        {
+          "type": "component",
+          "settings": {
+            "x_position": 53,
+            "y_position": 54,
+            "x_position_mobile": 55,
+            "y_position_mobile": 57
+          }
+        },
+        {
+          "type": "component",
+          "settings": {
+            "x_position": 28,
+            "y_position": 64,
+            "x_position_mobile": 30,
+            "y_position_mobile": 68
+          }
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

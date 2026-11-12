@@ -2,27 +2,55 @@
 
 {% assign block_settings = block.settings %}
 
+{%- liquid
+  # Opt-in extensions (defaults keep the native output):
+  # uploaded_poster / uploaded_aspect_ratio for Shopify-hosted videos, and a custom play button.
+  assign video_class = 'spacing-style size-style border-style'
+  assign uploaded_ratio = block_settings.video.aspect_ratio | default: 'auto'
+  if block_settings.source == 'uploaded' and block_settings.uploaded_aspect_ratio != 'video'
+    assign uploaded_ratio = block_settings.uploaded_aspect_ratio
+    assign video_class = video_class | append: ' video-block--ratio'
+  endif
+  assign uploaded_poster = block_settings.uploaded_poster | default: block_settings.video.preview_image
+  if block_settings.play_button_style == 'custom'
+    assign video_class = video_class | append: ' video-block--play-custom'
+    if block_settings.play_button_icon_image != blank
+      assign video_class = video_class | append: ' video-block--play-image'
+    endif
+  endif
+-%}
+
 {% capture video_style %}
   {%  render 'spacing-style', settings: block_settings %}
   {% render 'border-override', settings: block_settings %}
    --size-style-width: {{ block_settings.custom_width }}%; --size-style-width-mobile: {{ block_settings.custom_width_mobile }}%;
-   --size-style-aspect-ratio: {% if block_settings.source == 'uploaded' %}{{ block_settings.video.aspect_ratio | default: 'auto' }}{% elsif block_settings.cover_image == blank %}{{ block_settings.aspect_ratio }}{% else %}auto{% endif %};
+   --size-style-aspect-ratio: {% if block_settings.source == 'uploaded' %}{{ uploaded_ratio }}{% elsif block_settings.cover_image == blank %}{{ block_settings.aspect_ratio }}{% else %}auto{% endif %};
+  {%- if block_settings.play_button_style == 'custom' %}
+    --play-button-size: {{ block_settings.play_button_size }}px;
+    --play-button-icon-size: {{ block_settings.play_button_icon_size }}px;
+    --play-button-radius: {{ block_settings.play_button_radius }}px;
+    --play-button-background: {{ block_settings.play_button_background }};
+    --play-button-icon-color: {{ block_settings.play_button_icon_color }};
+    {%- if block_settings.play_button_icon_image != blank %}
+      --play-button-image: url('{{ block_settings.play_button_icon_image | image_url: width: 160 }}');
+    {%- endif %}
+  {%- endif %}
 {% endcapture %}
 
 {% if block_settings.source == 'uploaded' %}
   {% render 'video',
     video: block_settings.video,
-    video_class: 'spacing-style size-style border-style',
+    video_class: video_class,
     video_loop: block_settings.video_loop,
     video_style: video_style,
-    video_preview_image: block_settings.video.preview_image,
+    video_preview_image: uploaded_poster,
     additional_attributes: block.shopify_attributes
   %}
 {% else %}
   {% render 'video',
     video_from_url: true,
     video: block_settings.video_url.id,
-    video_class: 'spacing-style size-style border-style',
+    video_class: video_class,
     video_type: block_settings.video_url.type,
     video_style: video_style,
     video_alt: block_settings.alt,
@@ -34,6 +62,55 @@
 {% stylesheet %}
   .placeholder-video {
     aspect-ratio: 5 / 3;
+  }
+
+  /* Opt-in uploaded video aspect ratio: the poster button follows it instead of the file's ratio */
+  deferred-media.video-block--ratio > .deferred-media__poster-button {
+    aspect-ratio: var(--size-style-aspect-ratio, auto);
+  }
+
+  /* Opt-in custom play button (size, shape, colors, optional uploaded icon) */
+  .video-block--play-custom :is(.deferred-media__poster-icon, .video-placeholder-wrapper__poster-icon) {
+    inline-size: var(--play-button-size);
+    block-size: var(--play-button-size);
+    border-radius: var(--play-button-radius);
+    background-color: var(--play-button-background);
+    color: var(--play-button-icon-color);
+    transition: transform var(--animation-speed, 0.2s) var(--animation-easing, ease);
+
+    svg {
+      inline-size: var(--play-button-icon-size);
+      block-size: var(--play-button-icon-size);
+      color: inherit;
+      filter: none;
+    }
+
+    svg:hover {
+      color: inherit;
+    }
+  }
+
+  .video-block--play-custom .deferred-media__poster-button:hover .deferred-media__poster-icon {
+    transform: translate(-50%, -50%) scale(1.06);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .video-block--play-custom .deferred-media__poster-button:hover .deferred-media__poster-icon {
+      transform: translate(-50%, -50%);
+    }
+  }
+
+  .video-block--play-image :is(.deferred-media__poster-icon, .video-placeholder-wrapper__poster-icon) {
+    svg {
+      display: none;
+    }
+
+    &::before {
+      content: '';
+      inline-size: var(--play-button-icon-size);
+      block-size: var(--play-button-icon-size);
+      background: var(--play-button-image) center / contain no-repeat;
+    }
   }
 {% endstylesheet %}
 
@@ -62,6 +139,43 @@
       "type": "video",
       "id": "video",
       "label": "t:settings.video",
+      "visible_if": "{{ block.settings.source == 'uploaded' }}"
+    },
+    {
+      "type": "image_picker",
+      "id": "uploaded_poster",
+      "label": "Poster image",
+      "info": "Shown before the video plays. Leave empty to use the video's own preview image.",
+      "visible_if": "{{ block.settings.source == 'uploaded' and block.settings.video_autoplay == false }}"
+    },
+    {
+      "type": "select",
+      "id": "uploaded_aspect_ratio",
+      "label": "t:settings.aspect_ratio",
+      "options": [
+        {
+          "value": "video",
+          "label": "Same as video"
+        },
+        {
+          "value": "9/16",
+          "label": "t:options.portrait"
+        },
+        {
+          "value": "4/5",
+          "label": "4:5"
+        },
+        {
+          "value": "1/1",
+          "label": "t:options.square"
+        },
+        {
+          "value": "16/9",
+          "label": "t:options.landscape"
+        }
+      ],
+      "default": "video",
+      "info": "Other ratios crop the poster and video to fill the frame.",
       "visible_if": "{{ block.settings.source == 'uploaded' }}"
     },
     {
@@ -146,6 +260,81 @@
         }
       ],
       "default": "auto"
+    },
+    {
+      "type": "header",
+      "content": "Play button"
+    },
+    {
+      "type": "select",
+      "id": "play_button_style",
+      "label": "t:settings.style",
+      "options": [
+        {
+          "value": "native",
+          "label": "t:settings.default"
+        },
+        {
+          "value": "custom",
+          "label": "t:options.custom"
+        }
+      ],
+      "default": "native"
+    },
+    {
+      "type": "range",
+      "id": "play_button_size",
+      "label": "Button size",
+      "min": 32,
+      "max": 96,
+      "step": 1,
+      "unit": "px",
+      "default": 52,
+      "visible_if": "{{ block.settings.play_button_style == 'custom' }}"
+    },
+    {
+      "type": "range",
+      "id": "play_button_icon_size",
+      "label": "Icon size",
+      "min": 10,
+      "max": 48,
+      "step": 1,
+      "unit": "px",
+      "default": 24,
+      "visible_if": "{{ block.settings.play_button_style == 'custom' }}"
+    },
+    {
+      "type": "range",
+      "id": "play_button_radius",
+      "label": "t:settings.border_radius",
+      "min": 0,
+      "max": 48,
+      "step": 1,
+      "unit": "px",
+      "default": 48,
+      "visible_if": "{{ block.settings.play_button_style == 'custom' }}"
+    },
+    {
+      "type": "color",
+      "id": "play_button_background",
+      "label": "t:settings.background",
+      "alpha": true,
+      "default": "{{ settings.color_palette.foreground }}",
+      "visible_if": "{{ block.settings.play_button_style == 'custom' }}"
+    },
+    {
+      "type": "color",
+      "id": "play_button_icon_color",
+      "label": "Icon color",
+      "default": "{{ settings.color_palette.background }}",
+      "visible_if": "{{ block.settings.play_button_style == 'custom' }}"
+    },
+    {
+      "type": "image_picker",
+      "id": "play_button_icon_image",
+      "label": "Custom icon",
+      "info": "Replaces the play icon.",
+      "visible_if": "{{ block.settings.play_button_style == 'custom' }}"
     },
     {
       "type": "header",

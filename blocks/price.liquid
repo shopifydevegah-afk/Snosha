@@ -39,7 +39,7 @@
 %}
 
 <product-price
-  class="text-block {{ text_block_classes }} text-{{ block_settings.alignment }} {{ block_settings.type_preset | default: 'paragraph' }} spacing-style"
+  class="text-block {{ text_block_classes }} text-{{ block_settings.alignment }} {{ block_settings.type_preset | default: 'paragraph' }} spacing-style{% if block_settings.show_discount_badge %} price--inline-badge{% if block_settings.price_font_size_mobile > 0 %} price--mobile-size{% endif %}{% endif %}"
   data-block-id="{{ block.id }}"
   data-product-id="{{ product_resource.id }}"
   style="
@@ -50,6 +50,19 @@
       --color-rgb: {{ block_settings.text_color.rgb }};
     {% endif %}
     --width: {{ block_settings.width }};
+    {% if block_settings.show_discount_badge %}
+      --price-row-gap: {{ block_settings.price_row_gap }}px;
+      --price-row-gap-mobile: {{ block_settings.price_row_gap_mobile }}px;
+      --price-row-justify: {{ block_settings.alignment | replace: 'left', 'flex-start' | replace: 'right', 'flex-end' }};
+      --discount-badge-radius: {{ block_settings.discount_badge_radius }}px;
+      --discount-badge-font-size: {{ block_settings.discount_badge_font_size }}px;
+      --discount-badge-font-size-mobile: {{ block_settings.discount_badge_font_size_mobile }}px;
+      --discount-badge-radius-mobile: {{ block_settings.discount_badge_radius | times: 1.0 | times: block_settings.discount_badge_font_size_mobile | divided_by: block_settings.discount_badge_font_size | round: 2 }}px;
+      {% if block_settings.price_font_size_mobile > 0 %}--price-font-size-mobile: {{ block_settings.price_font_size_mobile }}px;{% endif %}
+      {% if block_settings.discount_badge_background != blank %}--discount-badge-background: {{ block_settings.discount_badge_background }};{% endif %}
+      {% if block_settings.discount_badge_text_color != blank %}--discount-badge-color: {{ block_settings.discount_badge_text_color }};{% endif %}
+      {% if block_settings.discount_badge_border_color != blank %}--discount-badge-border: {{ block_settings.discount_badge_border_color }};{% endif %}
+    {% endif %}
   "
   {{ block.shopify_attributes }}
 >
@@ -58,6 +71,35 @@
     product_resource: product_resource,
     show_sale_price_first: block_settings.show_sale_price_first
   %}
+
+  {%- if block_settings.show_discount_badge and selected_variant != blank -%}
+    {%- liquid
+      # Opt-in discount badge. Uses the same variant as the price above (selected or first available).
+      # Note: product-price.js refreshes only the price container on a live variant change.
+      assign discount_percent = 0
+      assign variant_compare_at = selected_variant.compare_at_price
+      assign variant_price = selected_variant.price
+      if variant_compare_at > variant_price
+        assign discount_percent = variant_compare_at | minus: variant_price | times: 100.0 | divided_by: variant_compare_at | round
+      endif
+    -%}
+    {%- if discount_percent >= 1 -%}
+      {%- liquid
+        assign discount_label_format = block_settings.discount_badge_label | default: '-[percent]%'
+        unless discount_label_format contains '[percent]'
+          assign discount_label_format = discount_label_format | append: ' [percent]%'
+        endunless
+        assign discount_percent_text = discount_percent | append: ''
+        assign discount_label = discount_label_format | escape | replace: '[percent]', discount_percent_text
+      -%}
+      <span
+        class="price-discount-badge"
+        ref="discountBadge"
+      >
+        {{- discount_label -}}
+      </span>
+    {%- endif -%}
+  {%- endif -%}
 
   {% if block_settings.show_tax_info %}
     <div class="tax-note">
@@ -92,6 +134,65 @@
 
 {% render 'payment-terms-styles' %}
 
+{% stylesheet %}
+  /* Opt-in (show_discount_badge): prices and the discount badge share one wrapping row.
+     Selectors start with product-price.price--inline-badge so they outrank the text-block preset rules
+     in base.css (e.g. .text-block.h6 > * sets color, font-size and line-height on every direct child). */
+  product-price.price--inline-badge {
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: var(--price-row-justify, flex-start);
+    gap: var(--gap-3xs, 4px) var(--price-row-gap);
+
+    @media screen and (max-width: 749px) {
+      column-gap: var(--price-row-gap-mobile);
+    }
+
+    /* .text-block > * { width: var(--width) } (text.liquid) would make each item 100% wide */
+    > * {
+      width: auto;
+    }
+
+    /* The price container stays in the DOM for product-price.js; its items join the row and take the
+       block's own size (the preset rule would otherwise pin it to the preset size). */
+    > [ref='priceContainer'] {
+      display: contents;
+      font-size: inherit;
+      line-height: inherit;
+    }
+
+    > :is(.tax-note, .installments) {
+      flex-basis: 100%;
+    }
+
+    /* Padding and radius scale with the badge text (Figma: 12px text → 4/12 padding, 8 radius) */
+    > .price-discount-badge {
+      display: inline-flex;
+      align-items: center;
+      padding: 0.333em 1em;
+      border: 1px solid var(--discount-badge-border, transparent);
+      border-radius: var(--discount-badge-radius, 0);
+      background: var(--discount-badge-background, rgb(var(--color-foreground-rgb) / var(--opacity-5)));
+      color: var(--discount-badge-color, var(--color, currentColor));
+      font-size: var(--discount-badge-font-size, 0.75em);
+      line-height: 1.5;
+      white-space: nowrap;
+
+      @media screen and (max-width: 749px) {
+        font-size: var(--discount-badge-font-size-mobile, var(--discount-badge-font-size, 0.75em));
+        border-radius: var(--discount-badge-radius-mobile, var(--discount-badge-radius, 0));
+      }
+    }
+
+    &.price--mobile-size {
+      @media screen and (max-width: 749px) {
+        font-size: var(--price-font-size-mobile);
+      }
+    }
+  }
+{% endstylesheet %}
+
 {% schema %}
 {
   "name": "t:names.product_price",
@@ -123,6 +224,107 @@
       "id": "show_tax_info",
       "label": "t:settings.show_tax_info",
       "default": false
+    },
+    {
+      "type": "checkbox",
+      "id": "show_discount_badge",
+      "label": "Show discount badge",
+      "info": "Calculated from the price and compare-at price. Hidden when there is no discount.",
+      "default": false
+    },
+    {
+      "type": "text",
+      "id": "discount_badge_label",
+      "label": "Discount badge text",
+      "info": "[percent] is replaced with the discount, for example: Save [percent]%",
+      "default": "-[percent]%",
+      "visible_if": "{{ block.settings.show_discount_badge }}"
+    },
+    {
+      "type": "color",
+      "id": "discount_badge_background",
+      "label": "Discount badge background",
+      "visible_if": "{{ block.settings.show_discount_badge }}"
+    },
+    {
+      "type": "color",
+      "id": "discount_badge_text_color",
+      "label": "Discount badge text",
+      "visible_if": "{{ block.settings.show_discount_badge }}"
+    },
+    {
+      "type": "color",
+      "id": "discount_badge_border_color",
+      "label": "Discount badge border",
+      "visible_if": "{{ block.settings.show_discount_badge }}"
+    },
+    {
+      "type": "range",
+      "id": "discount_badge_radius",
+      "label": "Discount badge corner radius",
+      "min": 0,
+      "max": 30,
+      "step": 1,
+      "unit": "px",
+      "default": 8,
+      "info": "Scales with the text size on mobile.",
+      "visible_if": "{{ block.settings.show_discount_badge }}"
+    },
+    {
+      "type": "range",
+      "id": "discount_badge_font_size",
+      "label": "Discount badge text size",
+      "min": 5,
+      "max": 20,
+      "step": 0.5,
+      "unit": "px",
+      "default": 12,
+      "visible_if": "{{ block.settings.show_discount_badge }}"
+    },
+    {
+      "type": "range",
+      "id": "discount_badge_font_size_mobile",
+      "label": "Mobile discount badge text size",
+      "min": 5,
+      "max": 20,
+      "step": 0.5,
+      "unit": "px",
+      "default": 12,
+      "visible_if": "{{ block.settings.show_discount_badge }}"
+    },
+    {
+      "type": "range",
+      "id": "price_font_size_mobile",
+      "label": "Mobile price size",
+      "info": "0 = same as desktop. The compare-at price follows proportionally where the theme styles it in em.",
+      "min": 0,
+      "max": 24,
+      "step": 0.5,
+      "unit": "px",
+      "default": 0,
+      "visible_if": "{{ block.settings.show_discount_badge }}"
+    },
+    {
+      "type": "range",
+      "id": "price_row_gap",
+      "label": "Space between prices and badge",
+      "min": 0,
+      "max": 24,
+      "step": 1,
+      "unit": "px",
+      "default": 10,
+      "visible_if": "{{ block.settings.show_discount_badge }}"
+    },
+    {
+      "type": "range",
+      "id": "price_row_gap_mobile",
+      "label": "Mobile space between prices and badge",
+      "min": 0,
+      "max": 24,
+      "step": 1,
+      "unit": "px",
+      "default": 6,
+      "visible_if": "{{ block.settings.show_discount_badge }}"
     },
     {
       "type": "header",

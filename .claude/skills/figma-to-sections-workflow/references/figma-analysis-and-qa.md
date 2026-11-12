@@ -75,6 +75,9 @@ Record for **Desktop and Mobile separately**:
 - Media: list every image/video/poster/content icon with its dimensions, aspect ratio, crop and focal point. Note whether mobile uses different media, and classify each one as *resource media*, *merchant content media* (needs a Theme Editor control) or *UI asset* (code)
 - Interactive states (hover, active, focus, open), sliders and their controls, and behavior if Figma shows it
 - RTL: is the design drawn RTL? Note anything that shouldn't mirror (logos, numbers, media, play icons)
+- Text content changes: truncated or shortened labels on mobile (e.g. first N words), hidden lines, different copy
+
+**Desktop ↔ Mobile comparison table (mandatory, SKILL.md hard rule 14).** After extracting both frames, write one row per property: heading size/line height, body/title sizes, media ratio and size, card width/height, gaps, paddings, column count, layout mode (carousel/grid), visible text, controls (arrows, progress). Columns: `Property | Desktop | Mobile | Same? | How it's delivered`. For each "different" row, the last column says one of: **native responsive setting** (name it), **existing setting reused for one breakpoint + new mobile-only setting** (name both), or **scoped CSS at ≤749 only** (fixed Figma value with no merchant need). Never copy a desktop value into a mobile rule, or the reverse, without a row that says they match. Copy the table (or its "different" rows) into the section's plan entry.
 
 If a value isn't available, write `ASSUMED: <value> (reason)`. Never invent one.
 
@@ -89,7 +92,9 @@ If a value isn't available, write `ASSUMED: <value> (reason)`. Never invent one.
 | JS syntax | `node --check assets/<file>.js` | No errors |
 | CSS loaded once | Grep `layout/theme.liquid` for the file | Exactly one `stylesheet_tag` per *initialized* developer file, none for uninitialized ones, and the Cairo line unchanged |
 | CSS scoping | Read every top-level rule you added or changed | Every selector depends on the owning custom class (custom-class-policy.md §5), and nothing nested escapes the instance. `:has()`/sibling forms are fine. A text search alone doesn't count; the browser check in Stage G is the proof |
+| Theme Editor controls (SKILL hard rule 15) | Read every declaration you added under the custom class and every inline `style` in the Liquid. Grep that CSS for literal sizes and colors (`px`, `rem`, `%`, `#`, `rgb(`). Compare with the plan's control map | (1) Each merchant-adjustable value reads a setting: native, or a scoped `--sn-*` var whose fallback equals the setting default. (2) Every remaining literal is a listed exception with a comment. (3) No fixed declaration targets a property a setting controls on the same device, so the merchant's value always wins (check specificity against native rules, e.g. `.custom-font-size`). (4) Mobile vars are read only at ≤749 and desktop values aren't overwritten at ≥750. (5) New settings are wired: Liquid outputs the var, CSS consumes it, and nothing renders without the custom class. (6) No duplicate of a native setting |
 | Console / network | `browser-automation` skill on the preview URL | No new errors or 404s |
+| Native preset & naming (SKILL hard rule 12) | Read the section's `presets`; compare with the instance in the template JSON | (1) instance `type` = the chosen native section; (2) the native preset was inspected and its block hierarchy reused; (3) instance `"name"` = the preset's `t:names.*` key, not a heading, brand or nickname; (4) storefront heading lives in a content block, separate from the name; (5) no duplicate custom section was created |
 
 Previews need `shopify theme dev --store <store>.myshopify.com` (requires the user to be logged in) or a preview URL from the user. If neither is available, say so and leave visual QA `PENDING`.
 
@@ -110,6 +115,7 @@ Check every row in **Arabic RTL** (the store's Arabic locale). Check:
 - native functions still work: add to cart, variant change, cart drawer, filters, search, links, keyboard focus
 
 - media: every content image/video can be chosen and replaced in the Theme Editor and renders correctly. The mobile → desktop fallback works. Empty settings don't break the layout (placeholder in the editor only, nothing broken live). Native media behavior is unchanged, and no code edit is needed to swap media
+- Theme Editor controls (rule 15): for every new or reused control, set two different values and confirm the property changes visibly, on its own device only (desktop at 1480, mobile at 390). Changing one element's control must not change another. Every card or repeated item uses the same value
 - class off: computed styles of the affected elements match native, other sections are unaffected, and the reversibility result is recorded (`CLASS_ONLY` / `CLASS_PLUS_SETTINGS` / `OPT_IN_STRUCTURAL` / `NOT_FULLY_REVERSIBLE`, see custom-class-policy.md §6)
 
 Write down any mismatch you can't fix (with the reason) in the plan. **VERIFIED** requires every applicable row with screenshot evidence. "Renders without errors" isn't enough, and don't claim pixel-perfect without comparing screenshots.

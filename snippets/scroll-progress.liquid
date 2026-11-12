@@ -1,0 +1,59 @@
+{%- doc -%}
+  Renders a scrollbar-style progress indicator that follows a horizontal scroller in the same section.
+  The indicator only reads the scroll position; it never scrolls the target, so native snapping,
+  touch, arrows and keyboard scrolling are unchanged. Hidden until the script measures an overflow.
+
+  @param {string} target - CSS selector of the scroller, resolved inside the closest `.shopify-section`
+  @param {string} [class] - Additional classes for the root element
+
+  @example
+  {% render 'scroll-progress', target: '.resource-list__carousel > slideshow-container > slideshow-slides', class: 'hidden--desktop' %}
+{%- enddoc -%}
+
+<script
+  src="{{ 'scroll-progress.js' | asset_url }}"
+  type="module"
+  fetchpriority="low"
+></script>
+
+<scroll-progress
+  class="scroll-progress {{ class }}"
+  target="{{ target | escape }}"
+  data-state="pending"
+  aria-hidden="true"
+>
+  <span class="scroll-progress__thumb"></span>
+</scroll-progress>
+
+{% stylesheet %}
+  scroll-progress {
+    --scroll-progress-height: 4px;
+
+    display: block;
+    position: relative;
+    inline-size: 100%;
+    block-size: var(--scroll-progress-height);
+    border-radius: var(--scroll-progress-height);
+    background: var(--scroll-progress-track, rgb(var(--color-foreground-rgb) / var(--opacity-10)));
+    overflow: hidden;
+  }
+
+  scroll-progress[data-state='pending'] {
+    visibility: hidden;
+  }
+
+  scroll-progress[data-state='inactive'] {
+    display: none;
+  }
+
+  .scroll-progress__thumb {
+    position: absolute;
+    inset-block: 0;
+    inset-inline-start: calc(
+      var(--scroll-progress-offset, 0) * (100% - var(--scroll-progress-size, 1) * 100%)
+    );
+    inline-size: calc(var(--scroll-progress-size, 1) * 100%);
+    border-radius: inherit;
+    background: var(--scroll-progress-thumb, var(--color-foreground));
+  }
+{% endstylesheet %}
