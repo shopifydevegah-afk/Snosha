@@ -28,6 +28,7 @@
       --carousel-card-width-mobile: {{ section.settings.card_width_mobile }}px;
       --carousel-gap-mobile: {{ section.settings.columns_gap_mobile }}px;
       --carousel-image-fit: {{ section.settings.image_fit | default: 'contain' }};
+      --carousel-image-height: {{ section.settings.image_height }}px;
     {% endif %}
   "
   data-testid="carousel-section"
@@ -40,6 +41,32 @@
   {%- if section.settings.custom_class != blank and section.settings.highlight_active_card -%}
     <carousel-active-card hidden></carousel-active-card>
     <script src="{{ 'carousel-active-card.js' | asset_url }}" type="module"></script>
+  {%- endif -%}
+
+  {%- comment -%}
+    Snosha S12 (opt-in): progress bar driven by the real scroller (custom class + "Show progress bar"), and one
+    "View all" link (label + link set). Placed after the cards, so on mobile they sit under the carousel; the
+    section's custom class can move the link next to the heading on larger screens.
+  {%- endcomment -%}
+  {%- if section.settings.custom_class != blank and section.settings.show_progress -%}
+    <carousel-progress class="carousel-progress" scroller=".carousel-content slideshow-slides" hidden>
+      <span class="carousel-progress__fill"></span>
+    </carousel-progress>
+    <script src="{{ 'carousel-progress.js' | asset_url }}" type="module"></script>
+  {%- endif -%}
+  {%- if section.settings.view_all_label != blank -%}
+    {%- if section.settings.view_all_link != blank -%}
+      <a class="section-carousel__view-all" href="{{ section.settings.view_all_link }}">
+        <span>{{ section.settings.view_all_label | escape }}</span>
+        <span class="svg-wrapper" aria-hidden="true">{{- 'icon-arrow.svg' | inline_asset_content -}}</span>
+      </a>
+    {%- elsif request.design_mode -%}
+      {%- comment -%} Theme Editor only: show the label until a link is chosen {%- endcomment -%}
+      <span class="section-carousel__view-all">
+        <span>{{ section.settings.view_all_label | escape }}</span>
+        <span class="svg-wrapper" aria-hidden="true">{{- 'icon-arrow.svg' | inline_asset_content -}}</span>
+      </span>
+    {%- endif -%}
   {%- endif -%}
 </div>
 
@@ -266,6 +293,41 @@
       "unit": "px",
       "default": 12,
       "visible_if": "{{ section.settings.custom_class != blank }}"
+    },
+    {
+      "type": "range",
+      "id": "image_height",
+      "label": "Card image height",
+      "info": "Read by the custom CSS class (image blocks inside the cards).",
+      "min": 160,
+      "max": 400,
+      "step": 4,
+      "unit": "px",
+      "default": 268,
+      "visible_if": "{{ section.settings.custom_class != blank }}"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_progress",
+      "label": "Show progress bar",
+      "info": "Under the cards while they scroll. Follows the swipe position.",
+      "default": false,
+      "visible_if": "{{ section.settings.custom_class != blank }}"
+    },
+    {
+      "type": "header",
+      "content": "View all link"
+    },
+    {
+      "type": "text",
+      "id": "view_all_label",
+      "label": "Label",
+      "info": "Leave empty to hide the link."
+    },
+    {
+      "type": "url",
+      "id": "view_all_link",
+      "label": "Link"
     }
   ],
   "presets": [

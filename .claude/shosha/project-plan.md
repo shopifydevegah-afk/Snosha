@@ -37,11 +37,11 @@ Each one is decided; the details are in the referenced Skill file.
 | Developer | CSS file | Status | Sections assigned |
 |---|---|---|---|
 | Main | `assets/main.css` | Initialized 2026-11-08 (loaded once after `custom-cairo.css`) | none assigned explicitly yet |
-| Dev1 | `assets/dev1.css` | Initialized 2026-11-08 (file created; loaded once in `layout/theme.liquid` after `main.css`, tag count 1, Cairo line unchanged) | S03, S06, S10 |
+| Dev1 | `assets/dev1.css` | Initialized 2026-11-08 (file created; loaded once in `layout/theme.liquid` after `main.css`, tag count 1, Cairo line unchanged) | S03, S06, S10, S12 |
 | Dev2 | `assets/dev2.css` | Not initialized | — |
 | Dev3 | `assets/dev3.css` | Not initialized | — |
 
-**Custom classes owned:** Dev1 (S03, `dev1.css`): `sn-home-hero`, `sn-home-hero-content`, `sn-home-hero-overline`, `sn-home-hero-stage`, `sn-home-hero-chip`, `sn-home-trust-card`, `sn-home-trust-item`, plus the Liquid-generated position classes `sn-float`, `sn-float--*`, `sn-float-m--*` (inert outside `.sn-home-hero-stage`). Dev1 (S06, `dev1.css`): `sn-home-f1-banner`, `sn-home-f1-content`, `sn-home-f1-tag`, `sn-home-f1-specs`, `sn-home-f1-spec`, `sn-home-f1-stage`, `sn-home-f1-watermark`, `sn-home-f1-arc`, `sn-home-f1-sparkles`, `sn-home-f1-glow`, `sn-home-f1-waves` (collision check 2026-11-11: none). Dev1 (S10, `dev1.css`): `sn-home-choose-care`, `sn-home-care-head`, `sn-home-care-badge`, `sn-home-care-specs`, `sn-home-care-price`, `sn-home-care-cta`, `sn-home-care-discount` (custom Liquid markup), plus the Liquid-generated `sn-card-featured` (inert without the section class) (collision check 2026-11-11: none).
+**Custom classes owned:** Dev1 (S03, `dev1.css`): `sn-home-hero`, `sn-home-hero-content`, `sn-home-hero-overline`, `sn-home-hero-stage`, `sn-home-hero-chip`, `sn-home-trust-card`, `sn-home-trust-item`, plus the Liquid-generated position classes `sn-float`, `sn-float--*`, `sn-float-m--*` (inert outside `.sn-home-hero-stage`). Dev1 (S06, `dev1.css`): `sn-home-f1-banner`, `sn-home-f1-content`, `sn-home-f1-tag`, `sn-home-f1-specs`, `sn-home-f1-spec`, `sn-home-f1-stage`, `sn-home-f1-watermark`, `sn-home-f1-arc`, `sn-home-f1-sparkles`, `sn-home-f1-glow`, `sn-home-f1-waves` (collision check 2026-11-11: none). Dev1 (S10, `dev1.css`): `sn-home-choose-care`, `sn-home-care-head`, `sn-home-care-badge`, `sn-home-care-specs`, `sn-home-care-price`, `sn-home-care-cta`, `sn-home-care-discount` (custom Liquid markup), plus the Liquid-generated `sn-card-featured` (inert without the section class) (collision check 2026-11-11: none). Dev1 (S12, `dev1.css`): `sn-home-blog` (collision check 2026-11-12: none); component classes `featured-blog-posts__view-all`, `featured-blog-posts-card__read-more`, `carousel-progress` come from the opt-in Liquid.
 **Shared-file claims (active):** none. (Dev1/S03 claims on `templates/index.json`, `blocks/group.liquid`, `blocks/text.liquid`, `snippets/text.liquid`, `snippets/custom-class.liquid`, `layout/theme.liquid` released 2026-11-08 after implementation.)
 
 ## D. Section registry
@@ -61,7 +61,7 @@ Logical areas from the Figma homepage, in Figma order. A row isn't necessarily o
 | S09 | Reels | `190:3935` | `190:4254` | index.json | — | NOT_STARTED | — | — | — | — |
 | S10 | Choose Your Care | `190:3943` | `190:4265` | index.json | Dev1 | IMPLEMENTED | C + B/D (small opt-in extensions) | `carousel` → `_carousel-content` → `_card` → `product-card`; blocks `_product-card-gallery`, `product-title`, `text`, `_product-card-group`, `icon`, `price`, `custom-liquid` | `sn-home-choose-care`, `sn-home-care-head`, `-badge`, `-specs`, `-price`, `-cta`, `-discount`; inert `sn-card-featured` | Implemented 2026-11-11 (`sn_home_care`, after `sn_home_f1`). **Visual QA: PENDING USER REVIEW**. Merchant: pick the 3 products in each card, exact spec icons (drop/tank/gauge/timer use native fallbacks). Shared edits: `_card` (26), `_carousel-content`, `_product-card-group` (36, + `icon` child), `carousel` (16), `assets/carousel-active-card.js` (new, S10 opt-in); `slideshow.js` / `_carousel-content` back to stock. 2026-11-11 fix: mobile start position + generic cards |
 | S11 | Bundle | `190:3987` | `190:4318` | index.json | — | NOT_STARTED | — | — | — | — |
-| S12 | Blog | `190:4018` | `190:4349` | index.json | — | NOT_STARTED | — | — | — | — |
+| S12 | Blog | `190:4018` | `190:4349` | index.json | Dev1 | IMPLEMENTED | C (+ opt-in settings) | `carousel` (same as S10) → `_carousel-content` → `_card` per post; blocks `image`, `text`, `group`, `icon` | `sn-home-blog` | Implemented 2026-11-12 (`sn_home_blog`); switched to manual cards on the merchant's request (images + text from the Theme Editor, add / remove cards). **Visual QA: PENDING USER REVIEW**. Merchant: upload images, edit texts, set each card Link and the View all link. Shared edits: `carousel` (16→20), `assets/carousel-progress.js` |
 | S13 | Why SNOSHA | `190:4024` | `190:4361` | index.json | — | NOT_STARTED | — | — | — | — |
 | S14 | FAQ | `217:14604` | `217:14813` | index.json | — | NOT_STARTED | — | — | — | — |
 | S15 | Footer | `190:4048` | `190:14491` | footer-group (global) | — | NOT_STARTED | — | — | — | Global: affects all pages |
@@ -589,13 +589,80 @@ Tongue cleaner specs (desktop Figma): «يزيل مصدر 90% من رائحة ا
 - **Static checks:** Theme Check 9 = baseline; `node --check` on the S10 script; S10 template valid; CSS braces balanced.
 - **NOT VERIFIED:** the rendered measurements above (no browser). Manual: 390 / 375 / 360 phone, centred card centre = screen centre on load and after every swipe, symmetric peeks, no strip / sideways scroll, heading and bar centred; desktop unchanged.
 
+### S12 Blog — IMPLEMENTED 2026-11-12 (Dev1); visual QA pending
+
+**Figma (inspected 2026-11-12 with `get_design_context` on `190:4018` and `190:4349`).** The layer is named "13 Blog"; the registry ID stays S12.
+
+| Element | Desktop `190:4018` (1480×664) | Mobile `190:4349` (390×734) |
+|---|---|---|
+| Section | padding 60/60, container 1376 with 20 inner → 1336; column gap 40 (heading → cards) | padding 56/40; column gap 14 (heading, carousel, progress, link) |
+| Heading | centred; title 32/52 SemiBold `#12568d`; subtitle 18/32 `#5a5a59`; gap 6 | 24/38 and 13/22; inline 24 |
+| View all | «عرض الكل» 16/26 SemiBold `#176bb0` + arrow-left 18, gap 10; absolute at the heading bottom-left (6px, 5.91px) | centred under the progress bar |
+| Cards | 3 × 429.33, gap 24; card column gap 16; image 268 high, radius 16 | track: start padding 24, cards 280, gap 12, carousel bottom padding 24 |
+| Card text | column gap 8, inline padding 4; date 12/18 SemiBold `#176bb0`; title 20/34 SemiBold `#12568d`; excerpt 16/28 `#5a5a59`; read more «اقرأ المزيد» 16/26 SemiBold `#176bb0` + arrow 18 | same text styles as desktop |
+| Progress | — | track 342×4 `#dcf2fb` radius 99 (24 sides); fill `#63cdff → #0f64a8` = 43.86% at the start side (= visible share of the track: scrollbar-like thumb) |
+
+**Native Reuse Audit**
+- `featured-blog-posts` ✅ (selected):
+  - native `blog` picker, Post count (2–10), layout grid / carousel / editorial;
+  - "Carousel on mobile": Horizon renders the list a second time as a slideshow, start snap, page gutters;
+  - icon style (none);
+  - static title block (richtext);
+  - static card: article image (ratio + radius), `_heading` title (`closest.article.title`), details (date / author toggles, colour), description (`article.excerpt` or `article.content`, HTML stripped, 30 words); the whole card links to `article.url`.
+- Per-article nested blocks: **not supported natively**. The card is one static template shared by every article; presentation is configurable, content per article comes from Shopify. No parallel system built.
+- Missing natively → minimal opt-in extensions (defaults = native output):
+  - `_featured-blog-posts-card`: "Show excerpt" (default on), "Read more label" (blank = none). The label is visual (`aria-hidden`) because the card is already one article link (no duplicate link).
+  - `featured-blog-posts`: "View all link" label + URL (empty URL = selected blog), `custom_class`, and class-bound "Show progress bar", "Image height" (268), "Card width — Mobile" (280).
+  - Progress: native carousels have dots / counter only, no progress bar. New `assets/carousel-progress.js` (`<carousel-progress>`) reads the displayed native scroller and sets thumb size (clientWidth / scrollWidth) and position (|scrollLeft| / max). It never scrolls, hides while nothing scrolls, and cleans up on disconnect (editor re-render).
+
+**Decisions**
+- Desktop: native grid (3 columns, Horizontal gap 24, Gap 40), container 1336 (class-scoped `--page-content-width`); "View all" on the heading row at the inline end (grid row 1, end / end) on ≥750, centred after the progress bar below 750. A single link element in both cases.
+- Mobile: native carousel kept (start snap, `--gutter-slide-width: 24px`, gap 12, card width from the setting, `min(280px, 100cqi − 48px)`); no arrows (Icon None); no centring workarounds. The S10 lessons are applied: only `row-gap` on the section grid, no transforms or negative inline margins.
+- Card: image → text gap 16; image height from the setting (aspect ratio switched off under the class, cover crop), radius = native 16; date moved first with `order: -1` (DOM order unchanged); excerpt clamped to 2 lines; arrows mirrored in RTL.
+- Template: `sn_home_blog` (type `featured-blog-posts`) after `sn_home_care` (S11 not built). Blog **not selected** (handle unknown; the Shopify tool points to another store), so native placeholders show until the merchant picks it. Read more «اقرأ المزيد», View all «عرض الكل», date on, author off.
+- **Files:** `sections/featured-blog-posts.liquid`, `blocks/_featured-blog-posts-card.liquid`, new `assets/carousel-progress.js`, `assets/dev1.css` (S12 block appended), `templates/index.json`.
+- **Static checks:** Theme Check 9 = baseline; S12 template 6 blocks, every setting valid; `node --check` on the script; CSS braces balanced; card block callers: `featured-blog-posts` only.
+- **PENDING USER REVIEW:** select the Blog; 1480 / 1024 / 768 (heading row with View all on the left, 3 cards, image height 268, Read more); 390 / 375 / 360 (first card 24 from the right edge, next peeking, swipe to the last card, progress thumb moves right → left, View all centred below); article without image / excerpt; 1 and 5+ articles; hidden excerpt / empty Read more label; RTL arrows; editor re-render.
+
+**Native "Blog post carousel" audit (2026-11-12, Dev1).**
+- **Native component found:** "Blog posts: Carousel" (`t:names.blog_posts_carousel`) is not a separate section. It is one of three presets (Grid / Carousel / Editorial) of the native section **`featured-blog-posts`** (`sections/featured-blog-posts.liquid`). Its structure: static `_featured-blog-posts-title` + static `_featured-blog-posts-card` (`image` → `_featured-blog-posts-image`, `title` → `_heading`, `blog-post-info-text` → `_blog-post-info-text`, `blog-post-description` → `_blog-post-description`); `resource-list` → `resource-list-carousel` → `slideshow` snippets; preset settings `layout_type: carousel`, `columns: 3`.
+- **Section type used by S12:** `featured-blog-posts` (instance `sn_home_blog`), i.e. the same native file and type. No custom section or block was created; nothing renamed. **No migration needed.**
+- **Change:** the instance had been configured like the Grid preset (`layout_type: grid` + "Carousel on mobile"). It now uses the Carousel preset configuration (`layout_type: carousel`, columns 3, Horizontal gap 24, Icon None): one native slideshow list at every width, instead of a desktop grid plus a hidden mobile copy.
+- **CSS:** the native desktop carousel reserves a 3rem next-slide peek, which would make cards 413px; `--peek-next-slide-size: 0px` on `.sn-home-blog` (≥750) gives Figma's 3 × 429.33 + 2 × 24 = 1336. Mobile rules (280 cards, 12 gap, 24 gutter, start snap) and the progress bar are unchanged (they target `.resource-list__carousel`, present in both layouts).
+- **Final decision:** keep native `featured-blog-posts` with the Carousel preset configuration plus the opt-in extensions recorded above. Desktop with more than 3 articles scrolls natively (drag / trackpad, no arrows).
+- **Files:** `templates/index.json` (`layout_type`), `assets/dev1.css` (peek, comment).
+- **Static checks:** Theme Check 9 = baseline; S12 template valid; CSS braces balanced.
+
+**Manual cards (2026-11-12, Dev1), merchant request:** "upload the media and the text from the Theme Editor and add several blocks". `featured-blog-posts` takes image, title, date, excerpt and link from Shopify articles, so per-card media / text can't be edited there.
+- **Decision:** `sn_home_blog` (same key and position) is now the native **`carousel`** section (the one S10 uses):
+  - one `_card` block per post (add / remove / reorder) with an `image` block (upload in the Theme Editor), text blocks Date (custom 12px, `#176bb0`, bold), Title (`<h3>`, `#12568d`), Description (`#5a5a59`), and a row `group` "Read more" (text + native `icon` "arrow", 18, `#176bb0`);
+  - the card's native **Link** makes the whole card clickable;
+  - cards no longer update from blog articles.
+- **Native settings used:** Columns 3, Horizontal gap 24, Icon None, Top / Bottom 60, Card width — Mobile 280, Horizontal gap — Mobile 12 (S10 settings), image block Corner radius 16, text colours / presets.
+- **New `carousel` settings (16→20):** "Card image height" (268, class-bound → `--carousel-image-height`), "Show progress bar" (class-bound; renders `<carousel-progress>`, same script as before), "View all link" Label + Link (one link after the cards; in the Theme Editor the label shows even before a link is chosen; on the live store it needs the link). All default off / blank, so S10 is unaffected.
+- **Reverted:** the earlier `featured-blog-posts` and `_featured-blog-posts-card` extensions (both files back to stock; nothing of the merchant's used them).
+- **CSS (`dev1.css`, S12 block rewritten):**
+  - 1336 container, desktop peek 0 (3 × 429.33 + 2 × 24); row-gap 40 / 14 only (no column gaps);
+  - View all on the heading row at the inline end (≥750) / centred under the bar (<750);
+  - mobile cards 280 / gap 12 / gutter 24, start snap;
+  - image 268 high, cover, 16px to the text;
+  - an empty image block hidden on the live store;
+  - progress thumb (`#dcf2fb` track, gradient fill, mobile only);
+  - right-pointing arrows mirrored in RTL;
+  - typography by element (`h2` / `p` heading, `h3` title, `p` description / read more, 12px date).
+- **Template:** 3 cards with the Figma texts as editable starting content; images empty (merchant uploads); card Links and the View all link empty (unknown URLs).
+- **Files:** `sections/carousel.liquid`, `assets/carousel-progress.js` (unchanged), `assets/dev1.css`, `templates/index.json`; `sections/featured-blog-posts.liquid` and `blocks/_featured-blog-posts-card.liquid` restored to stock.
+- **Static checks:** Theme Check 9 = baseline; S12 27 blocks valid; S10 still valid (104 blocks); `node --check` OK; CSS braces balanced.
+- **PENDING USER REVIEW:** upload 3 images, set card links and the View all link; desktop 1480 / 1024 / 768 (3 cards 429 wide, 268px images, View all left of the heading); mobile 390 / 375 / 360 (280 cards from 24px, swipe to the last, progress thumb, View all centred under the bar); add a 4th card; RTL arrows.
+
 ## F. QA & progress
 
 | ID | Figma analysis | Code checks | Visual desktop | Visual mobile | RTL | Media | Reversibility | Pending issues |
 |---|---|---|---|---|---|---|---|---|
-| S01–S02, S04–S05, S07–S09, S11–S15 | — | — | — | — | — | — | — | Only project-level mapping done; no section-level analysis yet |
+| S01–S02, S04–S05, S07–S09, S11, S13–S15 | — | — | — | — | — | — | — | Only project-level mapping done; no section-level analysis yet |
 | S06 | PASS (`190:3851` + `190:4167` design context + metadata 2026-11-11; no motion) | PASS (local): Theme Check 2026-11-11 = 9 offenses = baseline (all stock files); template: 27 S06 blocks, every setting exists in its schema, selects/ranges valid, block_order consistent; CSS braces balanced, 25 SVG data URIs well-formed; classes in template = classes in CSS | PENDING USER REVIEW | PENDING USER REVIEW | PENDING USER REVIEW | PENDING USER REVIEW (product image, background, tank/PSI icons not uploaded; CTA product not set) | PENDING USER REVIEW (expected `CLASS_PLUS_SETTINGS`: chip background/border/radius/padding, content width/padding, button colours stay when the class is removed) | Manual: 1480 / 390 / 375 / 360 vs Figma; tablet 768–989; scenarios A–F; hide each decoration block; RTL order; CTA hover/focus |
 | S10 | PASS (`190:3943` + `190:4265` design context + metadata 2026-11-11) | PASS (local): Theme Check 2026-11-11 (after the mobile/generic fix) = 9 = baseline; `node --check` slideshow.js; template: 85 S10 blocks valid against schemas incl. allowed child types; edited schemas parse; CSS braces balanced | PENDING USER REVIEW | PENDING USER REVIEW | PENDING USER REVIEW | PENDING USER REVIEW (products not selected; exact spec icons for drop / tank / gauge / timer not uploaded) | PENDING USER REVIEW (expected `CLASS_PLUS_SETTINGS`; featured start slide is functional and stays) | Manual: see S10 E "PENDING USER REVIEW" |
+| S12 | PASS (`190:4018` + `190:4349` design context 2026-11-12) | PASS (local): Theme Check 2026-11-12 = 9 = baseline; template 6 S12 blocks valid; `node --check` carousel-progress.js; CSS braces balanced | PENDING USER REVIEW | PENDING USER REVIEW | PENDING USER REVIEW | PENDING USER REVIEW (Blog not selected) | PENDING USER REVIEW (expected `CLASS_PLUS_SETTINGS`: View all label, Read more label, date colour, image radius stay) | See S12 E "PENDING USER REVIEW" |
 | S03 | PASS (both nodes re-inspected 2026-11-08 and again 2026-11-09 for the refinement; no motion) | PASS (local only): 2026-11-08 Theme Check at baseline (9); 2026-11-09 refinement + final pass: schema JSON/counts, template keys vs schemas, CSS braces (Theme Check not re-run). PENDING USER REVIEW: console/404, sanitizer output | PENDING USER REVIEW | PENDING USER REVIEW | PENDING USER REVIEW | PENDING USER REVIEW (final product image + icons not uploaded; placeholders in place) | PENDING USER REVIEW (expected `CLASS_PLUS_SETTINGS`, see E) | User's manual checklist: Figma comparison at 1480 / 390 / 375 and tablet 768–989; image-only, text-only, no chips, trust alone, 3 and 5+ trust items; D5 8px readability; `mobile_text` click-to-edit; class on/off. Assisted review once the user sends screenshots |
 
 Give a section its own row here when its work starts, and keep the S01–S15 row only for sections that haven't started.
@@ -644,3 +711,6 @@ Give a section its own row here when its work starts, and keep the S01–S15 row
 | 2026-11-11 | S10 overflow / desktop / active zoom by Dev1: desktop carousel contained in the 1376 column with equal cards (centre-snap gutters only for 4+), Featured card layout differences removed (`featured_card_width` → `active_card_zoom`), active card zoom via transform, grid `min-width: 0` + scoped `overflow-x: clip` | Merchant screenshots: desktop row full-bleed / cut cards, two "featured" cards, mobile strip | S10; `dev1.css`, `carousel`, `index.json` | Runtime NOT VERIFIED; user-owned QA |
 | 2026-11-11 | S10 desktop bar / last card / mobile CTA by Dev1: progress bar ≤989 only; S10-only mouse drag in `carousel-active-card.js` (native drag release is start-aligned → one card short, last card unreachable); gutters as flex spacers; mobile card bottom padding ≥ side padding | Merchant: desktop bar visible, last RTL card not current, mobile shifted, CTA too low | S10; `carousel-active-card.js`, `dev1.css` | Runtime NOT VERIFIED; user-owned QA |
 | 2026-11-11 | S10 mobile off-centre fixed at the root by Dev1: the S10 `gap` shorthand added column gaps to the section's 3-column grid (+44px on mobile, overflow to the left in RTL); now `row-gap` like native; obsolete overflow guards removed | Merchant: mobile still shifted after several attempts | S10; `dev1.css` | Rendered geometry NOT VERIFIED; user-owned QA |
+| 2026-11-12 | S12 Blog implemented by Dev1 on native `featured-blog-posts` (grid + native mobile carousel); opt-in card "Show excerpt" / "Read more label", section "View all" link + custom class + class-bound progress / image height / mobile card width; new `carousel-progress.js` | Figma `190:4018` / `190:4349`; native-first audit | S12; `featured-blog-posts` (22), `_featured-blog-posts-card` (14), new asset, `dev1.css`, `index.json` | Merchant selects the Blog; user-owned visual QA |
+| 2026-11-12 | S12 audit by Dev1: "Blog posts: Carousel" is a preset of native `featured-blog-posts`, the type S12 already uses (no custom section, no migration); instance switched from grid + mobile carousel to the Carousel preset layout; desktop peek 0 under the class | Merchant: reuse the native Blog Post Carousel | S12; `index.json`, `dev1.css` | User-owned visual QA |
+| 2026-11-12 | S12 switched by Dev1 to manual cards on the native `carousel` section (image / text blocks per card, add / remove cards); `carousel` +4 opt-in settings (image height, progress bar, View all label / link); `featured-blog-posts` extensions reverted to stock | Merchant: upload media and text in the Theme Editor and add several blocks | S12; `carousel` (20), `dev1.css`, `index.json` | User-owned visual QA |
