@@ -1976,14 +1976,6 @@
   > :first-child .text-block {
     :is(h1, h2, h3) {
       margin-block: 0;
-
-      /* Phones: requested line break «نصائح أذكى للعناية» / «بفمك». A width in em (9 × the 24px mobile size
-         = 216px) sits between the first three words (≈185px) and the whole line (≈235px), so only the last
-         word drops, at any phone width and without a <br>. Centred; desktop untouched. */
-      @media screen and (max-width: 749px) {
-        max-inline-size: 9em;
-        margin-inline: auto;
-      }
     }
 
     :is(h1, h2, h3) + p {
@@ -2063,13 +2055,14 @@
       margin-block: 0;
     }
 
-    /* Mobile title wrapping: the title block's native "Text wrap" offers only pretty / balance / nowrap.
-       "pretty" (current) makes Chrome pull a second word down so the last line is never one word, while
-       Figma (190:4349, 272px text box at 20/34) breaks greedily, e.g. only the last word on line 2.
-       Applied only while the native setting is "pretty"; balance / nowrap stay as chosen. */
+    /* Mobile article-title wrapping (Figma 190:4349 › Blog Card › title: 20/34 SemiBold in a 272px box,
+       greedy line breaks, e.g. «أفضل فرشاة أسنان كهربائية» / «للتقويم»). Horizon gives non-custom text
+       presets `text-wrap: pretty` (.text-block.rte in text-block-styles), which makes Chrome pull a second
+       word down so the last line is never a single word. Phones use normal wrapping instead; a Custom
+       preset keeps its own "Text wrap" setting. Works for any article title; desktop untouched. */
     @media screen and (max-width: 749px) {
-      > h4 [style*='--text-wrap: pretty'],
-      > h4 [style*='--text-wrap: pretty'] :is(h1, h2, h3, h4, h5, h6, p) {
+      > h4 .text-block:not(.custom-typography),
+      > h4 .text-block:not(.custom-typography) :is(h1, h2, h3, h4, h5, h6, p) {
         text-wrap: wrap;
       }
     }

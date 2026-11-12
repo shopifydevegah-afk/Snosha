@@ -2689,6 +2689,7 @@
            "type":"icon",
            "settings":{
             "icon":"stopwatch",
+            "image_upload":"shopify://shop_images/gauge_a0cb3f6e-fb34-41e1-b8d8-50929a7bf7bc.svg",
             "width":16,
             "width_mobile":24,
             "link":"",
@@ -2896,6 +2897,7 @@
            "type":"icon",
            "settings":{
             "icon":"bottle",
+            "image_upload":"shopify://shop_images/tank_b8f9e919-d32a-47e9-a552-63b11c78e12f.svg",
             "width":16,
             "width_mobile":24,
             "link":"",
