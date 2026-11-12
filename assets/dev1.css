@@ -584,12 +584,13 @@
           rgb(99 205 255 / 0) 58% 100%
         )
         border-box,
-      /* Figma 335:4229: a light-blue outline runs all the way round (bottom edge included); the beam only
-         brightens one side, so this base ring keeps the rest of the edge visible (#63cdff 40%, as desktop) */
-      linear-gradient(rgb(99 205 255 / 0.4), rgb(99 205 255 / 0.4)) border-box;
-    /* Figma mobile card shadow (335:4229 › Card). The ring is transparent along the bottom, so this
-       shadow is what draws the card's lower edge over the white section below. */
-    box-shadow: 0 16px 34px rgb(13 64 128 / 0.18);
+      /* Figma 335:4229: the white card (radius 18) sits 2px inside a radius-20 frame that CLIPS the card's
+         shadow (0 16 34 rgb(13 64 128 / .18)). So the visible outline is that shadow seen through the 2px
+         ring: faint at the top, strongest along the bottom (sampled ≈ rgb(218 226 235) over white), and
+         nothing spreads below the card. Approximated as a vertical tint of the same shadow colour. */
+      linear-gradient(rgb(13 64 128 / 0.03), rgb(13 64 128 / 0.15)) border-box;
+    /* No outer shadow: Figma's frame clips it (a soft glow below the card is not in the design) */
+    box-shadow: none;
   }
 }
 
@@ -1029,6 +1030,13 @@
     max-inline-size: 20px;
     max-block-size: 20px;
     object-fit: contain;
+
+    /* Figma mobile 190:4167: the icon's vector box is 24px inside the 26px badge (its 15px frame
+       overflows). Size = the icon block's "Mobile width" (S06: 24); the cap only keeps it in the badge. */
+    @media screen and (max-width: 749px) {
+      max-inline-size: 24px;
+      max-block-size: 24px;
+    }
   }
 }
 
@@ -1968,6 +1976,14 @@
   > :first-child .text-block {
     :is(h1, h2, h3) {
       margin-block: 0;
+
+      /* Phones: requested line break «نصائح أذكى للعناية» / «بفمك». A width in em (9 × the 24px mobile size
+         = 216px) sits between the first three words (≈185px) and the whole line (≈235px), so only the last
+         word drops, at any phone width and without a <br>. Centred; desktop untouched. */
+      @media screen and (max-width: 749px) {
+        max-inline-size: 9em;
+        margin-inline: auto;
+      }
     }
 
     :is(h1, h2, h3) + p {

@@ -2690,7 +2690,7 @@
            "settings":{
             "icon":"stopwatch",
             "width":16,
-            "width_mobile":20,
+            "width_mobile":24,
             "link":"",
             "open_in_new_tab":false,
             "icon_color":"#ffffff"
@@ -2794,7 +2794,7 @@
             "icon":"check_box",
             "image_upload":"shopify://shop_images/vector_1b715f9f-fc54-4010-a53f-60444ef01aca.svg",
             "width":16,
-            "width_mobile":20,
+            "width_mobile":24,
             "link":"",
             "open_in_new_tab":false,
             "icon_color":"#ffffff"
@@ -2897,7 +2897,7 @@
            "settings":{
             "icon":"bottle",
             "width":16,
-            "width_mobile":20,
+            "width_mobile":24,
             "link":"",
             "open_in_new_tab":false,
             "icon_color":"#ffffff"
@@ -3001,7 +3001,7 @@
             "icon":"none",
             "image_upload":"shopify://shop_images/brush-head_5d8e2d1e-150c-46fc-861c-cd7e19d1e1db.png",
             "width":16,
-            "width_mobile":20,
+            "width_mobile":24,
             "link":"",
             "open_in_new_tab":false,
             "icon_color":"#ffffff"
