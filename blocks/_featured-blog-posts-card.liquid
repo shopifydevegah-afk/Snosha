@@ -98,8 +98,17 @@
     {% endif %}
 
     <div class="featured-blog-posts-card__content layout-panel-flex--column">
-      <h4>{{ title }}</h4>
-      {{ details }}
+      {%- comment -%}
+        Snosha S12 (opt-in): "Date position" puts the date / author line before the title (real DOM order,
+        so screen readers follow it too). Unset or "after_title" = native order.
+      {%- endcomment -%}
+      {%- if block_settings.details_position == 'before_title' -%}
+        {{ details }}
+        <h4>{{ title }}</h4>
+      {%- else -%}
+        <h4>{{ title }}</h4>
+        {{ details }}
+      {%- endif -%}
       {%- comment -%}
         Snosha S12 (opt-in): excerpt toggle (unset = shown, native) and a "Read more" link to THIS card's article
         (article.url; blank label = none, native). The card's own overlay link is the keyboard / screen-reader
@@ -217,6 +226,22 @@
     {
       "type": "header",
       "content": "t:content.text"
+    },
+    {
+      "type": "select",
+      "id": "details_position",
+      "label": "Date position",
+      "options": [
+        {
+          "value": "after_title",
+          "label": "After title"
+        },
+        {
+          "value": "before_title",
+          "label": "Before title"
+        }
+      ],
+      "default": "after_title"
     },
     {
       "type": "checkbox",

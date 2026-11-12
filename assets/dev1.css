@@ -583,8 +583,13 @@
           rgb(99 205 255 / 0.65) 53.5%,
           rgb(99 205 255 / 0) 58% 100%
         )
-        border-box;
-    box-shadow: none;
+        border-box,
+      /* Figma 335:4229: a light-blue outline runs all the way round (bottom edge included); the beam only
+         brightens one side, so this base ring keeps the rest of the edge visible (#63cdff 40%, as desktop) */
+      linear-gradient(rgb(99 205 255 / 0.4), rgb(99 205 255 / 0.4)) border-box;
+    /* Figma mobile card shadow (335:4229 › Card). The ring is transparent along the bottom, so this
+       shadow is what draws the card's lower edge over the white section below. */
+    box-shadow: 0 16px 34px rgb(13 64 128 / 0.18);
   }
 }
 
@@ -986,6 +991,13 @@
   @media screen and (max-width: 749px) {
     /* Figma mobile: 8 between rows (between chips = native Gap 10) */
     row-gap: 8px;
+
+    /* Figma mobile order differs from desktop: each chip's native group setting "Mobile display order"
+       (--sn-order-mobile, output for classed sections; 0 = block order). Visual only; Tab and screen
+       readers keep the block order. */
+    > * {
+      order: var(--sn-order-mobile, 0);
+    }
   }
 }
 
@@ -1647,6 +1659,15 @@
     flex-wrap: wrap;
   }
 
+  /* Phones: Horizon gives every .text-block in a row group `flex: 1 1 …` (base.css), so the price block
+     stretched across the row and pushed the discount pill to the far (left) end. Figma 190:4265: the
+     pill sits right beside the prices. Keep the price at its own width (its native Width "Fit"). */
+  @media screen and (max-width: 749px) {
+    .sn-home-care-price > .group-block-content > product-price.text-block {
+      flex: 0 0 auto;
+    }
+  }
+
   .sn-home-care-discount {
     display: inline-flex;
     align-items: center;
@@ -2011,9 +2032,9 @@
   .featured-blog-posts-card__content {
     padding-inline: 4px;
 
-    /* Figma order: date, title, excerpt, read more (DOM order unchanged) */
+    /* Figma order (date, title, excerpt, read more) = the card's "Date position: Before title" setting.
+       (A CSS `order` can't do it: Shopify wraps the date block in its own .shopify-block element.) */
     .blog-post-details {
-      order: -1;
       color: var(--color-details, #176bb0);
       font-size: 12px;
       font-weight: 600;
@@ -2024,6 +2045,17 @@
     > h4,
     > h4 :is(h1, h2, h3, h4, h5, h6, p) {
       margin-block: 0;
+    }
+
+    /* Mobile title wrapping: the title block's native "Text wrap" offers only pretty / balance / nowrap.
+       "pretty" (current) makes Chrome pull a second word down so the last line is never one word, while
+       Figma (190:4349, 272px text box at 20/34) breaks greedily, e.g. only the last word on line 2.
+       Applied only while the native setting is "pretty"; balance / nowrap stay as chosen. */
+    @media screen and (max-width: 749px) {
+      > h4 [style*='--text-wrap: pretty'],
+      > h4 [style*='--text-wrap: pretty'] :is(h1, h2, h3, h4, h5, h6, p) {
+        text-wrap: wrap;
+      }
     }
   }
 
