@@ -488,9 +488,10 @@
   }
 
   /* ---------- Total ---------- */
+  /* Figma mobile 190:4334: one centred row, gap 20 (wraps, still centred, only on very narrow phones) */
   .sn-pb__total {
-    justify-content: space-between;
-    gap: 12px 34px;
+    justify-content: center;
+    gap: 12px 20px;
     padding-block-start: 16px;
   }
 
@@ -588,9 +589,9 @@
       line-height: var(--pb-d-lh); /* "Description line height (desktop)", Figma 32 */
     }
 
-    /* Figma desktop: the total group is centred */
+    /* Figma desktop: the total group is centred, gap 34 */
     .sn-pb__total {
-      justify-content: center;
+      column-gap: 34px;
     }
   }
 }

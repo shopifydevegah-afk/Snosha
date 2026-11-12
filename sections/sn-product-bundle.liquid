@@ -184,7 +184,7 @@
                 {%- endif -%}
                 <span class="sn-pb__pop-text">
                   <span class="sn-pb__pop-title">{{ p.title | escape }}</span>
-                  <span class="sn-pb__pop-price">{{ v.price | money }}</span>
+                  <span class="sn-pb__pop-price">{{ v.price | money_without_trailing_zeros }}</span>
                 </span>
               </a>
               <button
@@ -255,7 +255,7 @@
               </span>
               <span class="sn-pb__price">
                 {%- if qty > 1 %}{{ qty }} × {% endif -%}
-                {{- line_price | money -}}
+                {{- line_price | money_without_trailing_zeros -}}
               </span>
             </li>
           {%- endfor -%}
@@ -268,11 +268,11 @@
         <div class="sn-pb__total">
           <p class="sn-pb__now">
             <span>{{ section.settings.total_label | escape }}</span>
-            <span class="sn-pb__now-price">{{ pv.price | money }}</span>
+            <span class="sn-pb__now-price">{{ pv.price | money_without_trailing_zeros }}</span>
           </p>
           {%- if section.settings.discount_badge != blank and was_total > 0 -%}
             <p class="sn-pb__was">
-              <s class="sn-pb__old">{{ was_total | money }}</s>
+              <s class="sn-pb__old">{{ was_total | money_without_trailing_zeros }}</s>
               {%- if percent > 0 and section.settings.discount_badge != blank -%}
                 <span class="sn-pb__badge">
                   {{- section.settings.discount_badge | replace: '[percent]', percent | escape -}}

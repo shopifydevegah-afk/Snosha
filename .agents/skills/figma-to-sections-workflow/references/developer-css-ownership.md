@@ -10,6 +10,8 @@
 | Dev1 | `assets/dev1.css` | Not initialized (file absent, no tag) |
 | Dev2 | `assets/dev2.css` | **Initialized 2026-11-08**: file created, loaded once in `layout/theme.liquid` after `main.css` |
 | Dev3 | `assets/dev3.css` | Not initialized (file absent, no tag) |
+| Dev2 | `assets/dev2.css` | Not initialized (file absent, no tag) |
+| Dev3 | `assets/dev3.css` | **Initialized 2026-11-08** (S05): loaded once in `layout/theme.liquid`, right after `main.css` |
 
 None of these names clash with Horizon assets. Switch to `assets/shosha-<dev>.css` only if a real filename clash appears, and update this table if you do.
 
@@ -22,7 +24,7 @@ Other custom assets (shared, owned by Main, protected): `assets/custom-cairo.css
 {{ 'main.css' | asset_url | stylesheet_tag }}           ← loaded since 2026-11-08
 {{ 'dev1.css' | asset_url | stylesheet_tag }}           ← added only when Dev1 initializes
 {{ 'dev2.css' | asset_url | stylesheet_tag }}           ← added only when Dev2 initializes
-{{ 'dev3.css' | asset_url | stylesheet_tag }}           ← added only when Dev3 initializes
+{{ 'dev3.css' | asset_url | stylesheet_tag }}           ← loaded since 2026-11-08
 ```
 
 Each tag goes in its numeric slot: after the nearest *lower-numbered* developer tag that exists, or after `main.css`. That keeps the order the same no matter who starts first. These files load after `base.css` and the compiled `{% stylesheet %}` bundle (both come before or inside `content_for_header`), so a scoped rule wins over a native rule of equal specificity. Order between developer files doesn't matter, because each owner only targets their own classes. Never use `@import` between files, and never load a file a second time from a section. Plain `.css` files can't contain Liquid.

@@ -2,6 +2,25 @@
 
 {% assign block_settings = block.settings %}
 
+{%- liquid
+  # Opt-in extensions (defaults keep the native output):
+  # rows as cards, custom question typography, icon color/size and an uploaded icon image.
+  assign icon_style = block_settings.icon
+  if icon_style == 'image' and block_settings.icon_image == blank
+    assign icon_style = 'caret'
+  endif
+
+  assign extra_class = ''
+  if block_settings.row_cards
+    assign extra_class = extra_class | append: ' accordion--cards'
+  elsif block_settings.dividers
+    assign extra_class = extra_class | append: ' accordion--dividers'
+  endif
+  if block_settings.icon_color != blank
+    assign extra_class = extra_class | append: ' accordion--icon-color'
+  endif
+-%}
+
 {% render 'contrast-override',
   background_color: block_settings.background_color,
   text_color: block_settings.text_color,
@@ -9,17 +28,42 @@
 %}
 
 <div
-  class="accordion accordion--{{ block.id }} accordion--{{ block_settings.icon }} border-style spacing-style{% if block_settings.background_color != blank or block_settings.text_color != blank %} color-custom-{{ block.id }}{% endif %}{% if block_settings.background_color != blank %} accordion--custom-background{% endif %}{% if block_settings.dividers %} accordion--dividers{% endif %}"
+  class="accordion accordion--{{ block.id }} accordion--{{ icon_style }} border-style spacing-style{% if block_settings.background_color != blank or block_settings.text_color != blank %} color-custom-{{ block.id }}{% endif %}{% if block_settings.background_color != blank %} accordion--custom-background{% endif %}{{ extra_class }}"
   style="
+    {%- if block_settings.type_preset == 'custom' %}
+      --summary-font-family: var(--font-body--family);
+      --summary-font-style: var(--font-body--style);
+      --summary-font-weight: {{ block_settings.summary_font_weight }};
+      --summary-font-size: {{ block_settings.summary_font_size }}px;
+      --summary-font-line-height: {{ block_settings.summary_line_height }}px;
+      --summary-font-case: none;
+    {%- else %}
     --summary-font-family: var(--font-{{ block_settings.type_preset }}--family);
      --summary-font-style: var(--font-{{ block_settings.type_preset }}--style);
      --summary-font-weight: var(--font-{{ block_settings.type_preset }}--weight);
      --summary-font-size: var(--font-{{ block_settings.type_preset }}--size);
      --summary-font-line-height: var(--font-{{ block_settings.type_preset }}--line-height);
      --summary-font-case: var(--font-{{ block_settings.type_preset }}--case);
+    {%- endif %}
     {% render 'spacing-style', settings: block_settings %}
     {% render 'border-override', settings: block_settings %}
     {% if block_settings.divider_color != blank %} --color-border: {{ block_settings.divider_color }};{% endif %}
+    {%- if block_settings.icon_color != blank %} --accordion-icon-color: {{ block_settings.icon_color }};{% endif %}
+    {%- if icon_style == 'image' %} --accordion-icon-image: url('{{ block_settings.icon_image | image_url: width: 96 }}');{% endif %}
+    {%- if block_settings.row_cards %}
+      --accordion-row-gap: {{ block_settings.row_gap }}px;
+      --accordion-row-border-width: {{ block_settings.row_border_width }}px;
+      --accordion-row-radius: {{ block_settings.row_radius }}px;
+      --accordion-row-padding-block: {{ block_settings.row_padding_block }}px;
+      --accordion-row-padding-inline: {{ block_settings.row_padding_inline }}px;
+      --accordion-row-padding-inline-mobile: {{ block_settings.row_padding_inline_mobile }}px;
+      --accordion-summary-gap: {{ block_settings.summary_gap }}px;
+      --accordion-content-gap: {{ block_settings.content_gap }}px;
+      --accordion-icon-size: {{ block_settings.icon_size }}px;
+      {%- if block_settings.row_background != blank %} --accordion-row-background: {{ block_settings.row_background }};{% endif %}
+      {%- if block_settings.row_background_open != blank %} --accordion-row-background-open: {{ block_settings.row_background_open }};{% endif %}
+      {%- if block_settings.row_border_color != blank %} --accordion-row-border-color: {{ block_settings.row_border_color }};{% endif %}
+    {%- endif %}
   "
   {{ block.shopify_attributes }}
 >
@@ -27,6 +71,95 @@
 </div>
 
 {% render 'accordion-styles' %}
+
+{% stylesheet %}
+  /* Opt-in icon color */
+  .accordion--icon-color summary .svg-wrapper {
+    color: var(--accordion-icon-color);
+  }
+
+  /* Opt-in uploaded icon: replaces the caret and turns like it when the row opens */
+  .accordion--image .icon-plus,
+  .accordion--image .icon-caret > svg {
+    display: none;
+  }
+
+  .accordion--image .icon-caret::before {
+    content: '';
+    display: block;
+    inline-size: 100%;
+    block-size: 100%;
+    background: var(--accordion-icon-image) center / contain no-repeat;
+    transition: transform var(--animation-speed) var(--animation-easing);
+  }
+
+  .accordion--image details[open] > summary .icon-caret::before {
+    transform: rotate(180deg);
+  }
+
+  /* Opt-in: each row is a separate card (background, border, radius, padding) */
+  .accordion--cards {
+    display: flex;
+    flex-direction: column;
+    gap: var(--accordion-row-gap);
+  }
+
+  .accordion--cards .details {
+    background-color: var(--accordion-row-background, transparent);
+    border: var(--accordion-row-border-width) solid var(--accordion-row-border-color, var(--color-border));
+    border-radius: var(--accordion-row-radius);
+    transition: background-color var(--animation-speed) var(--animation-easing);
+  }
+
+  .accordion--cards .details[open] {
+    background-color: var(--accordion-row-background-open, var(--accordion-row-background, transparent));
+  }
+
+  /* The whole question row stays the click target, so the padding sits on the summary */
+  .accordion--cards .details__header {
+    gap: var(--accordion-summary-gap);
+    padding-block: var(--accordion-row-padding-block);
+    padding-inline: var(--accordion-row-padding-inline);
+  }
+
+  .accordion--cards .details-content {
+    padding-inline: var(--accordion-row-padding-inline);
+  }
+
+  .accordion--cards .details[open] > .details__header {
+    padding-block-end: var(--accordion-content-gap);
+  }
+
+  .accordion--cards .details[open] > .details-content {
+    padding-block-end: var(--accordion-row-padding-block);
+  }
+
+  /* Row without an answer yet: opening it keeps the closed card size (no empty panel) */
+  .accordion--cards .details[open]:not(:has(.details-content *)) > .details__header {
+    padding-block-end: var(--accordion-row-padding-block);
+  }
+
+  .accordion--cards .details[open]:not(:has(.details-content *)) > .details-content {
+    padding-block: 0;
+  }
+
+  .accordion--cards summary .svg-wrapper {
+    flex-shrink: 0;
+    inline-size: var(--accordion-icon-size);
+    block-size: var(--accordion-icon-size);
+
+    > svg {
+      inline-size: 100%;
+      block-size: 100%;
+    }
+  }
+
+  @media screen and (max-width: 749px) {
+    .accordion--cards .details {
+      --accordion-row-padding-inline: var(--accordion-row-padding-inline-mobile);
+    }
+  }
+{% endstylesheet %}
 
 {% schema %}
 {
@@ -51,9 +184,26 @@
         {
           "value": "plus",
           "label": "t:options.plus"
+        },
+        {
+          "value": "image",
+          "label": "t:settings.image_icon"
         }
       ],
       "default": "caret"
+    },
+    {
+      "type": "image_picker",
+      "id": "icon_image",
+      "label": "t:settings.image_icon",
+      "info": "Shown pointing down when closed and turned when open. Without an image the caret is used.",
+      "visible_if": "{{ block.settings.icon == 'image' }}"
+    },
+    {
+      "type": "color",
+      "id": "icon_color",
+      "label": "Icon color",
+      "placeholder": "t:settings.default"
     },
     {
       "type": "checkbox",
@@ -104,10 +254,194 @@
         {
           "value": "h6",
           "label": "t:options.h6"
+        },
+        {
+          "value": "custom",
+          "label": "t:options.custom"
         }
       ],
       "default": "h6",
       "info": "t:info.edit_presets_in_theme_settings"
+    },
+    {
+      "type": "range",
+      "id": "summary_font_size",
+      "label": "t:settings.size",
+      "min": 10,
+      "max": 40,
+      "step": 1,
+      "unit": "px",
+      "default": 16,
+      "visible_if": "{{ block.settings.type_preset == 'custom' }}"
+    },
+    {
+      "type": "select",
+      "id": "summary_font_weight",
+      "label": "Weight",
+      "options": [
+        {
+          "value": "400",
+          "label": "Regular"
+        },
+        {
+          "value": "500",
+          "label": "Medium"
+        },
+        {
+          "value": "600",
+          "label": "Semibold"
+        },
+        {
+          "value": "700",
+          "label": "Bold"
+        }
+      ],
+      "default": "600",
+      "visible_if": "{{ block.settings.type_preset == 'custom' }}"
+    },
+    {
+      "type": "range",
+      "id": "summary_line_height",
+      "label": "t:settings.line_height",
+      "min": 12,
+      "max": 60,
+      "step": 1,
+      "unit": "px",
+      "default": 27,
+      "visible_if": "{{ block.settings.type_preset == 'custom' }}"
+    },
+    {
+      "type": "header",
+      "content": "Row cards"
+    },
+    {
+      "type": "checkbox",
+      "id": "row_cards",
+      "label": "Show rows as cards",
+      "info": "Each row gets its own background, border and padding. Dividers are not used.",
+      "default": false
+    },
+    {
+      "type": "range",
+      "id": "row_gap",
+      "label": "Gap between cards",
+      "min": 0,
+      "max": 40,
+      "step": 1,
+      "unit": "px",
+      "default": 12,
+      "visible_if": "{{ block.settings.row_cards }}"
+    },
+    {
+      "type": "color",
+      "id": "row_background",
+      "label": "Card background",
+      "alpha": true,
+      "placeholder": "t:settings.default",
+      "visible_if": "{{ block.settings.row_cards }}"
+    },
+    {
+      "type": "color",
+      "id": "row_background_open",
+      "label": "Open card background",
+      "alpha": true,
+      "placeholder": "t:settings.default",
+      "visible_if": "{{ block.settings.row_cards }}"
+    },
+    {
+      "type": "color",
+      "id": "row_border_color",
+      "label": "t:settings.border_color",
+      "placeholder": "t:settings.default",
+      "visible_if": "{{ block.settings.row_cards }}"
+    },
+    {
+      "type": "range",
+      "id": "row_border_width",
+      "label": "t:settings.thickness",
+      "min": 0,
+      "max": 6,
+      "step": 1,
+      "unit": "px",
+      "default": 1,
+      "visible_if": "{{ block.settings.row_cards }}"
+    },
+    {
+      "type": "range",
+      "id": "row_radius",
+      "label": "t:settings.border_radius",
+      "min": 0,
+      "max": 40,
+      "step": 1,
+      "unit": "px",
+      "default": 14,
+      "visible_if": "{{ block.settings.row_cards }}"
+    },
+    {
+      "type": "range",
+      "id": "row_padding_block",
+      "label": "Card padding top and bottom",
+      "min": 0,
+      "max": 40,
+      "step": 1,
+      "unit": "px",
+      "default": 14,
+      "visible_if": "{{ block.settings.row_cards }}"
+    },
+    {
+      "type": "range",
+      "id": "row_padding_inline",
+      "label": "Card padding sides",
+      "min": 0,
+      "max": 40,
+      "step": 1,
+      "unit": "px",
+      "default": 16,
+      "visible_if": "{{ block.settings.row_cards }}"
+    },
+    {
+      "type": "range",
+      "id": "row_padding_inline_mobile",
+      "label": "Card padding sides on mobile",
+      "min": 0,
+      "max": 40,
+      "step": 1,
+      "unit": "px",
+      "default": 20,
+      "visible_if": "{{ block.settings.row_cards }}"
+    },
+    {
+      "type": "range",
+      "id": "summary_gap",
+      "label": "Gap between question and icon",
+      "min": 0,
+      "max": 40,
+      "step": 1,
+      "unit": "px",
+      "default": 12,
+      "visible_if": "{{ block.settings.row_cards }}"
+    },
+    {
+      "type": "range",
+      "id": "content_gap",
+      "label": "Gap between question and answer",
+      "min": 0,
+      "max": 40,
+      "step": 1,
+      "unit": "px",
+      "default": 10,
+      "visible_if": "{{ block.settings.row_cards }}"
+    },
+    {
+      "type": "range",
+      "id": "icon_size",
+      "label": "Icon size",
+      "min": 10,
+      "max": 40,
+      "step": 1,
+      "unit": "px",
+      "default": 18,
+      "visible_if": "{{ block.settings.row_cards }}"
     },
     {
       "type": "header",

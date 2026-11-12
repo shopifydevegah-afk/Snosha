@@ -1,5 +1,3 @@
-
-
 {% liquid
   if section.settings.collection_list != blank
     assign section_collections = section.settings.collection_list
@@ -14,17 +12,14 @@
     assign max_items = section.settings.columns
   endif
 %}
-
 {% liquid
   if section.settings.background_color != blank
     render 'contrast-override', background_color: section.settings.background_color, section_id: section.id
   endif
 %}
-
 <div
   class="section-background{% if section.settings.background_color != blank %} color-custom-{{ section.id }}{% endif %}"
 ></div>
-
 <div
   class="
     section
@@ -53,31 +48,26 @@
   <div class="section-resource-list__content">
     {%- content_for 'blocks' -%}
   </div>
-
   {% if section_collections == null %}
     {% for i in (1..max_items) %}
       {% assign section_collections = section_collections | append: ', ' %}
     {% endfor %}
-
     {% assign section_collections = section_collections | split: ',' %}
   {% endif %}
-
   {% capture list_items %}
     {% for collection in section_collections limit: max_items %}
       <div class="resource-list__item">
         {% content_for 'block', type: '_collection-card', id: 'static-collection-card', closest.collection: collection %}
       </div>
       {% unless forloop.last %}
-        <!--@list/split-->
+        <!--\@list/split-->
       {% endunless %}
     {% endfor %}
   {% endcapture %}
-
   {% liquid
     # Create an array from the list items to be used for different layout types
-    assign list_items_array = list_items | strip | split: '<!--@list/split-->'
+    assign list_items_array = list_items | strip | split: '<!--\@list/split-->'
   %}
-
   {% render 'resource-list',
     list_items: list_items,
     list_items_array: list_items_array,
@@ -88,7 +78,6 @@
     test_id: 'collections-list-grid'
   %}
 </div>
-
 {% schema %}
 {
   "name": "t:names.collection_list",
@@ -383,8 +372,7 @@
     },
     {
       "type": "header",
-      "content": "Mobile collection images",
-      "info": "Phone-only settings below apply when a custom class is set. Mobile font sizes are in the heading Text block and the Collection title block (\"Mobile size\")."
+      "content": "Mobile collection images"
     },
     {
       "type": "range",

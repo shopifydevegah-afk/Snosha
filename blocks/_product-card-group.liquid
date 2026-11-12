@@ -4,7 +4,27 @@
   {% content_for 'blocks' %}
 {% endcapture %}
 
-{% render 'group', children: children, settings: block.settings, shopify_attributes: block.shopify_attributes %}
+{%- liquid
+  assign group_class = ''
+  if block.settings.mobile_spacing_custom
+    assign group_class = 'group-block--' | append: block.id
+  endif
+-%}
+{% render 'group', children: children, settings: block.settings, shopify_attributes: block.shopify_attributes, class: group_class %}
+{%- if block.settings.mobile_spacing_custom -%}
+  {%- comment -%} Opt-in mobile spacing; desktop keeps the native gap and padding settings. {%- endcomment -%}
+  {% style %}
+    @media screen and (max-width: 749px) {
+      #shopify-section-{{ section.id }} .group-block--{{ block.id }} {
+        padding-inline: {{ block.settings.padding_inline_mobile }}px;
+        padding-block-end: {{ block.settings.padding_block_end_mobile }}px;
+      }
+      #shopify-section-{{ section.id }} .group-block--{{ block.id }} > .group-block-content {
+        gap: {{ block.settings.gap_mobile }}px;
+      }
+    }
+  {% endstyle %}
+{%- endif -%}
 
 {% schema %}
 {
@@ -34,6 +54,9 @@
     },
     {
       "type": "product-title"
+    },
+    {
+      "type": "icon"
     },
     {
       "type": "custom-liquid"
@@ -517,6 +540,49 @@
       "step": 1,
       "unit": "px",
       "default": 0
+    },
+    {
+      "type": "header",
+      "content": "Mobile spacing"
+    },
+    {
+      "type": "checkbox",
+      "id": "mobile_spacing_custom",
+      "label": "Use different spacing on mobile",
+      "default": false
+    },
+    {
+      "type": "range",
+      "id": "gap_mobile",
+      "label": "Mobile gap",
+      "min": 0,
+      "max": 40,
+      "step": 1,
+      "unit": "px",
+      "default": 12,
+      "visible_if": "{{ block.settings.mobile_spacing_custom }}"
+    },
+    {
+      "type": "range",
+      "id": "padding_inline_mobile",
+      "label": "Mobile side padding",
+      "min": 0,
+      "max": 50,
+      "step": 1,
+      "unit": "px",
+      "default": 0,
+      "visible_if": "{{ block.settings.mobile_spacing_custom }}"
+    },
+    {
+      "type": "range",
+      "id": "padding_block_end_mobile",
+      "label": "Mobile bottom padding",
+      "min": 0,
+      "max": 50,
+      "step": 1,
+      "unit": "px",
+      "default": 0,
+      "visible_if": "{{ block.settings.mobile_spacing_custom }}"
     }
   ],
   "presets": [

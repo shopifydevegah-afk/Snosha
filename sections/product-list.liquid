@@ -19,6 +19,7 @@
     section-resource-list
     spacing-style
     gap-style
+    {%- render 'custom-class', value: section.settings.custom_class %}
   "
   style="
     {% render 'spacing-style', settings: section.settings %}
@@ -77,6 +78,26 @@
     content_type: 'products',
     test_id: 'resource-list-grid'
   %}
+
+  {%- liquid
+    # Opt-in: progress bar for the carousel (desktop carousel layout, or the mobile carousel fallback)
+    assign show_scroll_progress = false
+    assign scroll_progress_class = ''
+    if section.settings.show_scroll_progress
+      if section.settings.layout_type == 'carousel'
+        assign show_scroll_progress = true
+      elsif section.settings.carousel_on_mobile
+        assign show_scroll_progress = true
+        assign scroll_progress_class = 'hidden--desktop'
+      endif
+    endif
+  -%}
+  {%- if show_scroll_progress -%}
+    {% render 'scroll-progress',
+      target: '.resource-list__carousel > slideshow-container > slideshow-slides',
+      class: scroll_progress_class
+    %}
+  {%- endif -%}
 
   <div
     class="section-resource-list__content"
@@ -268,6 +289,14 @@
       "visible_if": "{{ section.settings.icons_style != 'none' and section.settings.layout_type == 'carousel' or section.settings.carousel_on_mobile == true }}"
     },
     {
+      "type": "checkbox",
+      "id": "show_scroll_progress",
+      "label": "Show scroll progress bar",
+      "info": "Shows a bar under the carousel that follows the scroll position.",
+      "default": false,
+      "visible_if": "{{ section.settings.layout_type == 'carousel' or section.settings.carousel_on_mobile == true }}"
+    },
+    {
       "type": "header",
       "content": "t:content.section_layout"
     },
@@ -346,6 +375,16 @@
       "step": 1,
       "unit": "px",
       "default": 0
+    },
+    {
+      "type": "header",
+      "content": "Advanced"
+    },
+    {
+      "type": "text",
+      "id": "custom_class",
+      "label": "Custom CSS class",
+      "info": "Lowercase letters, numbers and hyphens, starting with a letter. Separate multiple classes with spaces."
     }
   ],
   "presets": [
