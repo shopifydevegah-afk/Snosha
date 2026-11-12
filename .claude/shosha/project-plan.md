@@ -62,7 +62,7 @@ Logical areas from the Figma homepage, in Figma order. A row isn't necessarily o
 | S10 | Choose Your Care | `190:3943` | `190:4265` | index.json | — | NOT_STARTED | — | — | — | — |
 | S11 | Bundle | `190:3987` | `190:4318` | index.json | Dev2 | IMPLEMENTED (rebuilt 2026-11-11 as a dedicated section; visual + commerce QA PENDING USER REVIEW) | E (merchant-approved) | new `sn-product-bundle` ("Product bundle"); reuses `anchored-popover-component`, `image` snippet, cart event | `sn-home-bundle` | Merchant: bundle product, items, image |
 | S12 | Blog | `190:4018` | `190:4349` | index.json | — | NOT_STARTED | — | — | — | — |
-| S13 | Why SNOSHA | `190:4024` | `190:4361` | index.json | — | NOT_STARTED | — | — | — | — |
+| S13 | Why SNOSHA | `190:4024` | `190:4361` | index.json | Dev2 | IMPLEMENTED (2026-11-12; visual QA PENDING USER REVIEW) | B/C | `section` preset `t:names.icons_with_text` + `group`/`image`/`text` | `sn-home-why` | Merchant uploads the 4 icons |
 | S14 | FAQ | `217:14604` | `217:14813` | index.json | — | NOT_STARTED | — | — | — | — |
 | S15 | Footer | `190:4048` | `190:14491` | footer-group (global) | — | NOT_STARTED | — | — | — | Global: affects all pages |
 
@@ -429,6 +429,38 @@ Category **B**: native section + on-demand `custom_class` setting. No Liquid/JS 
   - **Theme Check:** 9 = baseline (40/40 settings).
   - **QA:** PENDING USER REVIEW.
 
+### S13 — Why SNOSHA ("لماذا SNOSHA؟") · Dev2 · 2026-11-12
+- **Figma:**
+  - Desktop `190:4024`: padding 60/60, container 1376, inner padding 20.
+    - Heading 32/52 600 `#12568d` + subtitle 18/32 `#5a5a59`, centered, gap 6. Heading → grid 26.
+    - Grid: 4 × 310, gap 32.
+    - Item: tile 96, radius 26, border 1 `#dcf2fb`, gradient white → `#f0fafe` (downward), drop shadow 0 10 11 rgb(15 100 168 / 0.08), inner highlight 0 2 2 white 0.9. Art 64. Tile → text 14; title 18/30 600 `#12568d`; description 13/22 `#5a5a59`; title → description 6.
+  - Mobile `190:4361`: padding 60/48, gutters 24; heading 24/38; subtitle 13/22 **right-aligned**; heading → grid 18; 2 × 2 grid of 165, gaps 12; items as desktop.
+  - The two sparkles sit outside the heading frame and don't show in Figma's render (on mobile at x 777, off-frame), so they are not implemented.
+- **Native audit:**
+  - The `section` presets "Icons with text" and "Multicolumn" (groups of icon/text) are the closest. No dedicated multicolumn section exists.
+  - The native `icon` block only offers theme glyphs, so the custom illustrations use the native `image` block (merchant upload).
+  - Category **B/C**: native `section` with preset name `t:names.icons_with_text`, composed of `group`/`image`/`text` blocks. No new section.
+- **Structure:**
+  - Section (column, gap 26 / mobile 18):
+    - Heading group (gap 6): heading + subheading text blocks.
+    - Grid group: `columns` 4 / `columns_mobile` 2, gap 32 / 12. It holds 4 card groups (gap 14), each with:
+      - A tile group (fit, padding 15, border, radius 26, white background + gradient overlay `#f0fafe`) holding an image block (square, fixed 64px).
+      - A text group (gap 6): title + description.
+  - Cards can be added, removed and reordered in the editor.
+- **Opt-in extensions** (settings take effect only when the section has a custom class; defaults keep native behaviour):
+  - `group`: `columns` and `columns_mobile` (0 = native flex; >0 = equal-column grid via class `sn-group--cols` / `sn-group--cols-mobile`). 37 → 39 settings.
+  - `text`: `line_height_exact_mobile` (0 = same), `alignment_mobile` (same / start / center / end), and a new "13px" (0.8125rem) size option. 22 → 24 settings.
+  - `image`: `fixed_width` and `fixed_width_mobile` (px, 0 = native). With the class, an empty image renders nothing on the live store (the editor still shows the placeholder). 17 → 19 settings.
+- **Section settings** (S08 extensions reused): background `#f0fafe`, padding 60/60, side padding 20, `content_max_width` 1380 (step 10; Figma 1376), mobile 60/48/8, `gap_mobile` 18, `custom_class` `sn-home-why`.
+- **CSS:** `assets/dev2.css` under `.sn-home-why`: row cap, text weight/line height, desktop/mobile grids, fixed icon size, mobile overrides. The tile shadows are the only literals (no shadow setting); the tile is targeted with `:has(> .group-block-content > .image-block--sn-fixed)`.
+- **Order:**
+  - Desktop follows Figma right → left: تقنية أذكى · مصممة لاحتياجاتك · تفاصيل تصنع الفرق · روتين أبسط.
+  - Figma's mobile rows are the other way round (row 1 = تفاصيل · روتين), which one block order can't reproduce at the same time. Mobile shows row 1 = تقنية · مصممة. Reordering the blocks fixes mobile but flips desktop.
+- **Template:** `why_sn_home` added after `bundle_sn_home`; the 4 icons are empty (merchant uploads them).
+- **Checks:** Theme Check 9 = baseline; schemas and `index.json` parse; `dev2.css` braces balanced.
+- **Visual QA:** PENDING USER REVIEW (rule 13).
+
 ## F. QA & progress
 
 | ID | Figma analysis | Code checks | Visual desktop | Visual mobile | RTL | Media | Reversibility | Pending issues |
@@ -483,3 +515,4 @@ Give a section its own row here when its work starts, and keep the S01–S15 row
 | 2026-11-11 | S11 correction: `bundle_product` picker (purchase model A = bundle product only, B = components); editor-only guidance and placeholder rows; image column hidden on the storefront without an image; `unavailable_text` replaced by Horizon translations | First version had no parent bundle picker and showed nothing until products were picked; Liquid can't enumerate bundle components | S11 | Merchant picks bundle product + components; visual + commerce QA by the user |
 | 2026-11-11 | S11 rebuilt as dedicated section `sn-product-bundle` (category E, merchant-approved): bundle product = purchase (model A only), "Bundle item" blocks drive rows + hotspots + popups; native product-hotspots files restored | Native hotspots adaptation did not give the merchant a usable bundle setup | S11; `index.json` `bundle_sn_home` replaced in place | Merchant setup; visual + commerce QA by the user |
 | 2026-11-11 | S11: editor-only note (bundle data box) removed at the merchant's request; placeholder rows for empty "Bundle item" blocks kept | The note cluttered the Theme Editor preview; product data is now correct (LE 2,499 / compare-at 3,100, available, 7 in stock) | S11 | — |
+| 2026-11-12 | S13 on native `section` preset "Icons with text" (B/C): opt-in `group` columns, `text` mobile line height/alignment + 13px option, `image` fixed width + no live placeholder | Closest native composition; custom illustrations need image uploads | S13; blocks `group`, `text`, `image` | Icons from the merchant; visual QA by the user |

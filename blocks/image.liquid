@@ -18,11 +18,31 @@
   endif
 %}
 
+{%- comment -%}
+  Snosha (opt-in, sections with a custom class): "Fixed width" (px, 0 = native sizing) for icons and small
+  artwork, and no stock placeholder on the live store when no image is picked (the editor still shows it).
+{%- endcomment -%}
+{%- liquid
+  assign sn_opt_in = false
+  if section.settings.custom_class != blank
+    assign sn_opt_in = true
+  endif
+  assign sn_fixed = false
+  if sn_opt_in and block_settings.fixed_width > 0
+    assign sn_fixed = true
+  endif
+  assign sn_fixed_mobile = block_settings.fixed_width_mobile | default: 0
+  if sn_fixed_mobile == 0
+    assign sn_fixed_mobile = block_settings.fixed_width
+  endif
+-%}
+
 {% capture class %}
-  image-block image-block--{{ block.id }} image-block--height-{{ block_settings.height }} spacing-style size-style
+  image-block image-block--{{ block.id }} image-block--height-{{ block_settings.height }} spacing-style size-style{% if sn_fixed %} image-block--sn-fixed{% endif %}
 {% endcapture %}
 
 {% capture style %}
+  {%- if sn_fixed %}--sn-image-width: {{ block_settings.fixed_width }}px; --sn-image-width-mobile: {{ sn_fixed_mobile }}px;{% endif %}
   --ratio: {{ ratio }};
   {% render 'size-style', settings: block_settings %}
   {% render 'spacing-style', settings: block_settings %}
@@ -60,7 +80,9 @@
   {%- endif -%}
 {% endcapture %}
 
-{% if block_settings.link == blank %}
+{% if sn_opt_in and block_settings.image == blank and request.design_mode == false %}
+  {%- comment -%} Snosha opt-in: nothing on the live store until the merchant picks an image {%- endcomment -%}
+{% elsif block_settings.link == blank %}
   <div
     class="{{ class }}"
     style="{{ style }}"
@@ -216,6 +238,28 @@
       "unit": "%",
       "default": 100,
       "visible_if": "{{ block.settings.width_mobile == 'custom' }}"
+    },
+    {
+      "type": "range",
+      "id": "fixed_width",
+      "label": "Fixed width",
+      "info": "0 = use the width above. For icons/artwork, in sections with a custom class.",
+      "min": 0,
+      "max": 200,
+      "step": 2,
+      "unit": "px",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "fixed_width_mobile",
+      "label": "Fixed width (mobile)",
+      "info": "0 = same as Fixed width.",
+      "min": 0,
+      "max": 200,
+      "step": 2,
+      "unit": "px",
+      "default": 0
     },
     {
       "type": "select",

@@ -594,3 +594,99 @@
     }
   }
 }
+
+/* ==========================================================================
+   sn-home-why — native "section" with the "Icons with text" preset (S13)
+   Figma desktop 190:4024 (1480 frame) · mobile 190:4361 (390 frame) · owner: dev2
+   Sizes, gaps, colors, columns and paddings are Theme Editor settings (native, or the opt-in Snosha
+   settings passed as --sn-* vars only when the section has this class). Literals: tile shadows only.
+   ========================================================================== */
+.sn-home-why {
+  /* Row cap: section "Content max width" */
+  > .custom-section-content > .section-content-wrapper {
+    max-inline-size: var(--sn-content-max-width, none);
+    margin-inline: auto;
+    inline-size: 100%;
+  }
+
+  /* Text: weight + exact line height from each text block */
+  .text-block.custom-typography,
+  .text-block.custom-typography > * {
+    font-weight: var(--sn-font-weight, var(--font-weight));
+    line-height: var(--sn-line-height, var(--line-height));
+  }
+
+  .text-block.custom-typography > * {
+    margin-block: 0;
+  }
+
+  /* Feature grid: group "Columns (desktop)" → equal columns, native gap */
+  @media screen and (min-width: 750px) {
+    .sn-group--cols > .group-block-content {
+      display: grid;
+      grid-template-columns: repeat(var(--sn-cols), minmax(0, 1fr));
+      align-items: start;
+    }
+  }
+
+  /* Icons: image block "Fixed width" (Figma 64px artwork, no distortion) */
+  .image-block--sn-fixed {
+    flex: 0 0 auto;
+    width: var(--sn-image-width);
+
+    .image-block__image,
+    .placeholder-image {
+      width: 100%;
+      height: auto;
+      object-fit: contain;
+    }
+  }
+
+  /* Icon tile = a group holding a fixed-size image; border, radius, padding and gradient are its
+     native settings. Shadows have no setting: Figma drop shadow + inner top highlight. */
+  .group-block:has(> .group-block-content > .image-block--sn-fixed) {
+    box-shadow:
+      0 10px 11px 0 rgb(15 100 168 / 0.08),
+      inset 0 2px 2px 0 rgb(255 255 255 / 0.9);
+  }
+
+  /* ---------- Mobile ≤749 (Figma 190:4361) ---------- */
+  @media screen and (max-width: 749px) {
+    > .custom-section-content > .section-content-wrapper {
+      flex-direction: var(--sn-mobile-direction, column);
+      gap: var(--sn-gap-mobile, var(--gap));
+      padding-block: calc(var(--sn-padding-block-start-mobile, var(--padding-block-start)) + var(--section-top-offset, 0px))
+        var(--sn-padding-block-end-mobile, var(--padding-block-end));
+      padding-inline: var(--sn-padding-inline-mobile, var(--padding-inline-start));
+    }
+
+    .group-block-content {
+      gap: var(--sn-gap-mobile, var(--gap));
+    }
+
+    /* Group "Columns (mobile)" → 2×2 grid (no carousel) */
+    .sn-group--cols-mobile > .group-block-content {
+      display: grid;
+      grid-template-columns: repeat(var(--sn-cols-mobile), minmax(0, 1fr));
+      align-items: start;
+    }
+
+    .image-block--sn-fixed {
+      width: var(--sn-image-width-mobile, var(--sn-image-width));
+    }
+
+    .text-block.custom-typography.custom-font-size,
+    .text-block.custom-typography.custom-font-size > * {
+      font-size: var(--sn-mobile-font-size, var(--font-size));
+    }
+
+    .text-block.custom-typography,
+    .text-block.custom-typography > * {
+      line-height: var(--sn-line-height-mobile, var(--sn-line-height, var(--line-height)));
+    }
+
+    .text-block.custom-typography > * {
+      text-align: var(--sn-text-align-mobile, var(--text-align, var(--text-align-default)));
+    }
+  }
+}

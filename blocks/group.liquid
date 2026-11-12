@@ -5,10 +5,20 @@
 {% endcapture %}
 
 {%- comment -%} Snosha (opt-in): phone gap as a CSS var, only when the section has a custom class; read by that class's CSS at ≤749px. {%- endcomment -%}
+{%- comment -%} Snosha (opt-in): "Columns" settings (0 = native flex) turn the group into an equal-column grid, via a class + vars read by that class's CSS. {%- endcomment -%}
 {%- liquid
   assign sn_group_style = ''
+  assign sn_group_class = ''
   if section.settings.custom_class != blank
     assign sn_group_style = '--sn-gap-mobile: ' | append: block.settings.gap_mobile | append: 'px;'
+    if block.settings.columns > 0
+      assign sn_group_class = 'sn-group--cols'
+      assign sn_group_style = sn_group_style | append: ' --sn-cols: ' | append: block.settings.columns | append: ';'
+    endif
+    if block.settings.columns_mobile > 0
+      assign sn_group_class = sn_group_class | append: ' sn-group--cols-mobile'
+      assign sn_group_style = sn_group_style | append: ' --sn-cols-mobile: ' | append: block.settings.columns_mobile | append: ';'
+    endif
   endif
 -%}
 
@@ -18,7 +28,8 @@
   shopify_attributes: block.shopify_attributes,
   background_color: block.settings.background_color,
   block_id: block.id,
-  style: sn_group_style
+  style: sn_group_style,
+  class: sn_group_class
 %}
 
 {% schema %}
@@ -183,6 +194,26 @@
       "step": 1,
       "unit": "px",
       "default": 12
+    },
+    {
+      "type": "range",
+      "id": "columns",
+      "label": "Columns (desktop)",
+      "info": "0 = standard layout. 1–6 = equal-width grid using the gap above. In sections with a custom class.",
+      "min": 0,
+      "max": 6,
+      "step": 1,
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "columns_mobile",
+      "label": "Columns (mobile)",
+      "info": "0 = standard layout. 1–4 = equal-width grid on phones using the mobile gap.",
+      "min": 0,
+      "max": 4,
+      "step": 1,
+      "default": 0
     },
     {
       "type": "header",

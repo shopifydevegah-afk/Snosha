@@ -7,6 +7,8 @@
     .text-block--{{ block.id }} {
       --sn-mobile-font-size: {{ block.settings.mobile_font_size }}px;
       --sn-line-height: {{ block.settings.line_height_exact | divided_by: 100.0 }};
+      {%- if block.settings.line_height_exact_mobile > 0 %} --sn-line-height-mobile: {{ block.settings.line_height_exact_mobile | divided_by: 100.0 }};{% endif %}
+      {%- if block.settings.alignment_mobile != blank %} --sn-text-align-mobile: {{ block.settings.alignment_mobile }};{% endif %}
       {%- if block.settings.font_weight != blank %} --sn-font-weight: {{ block.settings.font_weight }};{% endif %}
     }
   {% endstyle %}
@@ -161,6 +163,10 @@
           "label": "12px"
         },
         {
+          "value": "0.8125rem",
+          "label": "13px"
+        },
+        {
           "value": "0.875rem",
           "label": "14px"
         },
@@ -293,6 +299,32 @@
       "step": 1,
       "unit": "%",
       "default": 140,
+      "visible_if": "{{ block.settings.type_preset == 'custom' }}"
+    },
+    {
+      "type": "range",
+      "id": "line_height_exact_mobile",
+      "label": "Mobile exact line height",
+      "info": "0 = same as above. Phones only, in sections with a custom class.",
+      "min": 0,
+      "max": 200,
+      "step": 2,
+      "unit": "%",
+      "default": 0,
+      "visible_if": "{{ block.settings.type_preset == 'custom' }}"
+    },
+    {
+      "type": "select",
+      "id": "alignment_mobile",
+      "label": "Mobile alignment",
+      "info": "Phones only, in sections with a custom class.",
+      "options": [
+        { "value": "", "label": "Same as desktop" },
+        { "value": "start", "label": "Start (right in Arabic)" },
+        { "value": "center", "label": "Center" },
+        { "value": "end", "label": "End (left in Arabic)" }
+      ],
+      "default": "",
       "visible_if": "{{ block.settings.type_preset == 'custom' }}"
     },
     {
