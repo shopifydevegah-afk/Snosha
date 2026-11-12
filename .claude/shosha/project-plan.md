@@ -460,6 +460,15 @@ Category **B**: native section + on-demand `custom_class` setting. No Liquid/JS 
 - **Template:** `why_sn_home` added after `bundle_sn_home`; the 4 icons are empty (merchant uploads them).
 - **Checks:** Theme Check 9 = baseline; schemas and `index.json` parse; `dev2.css` braces balanced.
 - **Visual QA:** PENDING USER REVIEW (rule 13).
+- **Mobile card order (2026-11-12):**
+  - New `group` setting `mobile_order` (0–12, 0 = block order); group 39 → 40/40.
+  - It outputs `--sn-order-mobile` on the card (custom-class sections only).
+  - `dev2.css` (≤749, `.sn-group--cols-mobile > .group-block-content > *`) applies CSS `order`, registered with `@property` (`inherits: false`, initial 0) so a card never picks up a parent group's value.
+  - Desktop keeps the editor block order.
+  - Ties keep block order; cards left at 0 come before numbered cards.
+  - **Visual order only:** Tab and screen readers follow the block order; Liquid can't reorder `content_for 'blocks'` output, and JS was not wanted.
+  - **Template:** تفاصيل 1 · روتين 2 · تقنية 3 · مصممة 4 → RTL grid: row 1 تفاصيل (right) · روتين; row 2 تقنية · مصممة = Figma 190:4361. Desktop unchanged: تقنية · مصممة · تفاصيل · روتين.
+  - **Checks:** Theme Check 9 = baseline. Visual QA PENDING USER REVIEW.
 
 ## F. QA & progress
 
@@ -516,3 +525,5 @@ Give a section its own row here when its work starts, and keep the S01–S15 row
 | 2026-11-11 | S11 rebuilt as dedicated section `sn-product-bundle` (category E, merchant-approved): bundle product = purchase (model A only), "Bundle item" blocks drive rows + hotspots + popups; native product-hotspots files restored | Native hotspots adaptation did not give the merchant a usable bundle setup | S11; `index.json` `bundle_sn_home` replaced in place | Merchant setup; visual + commerce QA by the user |
 | 2026-11-11 | S11: editor-only note (bundle data box) removed at the merchant's request; placeholder rows for empty "Bundle item" blocks kept | The note cluttered the Theme Editor preview; product data is now correct (LE 2,499 / compare-at 3,100, available, 7 in stock) | S11 | — |
 | 2026-11-12 | S13 on native `section` preset "Icons with text" (B/C): opt-in `group` columns, `text` mobile line height/alignment + 13px option, `image` fixed width + no live placeholder | Closest native composition; custom illustrations need image uploads | S13; blocks `group`, `text`, `image` | Icons from the merchant; visual QA by the user |
+| 2026-11-12 | S13: `group` "Mobile display order" (`mobile_order`, CSS order on phones) set to the Figma mobile order | Figma mobile and desktop card orders differ | S13; block `group` | Visual QA by the user |
+| 2026-11-12 | S13: mobile subheading alignment start → center (text block "Mobile alignment") at the merchant's request (Figma mobile was right-aligned) | Merchant prefers a centred subheading on phones, including the last line | S13 | — |

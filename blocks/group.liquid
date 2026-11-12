@@ -19,6 +19,9 @@
       assign sn_group_class = sn_group_class | append: ' sn-group--cols-mobile'
       assign sn_group_style = sn_group_style | append: ' --sn-cols-mobile: ' | append: block.settings.columns_mobile | append: ';'
     endif
+    if block.settings.mobile_order > 0
+      assign sn_group_style = sn_group_style | append: ' --sn-order-mobile: ' | append: block.settings.mobile_order | append: ';'
+    endif
   endif
 -%}
 
@@ -202,6 +205,16 @@
       "info": "0 = standard layout. 1–6 = equal-width grid using the gap above. In sections with a custom class.",
       "min": 0,
       "max": 6,
+      "step": 1,
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "mobile_order",
+      "label": "Mobile display order",
+      "info": "Phones only, for a card inside a group with mobile columns (custom-class sections). 0 = block order. Lower numbers come first; equal numbers keep block order. Visual order only (screen readers and Tab follow the block order).",
+      "min": 0,
+      "max": 12,
       "step": 1,
       "default": 0
     },

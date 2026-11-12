@@ -595,6 +595,13 @@
   }
 }
 
+/* S13: the card order value must not inherit from a parent group (0 = block order) */
+@property --sn-order-mobile {
+  syntax: "<integer>";
+  inherits: false;
+  initial-value: 0;
+}
+
 /* ==========================================================================
    sn-home-why — native "section" with the "Icons with text" preset (S13)
    Figma desktop 190:4024 (1480 frame) · mobile 190:4361 (390 frame) · owner: dev2
@@ -669,6 +676,12 @@
       display: grid;
       grid-template-columns: repeat(var(--sn-cols-mobile), minmax(0, 1fr));
       align-items: start;
+    }
+
+    /* Card "Mobile display order" (0 = block order). CSS order: visual only, Tab and screen readers
+       keep the block order. Equal values keep block order. Grid in RTL fills right → left. */
+    .sn-group--cols-mobile > .group-block-content > * {
+      order: var(--sn-order-mobile);
     }
 
     .image-block--sn-fixed {
