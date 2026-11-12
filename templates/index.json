@@ -2599,11 +2599,391 @@
         "padding-block-end": 60,
         "custom_class": "sn-home-reels"
       }
+    },
+    "section_sn14Faq": {
+      "type": "section",
+      "name": "FAQ",
+      "blocks": {
+        "group_faqHead": {
+          "type": "group",
+          "name": "t:names.header",
+          "settings": {
+            "content_direction": "column",
+            "vertical_on_mobile": true,
+            "horizontal_alignment_flex_direction_column": "center",
+            "vertical_alignment_flex_direction_column": "center",
+            "gap": 6,
+            "width": "fill",
+            "width_mobile": "fill",
+            "height": "fit",
+            "padding-block-start": 0,
+            "padding-block-end": 0,
+            "padding-inline-start": 0,
+            "padding-inline-end": 0
+          },
+          "blocks": {
+            "text_faqTitle": {
+              "type": "text",
+              "name": "t:names.heading",
+              "settings": {
+                "text": "<h2>الأسئلة الشائعة</h2>",
+                "width": "100%",
+                "max_width": "none",
+                "alignment": "center",
+                "type_preset": "rte",
+                "padding-block-start": 0,
+                "padding-block-end": 0,
+                "padding-inline-start": 0,
+                "padding-inline-end": 0
+              }
+            },
+            "text_faqSub": {
+              "type": "text",
+              "name": "Subtitle",
+              "settings": {
+                "text": "<p>إجابات سريعة عن الشحن والضمان والاسترجاع والدفع.</p>",
+                "width": "100%",
+                "max_width": "none",
+                "alignment": "center",
+                "type_preset": "custom",
+                "font": "var(--font-body--family)",
+                "font_size": "1.125rem",
+                "line_height": "normal",
+                "letter_spacing": "normal",
+                "case": "none",
+                "wrap": "pretty",
+                "font_size_mobile": 13,
+                "line_height_mobile": 22,
+                "text_color": "#5a5a59",
+                "custom_class": "sn-home-faq-subtitle",
+                "padding-block-start": 0,
+                "padding-block-end": 0,
+                "padding-inline-start": 0,
+                "padding-inline-end": 0
+              }
+            }
+          },
+          "block_order": [
+            "text_faqTitle",
+            "text_faqSub"
+          ]
+        },
+        "group_faqCols": {
+          "type": "group",
+          "name": "FAQ columns",
+          "settings": {
+            "content_direction": "row",
+            "vertical_on_mobile": true,
+            "horizontal_alignment": "flex-start",
+            "vertical_alignment": "flex-start",
+            "gap": 24,
+            "width": "fill",
+            "width_mobile": "fill",
+            "height": "fit",
+            "padding-block-start": 0,
+            "padding-block-end": 0,
+            "padding-inline-start": 0,
+            "padding-inline-end": 0
+          },
+          "blocks": {
+            "accordion_faqA": {
+              "type": "accordion",
+              "name": "FAQ column 1",
+              "settings": {
+                "icon": "caret",
+                "icon_color": "#176bb0",
+                "dividers": false,
+                "type_preset": "custom",
+                "summary_font_size": 16,
+                "summary_font_weight": "600",
+                "summary_line_height": 27,
+                "row_cards": true,
+                "row_gap": 12,
+                "row_background": "#ffffff",
+                "row_background_open": "#f0fafe",
+                "row_border_color": "#dcf2fb",
+                "row_border_width": 1,
+                "row_radius": 14,
+                "row_padding_block": 14,
+                "row_padding_inline": 16,
+                "row_padding_inline_mobile": 20,
+                "summary_gap": 12,
+                "content_gap": 10,
+                "icon_size": 18,
+                "text_color": "#131311",
+                "border": "none",
+                "border_width": 1,
+                "border_opacity": 100,
+                "border_radius": 0,
+                "padding-block-start": 0,
+                "padding-block-end": 0,
+                "padding-inline-start": 0,
+                "padding-inline-end": 0
+              },
+              "blocks": {
+                "row_faq1Pay": {
+                  "type": "_accordion-row",
+                  "name": "FAQ item",
+                  "settings": {
+                    "heading": "ما طرق الدفع المتاحة؟",
+                    "open_by_default": false,
+                    "icon": "none",
+                    "width": 20
+                  },
+                  "blocks": {
+                    "text_faq1Ans": {
+                      "type": "text",
+                      "name": "Answer",
+                      "settings": {
+                        "width": "100%",
+                        "max_width": "none",
+                        "alignment": "left",
+                        "type_preset": "rte",
+                        "text_color": "#5a5a59",
+                        "padding-block-start": 0,
+                        "padding-block-end": 0,
+                        "padding-inline-start": 0,
+                        "padding-inline-end": 0
+                      }
+                    }
+                  },
+                  "block_order": [
+                    "text_faq1Ans"
+                  ]
+                },
+                "row_faq2Cod": {
+                  "type": "_accordion-row",
+                  "name": "FAQ item",
+                  "settings": {
+                    "heading": "هل يوجد دفع عند الاستلام؟",
+                    "open_by_default": false,
+                    "icon": "none",
+                    "width": 20
+                  },
+                  "blocks": {
+                    "text_faq2Ans": {
+                      "type": "text",
+                      "name": "Answer",
+                      "settings": {
+                        "width": "100%",
+                        "max_width": "none",
+                        "alignment": "left",
+                        "type_preset": "rte",
+                        "text_color": "#5a5a59",
+                        "padding-block-start": 0,
+                        "padding-block-end": 0,
+                        "padding-inline-start": 0,
+                        "padding-inline-end": 0
+                      }
+                    }
+                  },
+                  "block_order": [
+                    "text_faq2Ans"
+                  ]
+                },
+                "row_faq3Orig": {
+                  "type": "_accordion-row",
+                  "name": "FAQ item",
+                  "settings": {
+                    "heading": "هل منتجات SNOSHA أصلية ومعتمدة؟",
+                    "open_by_default": false,
+                    "icon": "none",
+                    "width": 20
+                  },
+                  "blocks": {
+                    "text_faq3Ans": {
+                      "type": "text",
+                      "name": "Answer",
+                      "settings": {
+                        "width": "100%",
+                        "max_width": "none",
+                        "alignment": "left",
+                        "type_preset": "rte",
+                        "text_color": "#5a5a59",
+                        "padding-block-start": 0,
+                        "padding-block-end": 0,
+                        "padding-inline-start": 0,
+                        "padding-inline-end": 0
+                      }
+                    }
+                  },
+                  "block_order": [
+                    "text_faq3Ans"
+                  ]
+                }
+              },
+              "block_order": [
+                "row_faq1Pay",
+                "row_faq2Cod",
+                "row_faq3Orig"
+              ]
+            },
+            "accordion_faqB": {
+              "type": "accordion",
+              "name": "FAQ column 2",
+              "settings": {
+                "icon": "caret",
+                "icon_color": "#176bb0",
+                "dividers": false,
+                "type_preset": "custom",
+                "summary_font_size": 16,
+                "summary_font_weight": "600",
+                "summary_line_height": 27,
+                "row_cards": true,
+                "row_gap": 12,
+                "row_background": "#ffffff",
+                "row_background_open": "#f0fafe",
+                "row_border_color": "#dcf2fb",
+                "row_border_width": 1,
+                "row_radius": 14,
+                "row_padding_block": 14,
+                "row_padding_inline": 16,
+                "row_padding_inline_mobile": 20,
+                "summary_gap": 12,
+                "content_gap": 10,
+                "icon_size": 18,
+                "text_color": "#131311",
+                "border": "none",
+                "border_width": 1,
+                "border_opacity": 100,
+                "border_radius": 0,
+                "padding-block-start": 0,
+                "padding-block-end": 0,
+                "padding-inline-start": 0,
+                "padding-inline-end": 0
+              },
+              "blocks": {
+                "row_faq4Warr": {
+                  "type": "_accordion-row",
+                  "name": "FAQ item",
+                  "settings": {
+                    "heading": "هل يوجد ضمان على المنتجات؟",
+                    "open_by_default": true,
+                    "icon": "none",
+                    "width": 20
+                  },
+                  "blocks": {
+                    "text_faq4Ans": {
+                      "type": "text",
+                      "name": "Answer",
+                      "settings": {
+                        "text": "<p>نعم، جميع منتجات SNOSHA تأتي بضمان لمدة سنة ضد عيوب الصناعة.</p>",
+                        "width": "100%",
+                        "max_width": "none",
+                        "alignment": "left",
+                        "type_preset": "rte",
+                        "text_color": "#5a5a59",
+                        "padding-block-start": 0,
+                        "padding-block-end": 0,
+                        "padding-inline-start": 0,
+                        "padding-inline-end": 0
+                      }
+                    }
+                  },
+                  "block_order": [
+                    "text_faq4Ans"
+                  ]
+                },
+                "row_faq5Ret": {
+                  "type": "_accordion-row",
+                  "name": "FAQ item",
+                  "settings": {
+                    "heading": "ما مدة الاستبدال والاسترجاع؟",
+                    "open_by_default": false,
+                    "icon": "none",
+                    "width": 20
+                  },
+                  "blocks": {
+                    "text_faq5Ans": {
+                      "type": "text",
+                      "name": "Answer",
+                      "settings": {
+                        "width": "100%",
+                        "max_width": "none",
+                        "alignment": "left",
+                        "type_preset": "rte",
+                        "text_color": "#5a5a59",
+                        "padding-block-start": 0,
+                        "padding-block-end": 0,
+                        "padding-inline-start": 0,
+                        "padding-inline-end": 0
+                      }
+                    }
+                  },
+                  "block_order": [
+                    "text_faq5Ans"
+                  ]
+                },
+                "row_faq6Ship": {
+                  "type": "_accordion-row",
+                  "name": "FAQ item",
+                  "settings": {
+                    "heading": "هل يوجد شحن مجاني؟",
+                    "open_by_default": false,
+                    "icon": "none",
+                    "width": 20
+                  },
+                  "blocks": {
+                    "text_faq6Ans": {
+                      "type": "text",
+                      "name": "Answer",
+                      "settings": {
+                        "width": "100%",
+                        "max_width": "none",
+                        "alignment": "left",
+                        "type_preset": "rte",
+                        "text_color": "#5a5a59",
+                        "padding-block-start": 0,
+                        "padding-block-end": 0,
+                        "padding-inline-start": 0,
+                        "padding-inline-end": 0
+                      }
+                    }
+                  },
+                  "block_order": [
+                    "text_faq6Ans"
+                  ]
+                }
+              },
+              "block_order": [
+                "row_faq4Warr",
+                "row_faq5Ret",
+                "row_faq6Ship"
+              ]
+            }
+          },
+          "block_order": [
+            "accordion_faqA",
+            "accordion_faqB"
+          ]
+        }
+      },
+      "block_order": [
+        "group_faqHead",
+        "group_faqCols"
+      ],
+      "settings": {
+        "content_direction": "column",
+        "vertical_on_mobile": true,
+        "horizontal_alignment_flex_direction_column": "center",
+        "vertical_alignment_flex_direction_column": "center",
+        "gap": 61,
+        "section_width": "page-width",
+        "background_media": "none",
+        "border": "none",
+        "border_width": 1,
+        "border_opacity": 100,
+        "border_radius": 0,
+        "padding-block-start": 60,
+        "padding-block-end": 60,
+        "custom_class": "sn-home-faq"
+      }
     }
   },
   "order": [
     "product_list_fa6P9H",
     "product_list_Rxv4hg",
-    "carousel_sn9Rls"
+    "carousel_sn9Rls",
+    "section_sn14Faq"
   ]
 }

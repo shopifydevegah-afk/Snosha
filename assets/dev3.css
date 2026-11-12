@@ -471,3 +471,89 @@
     --scroll-progress-thumb: linear-gradient(to right, #63cdff, #0f64a8); /* Figma Progress Fill */
   }
 }
+
+/* ==========================================================================
+   sn-home-faq — S14 FAQ (owner: Dev3). Native `section` (FAQ preset structure) on index.
+   Figma desktop 217:14604, mobile 217:14813.
+   Questions/answers are native accordion rows; card look, question typography and the
+   chevron are accordion-block settings ("Row cards", heading preset "Custom", icon color).
+   Desktop: two accordion blocks in a row group (questions 1–3 | 4–6).
+   Mobile: the same blocks stack into one list in content order 1 → 6.
+   Part class (text block): -subtitle.
+   ========================================================================== */
+.sn-home-faq {
+  /* Figma colors with no Horizon token */
+  --sn-faq-heading: #12568d; /* Figma color/state-hover */
+
+  /* ---------- Container: Figma content 1336 = 1376 container − 2 × 20 ---------- */
+  &.section {
+    @media screen and (min-width: 750px) {
+      --page-content-width: 83.5rem;
+      --page-width: calc(var(--page-content-width) + var(--page-margin) * 2);
+    }
+
+    /* Figma mobile: 20px gutters (content 350) */
+    @media screen and (max-width: 749px) {
+      --page-margin: 20px;
+    }
+  }
+
+  /* Figma mobile: padding 56 / 40, heading → list gap 12 (desktop values are section settings) */
+  @media screen and (max-width: 749px) {
+    .section-content-wrapper {
+      row-gap: 12px;
+      padding-block: calc(56px + var(--section-top-offset, 0px)) 40px;
+    }
+  }
+
+  /* ---------- Heading (text block, <h2>) ---------- */
+  .group-block h2 {
+    margin: 0;
+    font-size: 32px;
+    line-height: 52px;
+    font-weight: 600;
+    color: var(--sn-faq-heading);
+
+    @media screen and (max-width: 749px) {
+      font-size: 24px;
+      line-height: 38px;
+    }
+  }
+
+  /* Subtitle: size, mobile size/line height and color are text-block settings; Figma desktop line height 32 */
+  @media screen and (min-width: 750px) {
+    .sn-home-faq-subtitle {
+      line-height: 32px;
+    }
+  }
+
+  .sn-home-faq-subtitle > * {
+    margin: 0;
+  }
+
+  /* ---------- FAQ columns (row group holding the two accordion blocks) ---------- */
+  /* Figma desktop: questions 1–3 in the left column, 4–6 in the right column.
+     The DOM keeps the reading order 1 → 6 (= mobile order and tab order); only the
+     desktop columns are swapped visually. */
+  .group-block-content:has(> .accordion) {
+    @media screen and (min-width: 750px) {
+      flex-direction: row-reverse;
+    }
+
+    /* Figma mobile: one list, 12px between cards (also between the two stacked accordions) */
+    @media screen and (max-width: 749px) {
+      gap: 12px;
+    }
+  }
+
+  /* Answers: Figma Desktop/Body 16/28 Regular (color is the text block's setting) */
+  .accordion .details-content .text-block {
+    font-size: 16px;
+    line-height: 28px;
+    font-weight: 400;
+
+    > * {
+      margin: 0;
+    }
+  }
+}

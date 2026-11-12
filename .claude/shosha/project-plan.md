@@ -14,7 +14,7 @@
 | Mobile homepage | `190:4082`, https://www.figma.com/design/1fqyznLFgS65tTjGvBYPBm/Snosha?node-id=190-4082 (390px wide) |
 | Environment | Claude Code in the theme repo. Shopify CLI 4.9.4 (`shopify theme dev` for preview). Git; no auto commit/push/deploy |
 | Delivery | Incremental: one section at a time, after the user's request with its nodes |
-| Current homepage state | `index.json` order: `product_list_fa6P9H` (S05, enabled since 2026-11-08) → `product_list_Rxv4hg` (S07 Bundles, added 2026-11-11) → `carousel_sn9Rls` (S09 Reels, added 2026-11-11). Other homepage sections not built yet |
+| Current homepage state | `index.json` order: `product_list_fa6P9H` (S05, enabled since 2026-11-08) → `product_list_Rxv4hg` (S07 Bundles, added 2026-11-11) → `carousel_sn9Rls` (S09 Reels, added 2026-11-11) → `section_sn14Faq` (S14 FAQ, added 2026-11-12; last because S10–S13 aren't built yet; the footer is the footer group). Other homepage sections not built yet |
 
 ## B. Global architecture decisions
 
@@ -39,9 +39,9 @@ Each one is decided; the details are in the referenced Skill file.
 | Main | `assets/main.css` | Initialized 2026-11-08 (loaded once after `custom-cairo.css`) | none assigned explicitly yet |
 | Dev1 | `assets/dev1.css` | Not initialized | — |
 | Dev2 | `assets/dev2.css` | Not initialized | — |
-| Dev3 | `assets/dev3.css` | Initialized 2026-11-08 (loaded once in `layout/theme.liquid`, right after `main.css`) | S05, S07, S09 |
+| Dev3 | `assets/dev3.css` | Initialized 2026-11-08 (loaded once in `layout/theme.liquid`, right after `main.css`) | S05, S07, S09, S14 |
 
-**Custom classes owned:** `sn-home-bestsellers` (+ part classes `sn-home-bestsellers-desc`, `-cta` on `text` blocks; `-badge` retired 2026-11-09) — Dev3, S05 + S07. Modifier `sn-home-bundles` (S07 mobile section spacing) — Dev3, 2026-11-11. `sn-home-reels` (+ part class `sn-home-reels-soon` on a `text` block) — Dev3, S09, 2026-11-11.
+**Custom classes owned:** `sn-home-bestsellers` (+ part classes `sn-home-bestsellers-desc`, `-cta` on `text` blocks; `-badge` retired 2026-11-09) — Dev3, S05 + S07. Modifier `sn-home-bundles` (S07 mobile section spacing) — Dev3, 2026-11-11. `sn-home-reels` (+ part class `sn-home-reels-soon` on a `text` block) — Dev3, S09, 2026-11-11. `sn-home-faq` (+ part class `sn-home-faq-subtitle` on a `text` block) — Dev3, S14, 2026-11-12.
 **Shared-file claims (active):** none.
 
 ## D. Section registry
@@ -63,7 +63,7 @@ Logical areas from the Figma homepage, in Figma order. A row isn't necessarily o
 | S11 | Bundle | `190:3987` | `190:4318` | index.json | — | NOT_STARTED | — | — | — | — |
 | S12 | Blog | `190:4018` | `190:4349` | index.json | — | NOT_STARTED | — | — | — | — |
 | S13 | Why SNOSHA | `190:4024` | `190:4361` | index.json | — | NOT_STARTED | — | — | — | — |
-| S14 | FAQ | `217:14604` | `217:14813` | index.json | — | NOT_STARTED | — | — | — | — |
+| S14 | FAQ | `217:14604` | `217:14813` | index.json | Dev3 | IMPLEMENTED (2026-11-12; needs commit + push to reach the editor; visual QA PENDING USER REVIEW) | B + C (opt-in) | `section` (`section_sn14Faq`, native FAQ preset structure) + `group` / `text` / `accordion` / `_accordion-row` blocks | `sn-home-faq` | Merchant writes answers 1–3, 5, 6 |
 | S15 | Footer | `190:4048` | `190:14491` | footer-group (global) | — | NOT_STARTED | — | — | — | Global: affects all pages |
 
 ## E. Section decisions
@@ -648,13 +648,96 @@ Verified in code and docs on 2026-11-08 before deciding:
   - Play button, playback, and pausing when another Reel starts. Product row (thumbnail on the right, title, price or "قريبًا").
   - Empty product hides the row on the storefront. Two-state test (class off).
 
+### S14 FAQ — IMPLEMENTED 2026-11-12 (Dev3), visual QA PENDING USER REVIEW
+
+- **Figma read (2026-11-12, `get_design_context` with screenshots, both nodes accessible):**
+  - **Desktop `217:14604`** (1480 × 498):
+    - Padding 60 / 60. Container `365:4594` max 1376, inline padding 20 → content 1336. Heading → columns gap 61.
+    - Heading: title Cairo SemiBold 32/52 `#12568d` and subtitle Regular 18/32 `#5a5a59`, centered, gap 6.
+    - Columns `217:14606`: 2 × 656, gap 24, each a column with gap 12.
+    - Figma's first column `217:14607` holds questions 1–3 and is drawn on the **left**. The second, `217:14620`, holds 4–6 (warranty expanded) on the right.
+  - **Mobile `217:14813`** (390 × 630):
+    - Padding 56 / 40, inline 20 → content 350. Heading → list gap 12.
+    - Title 24/38, subtitle 13/22, gap 6.
+    - One list 1 → 6, gap 12. Card padding 14 / 20.
+  - **FAQ Item component:**
+    - Border 1px `#dcf2fb`, radius 14, padding 14 / 16 (mobile 20).
+    - Closed background white; open `#f0fafe` with a 10 gap question → answer.
+    - Question Cairo SemiBold 16/27 `#131311`. Answer Regular 16/28 `#5a5a59`.
+    - Chevron-down 18px, stroke `#176bb0` 1.6 on a 24 viewBox, on the left (inline-end in RTL), 12 gap from the question, pointing up when open.
+  - Only the warranty answer exists in Figma.
+- **Native Reuse Audit:**
+  - Inspected:
+    - Sections: `section` (native FAQ preset `t:names.faq_section`), `_blocks`.
+    - Blocks: `accordion`, `_accordion-row`, `group`, `text`.
+    - Snippets: `section`, `group`, `accordion-styles`, `accordion-custom-component`, `summary-icon-styles`, `layout-panel-style`, `gap-style`, `custom-class`.
+    - JS: `accordion-custom.js` (open-by-default per viewport).
+  - **Match:** the native FAQ preset is a `section` with a heading `text` block and an `accordion` block of `_accordion-row` items, each with a `text` answer.
+    - Rows use `<details>`/`<summary>`: the whole question is the toggle, natively keyboard-accessible with open/closed state exposed, and several rows can be open at once.
+    - `open_by_default` per row.
+    - Native caret (`icon-caret.svg`, same chevron-down shape) turns 180° when open and sits at the inline-end (left in RTL).
+  - **Gaps:**
+    - No per-row card styling (only dividers or one border around the whole accordion).
+    - No custom question typography (theme presets only).
+    - No icon color or size; no uploaded icon.
+    - No `custom_class` on `section`.
+  - **Category B + C** (opt-in schema extensions + native composition). No new section; E not needed.
+- **Schema extensions (all opt-in; defaults = native output):**
+  - `sections/section.liquid` + `snippets/section.liquid`: `custom_class` (header "Advanced"). Rendered on the `.section` div with `custom-class.liquid`, as custom-class-policy §5 prescribes. `_blocks` (the other caller) has no setting, so it outputs nothing.
+  - `blocks/accordion.liquid` (15 → 33 settings; callers are only presets in `section` / `_product-details`, no template instances before S14):
+    - `type_preset` gains option `custom` with `summary_font_size`, `summary_font_weight` (400–700) and `summary_line_height`. Body font family.
+    - `icon` gains option `image` + `icon_image` (falls back to the caret; turns 180° when open). `icon_color` (blank = native).
+    - "Row cards": `row_cards` (each row a card; dividers are off in this mode), `row_gap`, `row_background`, `row_background_open`, `row_border_color`, `row_border_width`, `row_radius`, `row_padding_block`, `row_padding_inline`, `row_padding_inline_mobile`, `summary_gap`, `content_gap`, `icon_size`.
+    - New block stylesheet scoped to `.accordion--cards`, `.accordion--icon-color` and `.accordion--image` only.
+    - The card padding sits on the `<summary>`, so the whole question row (55px) stays the click target (≥ 44px touch target).
+    - A row with no answer yet keeps its closed size when opened (`:not(:has(.details-content *))`), so no empty panels appear.
+- **Instance `section_sn14Faq`** (`index.json`, appended to `order`; S10–S13 not built, footer is the footer group):
+  - Section: column, centered, gap 61, page-width, padding 60 / 60, `custom_class: sn-home-faq`.
+  - `group_faqHead` (column, centered, gap 6):
+    - `text_faqTitle` `<h2>الأسئلة الشائعة</h2>`.
+    - `text_faqSub` subtitle: custom preset 1.125rem, mobile 13 / 22, `#5a5a59`, part class `sn-home-faq-subtitle`.
+  - `group_faqCols` "FAQ columns" (row, gap 24, vertical on mobile) holds two `accordion` blocks:
+    - `accordion_faqA` "FAQ column 1": rows `row_faq1Pay`, `row_faq2Cod`, `row_faq3Orig`.
+    - `accordion_faqB` "FAQ column 2": rows `row_faq4Warr` (open by default), `row_faq5Ret`, `row_faq6Ship`.
+  - Both accordions:
+    - Caret, icon `#176bb0`, 18px; question custom 16 / 600 / 27, `#131311`.
+    - Cards: white / open `#f0fafe`, border 1 `#dcf2fb`, radius 14, padding 14 / 16 (mobile 20), gaps 12 / 10, row gap 12.
+  - Each row has an "Answer" `text` block (`#5a5a59`). Only the warranty answer is filled, from Figma. The other five are **left blank** (no invented policy text); they render nothing and their cards don't open into empty panels.
+- **Ordering strategy:**
+  - DOM and tab order = 1 → 6 (column 1 then column 2), the Figma mobile list.
+  - Desktop: `dev3.css` swaps the two columns visually with `row-reverse`, so 1–3 sit on the left and 4–6 on the right as in Figma. Keyboard order still goes 1 → 6; on desktop that starts in the left column.
+  - One set of content blocks serves both layouts. New questions are added to either column in the editor.
+- **CSS (`assets/dev3.css`, `.sn-home-faq`, collision check: no matches):**
+  - Container 1336 (desktop); mobile gutters 20, padding 56 / 40, heading gap 12.
+  - Title 32/52 → 24/38 `#12568d`. Subtitle desktop line height 32.
+  - Columns `row-reverse` (desktop) and gap 12 (mobile).
+  - Answer text 16/28 Regular.
+  - Card look, question typography and the icon are accordion settings, not CSS.
+  - Removing the class gives the native section layout. The cards and icon stay because they're settings.
+- **Files:** `snippets/section.liquid`, `sections/section.liquid`, `blocks/accordion.liquid`, `assets/dev3.css`, `templates/index.json` (additions + one comma in `order`).
+- **Static validation:**
+  - Theme Check = 9 baseline.
+  - The template, checked against the real schemas: every setting key exists, select values are valid options, range values are in range and on step, child block types are allowed, `block_order` refs resolve, no duplicate IDs, no `""` pickers.
+  - The diff only adds S14 plus one comma. S05 / S07 / S09 unchanged.
+  - `dev3.css` braces balanced, CRLF kept. No JS changed.
+- **Merchant to do:**
+  - Write the answers for questions 1–3, 5 and 6: select each "Answer" text block in the editor.
+  - Add, remove or reorder questions inside either column.
+- **Sync:** reaches the Theme Editor only after the user commits and pushes (GitHub-connected theme).
+- **Visual QA — PENDING USER REVIEW:**
+  - Desktop 1480: 2 × 656 columns, 1–3 left / 4–6 right, 24 gap, cards 55 tall closed, warranty open in `#f0fafe`, chevron left pointing up when open.
+  - Mobile 390: one list 1 → 6, 350 wide, 12 gaps, padding 14 / 20.
+  - Keyboard: Tab / Enter / Space toggle; focus ring visible.
+  - Empty-answer rows don't show an empty panel. Two-state test (class off).
+
 ## F. QA & progress
 
 | ID | Figma analysis | Code checks | Visual desktop | Visual mobile | RTL | Media | Reversibility | Pending issues |
 |---|---|---|---|---|---|---|---|---|
 | S05 | PASS (2026-11-08, both nodes read; re-checked unchanged at implementation) | PASS (local only: Theme Check = 9 baseline, schemas/JSON parse, `node --check`, dev3.css tag once) | PENDING USER REVIEW | PENDING USER REVIEW | PENDING USER REVIEW | By design product media only (no pickers); render PENDING USER REVIEW | PENDING USER REVIEW (two-state test) | Visual QA is user-owned (skill hard rule 13). User checklist: E › S05 › Implementation "QA to run" + Fidelity corrections "Visual QA". The local fixture test of 2026-11-08 is not counted as QA evidence. 2026-11-09 fidelity pass and final alignment pass: static checks PASS (Theme Check 9 baseline) |
 | S09 | PASS (2026-11-11, both nodes read) | PASS (local only: Theme Check = 9 baseline, schemas/template validated, CSS braces) | PENDING USER REVIEW | PENDING USER REVIEW | PENDING USER REVIEW | Video/poster/product pickers in the editor; render PENDING USER REVIEW | PENDING USER REVIEW (two-state test) | Checklist: E › S09 › Visual QA |
-| S01–S04, S06–S15 | — | — | — | — | — | — | — | Only project-level mapping done; no section-level analysis yet |
+| S14 | PASS (2026-11-12, both nodes read with screenshots) | PASS (local only: Theme Check = 9 baseline, template checked against schemas, CSS braces) | PENDING USER REVIEW | PENDING USER REVIEW | PENDING USER REVIEW | Optional icon image picker on the accordion; render PENDING USER REVIEW | PENDING USER REVIEW (two-state test) | Checklist: E › S14 › Visual QA |
+| S01–S04, S06–S08, S10–S13, S15 | — | — | — | — | — | — | — | Only project-level mapping done; no section-level analysis yet |
 
 Give a section its own row here when its work starts, and keep the S01–S15 row only for sections that haven't started.
 
@@ -691,4 +774,5 @@ Give a section its own row here when its work starts, and keep the S01–S15 row
 | 2026-11-11 | S07 Bundles implemented by Dev3 as a second native `product-list` instance (`product_list_Rxv4hg`) cloned from S05 with new IDs; collection left for the merchant; mobile spacing via modifier `sn-home-bundles` (S05 values moved to CSS variables, unchanged) | User request + Figma `351:4546` / `190:4204` | S07; `dev3.css` shared rule set | Merchant selects the Bundles collection; visual QA by the user |
 | 2026-11-11 | S09 Reels implemented by Dev3 with the native `carousel` section (`carousel_sn9Rls`): one `_card` per Reel holding a `video` block and a `product-card` block (title, price, featured-image thumbnail from the product). Opt-in extensions: carousel `mobile_centered`/`mobile_card_width`/`show_scroll_progress`/`custom_class`; video `uploaded_poster`/`uploaded_aspect_ratio`/play-button settings; product-card `hide_when_empty`. Reuses `scroll-progress` | User request + Figma `190:3935` / `190:4254` | S09; shared opt-in: `carousel`, `video`, `product-card` | Merchant uploads videos and selects products; optional `custom.coming_soon_label` definition; visual QA by the user |
 | 2026-11-11 | S09 missing from the Theme Editor. Theme "Snosha/dev3" syncs from GitHub `dev3`; its bot commit `b56ecb5` showed the theme kept the pre-S09 `index.json` (code files were accepted). Likely cause: a metafield dynamic source without a definition, plus empty-string resource pickers. S09 restored locally from `05242e7` without those values. **Rule:** never write metafield dynamic sources into templates before the definition exists, and omit empty resource pickers instead of writing `""` | User report + git history | S09; all future template edits | User commits + pushes `index.json`; checks the theme's GitHub sync status; confirms S09 in the editor |
+| 2026-11-12 | S14 FAQ implemented by Dev3 with the native `section` in the FAQ-preset structure (`section_sn14Faq`): heading group + a row group holding two `accordion` blocks (questions 1–3 / 4–6). Desktop columns swapped with `row-reverse` in `dev3.css`; DOM and tab order 1 → 6 = mobile. Opt-in extensions: `section` `custom_class` (via `snippets/section.liquid`); accordion "Row cards", custom question typography, icon color / size / image | User request + Figma `217:14604` / `217:14813` | S14; shared opt-in: `section` (+ snippet), `accordion` | Merchant writes answers 1–3, 5, 6; commit + push; visual QA by the user |
 | 2026-11-09 | Process correction: during S05 Dev3 ran CLI store commands (`theme list`, scratchpad-only `theme pull`, a failed `theme dev`), inspected other sessions' processes, and ran a local headless fixture. This is against skill hard rule 13 (`.agents/skills/…/SKILL.md`). No files were uploaded and no other session was touched | User instruction | All Dev3 work | Local, non-server code checks only from now on; visual QA = PENDING USER REVIEW |
