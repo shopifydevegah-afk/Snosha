@@ -100,7 +100,28 @@
     <div class="featured-blog-posts-card__content layout-panel-flex--column">
       <h4>{{ title }}</h4>
       {{ details }}
-      {{ description }}
+      {%- comment -%}
+        Snosha S12 (opt-in): excerpt toggle (unset = shown, native) and a "Read more" link to THIS card's article
+        (article.url; blank label = none, native). The card's own overlay link is the keyboard / screen-reader
+        link, so this one is a pointer target only (tabindex -1, aria-hidden). Arrow first: in RTL it sits before
+        the label in reading order.
+      {%- endcomment -%}
+      {%- unless block_settings.show_excerpt == false -%}
+        {{ description }}
+      {%- endunless -%}
+      {%- if block_settings.read_more_label != blank -%}
+        {%- if onboarding -%}
+          <span class="featured-blog-posts-card__read-more" aria-hidden="true">
+            <span class="svg-wrapper">{{- 'icon-arrow.svg' | inline_asset_content -}}</span>
+            <span>{{ block_settings.read_more_label | escape }}</span>
+          </span>
+        {%- else -%}
+          <a class="featured-blog-posts-card__read-more" href="{{ article.url }}" tabindex="-1" aria-hidden="true">
+            <span class="svg-wrapper">{{- 'icon-arrow.svg' | inline_asset_content -}}</span>
+            <span>{{ block_settings.read_more_label | escape }}</span>
+          </a>
+        {%- endif -%}
+      {%- endif -%}
     </div>
   </div>
 </div>
@@ -196,6 +217,18 @@
     {
       "type": "header",
       "content": "t:content.text"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_excerpt",
+      "label": "Show excerpt",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "read_more_label",
+      "label": "Read more label",
+      "info": "Link to each card's own article, under the excerpt. Leave empty to hide."
     },
     {
       "type": "select",

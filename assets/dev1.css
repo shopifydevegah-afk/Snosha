@@ -1903,23 +1903,19 @@
 }
 
 /* ==========================================================================
-   S12 Blog — .sn-home-blog (native `carousel` section, manual cards) | owner: Dev1
+   S12 Blog — .sn-home-blog (native `featured-blog-posts` section) | owner: Dev1
    Figma desktop 190:4018 (1480×664; container 1376 with 20px inner padding → 1336 content),
    mobile 190:4349 (390×734).
-   Every card is a native `_card` block the merchant edits: `image` block (uploaded in the Theme Editor),
-   text blocks (date, title h3, description), a row `group` (text + `icon` arrow) for "Read more", and the
-   card's native Link. Cards can be added, removed and reordered. Section extras (opt-in): "Card image height"
-   (--carousel-image-height), "Card width — Mobile" / "Horizontal gap — Mobile", progress bar
-   (carousel-progress.js) and the "View all" link (.section-carousel__view-all).
+   Native "Grid" preset configuration: Layout Grid (3 columns, Horizontal gap 24) on tablet / desktop and
+   Horizon's own "Carousel on mobile" slideshow below 750px. Article data is native (image, title, date,
+   excerpt, article.url). Opt-in extensions: card "Read more label" (.featured-blog-posts-card__read-more →
+   article.url), section "View all" (.featured-blog-posts__view-all → blog.url, automatic when the blog has
+   more posts than shown), progress bar (carousel-progress.js) and --blog-* variables from the section
+   settings (image height, mobile card width, mobile heading gap).
    ========================================================================== */
 .sn-home-blog {
   --page-content-width: 1336px;
   --page-width: calc(var(--page-content-width) + var(--page-margin) * 2);
-
-  /* Figma shows exactly three cards (3 × 429.33 + 2 × 24 = 1336): no native peek of the next card */
-  @media screen and (min-width: 750px) {
-    --peek-next-slide-size: 0px;
-  }
 
   /* Figma mobile section padding 56 / 40 (desktop 60 / 60 = native Top / Bottom) */
   &.spacing-style {
@@ -1928,17 +1924,15 @@
     }
   }
 
-  /* Rows only (the section is a 3-column grid; never set column gaps here): heading → cards 40 desktop,
-     14 between rows on mobile (Figma). */
+  /* Rows only (the section is a 3-column grid; never set column gaps here).
+     Desktop heading → cards = native Gap (40). Mobile: 14 between rows (Figma). */
   &.gap-style {
-    row-gap: 40px;
-
     @media screen and (max-width: 749px) {
       row-gap: 14px;
     }
   }
 
-  /* --- Heading + View all ------------------------------------------------- */
+  /* --- Heading ------------------------------------------------------------ */
   > :first-child {
     grid-row: 1;
 
@@ -1947,7 +1941,25 @@
     }
   }
 
-  .section-carousel__view-all {
+  /* Heading (h2) + subtitle (p) in the title block's rich text. Horizon's `.rte :is(h1…h6)` adds the theme
+     heading spacing below the heading, which made the gap bigger than Figma; reset it here, the gap is the
+     subtitle's top margin: 6px desktop (Figma), "Heading and subtitle gap — Mobile" (6) on phones. */
+  > :first-child .text-block {
+    :is(h1, h2, h3) {
+      margin-block: 0;
+    }
+
+    :is(h1, h2, h3) + p {
+      margin-block: 6px 0;
+
+      @media screen and (max-width: 749px) {
+        margin-block-start: var(--blog-heading-gap-mobile, 6px);
+      }
+    }
+  }
+
+  /* --- View all ----------------------------------------------------------- */
+  .featured-blog-posts__view-all {
     display: inline-flex;
     align-items: center;
     justify-self: center;
@@ -1959,23 +1971,14 @@
     line-height: 26px;
     text-decoration: none;
 
-    .svg-wrapper {
-      display: inline-flex;
-      inline-size: 18px;
-      block-size: 18px;
-    }
-
-    svg {
-      inline-size: 100%;
-      block-size: 100%;
-    }
-
     &:hover {
       text-decoration: underline;
       text-underline-offset: 4px;
     }
 
-    /* Tablet / desktop: on the heading row, at the inline end (left in Arabic), aligned to the subtitle */
+    /* Tablet / desktop: on the heading row, at the inline end (left in Arabic), aligned to the subtitle.
+       Taken out of the flow of that row, so the centred heading never shifts and nothing is reserved
+       when the link is hidden. */
     @media screen and (min-width: 750px) {
       grid-row: 1;
       justify-self: end;
@@ -1985,63 +1988,106 @@
     }
   }
 
-  /* --- Carousel track ----------------------------------------------------- */
-  slideshow-container {
-    background-color: transparent;
+  /* --- Cards ---------------------------------------------------------------- */
+  .featured-blog-posts-card__inner {
+    gap: 16px; /* image → text (Figma); the text column keeps the card's native Gap (8) */
   }
 
-  /* No arrows in Figma (also off through the native Icon: None) */
-  slideshow-arrows {
-    display: none;
-  }
+  /* Image box: fixed Figma height ("Image height", 268) at every width, full card width, cover crop;
+     corner radius = the image block's native Corner radius (16). */
+  .featured-blog-posts-card__image {
+    aspect-ratio: auto;
+    block-size: var(--blog-image-height, 268px);
+    max-block-size: none;
 
-  .carousel-content slideshow-slides > .card {
-    scroll-snap-align: start;
-  }
-
-  /* Mobile: Figma cards 280 (Card width — Mobile), gap 12 (Horizontal gap — Mobile), first card 24px from
-     the screen edge; native start-aligned snapping. */
-  @media screen and (max-width: 749px) {
-    .carousel-content slideshow-slides {
-      --gutter-slide-width: 24px;
-      --slideshow-gap: var(--carousel-gap-mobile, 12px);
-    }
-
-    .carousel-content slideshow-slides > .card {
-      width: min(var(--carousel-card-width-mobile, 280px), calc(100cqi - 48px));
-    }
-  }
-
-  /* --- Card --------------------------------------------------------------- */
-  .carousel-content .card__content {
-    background-color: transparent;
-  }
-
-  /* Image: Figma 268px high at every width (section "Card image height"), cover crop; corner radius = the
-     image block's native Corner radius (16). 16px to the text (card Gap 8 + 8). */
-  .card .image-block {
-    block-size: var(--carousel-image-height, 268px);
-    margin-block-end: 8px;
-
-    .image-block__image {
-      block-size: 100%;
+    .resource-image__image,
+    .blog-placeholder-svg {
       aspect-ratio: auto;
+      block-size: 100%;
       object-fit: cover;
     }
   }
 
-  /* An empty image block keeps its placeholder in the Theme Editor only */
-  .card__content:not(.card__content--design-mode) .image-block:has(> .placeholder-image) {
-    display: none;
+  .featured-blog-posts-card__content {
+    padding-inline: 4px;
+
+    /* Figma order: date, title, excerpt, read more (DOM order unchanged) */
+    .blog-post-details {
+      order: -1;
+      color: var(--color-details, #176bb0);
+      font-size: 12px;
+      font-weight: 600;
+      line-height: 18px;
+    }
+
+    /* Article title: no theme heading spacing (`.rte :is(h1…h6)`) inside the card */
+    > h4,
+    > h4 :is(h1, h2, h3, h4, h5, h6, p) {
+      margin-block: 0;
+    }
   }
 
-  /* "Read more" row: text + native arrow icon */
-  .card .group-block .icon-block__media {
-    inline-size: 18px;
-    block-size: 18px;
+  /* Excerpt: plain text from the native block, kept to two lines */
+  .blog-post-card__content-text {
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+    line-clamp: 2;
+    overflow: hidden;
   }
 
-  /* Progress bar (mobile; tablet / desktop rows don't scroll with three cards) */
+  /* --- Arrow links (Read more, View all) -----------------------------------
+     Figma: the arrow sits on the reading-start side of the label (right of it in Arabic) and points forward
+     (left in Arabic). The arrow is first in the DOM, so normal RTL flow puts it on the right; the shared
+     icon points right, so it is mirrored in RTL only. */
+  .featured-blog-posts-card__read-more {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    color: #176bb0;
+    font-size: 16px;
+    font-weight: 600;
+    line-height: 26px;
+    text-decoration: none;
+
+    &:hover {
+      text-decoration: underline;
+      text-underline-offset: 4px;
+    }
+  }
+
+  :is(.featured-blog-posts__view-all, .featured-blog-posts-card__read-more) {
+    .svg-wrapper {
+      display: inline-flex;
+      flex: 0 0 auto;
+      inline-size: 18px;
+      block-size: 18px;
+    }
+
+    svg {
+      inline-size: 100%;
+      block-size: 100%;
+    }
+
+    &:dir(rtl) svg {
+      scale: -1 1;
+    }
+  }
+
+  /* --- Mobile carousel (native "Carousel on mobile", start-aligned) -------- */
+  @media screen and (max-width: 749px) {
+    .resource-list__carousel slideshow-slides {
+      --gutter-slide-width: 24px; /* Figma: first card 24px from the screen edge */
+
+      gap: 12px; /* Figma (the native Horizontal gap is the desktop 24) */
+    }
+
+    .resource-list__carousel .resource-list__slide {
+      --slide-width: min(var(--blog-card-width-mobile, 280px), calc(100cqi - 48px));
+    }
+  }
+
+  /* --- Progress bar (mobile carousel only) --------------------------------- */
   .carousel-progress {
     position: relative;
     display: block;
@@ -2072,21 +2118,13 @@
   }
 }
 
-/* Arrows point "forward": mirror the right-pointing icons in RTL */
-:root[dir='rtl'] .sn-home-blog :is(.section-carousel__view-all svg, .card .icon-block__media) {
-  scale: -1 1;
-}
-
-/* Typography: Figma values at element-level specificity (wrapped in :where), so the text blocks' native
-   presets, sizes and "Font size — Mobile" settings still win. Colours come from each text block's native
-   Text colour (set in the template). */
+/* Typography: Figma values at element-level specificity (wrapped in :where), so native Custom typography,
+   colours and presets on the blocks still win. Margins are set above with normal specificity. */
 :where(.sn-home-blog > :first-child .text-block:not(.custom-typography)) :is(h1, h2, h3) {
-  margin: 0;
   font-family: var(--font-heading--family);
   font-size: 32px;
   font-weight: 600;
   line-height: 52px;
-  color: inherit;
 
   @media screen and (max-width: 749px) {
     font-size: 24px;
@@ -2094,12 +2132,14 @@
   }
 }
 
+:where(.sn-home-blog > :first-child .text-block:not(.custom-color)) :is(h1, h2, h3) {
+  color: #12568d;
+}
+
 :where(.sn-home-blog > :first-child .text-block:not(.custom-typography)) p {
-  margin: 6px 0 0;
   font-size: 18px;
   font-weight: 400;
   line-height: 32px;
-  color: #5a5a59;
 
   @media screen and (max-width: 749px) {
     font-size: 13px;
@@ -2107,34 +2147,30 @@
   }
 }
 
-/* Card title (h3), description and "Read more" (p), date (12px custom size) */
-:where(.sn-home-blog .card .text-block:not(.custom-typography)) :is(h2, h3, h4) {
-  margin: 0;
+:where(.sn-home-blog > :first-child .text-block:not(.custom-color)) p {
+  color: #5a5a59;
+}
+
+/* Article title (native _heading block inside the card's h4) */
+:where(.sn-home-blog .featured-blog-posts-card__content > h4),
+:where(.sn-home-blog .featured-blog-posts-card__content > h4 .text-block:not(.custom-typography)) :is(h1, h2, h3, h4, h5, h6, p) {
   font-family: var(--font-heading--family);
   font-size: 20px;
   font-weight: 600;
   line-height: 34px;
-  color: inherit;
 }
 
-:where(.sn-home-blog .card .text-block:not(.custom-typography)) p {
-  margin: 0;
+:where(.sn-home-blog .featured-blog-posts-card__content > h4 .text-block:not(.custom-color)) :is(h1, h2, h3, h4, h5, h6, p) {
+  color: #12568d;
+}
+
+/* Excerpt */
+:where(.sn-home-blog .blog-post-card__content-text:not(.custom-typography)) {
   font-size: 16px;
   font-weight: 400;
   line-height: 28px;
-  color: inherit;
 }
 
-:where(.sn-home-blog .card .text-block) strong {
-  font-weight: 600;
-}
-
-:where(.sn-home-blog .card .group-block .text-block:not(.custom-typography)) p {
-  line-height: 26px;
-}
-
-:where(.sn-home-blog .card .text-block.custom-font-size) p {
-  margin: 0;
-  line-height: 1.5;
-  color: inherit;
+:where(.sn-home-blog .blog-post-card__content-text) {
+  color: var(--color, #5a5a59);
 }
