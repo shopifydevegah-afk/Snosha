@@ -13,6 +13,33 @@
 {% endcapture %}
 
 {% render 'product-card', children: children, product: product, product_view_context: product_view_context %}
+{%- liquid
+  # Opt-in card overrides. Badge sizes only affect the opt-in product badge of the image block.
+  assign bs = block.settings
+  assign card_scope = '#shopify-section-' | append: section.id | append: ' #product-card-' | append: block.id
+-%}
+{%- if bs.border_radius_mobile_custom or bs.badge_font_size != 13 -%}
+  {% style %}
+    {%- if bs.badge_font_size != 13 %}
+      {{ card_scope }} {
+        --custom-badge-font-size: {{ bs.badge_font_size }}px;
+      }
+    {%- endif %}
+    {%- if bs.border_radius_mobile_custom %}
+      @media screen and (max-width: 749px) {
+        {{ card_scope }} {
+          --custom-badge-font-size-mobile: {{ bs.badge_font_size_mobile }}px;
+          --custom-badge-radius-scale-mobile: {{ bs.badge_font_size_mobile | times: 1.0 | divided_by: bs.badge_font_size | round: 3 }};
+        }
+        {{ card_scope }} > .product-card__content {
+          gap: {{ bs.product_card_gap_mobile }}px;
+          border-radius: {{ bs.border_radius_mobile }}px;
+          {% if bs.border_radius_mobile > 0 %}overflow: clip;{% endif %}
+        }
+      }
+    {%- endif %}
+  {% endstyle %}
+{%- endif -%}
 {% render 'quantity-selector-styles' %}
 {% render 'buy-buttons-styles' %}
 {% render 'gift-card-recipient-form-styles' %}
@@ -147,6 +174,57 @@
       "step": 1,
       "unit": "px",
       "default": 0
+    },
+    {
+      "type": "range",
+      "id": "badge_font_size",
+      "label": "Product badge text size",
+      "info": "For the product badge set in the product image block. Padding and corners scale with it.",
+      "min": 5,
+      "max": 20,
+      "step": 0.5,
+      "unit": "px",
+      "default": 13
+    },
+    {
+      "type": "checkbox",
+      "id": "border_radius_mobile_custom",
+      "label": "Customize mobile card",
+      "info": "Separate mobile corner radius, spacing and badge size.",
+      "default": false
+    },
+    {
+      "type": "range",
+      "id": "border_radius_mobile",
+      "label": "Mobile corner radius",
+      "min": 0,
+      "max": 32,
+      "step": 1,
+      "unit": "px",
+      "default": 0,
+      "visible_if": "{{ block.settings.border_radius_mobile_custom }}"
+    },
+    {
+      "type": "range",
+      "id": "product_card_gap_mobile",
+      "label": "Mobile vertical gap",
+      "min": 0,
+      "max": 40,
+      "step": 1,
+      "unit": "px",
+      "default": 12,
+      "visible_if": "{{ block.settings.border_radius_mobile_custom }}"
+    },
+    {
+      "type": "range",
+      "id": "badge_font_size_mobile",
+      "label": "Mobile product badge text size",
+      "min": 5,
+      "max": 20,
+      "step": 0.5,
+      "unit": "px",
+      "default": 13,
+      "visible_if": "{{ block.settings.border_radius_mobile_custom }}"
     },
     {
       "type": "header",

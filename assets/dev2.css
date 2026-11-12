@@ -237,3 +237,470 @@
     background-size: 100% 100%;
   }
 }
+
+/* ==========================================================================
+   sn-home-before-after — section "Image compare" preset on index (S08)
+   Figma desktop 190:3903 (1480 frame) · mobile 190:4222 (390 frame) · owner: dev2
+   Every size, gap, padding, color and ratio comes from Theme Editor settings (native or the opt-in
+   Snosha settings, passed as --sn-* vars only when the section has this class). Literals left here
+   are UI constants (handle, divider, shadow, label inset/line box), each with a reason.
+   ========================================================================== */
+.sn-home-before-after {
+  /* Row width: section "Content max width" (Figma: 774 image + 27 gap + 557 text = 1358 → 1360).
+     Without a cap the row followed the 1920px page width, so the 57% image kept growing on wide
+     screens. Column widths stay the native block "Width: Custom %" settings. */
+  > .custom-section-content > .section-content-wrapper {
+    max-inline-size: var(--sn-content-max-width, none);
+    margin-inline: auto;
+    inline-size: 100%;
+  }
+
+  /* Two-column row (≥750): a column group whose native "Height" is "Fill" stretches to the row height,
+     so its native "Vertical alignment: Space between" puts the heading at the image's top edge and the
+     button at its bottom edge. If the text is taller than the image (narrow widths), the row simply
+     grows: nothing is clipped and the image keeps its ratio, centred by the section's native alignment. */
+  @media screen and (min-width: 750px) {
+    > .custom-section-content > .section-content-wrapper > .group-block--height-fill {
+      align-self: stretch;
+      height: auto;
+    }
+  }
+
+  /* Text blocks: weight and exact line height (text block "Weight" / "Exact line height");
+     size = native "Size" on desktop. Without those vars the native custom-typography values apply. */
+  .text-block.custom-typography,
+  .text-block.custom-typography > * {
+    font-weight: var(--sn-font-weight, var(--font-weight));
+    line-height: var(--sn-line-height, var(--line-height));
+  }
+
+  .text-block.custom-typography > * {
+    margin-block: 0;
+  }
+
+  /* CTA: shape from the button block's "Button shape" settings (theme button tokens as fallback) */
+  :is(.button, .button-secondary, .button-custom) {
+    font-size: var(--sn-button-font-size, var(--font-paragraph--size));
+    font-weight: var(--sn-button-font-weight, var(--button-font-weight-primary));
+    border-radius: var(--sn-button-radius, var(--style-border-radius-buttons-primary));
+    padding-block: var(--sn-button-padding-block, var(--button-padding-block));
+    padding-inline: var(--sn-button-padding-inline, var(--button-padding-inline));
+    --button-border-width: var(--sn-button-border-width, var(--style-border-width-secondary));
+  }
+
+  /* ---------- Comparison slider ---------- */
+
+  /* RTL: the native range input follows the page direction (value grows right → left) while the
+     handle, divider and clipping are positioned from the left, so dragging moved the handle the
+     opposite way. Mirror the visuals in RTL: the handle follows the pointer and keyboard, and image 1
+     ("before") sits on the inline-start side, under its own label. Both layers keep one frame. */
+  [dir='rtl'] & {
+    [data-orientation='horizontal'] .comparison-slider__layer--before {
+      clip-path: inset(0 0 0 calc((100 - var(--compare)) * 1%));
+    }
+
+    [data-orientation='horizontal'] .comparison-slider__layer--after {
+      clip-path: inset(0 calc(var(--compare) * 1%) 0 0);
+    }
+
+    .comparison-slider__media-wrapper[data-orientation='horizontal']::after,
+    [data-orientation='horizontal'] .cs-slider__handle {
+      left: calc((100 - var(--compare)) * 1%);
+    }
+  }
+
+  /* Divider: Figma 3px line (native 4px). UI constant. */
+  .comparison-slider__media-wrapper[data-orientation='horizontal']::after {
+    width: 3px;
+  }
+
+  /* Handle: Figma pill 34×58 (mobile 29×48) with three 2×16 grips instead of chevrons. Colors come
+     from the native "Slider color" (pill) and "Slider inner color" (grips) settings. UI constants. */
+  .cs-slider__handle {
+    --sn-grip: linear-gradient(currentcolor 0 0);
+
+    width: 34px;
+    height: 58px;
+    padding: 0;
+    border-radius: 17px;
+    background:
+      var(--sn-grip) calc(50% - 6px) 50% / 2px 16px no-repeat,
+      var(--sn-grip) 50% 50% / 2px 16px no-repeat,
+      var(--sn-grip) calc(50% + 6px) 50% / 2px 16px no-repeat,
+      var(--color-background);
+    box-shadow: 0 12px 32px 0 rgb(15 100 168 / 0.1); /* Figma Shadow/Soft */
+
+    .cs-slider__chevron {
+      display: none;
+    }
+  }
+
+  /* Labels ("قبل" / "بعد"): text, colors, background and radius are native block settings;
+     size and padding come from the block's "Label …" settings. */
+  .comparison-slider__text {
+    padding: var(--sn-label-padding-block, var(--padding-xs)) var(--sn-label-padding-inline, var(--padding-xs));
+    box-shadow: 0 12px 32px 0 rgb(15 100 168 / 0.1); /* Figma Shadow/Soft */
+
+    > div {
+      font-size: var(--sn-label-size, inherit);
+      font-weight: 600; /* Figma Cairo SemiBold; block is at the 40-setting limit, so no weight control */
+      line-height: 18px; /* Figma 18px line box on both devices */
+      white-space: nowrap;
+    }
+  }
+
+  /* Label offset from the image edge: Figma 16px. Fixed because the block has no settings left (40/40). */
+  [data-orientation='horizontal'] .comparison-slider__text--before,
+  [data-orientation='horizontal'] .comparison-slider__text--after {
+    --sn-label-inset: 16px;
+  }
+
+  [data-orientation='horizontal'] .comparison-slider__text--before {
+    inset-inline-start: var(--sn-label-inset);
+  }
+
+  [data-orientation='horizontal'] .comparison-slider__text--after {
+    inset-inline-end: var(--sn-label-inset);
+  }
+
+  [data-orientation='horizontal'][data-text-position='start'] .comparison-slider__text {
+    inset-block-start: var(--sn-label-inset);
+  }
+
+  [data-orientation='horizontal'][data-text-position='end'] .comparison-slider__text {
+    inset-block-end: var(--sn-label-inset);
+  }
+
+  /* ---------- Mobile ≤749 (Figma 190:4222) ---------- */
+  @media screen and (max-width: 749px) {
+    /* Section: order, gap and padding from the section's "Mobile layout" settings */
+    > .custom-section-content > .section-content-wrapper {
+      flex-direction: var(--sn-mobile-direction, column);
+      gap: var(--sn-gap-mobile, var(--gap));
+      padding-block: calc(var(--sn-padding-block-start-mobile, var(--padding-block-start)) + var(--section-top-offset, 0px))
+        var(--sn-padding-block-end-mobile, var(--padding-block-end));
+      padding-inline: var(--sn-padding-inline-mobile, var(--padding-inline-start));
+    }
+
+    /* Groups: gap from each group's "Mobile gap" */
+    .group-block-content {
+      gap: var(--sn-gap-mobile, var(--gap));
+    }
+
+    /* Text: phone size from each text block's "Mobile size" */
+    .text-block.custom-typography.custom-font-size,
+    .text-block.custom-typography.custom-font-size > * {
+      font-size: var(--sn-mobile-font-size, var(--font-size));
+    }
+
+    /* Slider: phone ratio ("Mobile height") and radius ("Mobile border radius"). Both layers share
+       the frame, so the two images stay aligned at any ratio. */
+    .comparison-slider,
+    .comparison-slider .before-image,
+    .comparison-slider .after-image,
+    .comparison-slider .comparison-slider__placeholder {
+      aspect-ratio: var(--sn-ratio-mobile, var(--ratio));
+    }
+
+    .comparison-slider {
+      border-radius: var(--sn-radius-mobile, var(--border-radius));
+    }
+
+    .cs-slider__handle {
+      width: 29px;
+      height: 48px;
+    }
+
+    .comparison-slider__text {
+      padding-block: var(--sn-label-padding-block-mobile, var(--sn-label-padding-block, var(--padding-xs)));
+
+      > div {
+        font-size: var(--sn-label-size-mobile, var(--sn-label-size, inherit));
+      }
+    }
+
+    /* Figma mobile: labels 12px from the top (16px from the sides) */
+    [data-orientation='horizontal'][data-text-position='start'] .comparison-slider__text {
+      inset-block-start: 12px;
+    }
+  }
+}
+
+/* ==========================================================================
+   sn-home-bundle — "Product bundle" section (sections/sn-product-bundle.liquid, S11)
+   Figma desktop 190:3987 (1480 frame) · mobile 190:4318 (390 frame) · owner: dev2
+   Sizes and colors come from the section settings (--pb-*). Literals are Figma constants with no
+   setting (line heights, badge/button/popover paddings), each commented.
+   ========================================================================== */
+.sn-home-bundle {
+  .sn-pb__heading {
+    font-size: var(--pb-h-m);
+    font-weight: 600;
+    line-height: 1.583; /* Figma 38 / 24 */
+    color: var(--pb-accent);
+  }
+
+  .sn-pb__description {
+    font-size: var(--pb-d-m);
+    font-weight: 400;
+    line-height: var(--pb-d-lh-m); /* "Description line height (mobile)", Figma 26 */
+    color: var(--pb-text);
+  }
+
+  /* ---------- Product rows (no checkboxes: every item is part of the bundle) ---------- */
+  .sn-pb__items {
+    padding-block-start: 8px; /* Figma list top inset */
+  }
+
+  .sn-pb__item {
+    gap: 16px;
+    padding-block: var(--pb-row-pad);
+    border-block-end: 1px solid var(--pb-border);
+  }
+
+  .sn-pb__item--empty {
+    opacity: 0.6;
+  }
+
+  .sn-pb__thumb {
+    border-radius: 8px;
+  }
+
+  .sn-pb__text {
+    gap: 2px;
+  }
+
+  .sn-pb__title,
+  .sn-pb__price,
+  .sn-pb__now,
+  .sn-pb__pop-title {
+    font-size: var(--pb-title);
+    font-weight: 600;
+    line-height: 1.6875; /* Figma 27 / 16 */
+    color: var(--pb-accent);
+    text-decoration: none;
+  }
+
+  .sn-pb__subtitle {
+    font-size: var(--pb-sub);
+    line-height: 1.6667; /* Figma 20 / 12 */
+    color: var(--pb-text);
+  }
+
+  /* ---------- Total ---------- */
+  /* Figma mobile 190:4334: one centred row, gap 20 (wraps, still centred, only on very narrow phones) */
+  .sn-pb__total {
+    justify-content: center;
+    gap: 12px 20px;
+    padding-block-start: 16px;
+  }
+
+  .sn-pb__now,
+  .sn-pb__was {
+    gap: 12px;
+  }
+
+  .sn-pb__old {
+    font-size: 14px;
+    line-height: 22px;
+    color: var(--pb-text);
+  }
+
+  .sn-pb__badge {
+    padding: 4px 12px;
+    font-size: 12px;
+    font-weight: 600;
+    line-height: 18px;
+    color: var(--pb-brand);
+    background: color-mix(in srgb, var(--pb-border) 40%, #fff); /* Figma #f0fafe */
+    border: 1px solid var(--pb-border);
+    border-radius: 8px;
+  }
+
+  /* ---------- Button ---------- */
+  .sn-pb__button {
+    min-height: 52px;
+    padding: 13px 28px;
+    font: inherit;
+    font-size: 16px;
+    font-weight: 600;
+    line-height: 26px;
+    color: #fff;
+    background: var(--pb-brand);
+    border: 0;
+    border-radius: var(--pb-button-radius);
+    cursor: pointer;
+
+    &:hover:not(:disabled) {
+      background: color-mix(in srgb, var(--pb-brand) 88%, #000);
+    }
+
+    &:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+  }
+
+  .sn-pb__status {
+    margin: 8px 0 0;
+    font-size: 14px;
+    text-align: center;
+    color: var(--pb-text);
+  }
+
+  /* ---------- Hotspot: white disc, 1.5px ring, 10px dot (Figma desktop 28, mobile 32), soft shadow ---------- */
+  .sn-pb__marker {
+    background: radial-gradient(circle, var(--pb-brand) 0 5px, #fff 5.5px); /* Figma 10px dot at both sizes */
+    border: 1.5px solid var(--pb-ring);
+    box-shadow: 0 12px 32px 0 rgb(15 100 168 / 0.1); /* Figma Shadow/Soft */
+
+    &:focus-visible {
+      outline: 2px solid var(--pb-brand);
+      outline-offset: 2px;
+    }
+  }
+
+  .sn-pb__popover {
+    color: var(--pb-accent);
+    background: #fff;
+    border: 1px solid var(--pb-border);
+    border-radius: 12px;
+    box-shadow: 0 12px 32px 0 rgb(15 100 168 / 0.1);
+  }
+
+  .sn-pb__pop-image {
+    border-radius: 8px;
+  }
+
+  .sn-pb__pop-price {
+    font-size: 14px;
+    color: var(--pb-text);
+  }
+
+  /* ---------- Desktop ≥750 ---------- */
+  @media screen and (min-width: 750px) {
+    .sn-pb__heading {
+      font-size: var(--pb-h);
+      line-height: 1.625; /* Figma 52 / 32 */
+    }
+
+    .sn-pb__description {
+      font-size: var(--pb-d);
+      line-height: var(--pb-d-lh); /* "Description line height (desktop)", Figma 32 */
+    }
+
+    /* Figma desktop: the total group is centred, gap 34 */
+    .sn-pb__total {
+      column-gap: 34px;
+    }
+  }
+}
+
+/* S13: the card order value must not inherit from a parent group (0 = block order) */
+@property --sn-order-mobile {
+  syntax: "<integer>";
+  inherits: false;
+  initial-value: 0;
+}
+
+/* ==========================================================================
+   sn-home-why — native "section" with the "Icons with text" preset (S13)
+   Figma desktop 190:4024 (1480 frame) · mobile 190:4361 (390 frame) · owner: dev2
+   Sizes, gaps, colors, columns and paddings are Theme Editor settings (native, or the opt-in Snosha
+   settings passed as --sn-* vars only when the section has this class). Literals: tile shadows only.
+   ========================================================================== */
+.sn-home-why {
+  /* Row cap: section "Content max width" */
+  > .custom-section-content > .section-content-wrapper {
+    max-inline-size: var(--sn-content-max-width, none);
+    margin-inline: auto;
+    inline-size: 100%;
+  }
+
+  /* Text: weight + exact line height from each text block */
+  .text-block.custom-typography,
+  .text-block.custom-typography > * {
+    font-weight: var(--sn-font-weight, var(--font-weight));
+    line-height: var(--sn-line-height, var(--line-height));
+  }
+
+  .text-block.custom-typography > * {
+    margin-block: 0;
+  }
+
+  /* Feature grid: group "Columns (desktop)" → equal columns, native gap */
+  @media screen and (min-width: 750px) {
+    .sn-group--cols > .group-block-content {
+      display: grid;
+      grid-template-columns: repeat(var(--sn-cols), minmax(0, 1fr));
+      align-items: start;
+    }
+  }
+
+  /* Icons: image block "Fixed width" (Figma 64px artwork, no distortion) */
+  .image-block--sn-fixed {
+    flex: 0 0 auto;
+    width: var(--sn-image-width);
+
+    .image-block__image,
+    .placeholder-image {
+      width: 100%;
+      height: auto;
+      object-fit: contain;
+    }
+  }
+
+  /* Icon tile = a group holding a fixed-size image; border, radius, padding and gradient are its
+     native settings. Shadows have no setting: Figma drop shadow + inner top highlight. */
+  .group-block:has(> .group-block-content > .image-block--sn-fixed) {
+    box-shadow:
+      0 10px 11px 0 rgb(15 100 168 / 0.08),
+      inset 0 2px 2px 0 rgb(255 255 255 / 0.9);
+  }
+
+  /* ---------- Mobile ≤749 (Figma 190:4361) ---------- */
+  @media screen and (max-width: 749px) {
+    > .custom-section-content > .section-content-wrapper {
+      flex-direction: var(--sn-mobile-direction, column);
+      gap: var(--sn-gap-mobile, var(--gap));
+      padding-block: calc(var(--sn-padding-block-start-mobile, var(--padding-block-start)) + var(--section-top-offset, 0px))
+        var(--sn-padding-block-end-mobile, var(--padding-block-end));
+      padding-inline: var(--sn-padding-inline-mobile, var(--padding-inline-start));
+    }
+
+    .group-block-content {
+      gap: var(--sn-gap-mobile, var(--gap));
+    }
+
+    /* Group "Columns (mobile)" → 2×2 grid (no carousel) */
+    .sn-group--cols-mobile > .group-block-content {
+      display: grid;
+      grid-template-columns: repeat(var(--sn-cols-mobile), minmax(0, 1fr));
+      align-items: start;
+    }
+
+    /* Card "Mobile display order" (0 = block order). CSS order: visual only, Tab and screen readers
+       keep the block order. Equal values keep block order. Grid in RTL fills right → left. */
+    .sn-group--cols-mobile > .group-block-content > * {
+      order: var(--sn-order-mobile);
+    }
+
+    .image-block--sn-fixed {
+      width: var(--sn-image-width-mobile, var(--sn-image-width));
+    }
+
+    .text-block.custom-typography.custom-font-size,
+    .text-block.custom-typography.custom-font-size > * {
+      font-size: var(--sn-mobile-font-size, var(--font-size));
+    }
+
+    .text-block.custom-typography,
+    .text-block.custom-typography > * {
+      line-height: var(--sn-line-height-mobile, var(--sn-line-height, var(--line-height)));
+    }
+
+    .text-block.custom-typography > * {
+      text-align: var(--sn-text-align-mobile, var(--text-align, var(--text-align-default)));
+    }
+  }
+}

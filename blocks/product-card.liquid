@@ -2,16 +2,24 @@
 
 {% liquid
   assign product = block.settings.product
+
+  # Opt-in: on the storefront, render nothing until a product is selected (the editor keeps the placeholder)
+  assign hide_card = false
+  if block.settings.hide_when_empty and product == blank and request.design_mode == false
+    assign hide_card = true
+  endif
 -%}
 
-{% capture children %}
-  {% content_for 'blocks', closest.product: product %}
-{% endcapture %}
+{%- unless hide_card -%}
+  {% capture children %}
+    {% content_for 'blocks', closest.product: product %}
+  {% endcapture %}
 
-{% render 'swatch-styles' %}
-{% render 'quantity-selector-styles' %}
-{% render 'product-card', children: children, product: product, block: block %}
-{% render 'buy-buttons-styles' %}
+  {% render 'swatch-styles' %}
+  {% render 'quantity-selector-styles' %}
+  {% render 'product-card', children: children, product: product, block: block %}
+  {% render 'buy-buttons-styles' %}
+{%- endunless -%}
 
 {% schema %}
 {
@@ -57,6 +65,13 @@
       "type": "product",
       "id": "product",
       "label": "t:settings.product"
+    },
+    {
+      "type": "checkbox",
+      "id": "hide_when_empty",
+      "label": "Hide until a product is selected",
+      "info": "On the live store, nothing is shown while no product is selected.",
+      "default": false
     },
     {
       "type": "range",

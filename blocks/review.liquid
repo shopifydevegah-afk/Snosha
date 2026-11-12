@@ -26,6 +26,18 @@
   {% endstyle %}
 {% endif %}
 
+{%- if block_settings.font_size_mobile > 0 -%}
+  {%- comment -%} Opt-in mobile size for the label and review count text. {%- endcomment -%}
+  {% style %}
+    @media screen and (max-width: 749px) {
+      #shopify-section-{{ section.id }} .rating-wrapper-{{ block.id }} :is(.rating-label, .rating-count) {
+        font-size: {{ block_settings.font_size_mobile }}px;
+        line-height: 1.67;
+      }
+    }
+  {% endstyle %}
+{%- endif -%}
+
 {%- if rating != blank -%}
   {% liquid
     assign star_count_rating = scale_max
@@ -111,6 +123,10 @@
           {{ 'content.reviews' | t }}
         {%- endif -%}
       </p>
+    {%- endif -%}
+    {%- if block_settings.label != blank -%}
+      {%- comment -%} Opt-in label; only reachable when real rating data exists. {%- endcomment -%}
+      <span class="rating-label {{ block_settings.type_preset }}">{{ block_settings.label | escape }}</span>
     {%- endif -%}
   </div>
 {%- endif -%}
@@ -201,6 +217,23 @@
       "id": "show_number",
       "label": "t:settings.review_count",
       "default": true
+    },
+    {
+      "type": "text",
+      "id": "label",
+      "label": "Label",
+      "info": "Shown next to the stars only when the product has rating data. Leave blank to hide."
+    },
+    {
+      "type": "range",
+      "id": "font_size_mobile",
+      "label": "Mobile text size",
+      "info": "Label and review count. 0 = same as desktop.",
+      "min": 0,
+      "max": 24,
+      "step": 0.5,
+      "unit": "px",
+      "default": 0
     },
     {
       "type": "color",

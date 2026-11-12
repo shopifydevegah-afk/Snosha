@@ -1,5 +1,3 @@
-
-
 {% if closest.collection == blank %}
   {% assign text = 'placeholders.collection_title' | t %}
   {% assign collection_title = '<p>' | append: text | append: '</p>' %}
@@ -28,7 +26,6 @@
     .text-block--{{ block.id }} { --sn-mobile-font-size: {{ block.settings.mobile_font_size }}px; }
   {% endstyle %}
 {%- endif -%}
-
 {% schema %}
 {
   "name": "t:names.collection_title",
@@ -240,13 +237,13 @@
       "type": "range",
       "id": "mobile_font_size",
       "label": "Mobile size",
-      "info": "Phones only, same on every card. Size above = desktop.",
+      "info": "Phones only (≤749px), same on every card, in sections with a custom class. Size above = desktop.",
       "min": 10,
       "max": 32,
       "step": 1,
       "unit": "px",
       "default": 11,
-      "visible_if": "{{ block.settings.type_preset == 'custom' and section.settings.custom_class != blank }}"
+      "visible_if": "{{ block.settings.type_preset == 'custom' }}"
     },
     {
       "type": "select",

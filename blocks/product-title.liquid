@@ -14,6 +14,7 @@
     {% render 'text', fallback_text: product_title, block: block %}
   </a>
 {% endif %}
+{% render 'text-responsive-style', block: block %}
 
 {% schema %}
 {
@@ -300,6 +301,28 @@
         }
       ],
       "visible_if": "{{ block.settings.type_preset == 'custom' }}"
+    },
+    {
+      "type": "range",
+      "id": "font_size_mobile",
+      "label": "Mobile text size",
+      "info": "0 = same as desktop.",
+      "min": 0,
+      "max": 40,
+      "step": 0.5,
+      "unit": "px",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "line_height_mobile",
+      "label": "Mobile line height",
+      "info": "0 = same as desktop.",
+      "min": 0,
+      "max": 50,
+      "step": 0.5,
+      "unit": "px",
+      "default": 0
     },
     {
       "type": "header",

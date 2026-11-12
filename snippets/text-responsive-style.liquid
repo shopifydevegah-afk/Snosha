@@ -1,0 +1,72 @@
+{%- doc -%}
+  Opt-in line limit and mobile typography for blocks that render the `text` snippet
+  (element class `text-block--<block.id>`). Outputs nothing while every setting is 0 (native).
+
+  Reads these block settings when present: max_lines, max_lines_mobile, font_size_mobile, line_height_mobile.
+
+  @param {object} block - The block whose settings are used
+
+  @example
+  {% render 'text-responsive-style', block: block %}
+{%- enddoc -%}
+
+{%- liquid
+  assign bs = block.settings
+  assign max_lines = bs.max_lines | default: 0
+  assign max_lines_mobile = bs.max_lines_mobile | default: 0
+  if max_lines_mobile == 0
+    assign max_lines_mobile = max_lines
+  endif
+  assign font_size_mobile = bs.font_size_mobile | default: 0
+  assign line_height_mobile = bs.line_height_mobile | default: 0
+-%}
+{%- if max_lines > 0 or max_lines_mobile > 0 or font_size_mobile > 0 or line_height_mobile > 0 -%}
+  {%- capture text_scope -%}#shopify-section-{{ section.id }} .text-block--{{ block.id }}{%- endcapture -%}
+  {%- capture clamp_excerpt -%}
+    /* Rich text flows as one excerpt so the line limit applies to the whole text */
+    {{ text_scope }} {
+      display: -webkit-box;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+      text-align: var(--text-align, var(--text-align-default));
+    }
+    {{ text_scope }} > * {
+      display: inline;
+      margin: 0;
+    }
+    {{ text_scope }} :is(img, picture, video, iframe, table, svg, hr, br) {
+      display: none;
+    }
+    {{ text_scope }} > *:not(:last-child)::after {
+      content: ' ';
+    }
+  {%- endcapture -%}
+  {% style %}
+    {%- if max_lines > 0 %}
+      {{ clamp_excerpt }}
+      {{ text_scope }} {
+        -webkit-line-clamp: {{ max_lines }};
+        line-clamp: {{ max_lines }};
+      }
+    {%- endif %}
+    @media screen and (max-width: 749px) {
+      {%- if max_lines_mobile > 0 and max_lines == 0 %}
+        {{ clamp_excerpt }}
+      {%- endif %}
+      {{ text_scope }} {
+        {%- if max_lines_mobile > 0 %}
+          -webkit-line-clamp: {{ max_lines_mobile }};
+          line-clamp: {{ max_lines_mobile }};
+        {%- endif %}
+        {%- if font_size_mobile > 0 %}font-size: {{ font_size_mobile }}px;{% endif %}
+        {%- if line_height_mobile > 0 %}line-height: {{ line_height_mobile }}px;{% endif %}
+      }
+      {%- if font_size_mobile > 0 or line_height_mobile > 0 %}
+        {{ text_scope }} > * {
+          font-size: inherit;
+          line-height: inherit;
+        }
+      {%- endif %}
+    }
+  {% endstyle %}
+{%- endif -%}

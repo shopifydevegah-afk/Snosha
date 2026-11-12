@@ -14,9 +14,12 @@
     section
     section--{{ section.settings.section_width }}
     {% if section.settings.background_color != blank %}color-custom-{{ section.id }}{% endif %}
-    section-carousel{% render 'custom-class', value: section.settings.custom_class %}
+    section-carousel
+    {% if section.settings.mobile_centered %}section-carousel--mobile-centered{% endif %}
+    {% if section.settings.mobile_gap_custom %}section-carousel--mobile-gap{% endif %}
     spacing-style
     gap-style
+    {% render 'custom-class', value: section.settings.custom_class %}
   "
   style="
     {% render 'spacing-style', settings: section.settings %}
@@ -26,9 +29,10 @@
       --carousel-card-width: {{ section.settings.card_width }};
       --carousel-active-zoom: {{ section.settings.active_card_zoom | divided_by: 100.0 }};
       --carousel-card-width-mobile: {{ section.settings.card_width_mobile }}px;
-      --carousel-gap-mobile: {{ section.settings.columns_gap_mobile }}px;
       --carousel-image-fit: {{ section.settings.image_fit | default: 'contain' }};
     {% endif %}
+    {% if section.settings.mobile_centered %}--carousel-mobile-card-width: {{ section.settings.mobile_card_width }}px;{% endif %}
+    {% if section.settings.custom_class != blank or section.settings.mobile_gap_custom %}--carousel-gap-mobile: {{ section.settings.columns_gap_mobile }}px;{% endif %}
   "
   data-testid="carousel-section"
 >
@@ -41,13 +45,41 @@
     <carousel-active-card hidden></carousel-active-card>
     <script src="{{ 'carousel-active-card.js' | asset_url }}" type="module"></script>
   {%- endif -%}
+
+  {%- comment -%} Opt-in progress bar; it hides itself while the carousel does not overflow. {%- endcomment -%}
+  {%- if section.settings.show_scroll_progress -%}
+    {% render 'scroll-progress', target: '.carousel-content slideshow-slides' %}
+  {%- endif -%}
 </div>
+
+{% stylesheet %}
+  /* Opt-in: fixed-width cards centered on mobile, neighbours visible on both sides */
+  @media screen and (max-width: 749px) {
+    /* Opt-in mobile gap: overrides --carousel-gap on the track, so the slide gap and the card width math both use it */
+    .section-carousel--mobile-gap .carousel-content slideshow-slides {
+      --carousel-gap: var(--carousel-gap-mobile);
+    }
+
+    .section-carousel--mobile-centered .carousel-content slideshow-slides {
+      padding-inline: max(0px, calc((100% - var(--carousel-mobile-card-width)) / 2));
+      scroll-padding-inline: 0;
+    }
+
+    .section-carousel--mobile-centered .carousel-content slideshow-slides > .card {
+      width: min(var(--carousel-mobile-card-width), 100%);
+      scroll-snap-align: center;
+    }
+  }
+{% endstylesheet %}
 
 {% schema %}
 {
   "name": "t:names.carousel",
   "disabled_on": {
-    "groups": ["header", "footer"]
+    "groups": [
+      "header",
+      "footer"
+    ]
   },
   "settings": [
     {
@@ -76,6 +108,24 @@
       "default": "1"
     },
     {
+      "type": "checkbox",
+      "id": "mobile_centered",
+      "label": "Center cards on mobile",
+      "info": "Fixed-width cards that snap to the center, with the next and previous cards partly visible.",
+      "default": false
+    },
+    {
+      "type": "range",
+      "id": "mobile_card_width",
+      "label": "Mobile card width",
+      "min": 200,
+      "max": 360,
+      "step": 2,
+      "unit": "px",
+      "default": 290,
+      "visible_if": "{{ section.settings.mobile_centered }}"
+    },
+    {
       "type": "select",
       "id": "section_width",
       "label": "t:settings.width",
@@ -100,6 +150,24 @@
       "step": 1,
       "unit": "px",
       "default": 8
+    },
+    {
+      "type": "checkbox",
+      "id": "mobile_gap_custom",
+      "label": "Use a different gap on mobile",
+      "default": false
+    },
+    {
+      "type": "range",
+      "id": "columns_gap_mobile",
+      "label": "Mobile horizontal gap",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 12,
+      "visible_if": "{{ section.settings.mobile_gap_custom or section.settings.custom_class != blank }}",
+      "info": "Phones below 750px. Used by the mobile-gap option and by the section's custom CSS."
     },
     {
       "type": "color",
@@ -161,6 +229,13 @@
       "visible_if": "{{ section.settings.icons_style != 'none' }}"
     },
     {
+      "type": "checkbox",
+      "id": "show_scroll_progress",
+      "label": "Show scroll progress bar",
+      "info": "Shows a bar under the carousel that follows the scroll position, only when the cards do not all fit.",
+      "default": false
+    },
+    {
       "type": "header",
       "content": "t:content.padding"
     },
@@ -183,6 +258,10 @@
       "step": 1,
       "unit": "px",
       "default": 0
+    },
+    {
+      "type": "header",
+      "content": "Advanced"
     },
     {
       "type": "text",
@@ -255,17 +334,6 @@
       "unit": "px",
       "default": 262,
       "visible_if": "{{ section.settings.custom_class != blank }}"
-    },
-    {
-      "type": "range",
-      "id": "columns_gap_mobile",
-      "label": "Horizontal gap — Mobile",
-      "min": 0,
-      "max": 40,
-      "step": 1,
-      "unit": "px",
-      "default": 12,
-      "visible_if": "{{ section.settings.custom_class != blank }}"
     }
   ],
   "presets": [
@@ -325,7 +393,9 @@
               }
             }
           },
-          "block_order": ["heading"]
+          "block_order": [
+            "heading"
+          ]
         },
         "static-carousel-content": {
           "type": "_carousel-content",
@@ -368,7 +438,11 @@
                   }
                 }
               },
-              "block_order": ["image_1", "heading_1", "text_1"]
+              "block_order": [
+                "image_1",
+                "heading_1",
+                "text_1"
+              ]
             },
             "card_2": {
               "type": "_card",
@@ -394,7 +468,11 @@
                   }
                 }
               },
-              "block_order": ["image_2", "heading_2", "text_2"]
+              "block_order": [
+                "image_2",
+                "heading_2",
+                "text_2"
+              ]
             },
             "card_3": {
               "type": "_card",
@@ -420,7 +498,11 @@
                   }
                 }
               },
-              "block_order": ["image_3", "heading_3", "text_3"]
+              "block_order": [
+                "image_3",
+                "heading_3",
+                "text_3"
+              ]
             },
             "card_4": {
               "type": "_card",
@@ -446,10 +528,19 @@
                   }
                 }
               },
-              "block_order": ["image_4", "heading_4", "text_4"]
+              "block_order": [
+                "image_4",
+                "heading_4",
+                "text_4"
+              ]
             }
           },
-          "block_order": ["card_1", "card_2", "card_3", "card_4"]
+          "block_order": [
+            "card_1",
+            "card_2",
+            "card_3",
+            "card_4"
+          ]
         }
       }
     }

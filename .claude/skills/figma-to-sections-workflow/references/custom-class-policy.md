@@ -150,14 +150,14 @@ Horizon writes `--padding-*`, `--gap`, `--size-style-*` and similar into the ele
    ```css
    /* product-list / product-recommendations: .spacing-style is the classed .section itself */
    .sn-home-bestsellers.spacing-style { @media screen and (max-width: 749px) {
-     padding-block: calc(24px + var(--section-top-offset, 0px)) 32px;
+     padding-block: calc(var(--sn-padding-block-start-mobile, 24px) + var(--section-top-offset, 0px)) var(--sn-padding-block-end-mobile, 32px); /* vars from mobile padding settings, fallbacks = defaults (rule 15) */
    } }
    /* section / _blocks: .spacing-style is the inner wrapper */
    .sn-home-intro > .custom-section-content > .section-content-wrapper { … }
    /* hero: */
    .sn-home-hero > .hero__container { … }
    ```
-3. **Explicit mobile spacing setting** (schema extension) when editors need to control it.
+3. **Explicit mobile spacing setting** (schema extension), required whenever the value is merchant-adjustable (SKILL hard rule 15). Step 2 then reads its scoped var instead of a literal.
 
 Variables you set on the class *do* reach descendants that don't set the same variable inline. For container width, see "Layout levels" in horizon-architecture.md.
 

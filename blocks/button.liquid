@@ -1,5 +1,18 @@
 
 {% render 'button', link: block.settings.link %}
+{%- comment -%} Snosha (opt-in): button shape as CSS vars, only when the section has a custom class; read by that class's CSS. {%- endcomment -%}
+{%- if section.settings.custom_class != blank -%}
+  {% style %}
+    .{{ block.settings.style_class }}--{{ block.id }} {
+      --sn-button-font-size: {{ block.settings.font_size }}px;
+      --sn-button-font-weight: {{ block.settings.font_weight }};
+      --sn-button-border-width: {{ block.settings.border_width }}px;
+      --sn-button-radius: {{ block.settings.border_radius }}px;
+      --sn-button-padding-block: {{ block.settings.padding_block }}px;
+      --sn-button-padding-inline: {{ block.settings.padding_inline }}px;
+    }
+  {% endstyle %}
+{%- endif -%}
 
 {% schema %}
 {
@@ -141,6 +154,73 @@
       "unit": "%",
       "default": 100,
       "visible_if": "{{ block.settings.width_mobile == \"custom\" }}"
+    },
+    {
+      "type": "header",
+      "content": "Button shape",
+      "info": "Applies in sections with a custom class; otherwise the theme's button settings apply."
+    },
+    {
+      "type": "range",
+      "id": "font_size",
+      "label": "Text size",
+      "min": 10,
+      "max": 32,
+      "step": 1,
+      "unit": "px",
+      "default": 16
+    },
+    {
+      "type": "select",
+      "id": "font_weight",
+      "label": "Weight",
+      "options": [
+        { "value": "400", "label": "400" },
+        { "value": "500", "label": "500" },
+        { "value": "600", "label": "600" },
+        { "value": "700", "label": "700" }
+      ],
+      "default": "600"
+    },
+    {
+      "type": "range",
+      "id": "border_width",
+      "label": "Border thickness",
+      "min": 0,
+      "max": 6,
+      "step": 0.5,
+      "unit": "px",
+      "default": 1
+    },
+    {
+      "type": "range",
+      "id": "border_radius",
+      "label": "Border radius",
+      "min": 0,
+      "max": 50,
+      "step": 1,
+      "unit": "px",
+      "default": 12
+    },
+    {
+      "type": "range",
+      "id": "padding_block",
+      "label": "Vertical padding",
+      "min": 0,
+      "max": 40,
+      "step": 1,
+      "unit": "px",
+      "default": 13
+    },
+    {
+      "type": "range",
+      "id": "padding_inline",
+      "label": "Side padding",
+      "min": 0,
+      "max": 80,
+      "step": 1,
+      "unit": "px",
+      "default": 28
     }
   ],
   "presets": [
