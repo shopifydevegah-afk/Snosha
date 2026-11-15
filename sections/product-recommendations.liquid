@@ -5,6 +5,18 @@
   fetchpriority="low"
 ></script>
 
+{%- if section.settings.scroll_progress != blank and section.settings.scroll_progress != 'none' -%}
+  {%- comment -%}
+    Snosha P06: the progress bar arrives with the recommendations (morphSection), and scripts inside
+    morphed HTML do not run, so the element's script is loaded here with the section itself.
+  {%- endcomment -%}
+  <script
+    src="{{ 'scroll-progress.js' | asset_url }}"
+    type="module"
+    fetchpriority="low"
+  ></script>
+{%- endif -%}
+
 {% liquid
   case section.settings.layout_type
     when 'grid'
@@ -136,9 +148,27 @@
         else
           assign products = recommendations.products
         endif
+
+        # Snosha P06: optional "Extra products" added after the recommendations (or the fallback).
+        # The current product and products already in the list are skipped. Unset = native output.
+        assign item_limit = section.settings.max_products
+        if section.settings.product != blank and section.settings.extra_products != blank
+          assign extra_products = section.settings.extra_products | reject: 'id', section.settings.product.id
+          for listed_product in products limit: section.settings.max_products
+            assign extra_products = extra_products | reject: 'id', listed_product.id
+          endfor
+          if extra_products.size > 0
+            if products == blank or products.size == 0
+              assign products = extra_products
+            else
+              assign products = products | slice: 0, section.settings.max_products | concat: extra_products
+            endif
+            assign item_limit = item_limit | plus: extra_products.size
+          endif
+        endif
       %}
       {% capture list_items %}
-        {% for product in products limit: section.settings.max_products %}
+        {% for product in products limit: item_limit %}
           <div class="resource-list__item">
             {% content_for 'block',
               type: '_product-card',
@@ -188,7 +218,7 @@
             {% render 'resource-list-carousel',
               ref: 'resourceListCarousel',
               slides: slides,
-              slide_count: recommendations.products.size,
+              slide_count: slides.size,
               settings: section.settings
             %}
         {% endcase %}
@@ -212,7 +242,7 @@
           {% render 'resource-list-carousel',
             ref: 'resourceListCarouselMobile',
             slides: slides,
-            slide_count: recommendations.products.size,
+            slide_count: slides.size,
             settings: section.settings
           %}
         </div>
@@ -423,6 +453,13 @@
       "max": 10,
       "step": 1,
       "default": 4
+    },
+    {
+      "type": "product_list",
+      "id": "extra_products",
+      "label": "Extra products",
+      "info": "Added after the recommendations (up to 12). The current product and repeats are skipped. Shows even when there are no recommendations.",
+      "limit": 12
     },
     {
       "type": "range",
