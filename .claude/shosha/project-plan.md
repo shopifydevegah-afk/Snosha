@@ -1906,6 +1906,35 @@ Verified in code and docs on 2026-11-08 before deciding:
   - Keyboard: Tab / Enter / Space toggle; focus ring visible.
   - Empty-answer rows don't show an empty panel. Two-state test (class off).
 
+### PDP-01 — Product page comparison table ("ليه تشتري SNOSHA N2؟") · Dev2 · 2026-11-15
+- **Template:** `templates/product.json` (default; user's choice), section `comparison_sn_product` inserted after `main`. `product.custom-snosha-product.json` not touched. Not a homepage S-number.
+- **Figma** (read via the Figma plugin, 2026-11-15):
+  - Desktop `190:10461`: gradient 69.29° #0e3b6b 8.75% → #12568d 54.13% → #0a2e55 91.25%; padding 60/140; container 1376 + 20; heading → stage 36.
+    - Heading 32/52 600 white; subheading 18/32 white 88%; gap 6.
+    - Table 1120: white 9% fill, 1px white 20% border, radius 24, blur 12, shadow 0 24 60 rgb(0 20 51/.45). Head row 64, rows 78. Criterion 15.5 600 right (header 17 700); manual 14.5 400 centred (header 16 600); row lines white 14% x 28–1002.
+    - Strip 376, offset 30px left of centre, 20 above / 34 below the table, radius 20, 1.5px white 90% border, gradient white → #f0fafe, shadows 0 26 54 rgb(0 26 64/.5) + 0 0 44 rgb(99 205 255/.45); logo 140×28; cells 15 600 #12568d; lines rgb(23 107 176/.14).
+    - Toothbrush photo ≈396×743, tilted 2.68°, overlapping the table's right end; "Section Glow" and "Floor Shadow" SVGs (not implemented, see limits).
+  - Mobile `190:11173`: gradient 82.97°; padding 40/52, side 20, gap 27; heading 20/52 (−7 margin), subheading 12/32.
+    - Table 350, radius 16, head row 46, rows 78; criterion 11 600 (header 12.5 700); manual 10 (header 11 600, white 80%).
+    - Strip 138 centred, 16 above/below, radius 14, gradient white → #f7fbfe → #eaf6fd, shadows 0 14 26 rgb(3 20 51/.5) + 0 0 30 4 rgb(99 205 255/.65); logo 114×23; cells 10 600.
+    - Toothbrush 126 wide at the top right beside the heading, no tilt.
+  - All row strings match the task's list (desktop and shortened mobile copy).
+- **Native audit:** no comparison table exists (`comparison-slider` is the before/after image slider, not used). Options given to the user: custom section (E, recommended) vs native composition. **User chose native composition (C).**
+- **Structure** (native `section`, name `t:names.custom_section`, class `sn-product-comparison`):
+  - Heading group (gap 6 / mobile 0): heading + subheading text blocks (mobile size/line height via the text block's "Font size — Mobile"/"Line height — Mobile").
+  - Table group (class `sn-pc-table`):
+    - Header row group (`sn-pc-row sn-pc-head`): text "المعيار" · image block (logo, fixed 140 / mobile 114) · text "الفرشاة اليدوية العادية" (mobile text "اليدوية العادية").
+    - 7 row groups (`sn-pc-row`), each 3 text blocks with classes `sn-pc-crit` / `sn-pc-strip` / `sn-pc-manual`; desktop text + native "mobile text" (blank = desktop text).
+    - Image block (toothbrush), custom width 42% / mobile 38% of the table.
+  - Rows can be added (duplicate a row group), removed and reordered in the editor; each row is its own 3-column grid, so its cells share a height. The strip is one layer behind the middle column of all rows, so it follows the row count and heights.
+- **Schema:** `text` font size options 14.5 / 15 / 15.5 / 17px added (options only, no new setting). No other schema change; `section` and `group` are already over the 40-setting cap, so no settings were added there.
+- **CSS:** `assets/dev2.css` under `.sn-product-comparison`. Literals (no setting fits under the caps): column geometry, table box, strip look, row lines, toothbrush position/tilt, background gradient (native background colour #12568d stays as the fallback).
+- **Accessibility:** group/text markup (no `<table>` semantics), a known trade-off of the native option. Reading order per row: criterion → SNOSHA → manual. Mobile copy is a second element shown only on phones (one read at a time).
+- **Media:** logo and toothbrush are empty image pickers (merchant uploads); with the class, an empty image renders nothing on the live store.
+- **Checks:** Theme Check 11 offenses before and after (all pre-existing; the documented 9 is out of date after the merges); `product.json` parses, diff = insertion only; `dev2.css` braces balanced.
+- **Not implemented / limits:** Figma "Section Glow" and toothbrush "Floor Shadow" (SVG contents not read); mobile manual header 80% white (text colour has no alpha, white used); mobile cells are 10–11px as in Figma (small).
+- **Visual QA:** PENDING USER REVIEW (rule 13).
+
 ## F. QA & progress
 
 One QA row per S-ID. `PASS (local)` and Theme Check results describe **historical developer-reported checks** on individual branches, not checks rerun during this documentation merge. Final desktop/mobile/RTL visual QA remains `PENDING USER REVIEW` absent user evidence.
@@ -2037,3 +2066,4 @@ One QA row per S-ID. `PASS (local)` and Theme Check results describe **historica
 - Consolidated QA to **15 unique S-IDs**; retained historic observations as historic evidence, not as live visual verification.
 - Preserved **all detailed S01–S15 section decisions and refinements in E** and **the complete chronological change log in H** without removing superseded history.
 - No Git merge status, template integrity, schema acceptance, remote Shopify state or current CSS initialization was validated by this document edit.
+| 2026-11-15 | PDP-01 comparison table on `templates/product.json` as native composition (user choice over a custom section): `section` + row groups + text blocks with mobile text; `text` font size options 14.5/15/15.5/17px | Native-first; user chose C knowing the strip/table look stays as scoped CSS (section/group at the settings cap) | `product.json`, `blocks/text.liquid`, `dev2.css` | Logo + toothbrush uploads; visual QA by the user |
