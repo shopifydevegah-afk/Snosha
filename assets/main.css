@@ -56,6 +56,63 @@
     mask-size: 22px;
   }
 
+  /* Cart count badge (native snippets/cart-bubble.liquid, same markup and JS updates).
+     Figma (user screenshot 2026-11-15, round 3): site blue #176bb0 circle, 16px, white
+     semibold number, centred on the top-right corner of the 22px cart glyph frame (physical
+     right, as drawn in Figma). The colours go through Horizon's own variables, set on
+     <cart-icon> only, so they beat the header-level inline values and touch no other badge.
+     The glyph is 22px in its cell: centred on desktop, pinned to the inline-end edge on
+     mobile / drawer mode. */
+  .header-actions__cart-icon {
+    --cart-bubble-background: #176bb0; /* site blue (primary button / announcement bar) */
+    --cart-bubble-text: #ffffff;
+    --sn-cart-badge-size: 16px;
+    --sn-cart-glyph-top: calc((var(--button-size) - var(--icon-size-md)) / 2);
+    --sn-cart-glyph-right: calc((var(--button-size) - var(--icon-size-md)) / 2);
+  }
+
+  /* Numbered state only; Horizon's 10px dot (count of 100+) keeps its native geometry */
+  .header-actions__cart-icon:not(:has(.cart-bubble__text-count:empty)) .cart-bubble[data-maintain-ratio] {
+    width: var(--sn-cart-badge-size);
+    height: var(--sn-cart-badge-size);
+    aspect-ratio: 1;
+    padding: 0;
+    top: calc(var(--sn-cart-glyph-top) - var(--sn-cart-badge-size) / 2);
+    inset-inline: auto; /* drop the native inline-end offset, then pin to the physical right */
+    right: calc(var(--sn-cart-glyph-right) - var(--sn-cart-badge-size) / 2);
+
+    .cart-bubble__background {
+      border-radius: 50%;
+    }
+
+    .cart-bubble__text {
+      font-size: var(--font-size--3xs); /* 10px */
+      font-weight: 600;
+      line-height: 1;
+      font-variant-numeric: tabular-nums;
+    }
+  }
+
+  /* Mobile layout (and touch devices in drawer mode): the glyph sits at the inline-end edge of
+     its cell, which is the left edge in RTL and the right edge in LTR */
+  @media screen and (max-width: 749px) {
+    .header-actions__cart-icon {
+      --sn-cart-glyph-right: 0px;
+    }
+
+    [dir='rtl'] & .header-actions__cart-icon {
+      --sn-cart-glyph-right: calc(var(--header-mobile-bookend, var(--button-size)) - var(--icon-size-md));
+    }
+  }
+
+  &[data-menu-style='drawer'] .header-actions__cart-icon {
+    --sn-cart-glyph-right: 0px;
+  }
+
+  [dir='rtl'] &[data-menu-style='drawer'] .header-actions__cart-icon {
+    --sn-cart-glyph-right: calc(var(--header-mobile-bookend, var(--button-size)) - var(--icon-size-md));
+  }
+
   .account-button__icon {
     mask-image: url('icon-header-account.svg');
     mask-size: 24px; /* Figma: 24px vector in a 22px frame */
