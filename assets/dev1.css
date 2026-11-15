@@ -3651,13 +3651,15 @@
    Product page — Long Description | owner: Dev1
    Figma desktop 190:10527 (1480; container 1376 incl. 20 padding → 1336), mobile 190:11237 (390; content 350).
    ONE native `section` (custom class sn-ld; background white + native gradient overlay #dcf2fb "to top", gap 60 /
-   mobile 24, padding 60/60, mobile 40/24) holding seven native `group` content groups (reorder / hide in the
-   editor). Each content group: copy group (.sn-ld-copy: title / subtitle / body / note text blocks) + image block +
-   list group (.sn-ld-list) of feature rows. Feature row = group (.sn-ld-item) › icon + title text + body text,
-   laid out by CSS grid (icon tile beside the stacked text). LED row: a small group (.sn-ld-led) whose native
-   Background colour is the indicator colour. Positions per group come from grid areas below (no absolute content).
-   Typography applies to text blocks left on a preset (:not(.custom-typography)); switching a text block to Custom
-   typography in the editor uses its own values. Removing a group class removes its layout (native stacking).
+   mobile 48, padding 60/60, mobile 40/24) holding seven native `group` content groups (reorder / hide in the
+   editor). Each content group: copy group (.sn-ld-copy) + image block + list group (.sn-ld-list) of feature rows.
+   Feature row = group (.sn-ld-item) › icon + title text + body text (CSS grid: icon tile beside stacked text).
+   LED row: a small group (.sn-ld-led) whose native Background colour is the indicator colour.
+   Editor settings that stay in control: section padding / gap; copy, list and row Gap (desktop + mobile); icon
+   Width / Mobile width (tile grows with the icon); image block Width / Border radius / Image fit / Mobile image;
+   text blocks switched to Custom typography. Figma geometry is applied as maximum widths and offsets only.
+   The uploaded images are Figma exports that already contain their tilt, shadow and dashed frame — no CSS
+   transforms, shadows or borders are added on top of them.
    ========================================================================== */
 .sn-ld {
   --page-content-width: 1336px;
@@ -3671,9 +3673,22 @@
   @media screen and (max-width: 749px) {
     --page-margin: 20px;
     --sn-ld-tile-pad: 11px;
+
+    /* Mobile spacing from the editor's "Mobile" settings: the section's Mobile gap / padding and every
+       group's Mobile gap (the variables are written by section.liquid / group.liquid; nothing read them here,
+       so phones used the desktop gaps). Grid layouts below still set their own row / column gaps. */
+    > .custom-section-content > .section-content-wrapper {
+      gap: var(--sn-gap-mobile, var(--gap));
+      padding-block: calc(var(--sn-padding-block-start-mobile, var(--padding-block-start)) + var(--section-top-offset, 0px))
+        var(--sn-padding-block-end-mobile, var(--padding-block-end));
+    }
+
+    .group-block-content {
+      gap: var(--sn-gap-mobile, var(--gap));
+    }
   }
 
-  /* --- Typography (Figma desktop / mobile) ----------------------------------------------------------- */
+  /* --- Typography (Figma desktop / mobile; text blocks on a preset) ---------------------------------- */
   .text-block:not(.custom-typography) > * {
     margin: 0;
   }
@@ -3687,14 +3702,12 @@
 
     @media screen and (max-width: 749px) {
       font-size: 21px;
-      line-height: 40px;
     }
   }
 
   .sn-ld-intro .sn-ld-title:not(.custom-typography) > * {
     @media screen and (max-width: 749px) {
       font-size: 22px;
-      line-height: 52px;
     }
   }
 
@@ -3709,7 +3722,7 @@
     }
   }
 
-  .sn-ld-body--lead:not(.custom-typography) > * {
+  .sn-ld-body-lead:not(.custom-typography) > * {
     font-size: 18px;
     line-height: 32px;
 
@@ -3728,7 +3741,7 @@
     @media screen and (max-width: 749px) {
       font-size: 16px;
       font-weight: 500;
-      line-height: 28px;
+      line-height: 38px;
     }
   }
 
@@ -3765,6 +3778,11 @@
     }
   }
 
+  /* Box contents rows: Figma body #0f64a8 */
+  .sn-ld-box .sn-ld-item-body:not(.custom-typography) > * {
+    color: #0f64a8;
+  }
+
   /* --- Feature row: icon tile beside title + body; gap = the row group's Gap / Mobile gap ------------- */
   .sn-ld-item > .group-block-content {
     display: grid;
@@ -3776,10 +3794,6 @@
     align-items: start;
     column-gap: var(--gap);
     row-gap: 1px;
-
-    @media screen and (max-width: 749px) {
-      column-gap: var(--sn-gap-mobile, var(--gap));
-    }
 
     > .icon-block,
     > .sn-ld-led {
@@ -3794,16 +3808,37 @@
     > .sn-ld-item-body {
       grid-area: body;
     }
+
+    /* Figma mobile rows: tile and text centred on each other */
+    @media screen and (max-width: 749px) {
+      column-gap: var(--sn-gap-mobile, var(--gap));
+      grid-template-rows: auto auto;
+      align-content: center;
+
+      > .icon-block,
+      > .sn-ld-led {
+        align-self: center;
+      }
+
+      > .sn-ld-item-title {
+        padding-block-start: 0;
+        align-self: end;
+      }
+
+      > .sn-ld-item-body {
+        align-self: start;
+      }
+    }
   }
 
-  /* A row without a body line: title centred on the tile */
+  /* A row without a body line: title centred on the tile (Figma Box item: title 11px down a 48px tile) */
   .sn-ld-item:not(:has(.sn-ld-item-body)) > .group-block-content > .sn-ld-item-title {
     grid-row: 1 / span 2;
     align-self: center;
     padding-block-start: 0;
   }
 
-  /* Icon tile around the native icon (icon size = the icon block's Width / Mobile width) */
+  /* Icon tile around the native icon / uploaded icon (size = the icon block's Width / Mobile width) */
   .sn-ld-item > .group-block-content > .icon-block {
     align-items: center;
     justify-content: center;
@@ -3812,10 +3847,15 @@
     border-radius: 50%;
     background-color: #fff;
     box-shadow: 0 8px 16px rgb(13 64 128 / 0.08);
+
+    > .icon-block__media {
+      display: block;
+      block-size: auto;
+    }
   }
 
-  /* LED indicator: 52px tile, 15px dot in the group's Background colour (+ soft halo; optional blink class) */
-  .sn-ld-item--led > .group-block-content {
+  /* LED indicator: 52px tile, 15px dot in the group's Background colour (+ halo; optional blink class) */
+  .sn-ld-item-led > .group-block-content {
     align-items: center;
 
     > .sn-ld-item-title {
@@ -3823,9 +3863,14 @@
     }
   }
 
+  /* Figma 190:10643: 52 white tile (1px #dcf2fb, shadow 0 6 14), 15 dot centred (17.5 inset) with a soft glow
+     in its own colour; the blinking one adds a 27 dashed ring. The group's empty media wrapper and content
+     are hidden so the dot is the tile's only grid item (otherwise the grid splits and the dot sits high). */
   .sn-ld-led.sn-ld-led {
     display: grid;
+    grid-template: 1fr / 1fr;
     place-items: center;
+    flex: 0 0 auto;
     inline-size: 52px;
     block-size: 52px;
     padding: 0;
@@ -3834,27 +3879,40 @@
     background: #fff;
     box-shadow: 0 6px 14px rgb(13 64 128 / 0.08);
 
+    &::before,
+    &::after {
+      grid-area: 1 / 1;
+      border-radius: 50%;
+    }
+
     &::before {
       content: '';
       inline-size: 15px;
       block-size: 15px;
-      border-radius: 50%;
       background-color: var(--color-background, #ef4444);
-      box-shadow: 0 0 0 6px rgb(var(--color-background-rgb, 239 68 68) / 0.16);
+      box-shadow: 0 0 9px 1px rgb(var(--color-background-rgb, 239 68 68) / 0.45);
     }
 
+    > .group-block__media-wrapper,
     > .group-block-content {
       display: none;
     }
   }
 
+  .sn-ld-led-blink.sn-ld-led-blink::after {
+    content: '';
+    inline-size: 27px;
+    block-size: 27px;
+    border: 1.5px dashed rgb(var(--color-background-rgb, 239 68 68) / 0.55);
+  }
+
   @media (prefers-reduced-motion: no-preference) {
-    .sn-ld-led--blink::before {
+    .sn-ld-led-blink::before {
       animation: sn-ld-blink 1.2s ease-in-out infinite;
     }
   }
 
-  /* --- Images (picked in the editor; rounded 24 = image block Border radius) ------------------------- */
+  /* --- Images: the image block's own Width applies; Figma sizes below are maximums ------------------- */
   .sn-ld-group .image-block {
     min-inline-size: 0;
   }
@@ -3869,15 +3927,24 @@
     max-inline-size: 957px;
   }
 
-  /* --- Content groups: copy / image / list placed by grid areas --------------------------------------- */
-  .sn-ld-group:not(.sn-ld-intro) > .group-block-content {
+  @media screen and (min-width: 990px) {
+    .sn-ld-intro {
+      padding-block-start: 52px;
+    }
+  }
+
+  /* --- Content groups: copy / image / list placed by grid areas ---------------------------------------
+     The shared single-column base is wrapped in :where() (specificity 0,2,0) so every per-group layout below
+     (.sn-ld-sonic > .group-block-content … = 0,3,0) overrides its columns and areas. Without it the base rule
+     (0,4,0 with :not()) won and every group rendered as one stacked column with full-width images. */
+  :where(.sn-ld-group:not(.sn-ld-intro)) > .group-block-content {
     display: grid;
     grid-template-columns: minmax(0, 1fr);
     grid-template-areas:
       'copy'
       'image'
       'list';
-    row-gap: 14px;
+    row-gap: 10px;
 
     > .sn-ld-copy {
       grid-area: copy;
@@ -3892,9 +3959,13 @@
     }
   }
 
-  /* Mobile / tablet (Figma 390): stacked; Box contents = image beside the list; Modes / Water = image behind the
-     rows on the left */
+  /* --- Mobile / tablet (Figma 390): heading + body first, then media and rows ------------------------- */
   @media screen and (max-width: 989px) {
+    .sn-ld-battery > .group-block-content {
+      row-gap: 14px;
+    }
+
+    /* Box contents: image (160) on the right, list beside it */
     .sn-ld-box > .group-block-content {
       --sn-ld-tile-pad: 9px;
 
@@ -3911,10 +3982,10 @@
 
       .sn-ld-item-body:not(.custom-typography) > * {
         font-size: 10.5px;
-        color: #0f64a8;
       }
     }
 
+    /* Cleaning modes / Water: the product image sits behind the rows, on the left (Figma 190:11303 / 190:11405) */
     :is(.sn-ld-modes, .sn-ld-water) > .group-block-content {
       grid-template-areas:
         'copy'
@@ -3929,8 +4000,7 @@
         z-index: 0;
         justify-self: end;
         align-self: center;
-        inline-size: 55%;
-        margin-inline-end: -8%;
+        max-inline-size: 55%;
       }
 
       > .sn-ld-list {
@@ -3939,21 +4009,62 @@
       }
     }
 
+    /* Tall toothbrush (Figma 190:11346): brush ≈ 60 × 277 starting level with the first row, on the left,
+       behind the rows; kept within the rows' height instead of lengthening the group */
+    .sn-ld-modes > .group-block-content > .image-block {
+      max-inline-size: 52%;
+      align-self: start;
+      margin-block-start: 0;
+
+      .image-block__image {
+        inline-size: auto;
+        max-inline-size: 100%;
+        max-block-size: 380px;
+      }
+    }
+
+    /* Figma mobile modes: title (21, 21 tall) → subtitle 31 apart, subtitle → body 36 apart */
+    @media screen and (max-width: 749px) {
+      .sn-ld-modes .sn-ld-title:not(.custom-typography) > * {
+        line-height: 32px;
+      }
+
+      .sn-ld-modes .sn-ld-subtitle:not(.custom-typography) {
+        margin-block-start: -10px;
+
+        > * {
+          line-height: 30px;
+        }
+      }
+    }
+
     .sn-ld-brush > .group-block-content > .image-block {
       justify-self: center;
-      inline-size: 70%;
       max-inline-size: 246px;
+    }
+
+    /* Battery: Figma mobile shows a 350 × 185 crop of the battery image (unless a Mobile image is picked) */
+    .sn-ld-battery > .group-block-content > .image-block:not(:has(picture)) .image-block__image {
+      aspect-ratio: 350 / 185;
+      object-fit: cover;
+      object-position: 50% 45%;
+      border-radius: 24px;
     }
   }
 
-  /* Desktop (Figma 1480): RTL grid, first column = right */
+  /* --- Desktop (Figma 1480): RTL grid, first column = right ------------------------------------------- */
   @media screen and (min-width: 990px) {
     --sn-ld-tile-pad: 15px;
 
-    :is(.sn-ld-box, .sn-ld-brush, .sn-ld-water, .sn-ld-battery) {
+    :is(.sn-ld-box, .sn-ld-brush, .sn-ld-water) {
       --sn-ld-tile-pad: 12px;
     }
 
+    .sn-ld-copy .sn-ld-body {
+      max-inline-size: 400px;
+    }
+
+    /* Sonic: copy 420 (top 72) · image 412 · rows (362, top 61, 18 from the left edge) */
     .sn-ld-sonic > .group-block-content {
       grid-template-columns: minmax(0, 420px) minmax(0, 412px) minmax(0, 1fr);
       grid-template-areas: 'copy image list';
@@ -3966,31 +4077,40 @@
 
       > .sn-ld-list {
         justify-self: end;
-        inline-size: min(100%, 380px);
+        inline-size: 100%;
+        max-inline-size: 362px;
+        margin-inline-end: 18px;
         padding-block-start: 61px;
       }
     }
 
+    /* Box: copy 420 (top 8) with the list under it · image 805 on a 920 stage, 44 from its left, 18 above */
     .sn-ld-box > .group-block-content {
       grid-template-columns: minmax(0, 420px) minmax(0, 1fr);
       grid-template-areas:
         'copy image'
         'list image';
       grid-template-rows: auto 1fr;
-      row-gap: 10px;
       align-items: start;
 
       > .sn-ld-copy {
         padding-block-start: 8px;
       }
 
+      > .sn-ld-list {
+        inline-size: 100%;
+        max-inline-size: 392px;
+      }
+
       > .image-block {
-        align-self: center;
-        justify-self: center;
-        inline-size: min(100%, 805px);
+        justify-self: end;
+        max-inline-size: 805px;
+        margin-block-start: -18px;
+        margin-inline-end: 44px;
       }
     }
 
+    /* Cleaning modes: copy 411 (top 130) · tall image 241 (52 above the group) · rows (362, top 20) */
     .sn-ld-modes > .group-block-content {
       grid-template-columns: minmax(0, 411px) minmax(0, 377px) minmax(0, 1fr);
       grid-template-areas: 'copy image list';
@@ -4000,25 +4120,36 @@
         padding-block-start: 130px;
       }
 
+      /* Figma brush 208 × 638 (stage 377). The uploaded export carries its shadow / floor margin around the
+         brush (brush ≈ half the file's width), so the image box is wider than 241 to give the same brush size;
+         it may overflow its column (section clips horizontally) and its lower margin does not lengthen the group. */
       > .image-block {
         justify-self: center;
-        inline-size: min(100%, 241px);
-        margin-block-start: -52px;
+        inline-size: 340px;
+        max-inline-size: none;
+        margin-block: -52px -40px;
       }
 
       > .sn-ld-list {
         justify-self: end;
-        inline-size: min(100%, 380px);
+        inline-size: 100%;
+        max-inline-size: 362px;
+        margin-inline-end: 18px;
         padding-block-start: 20px;
+      }
+
+      /* Figma: title → subtitle 14, subtitle → body 18 (copy Gap) */
+      .sn-ld-subtitle {
+        max-inline-size: 380px;
+        margin-block-start: -4px;
+      }
+
+      .sn-ld-body {
+        max-inline-size: 360px;
       }
     }
 
-    /* Figma: the tall product image is tilted 3° with a soft drop shadow */
-    .sn-ld-modes > .group-block-content > .image-block .image-block__image {
-      rotate: 3deg;
-      filter: drop-shadow(-14px 24px 44px rgb(5 31 77 / 0.3));
-    }
-
+    /* Brush heads / Water: copy 454 with the rows (392) under it · image on the left */
     :is(.sn-ld-brush, .sn-ld-water) > .group-block-content {
       grid-template-columns: minmax(0, 454px) minmax(0, 1fr);
       grid-template-areas:
@@ -4029,7 +4160,12 @@
       align-items: start;
 
       > .sn-ld-list {
-        inline-size: min(100%, 392px);
+        inline-size: 100%;
+        max-inline-size: 392px;
+      }
+
+      .sn-ld-body {
+        max-inline-size: 392px;
       }
     }
 
@@ -4040,32 +4176,39 @@
 
       > .image-block {
         justify-self: end;
-        inline-size: min(100%, 638px);
+        max-inline-size: 638px;
         margin-block-start: 47px;
         margin-inline-end: 30px;
       }
     }
 
-    .sn-ld-water > .group-block-content > .image-block {
-      justify-self: end;
-      inline-size: min(100%, 540px);
-      margin-block-start: -68px;
-      margin-inline-end: 101px;
+    .sn-ld-water > .group-block-content {
+      > .image-block {
+        justify-self: end;
+        max-inline-size: 540px;
+        margin-block-start: -68px;
+        margin-inline-end: 101px;
+      }
+
+      .sn-ld-body {
+        max-inline-size: 400px;
+      }
     }
 
+    /* Battery: copy 404 · image 400 · indicators 404, 64 apart, vertically centred */
     .sn-ld-battery > .group-block-content {
       grid-template-columns: minmax(0, 404px) minmax(0, 400px) minmax(0, 1fr);
       grid-template-areas: 'copy image list';
       column-gap: 64px;
       align-items: center;
 
-      > .sn-ld-copy {
-        gap: 16px;
+      > .sn-ld-list {
+        max-inline-size: 404px;
       }
-    }
 
-    .sn-ld-copy .sn-ld-body {
-      max-inline-size: 400px;
+      .sn-ld-body {
+        max-inline-size: none;
+      }
     }
   }
 
@@ -4088,11 +4231,6 @@
       z-index: -1;
       pointer-events: none;
     }
-  }
-
-  /* Water image: Figma dashed 1.5px frame */
-  .sn-ld-water .image-block__image {
-    border: 1.5px dashed #dcf2fb;
   }
 }
 
