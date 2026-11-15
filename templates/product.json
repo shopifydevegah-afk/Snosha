@@ -1082,6 +1082,8 @@
                 "variant_style": "buttons",
                 "show_swatches": true,
                 "show_swatch_names": true,
+                "option_label": "اللون",
+                "option_label_match": "Color, Colour, اللون, لون",
                 "option_label_text_color": "",
                 "variant_style_class": "default",
                 "custom_variant_background": "{{ settings.color_palette.background }}",
@@ -1095,22 +1097,7 @@
                 "padding-block-start": 0,
                 "padding-block-end": 0,
                 "padding-inline-start": 0,
-                "padding-inline-end": 0,
-                "option_label": "اللون",
-                "option_label_match": "Color, Colour, اللون, لون"
-              },
-              "blocks": {}
-            },
-            "sn_linked_colors": {
-              "type": "linked-color-swatches",
-              "settings": {
-                "label": "اللون",
-                "list_metafield": "custom.color_products",
-                "name_metafield": "custom.color_name",
-                "swatch_metafield": "custom.color_swatch",
-                "show_names": true,
-                "source": "blocks",
-                "only_in_list": true
+                "padding-inline-end": 0
               },
               "blocks": {}
             },
@@ -1856,6 +1843,12 @@
               "type": "product-recommendations",
               "settings": {
                 "recommendation_type": "complementary",
+                "product_source": "recommendations",
+                "manual_products": [
+                  "snosha-f1",
+                  "snosha-f1-1",
+                  "snosha-f2"
+                ],
                 "layout_type": "grid",
                 "carousel_on_mobile": false,
                 "max_products": 2,
@@ -1869,8 +1862,7 @@
                 "padding-block-start": 0,
                 "padding-block-end": 0,
                 "padding-inline-start": 0,
-                "padding-inline-end": 0,
-                "product_source": "recommendations"
+                "padding-inline-end": 0
               },
               "blocks": {
                 "sn_xsell_heading": {
@@ -2174,8 +2166,8 @@
                       "type": "text",
                       "name": "t:names.product_description",
                       "settings": {
-                        "text": "{{ closest.product.description }}",
-                        "mobile_text": "",
+                        "text": "<p><strong>تقنية سونيك متقدمة</strong></p><p><strong><br/></strong>فرشاة SNOSHA N2 تعمل بتقنية Sonic بسرعة تصل حتى 42,000 حركة/دقيقة، لتنظيف أدق يصل للمساحات اللي الفرشاة اليدوية بتفوّتها — مع الحفاظ على لطف الاستخدام اليومي.<br/></p><p><strong>بطارية طويلة الأمد<br/></strong>شحنة واحدة تدوم حتى 120 يوم من الاستخدام، مع شحن USB-C سريع وعملي — انسَ الشاحن في السفر والتنقل</p>",
+                        "mobile_text": "<p><br/></p>",
                         "width": "100%",
                         "max_width": "normal",
                         "alignment": "left",
@@ -2490,7 +2482,6 @@
             "sn_promo",
             "sn_benefits",
             "variant_picker_R3rGDr",
-            "sn_linked_colors",
             "buy_buttons_eYQEYi",
             "sn_trust",
             "sn_xsell",
@@ -2516,6 +2507,7 @@
         "sn_swatch_dot": 24,
         "sn_swatch_gap": 8,
         "sn_swatch_label_gap": 5,
+        "sn_swatch_legend_gap": 4,
         "sn_button_height": 58,
         "sn_button_height_mobile": 58,
         "sn_purchase_gap": 12,
@@ -2527,6 +2519,8 @@
         "sn_trust_pad_block": 10,
         "sn_trust_pad_block_mobile": 5,
         "sn_trust_tile": 28,
+        "sn_trust_icon": 18,
+        "sn_trust_icon_mobile": 16,
         "sn_trust_text": 12,
         "sn_trust_text_mobile": 10.5,
         "sn_xsell_thumb": 56,
@@ -2539,10 +2533,7 @@
         "sn_acc_title_line": 40,
         "sn_acc_paragraph_gap": 0,
         "padding-block-start": 24,
-        "padding-block-end": 60,
-        "sn_trust_icon": 18,
-        "sn_trust_icon_mobile": 16,
-        "sn_swatch_legend_gap": 4
+        "padding-block-end": 60
       }
     }
   },
