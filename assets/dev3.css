@@ -601,3 +601,42 @@
     }
   }
 }
+
+/* ==========================================================================
+   sn-product-how-to-steps — PDP "كيفية الاستخدام" steps (owner: Dev3). Native `section`
+   on templates/product.json: heading `text` + card `group` → `numbered-list` (one `text`
+   per step, auto-numbered) + note `group` (`icon` + `text`).
+   Figma desktop 190:10750, mobile 190:11464.
+   Card, note, badge, colors and sizes are block settings. This file only applies the
+   section's Mobile padding / Mobile gap settings and the text blocks' exact weight and
+   desktop line height ("Weight" / "Exact line height").
+   ========================================================================== */
+.sn-product-how-to-steps {
+  /* Phones: section "Mobile top/bottom padding", "Mobile side padding" (added to the 16px page
+     margin → Figma 20px) and "Mobile gap". Heading line box is 52 in Figma but the text block's
+     mobile line height stops at 50, so top padding is 41 and gap 15 in the settings. */
+  @media screen and (max-width: 749px) {
+    .section-content-wrapper {
+      row-gap: var(--sn-gap-mobile, var(--gap));
+      padding-block: calc(var(--sn-padding-block-start-mobile, var(--padding-block-start)) + var(--section-top-offset, 0px))
+        var(--sn-padding-block-end-mobile, var(--padding-block-end));
+      padding-inline: var(--sn-padding-inline-mobile, var(--padding-inline-start));
+    }
+  }
+
+  /* Heading, steps and note: exact weight and line height from each text block's settings */
+  .text-block.custom-typography {
+    &,
+    > * {
+      margin: 0;
+      font-weight: var(--sn-font-weight, var(--font-weight));
+    }
+
+    @media screen and (min-width: 750px) {
+      &,
+      > * {
+        line-height: var(--sn-line-height, var(--line-height));
+      }
+    }
+  }
+}

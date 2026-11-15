@@ -80,6 +80,7 @@ One record per S01–S15, in Figma order. Where an old planning placeholder cont
 | ID | Section | Desktop node | Mobile node | Target | Owner | Status | Cat. | Native component | Custom class | Dependencies / blockers |
 |---|---|---|---|---|---|---|---|---|---|---|
 | P05 | How To Use Video ("05 How To Use Video") | `190:10510` | `190:11221` | `templates/product.json` (user choice 2026-11-15) | Dev3 | IMPLEMENTED (2026-11-15; needs commit + push; visual QA PENDING USER REVIEW) | B + C (opt-in) | `section` (`section_snHowToVideo`, Horizon "Video" preset structure) + `text` + `video` | `sn-product-how-to-video` | Merchant uploads the video and poster |
+| P09 | How To Use steps ("09 How To Use", كيفية الاستخدام) | `190:10750` | `190:11464` | `templates/product.json` (after P05) | Dev3 | IMPLEMENTED (2026-11-15; needs commit + push; visual QA PENDING USER REVIEW) | B + D (opt-in) | `section` (`section_snHowToSteps`) + `text` + `group` + new theme block `numbered-list` (children: `text`) + `icon` | `sn-product-how-to-steps` | Optional: merchant uploads the Figma sparkle as the note icon image (native `star` is the fallback) |
 
 ## E. Section decisions
 
@@ -1976,6 +1977,45 @@ Verified in code and docs on 2026-11-08 before deciding:
   - Mobile 390: 300 × 533 radius 16, no overlay, 56 button.
   - Playback (click / Enter / Space, controls, muted start); poster crop; narrow phones (< 340) shrink the frame; two-state test (class off).
 
+### P09 PDP How To Use steps (كيفية الاستخدام) — IMPLEMENTED 2026-11-15 (Dev3), visual QA PENDING USER REVIEW
+- **Figma:** desktop `190:10750` ("09 How To Use"), mobile `190:11464`. Both read with `get_design_context` + screenshots on 2026-11-15.
+- **Spec (desktop / mobile):**
+  - Section padding 60/60, content max 1376 with 20px sides (card 1336) / padding 40/40, 20px sides (card 350). Heading → card gap 18 / 14.
+  - Heading Cairo Bold 32/52 / 22/52, `#12568D`, centered.
+  - Card `#F0FAFE`, border 1 `#DCF2FB`, radius 16, shadow `0 8px 18px rgba(13,64,128,.06)`, padding 16 + steps 16 top (= 32), 24 bottom, 24 / 14 sides. Steps → note gap 18.
+  - Steps: gap 16, number → text gap 12, text Cairo Regular 16/28 / 12.5/28 `#5A5A59`, start-aligned (right in RTL).
+  - Badge 30 × 30 circle, gradient top `#63CDFF` → bottom `#0F64A8`, white Cairo Bold 14 / 11 (mobile is 11 in Figma, not 14).
+  - Note: white, border 1 `#DCF2FB`, radius 14, padding 14/20, icon → text gap 10, Cairo SemiBold 14/24 / 11/24 `#176BB0`, sparkle 18 on the start side. Mobile note wraps.
+  - "Acc" in the Figma layer name is not an interaction: static, always-expanded list (no accordion, no JS).
+- **Native Reuse Audit:**
+  - `section` (native "Section", name unchanged) holds heading `text` + card `group`. Has desktop padding/gap, `content_max_width`, and Dev2's mobile padding/gap settings (vars consumed by class CSS).
+  - `group` covers card + note: background color, border, radius, padding, gap, row/column. Missing: phone padding (desktop padding > 20 scales by 0.7 below 990px) and shadow.
+  - `text` covers every string with the existing custom typography settings (size, weight, exact line height, mobile px size/line height, color, alignment).
+  - `icon` covers the note icon: icon list + image upload + size + color. No sparkle in the native list; `star` is the fallback, image upload carries the Figma sparkle.
+  - No native numbered list exists. Badges must be shared, settings-driven and follow reordering → one small reusable theme block instead of 8 hardcoded badges or one block type per step.
+- **Category:** B (opt-in `group` settings) + D (new reusable theme block). No new section (no category E).
+- **Extensions:**
+  - `blocks/group.liquid` (44 → 51 settings, opt-in): `padding_mobile_custom` + `padding-block-start-mobile` / `padding-block-end-mobile` / `padding-inline-mobile` (class `sn-group--pad-mobile`, ≤749px); `shadow_color` (alpha, empty = none) + `shadow_blur` + `shadow_offset_y` (class `sn-group--shadow`). Classes and vars are only output when the settings are used, so existing groups render as before.
+  - New `blocks/numbered-list.liquid` ("Numbered list", theme block, `tag: null`, children: `text` only, 14 settings): step gap / mobile gap, number → text gap, first number, badge size / mobile size, number size / mobile size, weight, number color, gradient top / bottom (alpha; empty bottom = solid), radius %, `custom_class`. Numbers are a CSS counter on the direct `.text-block` children, so add / remove / duplicate / reorder keeps 1…n; hidden mobile-text copies (`display: none`) do not count. Badge sits on the inline-start side (right in RTL) via a 2-column grid; no absolute positioning.
+- **Instance (`section_snHowToSteps`, "How to use steps"):** after `section_snHowToVideo`. Heading `text_htsHead`; card `group_htsCard` ("Guide card") → `numbered_list_htsSteps` ("Steps", 8 `text_htsStep1–8` with the exact Figma copy) + `group_htsNote` ("Note") → `icon_htsNote` (`star`, 18, `#176bb0`) + `text_htsNote`.
+  - Section: gap 18, padding 60/60, sides 20/20, `content_max_width` 1376; mobile padding 41/40, side 4 (+16 page margin = 20), gap 15.
+  - The heading's mobile line height stops at 50 (Figma 52): 1px moved into the mobile top padding and 1px into the mobile gap, same as P05.
+  - Card: column, gap 18, `#f0fafe`, border solid 1 `#dcf2fb`, radius 16, padding 32/24/24/24, custom mobile padding 32/24/14, shadow `#0d40800f` blur 18 y 8.
+  - Steps: 1rem, weight 400, exact line height 175 %, mobile 12.5 / 28px, `#5a5a59`, alignment "left" (= start = right in RTL). Badge 30, number 14 / mobile 11, Bold, white, `#63cdff` → `#0f64a8`, 50 %.
+  - Note: row, gap 10, white, border 1 `#dcf2fb`, radius 14, padding 14/14/20/20; text 0.875rem, 600, 171 %, mobile 11 / 24px, `#176bb0`.
+- **CSS (`assets/dev3.css`, `.sn-product-how-to-steps`):** phone section padding/gap from the section's mobile settings, and the text blocks' exact weight + desktop exact line height (P05 pattern). Everything else is settings. Removing the class falls back to native weight/line height and scaled mobile section spacing.
+- **Shared content:** every product on `templates/product.json` shows these steps. For other products, assign a duplicated product template with its own steps (no metafields created).
+- **Files:** `blocks/group.liquid`, `blocks/numbered-list.liquid` (new), `templates/product.json`, `assets/dev3.css`, plan, both registry copies.
+- **Validation (local only):**
+  - Theme Check = **11** = post-merge baseline. `group` stays one `ExcessiveSettingsCount` offense (44 → 51 settings); the new block has none.
+  - Template checked against the schemas (keys, options, ranges/steps, allowed blocks, no duplicate IDs). `main` and P05 untouched. No `""` written for color settings.
+  - Schema ranges ≤ 101 steps, defaults on-step. CSS braces balanced, CRLF kept. Class unique.
+- **Sync:** reaches the editor only after commit + push.
+- **Visual QA — PENDING USER REVIEW:**
+  - Desktop 1480: card 1336 wide, badges on the right, 16 gaps, note at the bottom with icon on the right, soft shadow.
+  - Mobile 390: 20px gutters, card padding 14, numbers 11px, wrapped lines and note, no horizontal overflow.
+  - Editor: add / reorder / hide a step → numbers update; badge and card settings apply; two-state test (class off).
+
 ## F. QA & progress
 
 One QA row per S-ID. `PASS (local)` and Theme Check results describe **historical developer-reported checks** on individual branches, not checks rerun during this documentation merge. Final desktop/mobile/RTL visual QA remains `PENDING USER REVIEW` absent user evidence.
@@ -1999,6 +2039,7 @@ One QA row per S-ID. `PASS (local)` and Theme Check results describe **historica
 | S15 | PASS (get_design_context, 2026-11-11) | PASS: Theme Check = baseline 9, footer-group JSON and 4 schemas parse, no duplicate IDs | PENDING USER REVIEW | PENDING USER REVIEW | PENDING USER REVIEW | PENDING USER REVIEW (logo via image picker) | PENDING USER REVIEW (expected `CLASS_PLUS_SETTINGS: footer/utilities padding, copyright settings`) | Fix rounds 1–2 (2026-11-11): menu typography, single copyright line in Figma order (`dir` rtl + `bdi`) with its own desktop/mobile typography; merchant: pick the logo, set the logo link; test newsletter submit; check the settings change the text at both breakpoints |
 
 | P05 (PDP) | PASS (2026-11-15, both nodes read with screenshots) | PASS (local only: Theme Check = 11 post-merge baseline, template checked against schemas, CSS braces) | PENDING USER REVIEW | PENDING USER REVIEW | PENDING USER REVIEW | Video + poster pickers in the editor; render PENDING USER REVIEW | PENDING USER REVIEW (two-state test) | Checklist: E › P05 › Visual QA |
+| P09 (PDP) | PASS (2026-11-15, both nodes read with screenshots) | PASS (local only: Theme Check = 11 baseline, template checked against schemas, schema ranges, CSS braces) | PENDING USER REVIEW | PENDING USER REVIEW | PENDING USER REVIEW | Note icon: native `star` fallback; Figma sparkle via image upload (optional) | PENDING USER REVIEW (two-state test) | Checklist: E › P09 › Visual QA |
 
 **QA provenance:** Any historic agent-operated S04 preview observations predate the no-preview policy; they do not constitute current user approval.
 
@@ -2102,6 +2143,7 @@ One QA row per S-ID. `PASS (local)` and Theme Check results describe **historica
 | 2026-11-12 | Final mobile refinements by Dev1 (Figma 335:4229 + 190:4167 re-read; user screenshots sampled). S12: heading max-inline-size 9em on phones → «نصائح أذكى للعناية» / «بفمك» as requested by the merchant (note: Figma 190:4349 renders it on one line). S03: mobile ring = the Figma clipped card shadow seen through the 2px frame (vertical tint rgb(13 64 128 / .03→.15) ≈ sampled rgb(218 226 235) at the bottom), outer box-shadow removed (Figma clips it), cyan 40% ring removed. S06: chip icon Mobile width 20→24 (Figma vector box 24 in 26 badge), mobile cap 20→24 | Merchant mobile review | dev1.css, index.json (4 values) | Visual QA PENDING USER REVIEW |
 | 2026-11-12 | S12 correction by Dev1: the merchant meant the ARTICLE CARD title, not the section heading. Section heading max-inline-size 9em (phones) reverted → single line again. Card title: the earlier rule matched [style*="--text-wrap: pretty"], but typography-style writes --text-wrap only for the Custom preset, so it never applied; the rte title inherited text-wrap: pretty from .text-block.rte (text-block-styles). Now phones: .featured-blog-posts-card__content > h4 .text-block:not(.custom-typography) → text-wrap: wrap (greedy, Figma 190:4349) | Merchant correction | dev1.css | Visual QA PENDING USER REVIEW |
 | 2026-11-15 | PDP workstream added (`P##` IDs). P05 How To Use Video implemented by Dev3 on `templates/product.json` (user choice) with the native `section` + `text` + `video` (`section_snHowToVideo`). Opt-in `video` extensions: `media_fit`, `max_width`/`max_width_mobile`, poster overlay (+ mobile toggle), `play_button_size_mobile`, `play_button_shadow_color`, `border_radius_mobile`. Theme Check baseline is now 11 after the dev1/dev2 merge (`group` 44 and `section` 46 settings) | User request + Figma `190:10510` / `190:11221` | P05; shared opt-in: `video` (S09 unchanged) | Merchant uploads video + poster; commit + push; visual QA by the user |
+| 2026-11-15 | P09 How To Use steps implemented by Dev3 on `templates/product.json` (`section_snHowToSteps`, after P05): native `section` + `text` + `group` + `icon`, plus new reusable theme block `numbered-list` (auto-numbered `text` children via CSS counter, shared badge settings). Opt-in `group` extensions: custom mobile padding and box shadow (44 → 51 settings, Theme Check still 11) | User request + Figma `190:10750` / `190:11464` | P09; shared opt-in: `group` | Commit + push; optional sparkle image upload; visual QA by the user |
 
 ## Merge reconciliation note — 2026-11-12 (documentation only)
 

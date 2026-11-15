@@ -1,0 +1,285 @@
+{%- doc -%}
+  Snosha P09 (Dev3): a list of native `text` blocks, each shown with an automatic number badge.
+  Numbers come from a CSS counter, so adding, removing, hiding or reordering steps in the
+  theme editor keeps the sequence correct. Badge appearance is shared by all steps.
+{%- enddoc -%}
+
+{%- liquid
+  assign s = block.settings
+  assign number_start = s.number_start | default: 1 | minus: 1
+  assign gradient_start = s.number_gradient_start | default: 'transparent'
+  assign gradient_end = s.number_gradient_end | default: gradient_start
+  assign number_size_mobile = s.number_size_mobile
+  if number_size_mobile == 0
+    assign number_size_mobile = s.number_size
+  endif
+  assign number_font_size_mobile = s.number_font_size_mobile
+  if number_font_size_mobile == 0
+    assign number_font_size_mobile = s.number_font_size
+  endif
+-%}
+
+<div
+  class="numbered-list{% render 'custom-class', value: s.custom_class %}"
+  style="
+    counter-reset: numbered-list-item {{ number_start }};
+    --numbered-list-gap: {{ s.gap }}px;
+    --numbered-list-gap-mobile: {{ s.gap_mobile }}px;
+    --numbered-list-number-gap: {{ s.number_gap }}px;
+    --numbered-list-number-size: {{ s.number_size }}px;
+    --numbered-list-number-size-mobile: {{ number_size_mobile }}px;
+    --numbered-list-number-font-size: {{ s.number_font_size }}px;
+    --numbered-list-number-font-size-mobile: {{ number_font_size_mobile }}px;
+    --numbered-list-number-weight: {{ s.number_font_weight }};
+    --numbered-list-number-color: {{ s.number_color | default: 'currentColor' }};
+    --numbered-list-number-background: linear-gradient(180deg, {{ gradient_start }}, {{ gradient_end }});
+    --numbered-list-number-radius: {{ s.number_radius }}%;
+  "
+  {{ block.shopify_attributes }}
+>
+  {% content_for 'blocks' %}
+</div>
+
+{% stylesheet %}
+  .numbered-list {
+    display: flex;
+    flex-direction: column;
+    gap: var(--numbered-list-gap);
+    inline-size: 100%;
+    min-inline-size: 0;
+  }
+
+  /* Each step is a native text block. Hidden copies (display: none) do not increment the counter. */
+  .numbered-list > .text-block {
+    counter-increment: numbered-list-item;
+    display: grid;
+    grid-template-columns: var(--numbered-list-number-size) minmax(0, 1fr);
+    column-gap: var(--numbered-list-number-gap);
+    align-items: start;
+    inline-size: 100%;
+  }
+
+  .numbered-list > .text-block > * {
+    grid-column: 2;
+  }
+
+  /* Badge sits on the inline-start side: right in Arabic (RTL), left in LTR. */
+  .numbered-list > .text-block::before {
+    content: counter(numbered-list-item);
+    grid-column: 1;
+    grid-row: 1;
+    display: grid;
+    place-items: center;
+    inline-size: var(--numbered-list-number-size);
+    block-size: var(--numbered-list-number-size);
+    border-radius: var(--numbered-list-number-radius);
+    background: var(--numbered-list-number-background);
+    color: var(--numbered-list-number-color);
+    font-size: var(--numbered-list-number-font-size);
+    font-weight: var(--numbered-list-number-weight);
+    font-style: normal;
+    line-height: 1;
+    letter-spacing: 0;
+    text-transform: none;
+  }
+
+  @media screen and (max-width: 749px) {
+    .numbered-list {
+      gap: var(--numbered-list-gap-mobile);
+    }
+
+    .numbered-list > .text-block {
+      grid-template-columns: var(--numbered-list-number-size-mobile) minmax(0, 1fr);
+    }
+
+    .numbered-list > .text-block::before {
+      inline-size: var(--numbered-list-number-size-mobile);
+      block-size: var(--numbered-list-number-size-mobile);
+      font-size: var(--numbered-list-number-font-size-mobile);
+    }
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "Numbered list",
+  "tag": null,
+  "blocks": [
+    {
+      "type": "text"
+    }
+  ],
+  "settings": [
+    {
+      "type": "paragraph",
+      "content": "Add one Text block per step. Steps are numbered automatically in their current order."
+    },
+    {
+      "type": "header",
+      "content": "Steps"
+    },
+    {
+      "type": "range",
+      "id": "gap",
+      "label": "Gap between steps",
+      "min": 0,
+      "max": 60,
+      "step": 1,
+      "unit": "px",
+      "default": 16
+    },
+    {
+      "type": "range",
+      "id": "gap_mobile",
+      "label": "Mobile gap between steps",
+      "info": "Phones only (≤749px).",
+      "min": 0,
+      "max": 60,
+      "step": 1,
+      "unit": "px",
+      "default": 16
+    },
+    {
+      "type": "range",
+      "id": "number_gap",
+      "label": "Gap between number and text",
+      "min": 0,
+      "max": 40,
+      "step": 1,
+      "unit": "px",
+      "default": 12
+    },
+    {
+      "type": "range",
+      "id": "number_start",
+      "label": "First number",
+      "min": 1,
+      "max": 50,
+      "step": 1,
+      "default": 1
+    },
+    {
+      "type": "header",
+      "content": "Number badge"
+    },
+    {
+      "type": "range",
+      "id": "number_size",
+      "label": "Size",
+      "min": 16,
+      "max": 80,
+      "step": 1,
+      "unit": "px",
+      "default": 30
+    },
+    {
+      "type": "range",
+      "id": "number_size_mobile",
+      "label": "Mobile size",
+      "info": "0 = same as desktop.",
+      "min": 0,
+      "max": 80,
+      "step": 1,
+      "unit": "px",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "number_font_size",
+      "label": "Number size",
+      "min": 8,
+      "max": 40,
+      "step": 1,
+      "unit": "px",
+      "default": 14
+    },
+    {
+      "type": "range",
+      "id": "number_font_size_mobile",
+      "label": "Mobile number size",
+      "info": "0 = same as desktop.",
+      "min": 0,
+      "max": 40,
+      "step": 1,
+      "unit": "px",
+      "default": 0
+    },
+    {
+      "type": "select",
+      "id": "number_font_weight",
+      "label": "Number weight",
+      "options": [
+        { "value": "400", "label": "Regular" },
+        { "value": "500", "label": "Medium" },
+        { "value": "600", "label": "Semibold" },
+        { "value": "700", "label": "Bold" }
+      ],
+      "default": "700"
+    },
+    {
+      "type": "color",
+      "id": "number_color",
+      "label": "Number color",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "number_gradient_start",
+      "label": "Background (top)",
+      "info": "Empty = no background.",
+      "alpha": true,
+      "default": "#63cdff"
+    },
+    {
+      "type": "color",
+      "id": "number_gradient_end",
+      "label": "Background (bottom)",
+      "info": "Empty = same as top (solid color).",
+      "alpha": true,
+      "default": "#0f64a8"
+    },
+    {
+      "type": "range",
+      "id": "number_radius",
+      "label": "Corner radius",
+      "info": "50% = circle.",
+      "min": 0,
+      "max": 50,
+      "step": 1,
+      "unit": "%",
+      "default": 50
+    },
+    {
+      "type": "header",
+      "content": "Advanced"
+    },
+    {
+      "type": "text",
+      "id": "custom_class",
+      "label": "Custom CSS class",
+      "info": "Lowercase letters, numbers and hyphens, starting with a letter. Separate multiple classes with spaces."
+    }
+  ],
+  "presets": [
+    {
+      "name": "Numbered list",
+      "category": "t:categories.basic",
+      "blocks": {
+        "step_1": {
+          "type": "text",
+          "settings": { "text": "<p>Step one</p>", "width": "100%" }
+        },
+        "step_2": {
+          "type": "text",
+          "settings": { "text": "<p>Step two</p>", "width": "100%" }
+        },
+        "step_3": {
+          "type": "text",
+          "settings": { "text": "<p>Step three</p>", "width": "100%" }
+        }
+      },
+      "block_order": ["step_1", "step_2", "step_3"]
+    }
+  ]
+}
+{% endschema %}
