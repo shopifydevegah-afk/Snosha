@@ -55,7 +55,7 @@
   <sticky-add-to-cart
     class="sticky-add-to-cart{% if sn_sticky_bar %} sn-sticky-bar{% unless section.settings.sn_sticky_show_image %} sn-sticky-bar--no-image{% endunless %}{% unless section.settings.sn_sticky_show_compare %} sn-sticky-bar--no-compare{% endunless %}{% if section.settings.sn_sticky_quantity_mobile %} sn-sticky-bar--quantity-mobile{% endif %}{% endif %}"
     {% if sn_sticky_bar %}
-      style="--sn-sticky-bg: {{ section.settings.sn_sticky_background }}; --sn-sticky-width: {{ section.settings.sn_sticky_width }}px; --sn-sticky-padding: {{ section.settings.sn_sticky_padding }}px; --sn-sticky-padding-mobile: {{ section.settings.sn_sticky_padding_mobile }}px; --sn-sticky-image: {{ section.settings.sn_sticky_image_size }}px; --sn-sticky-button-width: {{ section.settings.sn_sticky_button_width }}px; --sn-sticky-button-height: {{ section.settings.sn_sticky_button_height }}px;{% unless section.settings.sn_sticky_shadow %} --sn-sticky-shadow: none;{% endunless %}"
+      style="--sn-sticky-bg: {{ section.settings.sn_sticky_background }}; --sn-sticky-width: {{ section.settings.sn_sticky_width }}px; --sn-sticky-padding: {{ section.settings.sn_sticky_padding }}px; --sn-sticky-padding-mobile: {{ section.settings.sn_sticky_padding_mobile }}px; --sn-sticky-image: {{ section.settings.sn_sticky_image_size }}px; --sn-sticky-button-width: {{ section.settings.sn_sticky_button_width }}px; --sn-sticky-button-height: {{ section.settings.sn_sticky_button_height }}px; --sn-sticky-button-height-mobile: {{ section.settings.sn_sticky_button_height_mobile }}px; --sn-sticky-image-mobile: {{ section.settings.sn_sticky_image_size_mobile }}px; --sn-sticky-plus-bg: {{ section.settings.sn_sticky_plus_bg }};{% if section.settings.sn_sticky_plus_color != blank %} --sn-sticky-plus-color: {{ section.settings.sn_sticky_plus_color }};{% endif %} --sn-sticky-qty-button: {{ section.settings.sn_sticky_qty_button }}px; --sn-sticky-qty-button-mobile: {{ section.settings.sn_sticky_qty_button_mobile }}px; --sn-sticky-qty-padding: {{ section.settings.sn_sticky_qty_padding }}px; --sn-sticky-qty-gap: {{ section.settings.sn_sticky_qty_gap }}px;{% unless section.settings.sn_sticky_shadow %} --sn-sticky-shadow: none;{% endunless %}"
     {% endif %}
     data-variant-available="{{ current_variant.available }}"
     data-product-id="{{ product.id }}"
@@ -673,7 +673,7 @@
       "max": 40,
       "step": 1,
       "unit": "px",
-      "default": 14,
+      "default": 10,
       "visible_if": "{{ section.settings.enable_sticky_add_to_cart and section.settings.sn_sticky_style == 'bar' }}"
     },
     {
@@ -684,18 +684,18 @@
       "max": 40,
       "step": 1,
       "unit": "px",
-      "default": 10,
+      "default": 8,
       "visible_if": "{{ section.settings.enable_sticky_add_to_cart and section.settings.sn_sticky_style == 'bar' }}"
     },
     {
       "type": "range",
       "id": "sn_sticky_image_size",
-      "label": "Sticky bar image size",
+      "label": "Sticky bar image size, desktop",
       "min": 32,
       "max": 96,
       "step": 1,
       "unit": "px",
-      "default": 64,
+      "default": 52,
       "visible_if": "{{ section.settings.enable_sticky_add_to_cart and section.settings.sn_sticky_style == 'bar' }}"
     },
     {
@@ -712,12 +712,92 @@
     {
       "type": "range",
       "id": "sn_sticky_button_height",
-      "label": "Sticky button and quantity height",
+      "label": "Sticky button and quantity height, desktop",
       "min": 36,
       "max": 72,
       "step": 1,
       "unit": "px",
-      "default": 58,
+      "default": 52,
+      "visible_if": "{{ section.settings.enable_sticky_add_to_cart and section.settings.sn_sticky_style == 'bar' }}"
+    },
+    {
+      "type": "range",
+      "id": "sn_sticky_button_height_mobile",
+      "label": "Sticky button height, mobile",
+      "min": 32,
+      "max": 64,
+      "step": 1,
+      "unit": "px",
+      "default": 44,
+      "visible_if": "{{ section.settings.enable_sticky_add_to_cart and section.settings.sn_sticky_style == 'bar' }}"
+    },
+    {
+      "type": "range",
+      "id": "sn_sticky_image_size_mobile",
+      "label": "Sticky bar image size, mobile",
+      "min": 32,
+      "max": 72,
+      "step": 1,
+      "unit": "px",
+      "default": 44,
+      "visible_if": "{{ section.settings.enable_sticky_add_to_cart and section.settings.sn_sticky_style == 'bar' }}"
+    },
+    {
+      "type": "color",
+      "id": "sn_sticky_plus_bg",
+      "label": "Quantity + button background",
+      "default": "#EAF3FB",
+      "visible_if": "{{ section.settings.enable_sticky_add_to_cart and section.settings.sn_sticky_style == 'bar' }}"
+    },
+    {
+      "type": "color",
+      "id": "sn_sticky_plus_color",
+      "label": "Quantity + icon colour",
+      "info": "Empty = theme button colour.",
+      "visible_if": "{{ section.settings.enable_sticky_add_to_cart and section.settings.sn_sticky_style == 'bar' }}"
+    },
+    {
+      "type": "range",
+      "id": "sn_sticky_qty_button",
+      "label": "Quantity button size, desktop",
+      "min": 24,
+      "max": 48,
+      "step": 1,
+      "unit": "px",
+      "default": 38,
+      "visible_if": "{{ section.settings.enable_sticky_add_to_cart and section.settings.sn_sticky_style == 'bar' }}"
+    },
+    {
+      "type": "range",
+      "id": "sn_sticky_qty_button_mobile",
+      "label": "Quantity button size, mobile",
+      "min": 24,
+      "max": 48,
+      "step": 1,
+      "unit": "px",
+      "default": 32,
+      "visible_if": "{{ section.settings.enable_sticky_add_to_cart and section.settings.sn_sticky_style == 'bar' }}"
+    },
+    {
+      "type": "range",
+      "id": "sn_sticky_qty_padding",
+      "label": "Quantity selector padding",
+      "min": 0,
+      "max": 16,
+      "step": 1,
+      "unit": "px",
+      "default": 6,
+      "visible_if": "{{ section.settings.enable_sticky_add_to_cart and section.settings.sn_sticky_style == 'bar' }}"
+    },
+    {
+      "type": "range",
+      "id": "sn_sticky_qty_gap",
+      "label": "Quantity selector gap",
+      "min": 0,
+      "max": 16,
+      "step": 1,
+      "unit": "px",
+      "default": 4,
       "visible_if": "{{ section.settings.enable_sticky_add_to_cart and section.settings.sn_sticky_style == 'bar' }}"
     },
     {

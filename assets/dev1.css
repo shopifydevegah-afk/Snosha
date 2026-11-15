@@ -3095,48 +3095,78 @@
     }
   }
 
-  /* Native quick add as the round "+" (Add = straight to cart; Choose = native options window). The quick-add
-     wrapper is made static so the button is placed on the whole row (centred, button side). */
-  .product-recommendations .card-gallery .quick-add {
+  /* Native quick add as the round button (Add = straight to cart; Choose = native options window).
+     Position: the button is absolute on the whole row (centred, button side = physical left in Arabic). Root cause
+     of the earlier jump: the single-variant "Add" button sits inside the native quick-add product form, whose
+     `container-type: inline-size` (layout containment) made the FORM its positioning box; with the quick-add
+     wrapper static, that form lay in the 56px image cell, so the Add button was placed against the image (right),
+     unlike the "Choose" button. The form is no containment box here, so both buttons use the row. Native hover
+     `scale: 1.03` / width expansion are neutralised: hover only darkens the colour.
+     Icon / size / colours = the card image block's quick-add settings ("Button icon": Plus / Shopping cart /
+     Custom image / Default, "Icon size", "Button background", "Button text and icon"); defaults theme blue / white. */
+  .product-recommendations .card-gallery .quick-add,
+  .product-recommendations .quick-add__product-form-component {
     position: static;
   }
 
+  .product-recommendations .quick-add__product-form-component .shopify-product-form {
+    container-type: normal;
+  }
+
   .product-recommendations button.quick-add__button {
+    --sn-xsell-add-bg: var(--sn-quick-add-bg, var(--color-primary-button-background, #176bb0));
+
     position: absolute;
     z-index: 2;
     display: flex;
     align-items: center;
+    justify-content: center;
     opacity: 1;
     inset-block: 50% auto;
     inset-inline: auto var(--sn-xsell-pad-end, 10px);
     translate: 0 -50%;
+    scale: 1;
     inline-size: var(--sn-xsell-add, 38px);
     block-size: var(--sn-xsell-add, 38px);
     min-inline-size: 0;
-    justify-content: center;
+    max-inline-size: none;
     padding: 0;
     border: 0;
     border-radius: 50%;
-    background: var(--color-primary-button-background, #176bb0);
-    color: var(--color-primary-button-text, #fff);
-    font-size: 0; /* label stays available to screen readers */
+    background: var(--sn-xsell-add-bg);
+    color: var(--sn-quick-add-fg, var(--color-primary-button-text, #fff));
+    font-size: 0; /* the button text stays the accessible name ("Add" / "Choose") */
     filter: drop-shadow(0 8px 8px rgb(15 100 168 / 0.3));
+    backdrop-filter: none;
+    transition: background-color var(--animation-speed, 0.2s) ease;
 
-    &:is(:hover, :focus-visible) {
+    &:is(:hover, :focus-visible, :active, [data-added='true']) {
+      inset-block: 50% auto;
+      inset-inline: auto var(--sn-xsell-pad-end, 10px);
+      translate: 0 -50%;
+      scale: 1;
       inline-size: var(--sn-xsell-add, 38px);
       padding: 0;
     }
 
-    > .add-to-cart-icon {
-      display: none;
+    &:is(:hover, :focus-visible) {
+      background: color-mix(in srgb, var(--sn-xsell-add-bg) 85%, #000);
     }
 
-    &:not([data-added='true'])::after {
-      content: '';
-      inline-size: 16px;
-      block-size: 16px;
-      background-color: currentcolor;
-      mask: url('icon-plus.svg') center / contain no-repeat;
+    > .add-to-cart-icon {
+      display: block;
+      flex: 0 0 auto;
+      inline-size: var(--sn-quick-add-icon-size, 16px);
+      block-size: var(--sn-quick-add-icon-size, 16px);
+
+      svg {
+        inline-size: 100%;
+        block-size: 100%;
+      }
+    }
+
+    .add-to-cart__added {
+      font-size: 1rem;
     }
   }
 
@@ -3254,8 +3284,15 @@
 
       /* Rich text title lines: a bold title that starts a paragraph and is followed by a line break (outside or
          inside the bold) gets the sub-heading line height (Figma: title box 29, line 40) */
-      p > :is(strong, b):first-child:is(:has(+ br), :has(> br:last-child)) {
+      p > :is(strong, b):first-child:has(+ br) {
         display: inline-block;
+        line-height: var(--sn-acc-title-line, 40px);
+      }
+
+      /* Title whose line break is INSIDE the bold (<strong>title<br></strong>text): as an inline-block the break
+         ended inside the box and the text continued on the same line, so it is its own line here */
+      p > :is(strong, b):first-child:has(> br:last-child) {
+        display: block;
         line-height: var(--sn-acc-title-line, 40px);
       }
 
@@ -3294,11 +3331,12 @@
    screenshot (full-width white bar at the bottom; RTL right → left: image · title + price … quantity · button).
    Visibility stays native (shown after the main buy buttons scroll away, hidden near the footer); the button
    submits the main product form; the quantity buttons drive the main form's quantity selector.
-   Settings: background, top border + shadow, content width, padding desktop/mobile, image size, button width,
-   button + quantity height, show image / compare-at price / quantity (+ mobile), label, icon.
+   Height = top/bottom padding + the tallest item (image / button / quantity, all from settings); the title +
+   price stack (26 + 22) fits a 52px row. Desktop and mobile have their own padding, image and button height.
    ========================================================================== */
 .sn-sticky-bar .sticky-add-to-cart__bar {
   --sn-sticky-gutter: max(var(--page-margin, 20px), calc((100vw - var(--sn-sticky-width, 1340px)) / 2));
+  --sn-sticky-control: var(--sn-sticky-button-height, 52px);
 
   inset-inline: 0;
   inset-block-end: 0;
@@ -3306,18 +3344,20 @@
   max-inline-size: none;
   display: grid;
   grid-template-columns: auto minmax(0, 1fr) auto auto;
+  grid-template-rows: auto auto;
   grid-template-areas:
     'image info quantity button'
     'image price quantity button';
   align-items: center;
+  align-content: center;
   column-gap: 16px;
-  row-gap: 2px;
-  padding-block: var(--sn-sticky-padding, 14px) calc(var(--sn-sticky-padding, 14px) + var(--safe-area-inset-bottom, 0px));
+  row-gap: 0;
+  padding-block: var(--sn-sticky-padding, 10px) calc(var(--sn-sticky-padding, 10px) + var(--safe-area-inset-bottom, 0px));
   padding-inline: var(--sn-sticky-gutter);
   border-radius: 0;
   border-block-start: 1px solid #eef2f5;
   background-color: var(--sn-sticky-bg, #fff);
-  box-shadow: var(--sn-sticky-shadow, 0 -8px 24px rgb(13 64 128 / 0.06));
+  box-shadow: var(--sn-sticky-shadow, 0 -6px 18px rgb(13 64 128 / 0.06));
   transform: translateY(calc(100% + 8px));
 
   /* the native floating card draws its glass border with ::before */
@@ -3340,9 +3380,9 @@
 
 .sn-sticky-bar .sticky-add-to-cart__image {
   grid-area: image;
-  inline-size: var(--sn-sticky-image, 64px);
-  block-size: var(--sn-sticky-image, 64px);
-  height: var(--sn-sticky-image, 64px);
+  inline-size: var(--sn-sticky-image, 52px);
+  block-size: var(--sn-sticky-image, 52px);
+  height: var(--sn-sticky-image, 52px);
   border: 1px solid #dcf2fb;
   border-radius: 12px;
   background-color: #fff;
@@ -3365,7 +3405,7 @@
 .sn-sticky-bar .sticky-add-to-cart__title {
   font-size: 18px;
   font-weight: 700;
-  line-height: 28px;
+  line-height: 26px;
   color: var(--color-primary-button-background, #176bb0);
 }
 
@@ -3379,13 +3419,22 @@
   align-self: start;
   font-size: 16px;
   font-weight: 600;
-  line-height: 24px;
+  line-height: 22px;
   color: #131311;
+
+  * {
+    margin: 0;
+    line-height: inherit;
+  }
 
   .compare-at-price {
     font-size: 14px;
     font-weight: 400;
     color: #5a5a59;
+  }
+
+  :is(.tax-note, .installments, .unit-price) {
+    display: none;
   }
 }
 
@@ -3393,16 +3442,16 @@
   display: none;
 }
 
-/* Quantity pill: "− 1 +" left to right, + on a light-blue circle */
+/* Quantity pill "− 1 +" (left to right); + on its own pale-blue circle (settings: + background / icon colour,
+   button size, pill padding, gap). Same height as the button. */
 .sn-sticky-bar .sticky-add-to-cart__quantity {
   grid-area: quantity;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 6px;
-  block-size: var(--sn-sticky-button-height, 58px);
-  min-inline-size: 142px;
-  padding-inline: 8px;
+  gap: var(--sn-sticky-qty-gap, 4px);
+  block-size: var(--sn-sticky-control);
+  padding-inline: var(--sn-sticky-qty-padding, 6px);
   border: 1.5px solid #dcf2fb;
   border-radius: 999px;
   background-color: #fff;
@@ -3410,20 +3459,17 @@
 
 .sn-sticky-bar .sticky-add-to-cart__quantity-button {
   display: flex;
+  flex: 0 0 auto;
   align-items: center;
   justify-content: center;
-  inline-size: 40px;
-  block-size: 40px;
+  inline-size: var(--sn-sticky-qty-button, 38px);
+  block-size: var(--sn-sticky-qty-button, 38px);
   padding: 0;
   border: 0;
   border-radius: 50%;
   background: transparent;
   color: var(--color-primary-button-background, #176bb0);
   cursor: pointer;
-
-  &--plus {
-    background-color: #eaf3fb;
-  }
 
   .svg-wrapper,
   svg {
@@ -3437,10 +3483,16 @@
   }
 }
 
+.sn-sticky-bar .sticky-add-to-cart__quantity-button--plus {
+  background-color: var(--sn-sticky-plus-bg, #eaf3fb);
+  color: var(--sn-sticky-plus-color, var(--color-primary-button-background, #176bb0));
+}
+
 .sn-sticky-bar .sticky-add-to-cart__quantity-value {
-  min-inline-size: 24px;
+  min-inline-size: 32px;
   font-size: 17px;
   font-weight: 700;
+  line-height: 1;
   text-align: center;
   color: #131311;
 }
@@ -3449,7 +3501,7 @@
   grid-area: button;
   justify-content: center;
   inline-size: var(--sn-sticky-button-width, 176px);
-  height: var(--sn-sticky-button-height, 58px);
+  height: var(--sn-sticky-control);
   padding-inline: 20px;
   border-radius: 12px;
   font-size: 16px;
@@ -3460,14 +3512,15 @@
 @media screen and (max-width: 749px) {
   .sn-sticky-bar .sticky-add-to-cart__bar {
     --sn-sticky-gutter: var(--page-margin, 20px);
+    --sn-sticky-control: var(--sn-sticky-button-height-mobile, 44px);
 
     grid-template-columns: auto minmax(0, 1fr) auto;
     grid-template-areas:
       'image info button'
       'image price button';
     column-gap: 10px;
-    padding-block: var(--sn-sticky-padding-mobile, 10px)
-      calc(var(--sn-sticky-padding-mobile, 10px) + var(--safe-area-inset-bottom, 0px));
+    padding-block: var(--sn-sticky-padding-mobile, 8px)
+      calc(var(--sn-sticky-padding-mobile, 8px) + var(--safe-area-inset-bottom, 0px));
   }
 
   .sn-sticky-bar--quantity-mobile .sticky-add-to-cart__bar {
@@ -3482,9 +3535,9 @@
   }
 
   .sn-sticky-bar .sticky-add-to-cart__image {
-    inline-size: 48px;
-    block-size: 48px;
-    height: 48px;
+    inline-size: var(--sn-sticky-image-mobile, 44px);
+    block-size: var(--sn-sticky-image-mobile, 44px);
+    height: var(--sn-sticky-image-mobile, 44px);
   }
 
   .sn-sticky-bar .sticky-add-to-cart__title {
@@ -3502,21 +3555,14 @@
     }
   }
 
-  .sn-sticky-bar .sticky-add-to-cart__quantity {
-    block-size: 44px;
-    min-inline-size: 104px;
-    padding-inline: 4px;
-  }
-
   .sn-sticky-bar .sticky-add-to-cart__quantity-button {
-    inline-size: 32px;
-    block-size: 32px;
+    inline-size: var(--sn-sticky-qty-button-mobile, 32px);
+    block-size: var(--sn-sticky-qty-button-mobile, 32px);
   }
 
   /* Mobile keeps the text label (the native mobile card shows only the icon) */
   .sn-sticky-bar .sticky-add-to-cart__button {
     inline-size: auto;
-    height: 44px;
     padding: 0 16px;
     font-size: 14px;
   }
