@@ -2620,10 +2620,2082 @@
         "padding-block-start": 24,
         "padding-block-end": 60
       }
+    },
+    "sn_long_description": {
+      "type": "section",
+      "settings": {
+        "content_direction": "column",
+        "vertical_on_mobile": true,
+        "horizontal_alignment_flex_direction_column": "flex-start",
+        "vertical_alignment_flex_direction_column": "flex-start",
+        "gap": 60,
+        "gap_mobile": 24,
+        "section_width": "page-width",
+        "background_media": "none",
+        "background_color": "#ffffff",
+        "toggle_overlay": true,
+        "overlay_style": "gradient",
+        "gradient_direction": "to top",
+        "overlay_color": "#dcf2fb",
+        "padding-block-start": 60,
+        "padding-block-end": 60,
+        "padding-block-start-mobile": 40,
+        "padding-block-end-mobile": 24,
+        "custom_class": "sn-ld"
+      },
+      "blocks": {
+        "ld_intro": {
+          "type": "group",
+          "settings": {
+            "content_direction": "column",
+            "vertical_on_mobile": false,
+            "horizontal_alignment_flex_direction_column": "flex-start",
+            "vertical_alignment_flex_direction_column": "flex-start",
+            "horizontal_alignment": "flex-start",
+            "vertical_alignment": "flex-start",
+            "gap": 18,
+            "gap_mobile": 12,
+            "width": "fill",
+            "width_mobile": "fill",
+            "height": "fit",
+            "custom_class": "sn-ld-group sn-ld-intro"
+          },
+          "blocks": {
+            "ld_intro_title": {
+              "type": "text",
+              "settings": {
+                "text": "<h2>وصف المنتج</h2>",
+                "width": "100%",
+                "max_width": "none",
+                "type_preset": "rte",
+                "custom_class": "sn-ld-title"
+              },
+              "blocks": {}
+            },
+            "ld_intro_body": {
+              "type": "text",
+              "settings": {
+                "text": "<p>فرشاة أسنان Snosha N2 مصممة لتقدّم تجربة تنظيف احترافية داخل المنزل، بتقنية سونيك تجمع بين القوة والأمان على الأسنان واللثة. صُنعت الفرشاة طبقًا لمعايير السلامة الصينية المعتمدة GB4706.1-2005 وGB4706.59-2008 وGB39669-2020 — وهي تفاصيل تعكس جدية سنوشا في اختيار منتج آمن وموثوق لعملائها.</p>",
+                "width": "100%",
+                "max_width": "none",
+                "type_preset": "rte",
+                "custom_class": "sn-ld-body sn-ld-body--lead"
+              },
+              "blocks": {}
+            }
+          },
+          "block_order": [
+            "ld_intro_title",
+            "ld_intro_body"
+          ]
+        },
+        "ld_sonic": {
+          "type": "group",
+          "settings": {
+            "content_direction": "column",
+            "vertical_on_mobile": false,
+            "horizontal_alignment_flex_direction_column": "flex-start",
+            "vertical_alignment_flex_direction_column": "flex-start",
+            "horizontal_alignment": "flex-start",
+            "vertical_alignment": "flex-start",
+            "gap": 0,
+            "gap_mobile": 0,
+            "width": "fill",
+            "width_mobile": "fill",
+            "height": "fit",
+            "custom_class": "sn-ld-group sn-ld-sonic"
+          },
+          "blocks": {
+            "ld_sonic_copy": {
+              "type": "group",
+              "settings": {
+                "content_direction": "column",
+                "vertical_on_mobile": false,
+                "horizontal_alignment_flex_direction_column": "flex-start",
+                "vertical_alignment_flex_direction_column": "flex-start",
+                "horizontal_alignment": "flex-start",
+                "vertical_alignment": "flex-start",
+                "gap": 18,
+                "gap_mobile": 10,
+                "width": "fill",
+                "width_mobile": "fill",
+                "height": "fit",
+                "custom_class": "sn-ld-copy"
+              },
+              "blocks": {
+                "ld_sonic_title": {
+                  "type": "text",
+                  "settings": {
+                    "text": "<h2>التقنية المستخدمة — تنظيف سونيك</h2>",
+                    "width": "100%",
+                    "max_width": "none",
+                    "type_preset": "rte",
+                    "custom_class": "sn-ld-title"
+                  },
+                  "blocks": {}
+                },
+                "ld_sonic_body": {
+                  "type": "text",
+                  "settings": {
+                    "text": "<p>تعمل N2 بتقنية الاهتزاز السونيك (Sonic) بمعدل يصل إلى 42,000 اهتزازة في الدقيقة. هذا المعدل العالي يحرّك اللعاب ومعجون الأسنان ليصلا إلى مناطق بين الأسنان يصعب على الفرشاة اليدوية الوصول إليها، فتحصل على تنظيف أعمق دون الحاجة للضغط بقوة.</p>",
+                    "width": "100%",
+                    "max_width": "none",
+                    "type_preset": "rte",
+                    "custom_class": "sn-ld-body"
+                  },
+                  "blocks": {}
+                }
+              },
+              "block_order": [
+                "ld_sonic_title",
+                "ld_sonic_body"
+              ]
+            },
+            "ld_sonic_image": {
+              "type": "image",
+              "settings": {
+                "image_ratio": "adapt",
+                "width": "fill",
+                "width_mobile": "fill",
+                "image_fit": "contain",
+                "border_radius": 24
+              },
+              "blocks": {}
+            },
+            "ld_sonic_list": {
+              "type": "group",
+              "settings": {
+                "content_direction": "column",
+                "vertical_on_mobile": false,
+                "horizontal_alignment_flex_direction_column": "flex-start",
+                "vertical_alignment_flex_direction_column": "flex-start",
+                "horizontal_alignment": "flex-start",
+                "vertical_alignment": "flex-start",
+                "gap": 64,
+                "gap_mobile": 12,
+                "width": "fill",
+                "width_mobile": "fill",
+                "height": "fit",
+                "custom_class": "sn-ld-list"
+              },
+              "blocks": {
+                "ld_sonic_f1": {
+                  "type": "group",
+                  "settings": {
+                    "content_direction": "row",
+                    "vertical_on_mobile": false,
+                    "horizontal_alignment_flex_direction_column": "flex-start",
+                    "vertical_alignment_flex_direction_column": "flex-start",
+                    "horizontal_alignment": "flex-start",
+                    "vertical_alignment": "flex-start",
+                    "gap": 16,
+                    "gap_mobile": 12,
+                    "width": "fill",
+                    "width_mobile": "fill",
+                    "height": "fit",
+                    "custom_class": "sn-ld-item"
+                  },
+                  "blocks": {
+                    "ld_sonic_f1_icon": {
+                      "type": "icon",
+                      "settings": {
+                        "icon": "stopwatch",
+                        "width": 24,
+                        "width_mobile": 20,
+                        "icon_color": "#176bb0"
+                      },
+                      "blocks": {}
+                    },
+                    "ld_sonic_f1_title": {
+                      "type": "text",
+                      "settings": {
+                        "text": "<p>42,000 اهتزازة/دقيقة</p>",
+                        "width": "100%",
+                        "max_width": "none",
+                        "type_preset": "rte",
+                        "custom_class": "sn-ld-item-title"
+                      },
+                      "blocks": {}
+                    },
+                    "ld_sonic_f1_body": {
+                      "type": "text",
+                      "settings": {
+                        "text": "<p>معدل سونيك عالي وثابت</p>",
+                        "width": "100%",
+                        "max_width": "none",
+                        "type_preset": "rte",
+                        "custom_class": "sn-ld-item-body"
+                      },
+                      "blocks": {}
+                    }
+                  },
+                  "block_order": [
+                    "ld_sonic_f1_icon",
+                    "ld_sonic_f1_title",
+                    "ld_sonic_f1_body"
+                  ]
+                },
+                "ld_sonic_f2": {
+                  "type": "group",
+                  "settings": {
+                    "content_direction": "row",
+                    "vertical_on_mobile": false,
+                    "horizontal_alignment_flex_direction_column": "flex-start",
+                    "vertical_alignment_flex_direction_column": "flex-start",
+                    "horizontal_alignment": "flex-start",
+                    "vertical_alignment": "flex-start",
+                    "gap": 16,
+                    "gap_mobile": 12,
+                    "width": "fill",
+                    "width_mobile": "fill",
+                    "height": "fit",
+                    "custom_class": "sn-ld-item"
+                  },
+                  "blocks": {
+                    "ld_sonic_f2_icon": {
+                      "type": "icon",
+                      "settings": {
+                        "icon": "washing",
+                        "width": 24,
+                        "width_mobile": 20,
+                        "icon_color": "#176bb0"
+                      },
+                      "blocks": {}
+                    },
+                    "ld_sonic_f2_title": {
+                      "type": "text",
+                      "settings": {
+                        "text": "<p>يحرّك اللعاب والمعجون</p>",
+                        "width": "100%",
+                        "max_width": "none",
+                        "type_preset": "rte",
+                        "custom_class": "sn-ld-item-title"
+                      },
+                      "blocks": {}
+                    },
+                    "ld_sonic_f2_body": {
+                      "type": "text",
+                      "settings": {
+                        "text": "<p>ليصلا بين الأسنان وأماكن يصعب الوصول لها</p>",
+                        "width": "100%",
+                        "max_width": "none",
+                        "type_preset": "rte",
+                        "custom_class": "sn-ld-item-body"
+                      },
+                      "blocks": {}
+                    }
+                  },
+                  "block_order": [
+                    "ld_sonic_f2_icon",
+                    "ld_sonic_f2_title",
+                    "ld_sonic_f2_body"
+                  ]
+                },
+                "ld_sonic_f3": {
+                  "type": "group",
+                  "settings": {
+                    "content_direction": "row",
+                    "vertical_on_mobile": false,
+                    "horizontal_alignment_flex_direction_column": "flex-start",
+                    "vertical_alignment_flex_direction_column": "flex-start",
+                    "horizontal_alignment": "flex-start",
+                    "vertical_alignment": "flex-start",
+                    "gap": 16,
+                    "gap_mobile": 12,
+                    "width": "fill",
+                    "width_mobile": "fill",
+                    "height": "fit",
+                    "custom_class": "sn-ld-item"
+                  },
+                  "blocks": {
+                    "ld_sonic_f3_icon": {
+                      "type": "icon",
+                      "settings": {
+                        "icon": "star",
+                        "width": 24,
+                        "width_mobile": 20,
+                        "icon_color": "#176bb0"
+                      },
+                      "blocks": {}
+                    },
+                    "ld_sonic_f3_title": {
+                      "type": "text",
+                      "settings": {
+                        "text": "<p>تنظيف أعمق بدون ضغط</p>",
+                        "width": "100%",
+                        "max_width": "none",
+                        "type_preset": "rte",
+                        "custom_class": "sn-ld-item-title"
+                      },
+                      "blocks": {}
+                    },
+                    "ld_sonic_f3_body": {
+                      "type": "text",
+                      "settings": {
+                        "text": "<p>من غير أي جهد إضافي منك</p>",
+                        "width": "100%",
+                        "max_width": "none",
+                        "type_preset": "rte",
+                        "custom_class": "sn-ld-item-body"
+                      },
+                      "blocks": {}
+                    }
+                  },
+                  "block_order": [
+                    "ld_sonic_f3_icon",
+                    "ld_sonic_f3_title",
+                    "ld_sonic_f3_body"
+                  ]
+                }
+              },
+              "block_order": [
+                "ld_sonic_f1",
+                "ld_sonic_f2",
+                "ld_sonic_f3"
+              ]
+            }
+          },
+          "block_order": [
+            "ld_sonic_copy",
+            "ld_sonic_image",
+            "ld_sonic_list"
+          ]
+        },
+        "ld_box": {
+          "type": "group",
+          "settings": {
+            "content_direction": "column",
+            "vertical_on_mobile": false,
+            "horizontal_alignment_flex_direction_column": "flex-start",
+            "vertical_alignment_flex_direction_column": "flex-start",
+            "horizontal_alignment": "flex-start",
+            "vertical_alignment": "flex-start",
+            "gap": 0,
+            "gap_mobile": 0,
+            "width": "fill",
+            "width_mobile": "fill",
+            "height": "fit",
+            "custom_class": "sn-ld-group sn-ld-box"
+          },
+          "blocks": {
+            "ld_box_copy": {
+              "type": "group",
+              "settings": {
+                "content_direction": "column",
+                "vertical_on_mobile": false,
+                "horizontal_alignment_flex_direction_column": "flex-start",
+                "vertical_alignment_flex_direction_column": "flex-start",
+                "horizontal_alignment": "flex-start",
+                "vertical_alignment": "flex-start",
+                "gap": 18,
+                "gap_mobile": 10,
+                "width": "fill",
+                "width_mobile": "fill",
+                "height": "fit",
+                "custom_class": "sn-ld-copy"
+              },
+              "blocks": {
+                "ld_box_title": {
+                  "type": "text",
+                  "settings": {
+                    "text": "<h2>محتويات العبوة</h2>",
+                    "width": "100%",
+                    "max_width": "none",
+                    "type_preset": "rte",
+                    "custom_class": "sn-ld-title"
+                  },
+                  "blocks": {}
+                },
+                "ld_box_body": {
+                  "type": "text",
+                  "settings": {
+                    "text": "<p>كل اللي محتاجه في علبة واحدة — جاهزة للاستخدام والسفر من أول يوم.</p>",
+                    "width": "100%",
+                    "max_width": "none",
+                    "type_preset": "rte",
+                    "custom_class": "sn-ld-body"
+                  },
+                  "blocks": {}
+                }
+              },
+              "block_order": [
+                "ld_box_title",
+                "ld_box_body"
+              ]
+            },
+            "ld_box_image": {
+              "type": "image",
+              "settings": {
+                "image_ratio": "adapt",
+                "width": "fill",
+                "width_mobile": "fill",
+                "image_fit": "contain",
+                "border_radius": 24
+              },
+              "blocks": {}
+            },
+            "ld_box_list": {
+              "type": "group",
+              "settings": {
+                "content_direction": "column",
+                "vertical_on_mobile": false,
+                "horizontal_alignment_flex_direction_column": "flex-start",
+                "vertical_alignment_flex_direction_column": "flex-start",
+                "horizontal_alignment": "flex-start",
+                "vertical_alignment": "flex-start",
+                "gap": 22,
+                "gap_mobile": 8,
+                "width": "fill",
+                "width_mobile": "fill",
+                "height": "fit",
+                "custom_class": "sn-ld-list"
+              },
+              "blocks": {
+                "ld_box_f1": {
+                  "type": "group",
+                  "settings": {
+                    "content_direction": "row",
+                    "vertical_on_mobile": false,
+                    "horizontal_alignment_flex_direction_column": "flex-start",
+                    "vertical_alignment_flex_direction_column": "flex-start",
+                    "horizontal_alignment": "flex-start",
+                    "vertical_alignment": "flex-start",
+                    "gap": 16,
+                    "gap_mobile": 12,
+                    "width": "fill",
+                    "width_mobile": "fill",
+                    "height": "fit",
+                    "custom_class": "sn-ld-item"
+                  },
+                  "blocks": {
+                    "ld_box_f1_icon": {
+                      "type": "icon",
+                      "settings": {
+                        "icon": "ruler",
+                        "width": 22,
+                        "width_mobile": 18,
+                        "icon_color": "#176bb0"
+                      },
+                      "blocks": {}
+                    },
+                    "ld_box_f1_title": {
+                      "type": "text",
+                      "settings": {
+                        "text": "<p>جسم الفرشاة × 1</p>",
+                        "width": "100%",
+                        "max_width": "none",
+                        "type_preset": "rte",
+                        "custom_class": "sn-ld-item-title"
+                      },
+                      "blocks": {}
+                    }
+                  },
+                  "block_order": [
+                    "ld_box_f1_icon",
+                    "ld_box_f1_title"
+                  ]
+                },
+                "ld_box_f2": {
+                  "type": "group",
+                  "settings": {
+                    "content_direction": "row",
+                    "vertical_on_mobile": false,
+                    "horizontal_alignment_flex_direction_column": "flex-start",
+                    "vertical_alignment_flex_direction_column": "flex-start",
+                    "horizontal_alignment": "flex-start",
+                    "vertical_alignment": "flex-start",
+                    "gap": 16,
+                    "gap_mobile": 12,
+                    "width": "fill",
+                    "width_mobile": "fill",
+                    "height": "fit",
+                    "custom_class": "sn-ld-item"
+                  },
+                  "blocks": {
+                    "ld_box_f2_icon": {
+                      "type": "icon",
+                      "settings": {
+                        "icon": "star",
+                        "width": 22,
+                        "width_mobile": 18,
+                        "icon_color": "#176bb0"
+                      },
+                      "blocks": {}
+                    },
+                    "ld_box_f2_title": {
+                      "type": "text",
+                      "settings": {
+                        "text": "<p>8 رؤوس فرشاة</p>",
+                        "width": "100%",
+                        "max_width": "none",
+                        "type_preset": "rte",
+                        "custom_class": "sn-ld-item-title"
+                      },
+                      "blocks": {}
+                    },
+                    "ld_box_f2_body": {
+                      "type": "text",
+                      "settings": {
+                        "text": "<p>6 للتنظيف العميق + 2 للأسنان الحساسة</p>",
+                        "width": "100%",
+                        "max_width": "none",
+                        "type_preset": "rte",
+                        "custom_class": "sn-ld-item-body"
+                      },
+                      "blocks": {}
+                    }
+                  },
+                  "block_order": [
+                    "ld_box_f2_icon",
+                    "ld_box_f2_title",
+                    "ld_box_f2_body"
+                  ]
+                },
+                "ld_box_f3": {
+                  "type": "group",
+                  "settings": {
+                    "content_direction": "row",
+                    "vertical_on_mobile": false,
+                    "horizontal_alignment_flex_direction_column": "flex-start",
+                    "vertical_alignment_flex_direction_column": "flex-start",
+                    "horizontal_alignment": "flex-start",
+                    "vertical_alignment": "flex-start",
+                    "gap": 16,
+                    "gap_mobile": 12,
+                    "width": "fill",
+                    "width_mobile": "fill",
+                    "height": "fit",
+                    "custom_class": "sn-ld-item"
+                  },
+                  "blocks": {
+                    "ld_box_f3_icon": {
+                      "type": "icon",
+                      "settings": {
+                        "icon": "box",
+                        "width": 22,
+                        "width_mobile": 18,
+                        "icon_color": "#176bb0"
+                      },
+                      "blocks": {}
+                    },
+                    "ld_box_f3_title": {
+                      "type": "text",
+                      "settings": {
+                        "text": "<p>حقيبة سفر × 1</p>",
+                        "width": "100%",
+                        "max_width": "none",
+                        "type_preset": "rte",
+                        "custom_class": "sn-ld-item-title"
+                      },
+                      "blocks": {}
+                    }
+                  },
+                  "block_order": [
+                    "ld_box_f3_icon",
+                    "ld_box_f3_title"
+                  ]
+                },
+                "ld_box_f4": {
+                  "type": "group",
+                  "settings": {
+                    "content_direction": "row",
+                    "vertical_on_mobile": false,
+                    "horizontal_alignment_flex_direction_column": "flex-start",
+                    "vertical_alignment_flex_direction_column": "flex-start",
+                    "horizontal_alignment": "flex-start",
+                    "vertical_alignment": "flex-start",
+                    "gap": 16,
+                    "gap_mobile": 12,
+                    "width": "fill",
+                    "width_mobile": "fill",
+                    "height": "fit",
+                    "custom_class": "sn-ld-item"
+                  },
+                  "blocks": {
+                    "ld_box_f4_icon": {
+                      "type": "icon",
+                      "settings": {
+                        "icon": "lightning_bolt",
+                        "width": 22,
+                        "width_mobile": 18,
+                        "icon_color": "#176bb0"
+                      },
+                      "blocks": {}
+                    },
+                    "ld_box_f4_title": {
+                      "type": "text",
+                      "settings": {
+                        "text": "<p>كابل شحن Type-C × 1</p>",
+                        "width": "100%",
+                        "max_width": "none",
+                        "type_preset": "rte",
+                        "custom_class": "sn-ld-item-title"
+                      },
+                      "blocks": {}
+                    }
+                  },
+                  "block_order": [
+                    "ld_box_f4_icon",
+                    "ld_box_f4_title"
+                  ]
+                },
+                "ld_box_f5": {
+                  "type": "group",
+                  "settings": {
+                    "content_direction": "row",
+                    "vertical_on_mobile": false,
+                    "horizontal_alignment_flex_direction_column": "flex-start",
+                    "vertical_alignment_flex_direction_column": "flex-start",
+                    "horizontal_alignment": "flex-start",
+                    "vertical_alignment": "flex-start",
+                    "gap": 16,
+                    "gap_mobile": 12,
+                    "width": "fill",
+                    "width_mobile": "fill",
+                    "height": "fit",
+                    "custom_class": "sn-ld-item"
+                  },
+                  "blocks": {
+                    "ld_box_f5_icon": {
+                      "type": "icon",
+                      "settings": {
+                        "icon": "map_pin",
+                        "width": 22,
+                        "width_mobile": 18,
+                        "icon_color": "#176bb0"
+                      },
+                      "blocks": {}
+                    },
+                    "ld_box_f5_title": {
+                      "type": "text",
+                      "settings": {
+                        "text": "<p>حامل الفرشاة × 1</p>",
+                        "width": "100%",
+                        "max_width": "none",
+                        "type_preset": "rte",
+                        "custom_class": "sn-ld-item-title"
+                      },
+                      "blocks": {}
+                    }
+                  },
+                  "block_order": [
+                    "ld_box_f5_icon",
+                    "ld_box_f5_title"
+                  ]
+                }
+              },
+              "block_order": [
+                "ld_box_f1",
+                "ld_box_f2",
+                "ld_box_f3",
+                "ld_box_f4",
+                "ld_box_f5"
+              ]
+            }
+          },
+          "block_order": [
+            "ld_box_copy",
+            "ld_box_image",
+            "ld_box_list"
+          ]
+        },
+        "ld_modes": {
+          "type": "group",
+          "settings": {
+            "content_direction": "column",
+            "vertical_on_mobile": false,
+            "horizontal_alignment_flex_direction_column": "flex-start",
+            "vertical_alignment_flex_direction_column": "flex-start",
+            "horizontal_alignment": "flex-start",
+            "vertical_alignment": "flex-start",
+            "gap": 0,
+            "gap_mobile": 0,
+            "width": "fill",
+            "width_mobile": "fill",
+            "height": "fit",
+            "custom_class": "sn-ld-group sn-ld-modes sn-ld-floor"
+          },
+          "blocks": {
+            "ld_modes_copy": {
+              "type": "group",
+              "settings": {
+                "content_direction": "column",
+                "vertical_on_mobile": false,
+                "horizontal_alignment_flex_direction_column": "flex-start",
+                "vertical_alignment_flex_direction_column": "flex-start",
+                "horizontal_alignment": "flex-start",
+                "vertical_alignment": "flex-start",
+                "gap": 18,
+                "gap_mobile": 10,
+                "width": "fill",
+                "width_mobile": "fill",
+                "height": "fit",
+                "custom_class": "sn-ld-copy"
+              },
+              "blocks": {
+                "ld_modes_title": {
+                  "type": "text",
+                  "settings": {
+                    "text": "<h2>5 أوضاع تنظيف</h2>",
+                    "width": "100%",
+                    "max_width": "none",
+                    "type_preset": "rte",
+                    "custom_class": "sn-ld-title"
+                  },
+                  "blocks": {}
+                },
+                "ld_modes_subtitle": {
+                  "type": "text",
+                  "settings": {
+                    "text": "<p>احتياجات مختلفة… فرشاة واحدة.</p>",
+                    "width": "100%",
+                    "max_width": "none",
+                    "type_preset": "rte",
+                    "custom_class": "sn-ld-subtitle"
+                  },
+                  "blocks": {}
+                },
+                "ld_modes_body": {
+                  "type": "text",
+                  "settings": {
+                    "text": "<p>فرشاة SNOSHA N2 بتديك 5 أوضاع تختار منها الوضع المثالي لروتينك — من التنظيف اليومي لحد العناية باللثة.</p>",
+                    "width": "100%",
+                    "max_width": "none",
+                    "type_preset": "rte",
+                    "custom_class": "sn-ld-body"
+                  },
+                  "blocks": {}
+                }
+              },
+              "block_order": [
+                "ld_modes_title",
+                "ld_modes_subtitle",
+                "ld_modes_body"
+              ]
+            },
+            "ld_modes_image": {
+              "type": "image",
+              "settings": {
+                "image_ratio": "adapt",
+                "width": "fill",
+                "width_mobile": "fill",
+                "image_fit": "contain",
+                "border_radius": 24
+              },
+              "blocks": {}
+            },
+            "ld_modes_list": {
+              "type": "group",
+              "settings": {
+                "content_direction": "column",
+                "vertical_on_mobile": false,
+                "horizontal_alignment_flex_direction_column": "flex-start",
+                "vertical_alignment_flex_direction_column": "flex-start",
+                "horizontal_alignment": "flex-start",
+                "vertical_alignment": "flex-start",
+                "gap": 52,
+                "gap_mobile": 12,
+                "width": "fill",
+                "width_mobile": "fill",
+                "height": "fit",
+                "custom_class": "sn-ld-list"
+              },
+              "blocks": {
+                "ld_modes_f1": {
+                  "type": "group",
+                  "settings": {
+                    "content_direction": "row",
+                    "vertical_on_mobile": false,
+                    "horizontal_alignment_flex_direction_column": "flex-start",
+                    "vertical_alignment_flex_direction_column": "flex-start",
+                    "horizontal_alignment": "flex-start",
+                    "vertical_alignment": "flex-start",
+                    "gap": 16,
+                    "gap_mobile": 12,
+                    "width": "fill",
+                    "width_mobile": "fill",
+                    "height": "fit",
+                    "custom_class": "sn-ld-item"
+                  },
+                  "blocks": {
+                    "ld_modes_f1_icon": {
+                      "type": "icon",
+                      "settings": {
+                        "icon": "washing",
+                        "width": 24,
+                        "width_mobile": 20,
+                        "icon_color": "#176bb0"
+                      },
+                      "blocks": {}
+                    },
+                    "ld_modes_f1_title": {
+                      "type": "text",
+                      "settings": {
+                        "text": "<p>Clean</p>",
+                        "width": "100%",
+                        "max_width": "none",
+                        "type_preset": "rte",
+                        "custom_class": "sn-ld-item-title"
+                      },
+                      "blocks": {}
+                    },
+                    "ld_modes_f1_body": {
+                      "type": "text",
+                      "settings": {
+                        "text": "<p>للتنظيف اليومي</p>",
+                        "width": "100%",
+                        "max_width": "none",
+                        "type_preset": "rte",
+                        "custom_class": "sn-ld-item-body"
+                      },
+                      "blocks": {}
+                    }
+                  },
+                  "block_order": [
+                    "ld_modes_f1_icon",
+                    "ld_modes_f1_title",
+                    "ld_modes_f1_body"
+                  ]
+                },
+                "ld_modes_f2": {
+                  "type": "group",
+                  "settings": {
+                    "content_direction": "row",
+                    "vertical_on_mobile": false,
+                    "horizontal_alignment_flex_direction_column": "flex-start",
+                    "vertical_alignment_flex_direction_column": "flex-start",
+                    "horizontal_alignment": "flex-start",
+                    "vertical_alignment": "flex-start",
+                    "gap": 16,
+                    "gap_mobile": 12,
+                    "width": "fill",
+                    "width_mobile": "fill",
+                    "height": "fit",
+                    "custom_class": "sn-ld-item"
+                  },
+                  "blocks": {
+                    "ld_modes_f2_icon": {
+                      "type": "icon",
+                      "settings": {
+                        "icon": "leaf",
+                        "width": 24,
+                        "width_mobile": 20,
+                        "icon_color": "#176bb0"
+                      },
+                      "blocks": {}
+                    },
+                    "ld_modes_f2_title": {
+                      "type": "text",
+                      "settings": {
+                        "text": "<p>Sensitive</p>",
+                        "width": "100%",
+                        "max_width": "none",
+                        "type_preset": "rte",
+                        "custom_class": "sn-ld-item-title"
+                      },
+                      "blocks": {}
+                    },
+                    "ld_modes_f2_body": {
+                      "type": "text",
+                      "settings": {
+                        "text": "<p>تنظيف ألطف للأسنان الحساسة</p>",
+                        "width": "100%",
+                        "max_width": "none",
+                        "type_preset": "rte",
+                        "custom_class": "sn-ld-item-body"
+                      },
+                      "blocks": {}
+                    }
+                  },
+                  "block_order": [
+                    "ld_modes_f2_icon",
+                    "ld_modes_f2_title",
+                    "ld_modes_f2_body"
+                  ]
+                },
+                "ld_modes_f3": {
+                  "type": "group",
+                  "settings": {
+                    "content_direction": "row",
+                    "vertical_on_mobile": false,
+                    "horizontal_alignment_flex_direction_column": "flex-start",
+                    "vertical_alignment_flex_direction_column": "flex-start",
+                    "horizontal_alignment": "flex-start",
+                    "vertical_alignment": "flex-start",
+                    "gap": 16,
+                    "gap_mobile": 12,
+                    "width": "fill",
+                    "width_mobile": "fill",
+                    "height": "fit",
+                    "custom_class": "sn-ld-item"
+                  },
+                  "blocks": {
+                    "ld_modes_f3_icon": {
+                      "type": "icon",
+                      "settings": {
+                        "icon": "star",
+                        "width": 24,
+                        "width_mobile": 20,
+                        "icon_color": "#176bb0"
+                      },
+                      "blocks": {}
+                    },
+                    "ld_modes_f3_title": {
+                      "type": "text",
+                      "settings": {
+                        "text": "<p>White</p>",
+                        "width": "100%",
+                        "max_width": "none",
+                        "type_preset": "rte",
+                        "custom_class": "sn-ld-item-title"
+                      },
+                      "blocks": {}
+                    },
+                    "ld_modes_f3_body": {
+                      "type": "text",
+                      "settings": {
+                        "text": "<p>يستهدف التصبغات السطحية</p>",
+                        "width": "100%",
+                        "max_width": "none",
+                        "type_preset": "rte",
+                        "custom_class": "sn-ld-item-body"
+                      },
+                      "blocks": {}
+                    }
+                  },
+                  "block_order": [
+                    "ld_modes_f3_icon",
+                    "ld_modes_f3_title",
+                    "ld_modes_f3_body"
+                  ]
+                },
+                "ld_modes_f4": {
+                  "type": "group",
+                  "settings": {
+                    "content_direction": "row",
+                    "vertical_on_mobile": false,
+                    "horizontal_alignment_flex_direction_column": "flex-start",
+                    "vertical_alignment_flex_direction_column": "flex-start",
+                    "horizontal_alignment": "flex-start",
+                    "vertical_alignment": "flex-start",
+                    "gap": 16,
+                    "gap_mobile": 12,
+                    "width": "fill",
+                    "width_mobile": "fill",
+                    "height": "fit",
+                    "custom_class": "sn-ld-item"
+                  },
+                  "blocks": {
+                    "ld_modes_f4_icon": {
+                      "type": "icon",
+                      "settings": {
+                        "icon": "lightning_bolt",
+                        "width": 24,
+                        "width_mobile": 20,
+                        "icon_color": "#176bb0"
+                      },
+                      "blocks": {}
+                    },
+                    "ld_modes_f4_title": {
+                      "type": "text",
+                      "settings": {
+                        "text": "<p>Polish</p>",
+                        "width": "100%",
+                        "max_width": "none",
+                        "type_preset": "rte",
+                        "custom_class": "sn-ld-item-title"
+                      },
+                      "blocks": {}
+                    },
+                    "ld_modes_f4_body": {
+                      "type": "text",
+                      "settings": {
+                        "text": "<p>لإحساس أنعم ولمعان أوضح</p>",
+                        "width": "100%",
+                        "max_width": "none",
+                        "type_preset": "rte",
+                        "custom_class": "sn-ld-item-body"
+                      },
+                      "blocks": {}
+                    }
+                  },
+                  "block_order": [
+                    "ld_modes_f4_icon",
+                    "ld_modes_f4_title",
+                    "ld_modes_f4_body"
+                  ]
+                },
+                "ld_modes_f5": {
+                  "type": "group",
+                  "settings": {
+                    "content_direction": "row",
+                    "vertical_on_mobile": false,
+                    "horizontal_alignment_flex_direction_column": "flex-start",
+                    "vertical_alignment_flex_direction_column": "flex-start",
+                    "horizontal_alignment": "flex-start",
+                    "vertical_alignment": "flex-start",
+                    "gap": 16,
+                    "gap_mobile": 12,
+                    "width": "fill",
+                    "width_mobile": "fill",
+                    "height": "fit",
+                    "custom_class": "sn-ld-item"
+                  },
+                  "blocks": {
+                    "ld_modes_f5_icon": {
+                      "type": "icon",
+                      "settings": {
+                        "icon": "heart",
+                        "width": 24,
+                        "width_mobile": 20,
+                        "icon_color": "#176bb0"
+                      },
+                      "blocks": {}
+                    },
+                    "ld_modes_f5_title": {
+                      "type": "text",
+                      "settings": {
+                        "text": "<p>Massage</p>",
+                        "width": "100%",
+                        "max_width": "none",
+                        "type_preset": "rte",
+                        "custom_class": "sn-ld-item-title"
+                      },
+                      "blocks": {}
+                    },
+                    "ld_modes_f5_body": {
+                      "type": "text",
+                      "settings": {
+                        "text": "<p>عناية لطيفة باللثة</p>",
+                        "width": "100%",
+                        "max_width": "none",
+                        "type_preset": "rte",
+                        "custom_class": "sn-ld-item-body"
+                      },
+                      "blocks": {}
+                    }
+                  },
+                  "block_order": [
+                    "ld_modes_f5_icon",
+                    "ld_modes_f5_title",
+                    "ld_modes_f5_body"
+                  ]
+                }
+              },
+              "block_order": [
+                "ld_modes_f1",
+                "ld_modes_f2",
+                "ld_modes_f3",
+                "ld_modes_f4",
+                "ld_modes_f5"
+              ]
+            }
+          },
+          "block_order": [
+            "ld_modes_copy",
+            "ld_modes_image",
+            "ld_modes_list"
+          ]
+        },
+        "ld_brush": {
+          "type": "group",
+          "settings": {
+            "content_direction": "column",
+            "vertical_on_mobile": false,
+            "horizontal_alignment_flex_direction_column": "flex-start",
+            "vertical_alignment_flex_direction_column": "flex-start",
+            "horizontal_alignment": "flex-start",
+            "vertical_alignment": "flex-start",
+            "gap": 0,
+            "gap_mobile": 0,
+            "width": "fill",
+            "width_mobile": "fill",
+            "height": "fit",
+            "custom_class": "sn-ld-group sn-ld-brush"
+          },
+          "blocks": {
+            "ld_brush_copy": {
+              "type": "group",
+              "settings": {
+                "content_direction": "column",
+                "vertical_on_mobile": false,
+                "horizontal_alignment_flex_direction_column": "flex-start",
+                "vertical_alignment_flex_direction_column": "flex-start",
+                "horizontal_alignment": "flex-start",
+                "vertical_alignment": "flex-start",
+                "gap": 18,
+                "gap_mobile": 10,
+                "width": "fill",
+                "width_mobile": "fill",
+                "height": "fit",
+                "custom_class": "sn-ld-copy"
+              },
+              "blocks": {
+                "ld_brush_title": {
+                  "type": "text",
+                  "settings": {
+                    "text": "<h2>رؤوس الفرشاة</h2>",
+                    "width": "100%",
+                    "max_width": "none",
+                    "type_preset": "rte",
+                    "custom_class": "sn-ld-title"
+                  },
+                  "blocks": {}
+                },
+                "ld_brush_body": {
+                  "type": "text",
+                  "settings": {
+                    "text": "<p>تأتي الفرشاة مع 8 رؤوس دوبونت: 6 رؤوس للتنظيف العميق اليومي، ورأسان مخصصان للأسنان الحساسة — مع مؤشر تلاشي لون يُنبّهك عند اقتراب موعد التغيير.</p>",
+                    "width": "100%",
+                    "max_width": "none",
+                    "type_preset": "rte",
+                    "custom_class": "sn-ld-body"
+                  },
+                  "blocks": {}
+                }
+              },
+              "block_order": [
+                "ld_brush_title",
+                "ld_brush_body"
+              ]
+            },
+            "ld_brush_image": {
+              "type": "image",
+              "settings": {
+                "image_ratio": "adapt",
+                "width": "fill",
+                "width_mobile": "fill",
+                "image_fit": "contain",
+                "border_radius": 24
+              },
+              "blocks": {}
+            },
+            "ld_brush_list": {
+              "type": "group",
+              "settings": {
+                "content_direction": "column",
+                "vertical_on_mobile": false,
+                "horizontal_alignment_flex_direction_column": "flex-start",
+                "vertical_alignment_flex_direction_column": "flex-start",
+                "horizontal_alignment": "flex-start",
+                "vertical_alignment": "flex-start",
+                "gap": 20,
+                "gap_mobile": 10,
+                "width": "fill",
+                "width_mobile": "fill",
+                "height": "fit",
+                "custom_class": "sn-ld-list"
+              },
+              "blocks": {
+                "ld_brush_f1": {
+                  "type": "group",
+                  "settings": {
+                    "content_direction": "row",
+                    "vertical_on_mobile": false,
+                    "horizontal_alignment_flex_direction_column": "flex-start",
+                    "vertical_alignment_flex_direction_column": "flex-start",
+                    "horizontal_alignment": "flex-start",
+                    "vertical_alignment": "flex-start",
+                    "gap": 16,
+                    "gap_mobile": 12,
+                    "width": "fill",
+                    "width_mobile": "fill",
+                    "height": "fit",
+                    "custom_class": "sn-ld-item"
+                  },
+                  "blocks": {
+                    "ld_brush_f1_icon": {
+                      "type": "icon",
+                      "settings": {
+                        "icon": "stopwatch",
+                        "width": 22,
+                        "width_mobile": 20,
+                        "icon_color": "#176bb0"
+                      },
+                      "blocks": {}
+                    },
+                    "ld_brush_f1_title": {
+                      "type": "text",
+                      "settings": {
+                        "text": "<p>استبدال كل 3 شهور</p>",
+                        "width": "100%",
+                        "max_width": "none",
+                        "type_preset": "rte",
+                        "custom_class": "sn-ld-item-title"
+                      },
+                      "blocks": {}
+                    },
+                    "ld_brush_f1_body": {
+                      "type": "text",
+                      "settings": {
+                        "text": "<p>مؤشر تلاشي اللون ينبّهك تلقائيًا</p>",
+                        "width": "100%",
+                        "max_width": "none",
+                        "type_preset": "rte",
+                        "custom_class": "sn-ld-item-body"
+                      },
+                      "blocks": {}
+                    }
+                  },
+                  "block_order": [
+                    "ld_brush_f1_icon",
+                    "ld_brush_f1_title",
+                    "ld_brush_f1_body"
+                  ]
+                },
+                "ld_brush_f2": {
+                  "type": "group",
+                  "settings": {
+                    "content_direction": "row",
+                    "vertical_on_mobile": false,
+                    "horizontal_alignment_flex_direction_column": "flex-start",
+                    "vertical_alignment_flex_direction_column": "flex-start",
+                    "horizontal_alignment": "flex-start",
+                    "vertical_alignment": "flex-start",
+                    "gap": 16,
+                    "gap_mobile": 12,
+                    "width": "fill",
+                    "width_mobile": "fill",
+                    "height": "fit",
+                    "custom_class": "sn-ld-item"
+                  },
+                  "blocks": {
+                    "ld_brush_f2_icon": {
+                      "type": "icon",
+                      "settings": {
+                        "icon": "check_box",
+                        "width": 22,
+                        "width_mobile": 20,
+                        "icon_color": "#176bb0"
+                      },
+                      "blocks": {}
+                    },
+                    "ld_brush_f2_title": {
+                      "type": "text",
+                      "settings": {
+                        "text": "<p>تركيب بسيط</p>",
+                        "width": "100%",
+                        "max_width": "none",
+                        "type_preset": "rte",
+                        "custom_class": "sn-ld-item-title"
+                      },
+                      "blocks": {}
+                    },
+                    "ld_brush_f2_body": {
+                      "type": "text",
+                      "settings": {
+                        "text": "<p>ضع الرأس موازيًا لزر التشغيل واضغط بلطف حتى يثبت</p>",
+                        "width": "100%",
+                        "max_width": "none",
+                        "type_preset": "rte",
+                        "custom_class": "sn-ld-item-body"
+                      },
+                      "blocks": {}
+                    }
+                  },
+                  "block_order": [
+                    "ld_brush_f2_icon",
+                    "ld_brush_f2_title",
+                    "ld_brush_f2_body"
+                  ]
+                },
+                "ld_brush_f3": {
+                  "type": "group",
+                  "settings": {
+                    "content_direction": "row",
+                    "vertical_on_mobile": false,
+                    "horizontal_alignment_flex_direction_column": "flex-start",
+                    "vertical_alignment_flex_direction_column": "flex-start",
+                    "horizontal_alignment": "flex-start",
+                    "vertical_alignment": "flex-start",
+                    "gap": 16,
+                    "gap_mobile": 12,
+                    "width": "fill",
+                    "width_mobile": "fill",
+                    "height": "fit",
+                    "custom_class": "sn-ld-item"
+                  },
+                  "blocks": {
+                    "ld_brush_f3_icon": {
+                      "type": "icon",
+                      "settings": {
+                        "icon": "lightning_bolt",
+                        "width": 22,
+                        "width_mobile": 20,
+                        "icon_color": "#176bb0"
+                      },
+                      "blocks": {}
+                    },
+                    "ld_brush_f3_title": {
+                      "type": "text",
+                      "settings": {
+                        "text": "<p>الفجوة الطفيفة طبيعية</p>",
+                        "width": "100%",
+                        "max_width": "none",
+                        "type_preset": "rte",
+                        "custom_class": "sn-ld-item-title"
+                      },
+                      "blocks": {}
+                    },
+                    "ld_brush_f3_body": {
+                      "type": "text",
+                      "settings": {
+                        "text": "<p>مقصودة للسماح بالاهتزاز أثناء الاستخدام</p>",
+                        "width": "100%",
+                        "max_width": "none",
+                        "type_preset": "rte",
+                        "custom_class": "sn-ld-item-body"
+                      },
+                      "blocks": {}
+                    }
+                  },
+                  "block_order": [
+                    "ld_brush_f3_icon",
+                    "ld_brush_f3_title",
+                    "ld_brush_f3_body"
+                  ]
+                },
+                "ld_brush_f4": {
+                  "type": "group",
+                  "settings": {
+                    "content_direction": "row",
+                    "vertical_on_mobile": false,
+                    "horizontal_alignment_flex_direction_column": "flex-start",
+                    "vertical_alignment_flex_direction_column": "flex-start",
+                    "horizontal_alignment": "flex-start",
+                    "vertical_alignment": "flex-start",
+                    "gap": 16,
+                    "gap_mobile": 12,
+                    "width": "fill",
+                    "width_mobile": "fill",
+                    "height": "fit",
+                    "custom_class": "sn-ld-item"
+                  },
+                  "blocks": {
+                    "ld_brush_f4_icon": {
+                      "type": "icon",
+                      "settings": {
+                        "icon": "recycle",
+                        "width": 22,
+                        "width_mobile": 20,
+                        "icon_color": "#176bb0"
+                      },
+                      "blocks": {}
+                    },
+                    "ld_brush_f4_title": {
+                      "type": "text",
+                      "settings": {
+                        "text": "<p>للإزالة</p>",
+                        "width": "100%",
+                        "max_width": "none",
+                        "type_preset": "rte",
+                        "custom_class": "sn-ld-item-title"
+                      },
+                      "blocks": {}
+                    },
+                    "ld_brush_f4_body": {
+                      "type": "text",
+                      "settings": {
+                        "text": "<p>اسحب الرأس للأعلى برفق</p>",
+                        "width": "100%",
+                        "max_width": "none",
+                        "type_preset": "rte",
+                        "custom_class": "sn-ld-item-body"
+                      },
+                      "blocks": {}
+                    }
+                  },
+                  "block_order": [
+                    "ld_brush_f4_icon",
+                    "ld_brush_f4_title",
+                    "ld_brush_f4_body"
+                  ]
+                }
+              },
+              "block_order": [
+                "ld_brush_f1",
+                "ld_brush_f2",
+                "ld_brush_f3",
+                "ld_brush_f4"
+              ]
+            }
+          },
+          "block_order": [
+            "ld_brush_copy",
+            "ld_brush_image",
+            "ld_brush_list"
+          ]
+        },
+        "ld_battery": {
+          "type": "group",
+          "settings": {
+            "content_direction": "column",
+            "vertical_on_mobile": false,
+            "horizontal_alignment_flex_direction_column": "flex-start",
+            "vertical_alignment_flex_direction_column": "flex-start",
+            "horizontal_alignment": "flex-start",
+            "vertical_alignment": "flex-start",
+            "gap": 0,
+            "gap_mobile": 0,
+            "width": "fill",
+            "width_mobile": "fill",
+            "height": "fit",
+            "custom_class": "sn-ld-group sn-ld-battery"
+          },
+          "blocks": {
+            "ld_battery_copy": {
+              "type": "group",
+              "settings": {
+                "content_direction": "column",
+                "vertical_on_mobile": false,
+                "horizontal_alignment_flex_direction_column": "flex-start",
+                "vertical_alignment_flex_direction_column": "flex-start",
+                "horizontal_alignment": "flex-start",
+                "vertical_alignment": "flex-start",
+                "gap": 18,
+                "gap_mobile": 10,
+                "width": "fill",
+                "width_mobile": "fill",
+                "height": "fit",
+                "custom_class": "sn-ld-copy"
+              },
+              "blocks": {
+                "ld_battery_title": {
+                  "type": "text",
+                  "settings": {
+                    "text": "<h2>البطارية والشحن</h2>",
+                    "width": "100%",
+                    "max_width": "none",
+                    "type_preset": "rte",
+                    "custom_class": "sn-ld-title"
+                  },
+                  "blocks": {}
+                },
+                "ld_battery_body": {
+                  "type": "text",
+                  "settings": {
+                    "text": "<p>تعمل الفرشاة ببطارية ليثيوم 18650 سعة 1200 مللي أمبير، تدوم حتى 120 يومًا من الاستخدام اليومي بشحنة واحدة كاملة. الشحن عبر منفذ Type-C ويستغرق من ساعتين إلى 3 ساعات فقط — من الشاحن أو بنك الطاقة أو أي منفذ USB.</p>",
+                    "width": "100%",
+                    "max_width": "none",
+                    "type_preset": "rte",
+                    "custom_class": "sn-ld-body"
+                  },
+                  "blocks": {}
+                },
+                "ld_battery_note": {
+                  "type": "text",
+                  "settings": {
+                    "text": "<p>يُنصح بفصل الجهاز عن الشاحن بعد اكتمال الشحن، والتأكد من شحنه بالكامل قبل أول استخدام.</p>",
+                    "width": "100%",
+                    "max_width": "none",
+                    "type_preset": "rte",
+                    "custom_class": "sn-ld-note"
+                  },
+                  "blocks": {}
+                }
+              },
+              "block_order": [
+                "ld_battery_title",
+                "ld_battery_body",
+                "ld_battery_note"
+              ]
+            },
+            "ld_battery_image": {
+              "type": "image",
+              "settings": {
+                "image_ratio": "adapt",
+                "width": "fill",
+                "width_mobile": "fill",
+                "image_fit": "contain",
+                "border_radius": 24
+              },
+              "blocks": {}
+            },
+            "ld_battery_list": {
+              "type": "group",
+              "settings": {
+                "content_direction": "column",
+                "vertical_on_mobile": false,
+                "horizontal_alignment_flex_direction_column": "flex-start",
+                "vertical_alignment_flex_direction_column": "flex-start",
+                "horizontal_alignment": "flex-start",
+                "vertical_alignment": "flex-start",
+                "gap": 18,
+                "gap_mobile": 10,
+                "width": "fill",
+                "width_mobile": "fill",
+                "height": "fit",
+                "custom_class": "sn-ld-list"
+              },
+              "blocks": {
+                "ld_battery_label": {
+                  "type": "text",
+                  "settings": {
+                    "text": "<p>مؤشرات الإضاءة</p>",
+                    "width": "100%",
+                    "max_width": "none",
+                    "type_preset": "rte",
+                    "custom_class": "sn-ld-list-label"
+                  },
+                  "blocks": {}
+                },
+                "ld_battery_l1": {
+                  "type": "group",
+                  "settings": {
+                    "content_direction": "row",
+                    "vertical_on_mobile": false,
+                    "horizontal_alignment_flex_direction_column": "flex-start",
+                    "vertical_alignment_flex_direction_column": "flex-start",
+                    "horizontal_alignment": "flex-start",
+                    "vertical_alignment": "flex-start",
+                    "gap": 14,
+                    "gap_mobile": 14,
+                    "width": "fill",
+                    "width_mobile": "fill",
+                    "height": "fit",
+                    "custom_class": "sn-ld-item sn-ld-item--led"
+                  },
+                  "blocks": {
+                    "ld_battery_l1_dot": {
+                      "type": "group",
+                      "settings": {
+                        "content_direction": "column",
+                        "vertical_on_mobile": false,
+                        "horizontal_alignment_flex_direction_column": "flex-start",
+                        "vertical_alignment_flex_direction_column": "flex-start",
+                        "horizontal_alignment": "flex-start",
+                        "vertical_alignment": "flex-start",
+                        "gap": 0,
+                        "gap_mobile": 0,
+                        "width": "fit-content",
+                        "width_mobile": "fit-content",
+                        "height": "fit",
+                        "custom_class": "sn-ld-led sn-ld-led--blink",
+                        "background_color": "#ef4444"
+                      },
+                      "blocks": {},
+                      "block_order": []
+                    },
+                    "ld_battery_l1_title": {
+                      "type": "text",
+                      "settings": {
+                        "text": "<p>وميض أحمر</p>",
+                        "width": "100%",
+                        "max_width": "none",
+                        "type_preset": "rte",
+                        "custom_class": "sn-ld-item-title"
+                      },
+                      "blocks": {}
+                    },
+                    "ld_battery_l1_body": {
+                      "type": "text",
+                      "settings": {
+                        "text": "<p>بطارية منخفضة — وقت الشحن</p>",
+                        "width": "100%",
+                        "max_width": "none",
+                        "type_preset": "rte",
+                        "custom_class": "sn-ld-item-body"
+                      },
+                      "blocks": {}
+                    }
+                  },
+                  "block_order": [
+                    "ld_battery_l1_dot",
+                    "ld_battery_l1_title",
+                    "ld_battery_l1_body"
+                  ]
+                },
+                "ld_battery_l2": {
+                  "type": "group",
+                  "settings": {
+                    "content_direction": "row",
+                    "vertical_on_mobile": false,
+                    "horizontal_alignment_flex_direction_column": "flex-start",
+                    "vertical_alignment_flex_direction_column": "flex-start",
+                    "horizontal_alignment": "flex-start",
+                    "vertical_alignment": "flex-start",
+                    "gap": 14,
+                    "gap_mobile": 14,
+                    "width": "fill",
+                    "width_mobile": "fill",
+                    "height": "fit",
+                    "custom_class": "sn-ld-item sn-ld-item--led"
+                  },
+                  "blocks": {
+                    "ld_battery_l2_dot": {
+                      "type": "group",
+                      "settings": {
+                        "content_direction": "column",
+                        "vertical_on_mobile": false,
+                        "horizontal_alignment_flex_direction_column": "flex-start",
+                        "vertical_alignment_flex_direction_column": "flex-start",
+                        "horizontal_alignment": "flex-start",
+                        "vertical_alignment": "flex-start",
+                        "gap": 0,
+                        "gap_mobile": 0,
+                        "width": "fit-content",
+                        "width_mobile": "fit-content",
+                        "height": "fit",
+                        "custom_class": "sn-ld-led",
+                        "background_color": "#ef4444"
+                      },
+                      "blocks": {},
+                      "block_order": []
+                    },
+                    "ld_battery_l2_title": {
+                      "type": "text",
+                      "settings": {
+                        "text": "<p>ثبات أحمر</p>",
+                        "width": "100%",
+                        "max_width": "none",
+                        "type_preset": "rte",
+                        "custom_class": "sn-ld-item-title"
+                      },
+                      "blocks": {}
+                    },
+                    "ld_battery_l2_body": {
+                      "type": "text",
+                      "settings": {
+                        "text": "<p>جاري الشحن الآن</p>",
+                        "width": "100%",
+                        "max_width": "none",
+                        "type_preset": "rte",
+                        "custom_class": "sn-ld-item-body"
+                      },
+                      "blocks": {}
+                    }
+                  },
+                  "block_order": [
+                    "ld_battery_l2_dot",
+                    "ld_battery_l2_title",
+                    "ld_battery_l2_body"
+                  ]
+                },
+                "ld_battery_l3": {
+                  "type": "group",
+                  "settings": {
+                    "content_direction": "row",
+                    "vertical_on_mobile": false,
+                    "horizontal_alignment_flex_direction_column": "flex-start",
+                    "vertical_alignment_flex_direction_column": "flex-start",
+                    "horizontal_alignment": "flex-start",
+                    "vertical_alignment": "flex-start",
+                    "gap": 14,
+                    "gap_mobile": 14,
+                    "width": "fill",
+                    "width_mobile": "fill",
+                    "height": "fit",
+                    "custom_class": "sn-ld-item sn-ld-item--led"
+                  },
+                  "blocks": {
+                    "ld_battery_l3_dot": {
+                      "type": "group",
+                      "settings": {
+                        "content_direction": "column",
+                        "vertical_on_mobile": false,
+                        "horizontal_alignment_flex_direction_column": "flex-start",
+                        "vertical_alignment_flex_direction_column": "flex-start",
+                        "horizontal_alignment": "flex-start",
+                        "vertical_alignment": "flex-start",
+                        "gap": 0,
+                        "gap_mobile": 0,
+                        "width": "fit-content",
+                        "width_mobile": "fit-content",
+                        "height": "fit",
+                        "custom_class": "sn-ld-led",
+                        "background_color": "#22c55e"
+                      },
+                      "blocks": {},
+                      "block_order": []
+                    },
+                    "ld_battery_l3_title": {
+                      "type": "text",
+                      "settings": {
+                        "text": "<p>ثبات أخضر</p>",
+                        "width": "100%",
+                        "max_width": "none",
+                        "type_preset": "rte",
+                        "custom_class": "sn-ld-item-title"
+                      },
+                      "blocks": {}
+                    },
+                    "ld_battery_l3_body": {
+                      "type": "text",
+                      "settings": {
+                        "text": "<p>اكتمل الشحن بالكامل</p>",
+                        "width": "100%",
+                        "max_width": "none",
+                        "type_preset": "rte",
+                        "custom_class": "sn-ld-item-body"
+                      },
+                      "blocks": {}
+                    }
+                  },
+                  "block_order": [
+                    "ld_battery_l3_dot",
+                    "ld_battery_l3_title",
+                    "ld_battery_l3_body"
+                  ]
+                }
+              },
+              "block_order": [
+                "ld_battery_label",
+                "ld_battery_l1",
+                "ld_battery_l2",
+                "ld_battery_l3"
+              ]
+            }
+          },
+          "block_order": [
+            "ld_battery_copy",
+            "ld_battery_image",
+            "ld_battery_list"
+          ]
+        },
+        "ld_water": {
+          "type": "group",
+          "settings": {
+            "content_direction": "column",
+            "vertical_on_mobile": false,
+            "horizontal_alignment_flex_direction_column": "flex-start",
+            "vertical_alignment_flex_direction_column": "flex-start",
+            "horizontal_alignment": "flex-start",
+            "vertical_alignment": "flex-start",
+            "gap": 0,
+            "gap_mobile": 0,
+            "width": "fill",
+            "width_mobile": "fill",
+            "height": "fit",
+            "custom_class": "sn-ld-group sn-ld-water"
+          },
+          "blocks": {
+            "ld_water_copy": {
+              "type": "group",
+              "settings": {
+                "content_direction": "column",
+                "vertical_on_mobile": false,
+                "horizontal_alignment_flex_direction_column": "flex-start",
+                "vertical_alignment_flex_direction_column": "flex-start",
+                "horizontal_alignment": "flex-start",
+                "vertical_alignment": "flex-start",
+                "gap": 18,
+                "gap_mobile": 10,
+                "width": "fill",
+                "width_mobile": "fill",
+                "height": "fit",
+                "custom_class": "sn-ld-copy"
+              },
+              "blocks": {
+                "ld_water_title": {
+                  "type": "text",
+                  "settings": {
+                    "text": "<h2>مقاومة الماء وزر التشغيل</h2>",
+                    "width": "100%",
+                    "max_width": "none",
+                    "type_preset": "rte",
+                    "custom_class": "sn-ld-title"
+                  },
+                  "blocks": {}
+                },
+                "ld_water_body": {
+                  "type": "text",
+                  "settings": {
+                    "text": "<p>تحمل N2 تصنيف مقاومة ماء IPX7، ما يجعلها آمنة تمامًا للاستخدام والشطف داخل الحمام — وزر واحد بسيط يتحكم في كل شيء.</p>",
+                    "width": "100%",
+                    "max_width": "none",
+                    "type_preset": "rte",
+                    "custom_class": "sn-ld-body"
+                  },
+                  "blocks": {}
+                }
+              },
+              "block_order": [
+                "ld_water_title",
+                "ld_water_body"
+              ]
+            },
+            "ld_water_image": {
+              "type": "image",
+              "settings": {
+                "image_ratio": "adapt",
+                "width": "fill",
+                "width_mobile": "fill",
+                "image_fit": "contain",
+                "border_radius": 24
+              },
+              "blocks": {}
+            },
+            "ld_water_list": {
+              "type": "group",
+              "settings": {
+                "content_direction": "column",
+                "vertical_on_mobile": false,
+                "horizontal_alignment_flex_direction_column": "flex-start",
+                "vertical_alignment_flex_direction_column": "flex-start",
+                "horizontal_alignment": "flex-start",
+                "vertical_alignment": "flex-start",
+                "gap": 20,
+                "gap_mobile": 12,
+                "width": "fill",
+                "width_mobile": "fill",
+                "height": "fit",
+                "custom_class": "sn-ld-list"
+              },
+              "blocks": {
+                "ld_water_f1": {
+                  "type": "group",
+                  "settings": {
+                    "content_direction": "row",
+                    "vertical_on_mobile": false,
+                    "horizontal_alignment_flex_direction_column": "flex-start",
+                    "vertical_alignment_flex_direction_column": "flex-start",
+                    "horizontal_alignment": "flex-start",
+                    "vertical_alignment": "flex-start",
+                    "gap": 16,
+                    "gap_mobile": 12,
+                    "width": "fill",
+                    "width_mobile": "fill",
+                    "height": "fit",
+                    "custom_class": "sn-ld-item"
+                  },
+                  "blocks": {
+                    "ld_water_f1_icon": {
+                      "type": "icon",
+                      "settings": {
+                        "icon": "washing",
+                        "width": 22,
+                        "width_mobile": 20,
+                        "icon_color": "#176bb0"
+                      },
+                      "blocks": {}
+                    },
+                    "ld_water_f1_title": {
+                      "type": "text",
+                      "settings": {
+                        "text": "<p>IPX7 مقاومة للماء</p>",
+                        "width": "100%",
+                        "max_width": "none",
+                        "type_preset": "rte",
+                        "custom_class": "sn-ld-item-title"
+                      },
+                      "blocks": {}
+                    },
+                    "ld_water_f1_body": {
+                      "type": "text",
+                      "settings": {
+                        "text": "<p>اشطفها تحت الماء الجاري بأمان تام</p>",
+                        "width": "100%",
+                        "max_width": "none",
+                        "type_preset": "rte",
+                        "custom_class": "sn-ld-item-body"
+                      },
+                      "blocks": {}
+                    }
+                  },
+                  "block_order": [
+                    "ld_water_f1_icon",
+                    "ld_water_f1_title",
+                    "ld_water_f1_body"
+                  ]
+                },
+                "ld_water_f2": {
+                  "type": "group",
+                  "settings": {
+                    "content_direction": "row",
+                    "vertical_on_mobile": false,
+                    "horizontal_alignment_flex_direction_column": "flex-start",
+                    "vertical_alignment_flex_direction_column": "flex-start",
+                    "horizontal_alignment": "flex-start",
+                    "vertical_alignment": "flex-start",
+                    "gap": 16,
+                    "gap_mobile": 12,
+                    "width": "fill",
+                    "width_mobile": "fill",
+                    "height": "fit",
+                    "custom_class": "sn-ld-item"
+                  },
+                  "blocks": {
+                    "ld_water_f2_icon": {
+                      "type": "icon",
+                      "settings": {
+                        "icon": "check_box",
+                        "width": 22,
+                        "width_mobile": 20,
+                        "icon_color": "#176bb0"
+                      },
+                      "blocks": {}
+                    },
+                    "ld_water_f2_title": {
+                      "type": "text",
+                      "settings": {
+                        "text": "<p>ضغطة واحدة</p>",
+                        "width": "100%",
+                        "max_width": "none",
+                        "type_preset": "rte",
+                        "custom_class": "sn-ld-item-title"
+                      },
+                      "blocks": {}
+                    },
+                    "ld_water_f2_body": {
+                      "type": "text",
+                      "settings": {
+                        "text": "<p>لتشغيل الفرشاة</p>",
+                        "width": "100%",
+                        "max_width": "none",
+                        "type_preset": "rte",
+                        "custom_class": "sn-ld-item-body"
+                      },
+                      "blocks": {}
+                    }
+                  },
+                  "block_order": [
+                    "ld_water_f2_icon",
+                    "ld_water_f2_title",
+                    "ld_water_f2_body"
+                  ]
+                },
+                "ld_water_f3": {
+                  "type": "group",
+                  "settings": {
+                    "content_direction": "row",
+                    "vertical_on_mobile": false,
+                    "horizontal_alignment_flex_direction_column": "flex-start",
+                    "vertical_alignment_flex_direction_column": "flex-start",
+                    "horizontal_alignment": "flex-start",
+                    "vertical_alignment": "flex-start",
+                    "gap": 16,
+                    "gap_mobile": 12,
+                    "width": "fill",
+                    "width_mobile": "fill",
+                    "height": "fit",
+                    "custom_class": "sn-ld-item"
+                  },
+                  "blocks": {
+                    "ld_water_f3_icon": {
+                      "type": "icon",
+                      "settings": {
+                        "icon": "stopwatch",
+                        "width": 22,
+                        "width_mobile": 20,
+                        "icon_color": "#176bb0"
+                      },
+                      "blocks": {}
+                    },
+                    "ld_water_f3_title": {
+                      "type": "text",
+                      "settings": {
+                        "text": "<p>ضغطة مطوّلة (3 ثوانٍ)</p>",
+                        "width": "100%",
+                        "max_width": "none",
+                        "type_preset": "rte",
+                        "custom_class": "sn-ld-item-title"
+                      },
+                      "blocks": {}
+                    },
+                    "ld_water_f3_body": {
+                      "type": "text",
+                      "settings": {
+                        "text": "<p>لإيقاف التشغيل</p>",
+                        "width": "100%",
+                        "max_width": "none",
+                        "type_preset": "rte",
+                        "custom_class": "sn-ld-item-body"
+                      },
+                      "blocks": {}
+                    }
+                  },
+                  "block_order": [
+                    "ld_water_f3_icon",
+                    "ld_water_f3_title",
+                    "ld_water_f3_body"
+                  ]
+                },
+                "ld_water_f4": {
+                  "type": "group",
+                  "settings": {
+                    "content_direction": "row",
+                    "vertical_on_mobile": false,
+                    "horizontal_alignment_flex_direction_column": "flex-start",
+                    "vertical_alignment_flex_direction_column": "flex-start",
+                    "horizontal_alignment": "flex-start",
+                    "vertical_alignment": "flex-start",
+                    "gap": 16,
+                    "gap_mobile": 12,
+                    "width": "fill",
+                    "width_mobile": "fill",
+                    "height": "fit",
+                    "custom_class": "sn-ld-item"
+                  },
+                  "blocks": {
+                    "ld_water_f4_icon": {
+                      "type": "icon",
+                      "settings": {
+                        "icon": "lightning_bolt",
+                        "width": 22,
+                        "width_mobile": 20,
+                        "icon_color": "#176bb0"
+                      },
+                      "blocks": {}
+                    },
+                    "ld_water_f4_title": {
+                      "type": "text",
+                      "settings": {
+                        "text": "<p>ضغطة أثناء التشغيل</p>",
+                        "width": "100%",
+                        "max_width": "none",
+                        "type_preset": "rte",
+                        "custom_class": "sn-ld-item-title"
+                      },
+                      "blocks": {}
+                    },
+                    "ld_water_f4_body": {
+                      "type": "text",
+                      "settings": {
+                        "text": "<p>للتنقل بين الأوضاع الخمسة</p>",
+                        "width": "100%",
+                        "max_width": "none",
+                        "type_preset": "rte",
+                        "custom_class": "sn-ld-item-body"
+                      },
+                      "blocks": {}
+                    }
+                  },
+                  "block_order": [
+                    "ld_water_f4_icon",
+                    "ld_water_f4_title",
+                    "ld_water_f4_body"
+                  ]
+                }
+              },
+              "block_order": [
+                "ld_water_f1",
+                "ld_water_f2",
+                "ld_water_f3",
+                "ld_water_f4"
+              ]
+            }
+          },
+          "block_order": [
+            "ld_water_copy",
+            "ld_water_image",
+            "ld_water_list"
+          ]
+        }
+      },
+      "block_order": [
+        "ld_intro",
+        "ld_sonic",
+        "ld_box",
+        "ld_modes",
+        "ld_brush",
+        "ld_battery",
+        "ld_water"
+      ]
     }
   },
   "order": [
     "sn_product_breadcrumbs",
-    "main"
+    "main",
+    "sn_long_description"
   ]
 }

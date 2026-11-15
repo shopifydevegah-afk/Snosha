@@ -3646,3 +3646,463 @@
     display: initial;
   }
 }
+
+/* ==========================================================================
+   Product page — Long Description | owner: Dev1
+   Figma desktop 190:10527 (1480; container 1376 incl. 20 padding → 1336), mobile 190:11237 (390; content 350).
+   ONE native `section` (custom class sn-ld; background white + native gradient overlay #dcf2fb "to top", gap 60 /
+   mobile 24, padding 60/60, mobile 40/24) holding seven native `group` content groups (reorder / hide in the
+   editor). Each content group: copy group (.sn-ld-copy: title / subtitle / body / note text blocks) + image block +
+   list group (.sn-ld-list) of feature rows. Feature row = group (.sn-ld-item) › icon + title text + body text,
+   laid out by CSS grid (icon tile beside the stacked text). LED row: a small group (.sn-ld-led) whose native
+   Background colour is the indicator colour. Positions per group come from grid areas below (no absolute content).
+   Typography applies to text blocks left on a preset (:not(.custom-typography)); switching a text block to Custom
+   typography in the editor uses its own values. Removing a group class removes its layout (native stacking).
+   ========================================================================== */
+.sn-ld {
+  --page-content-width: 1336px;
+  --page-width: calc(var(--page-content-width) + var(--page-margin) * 2);
+  --sn-ld-heading: #12568d;
+  --sn-ld-text: #4c85b3;
+  --sn-ld-tile-pad: 15px;
+
+  overflow-x: clip; /* images that extend past their column never create page scroll */
+
+  @media screen and (max-width: 749px) {
+    --page-margin: 20px;
+    --sn-ld-tile-pad: 11px;
+  }
+
+  /* --- Typography (Figma desktop / mobile) ----------------------------------------------------------- */
+  .text-block:not(.custom-typography) > * {
+    margin: 0;
+  }
+
+  .sn-ld-title:not(.custom-typography) > * {
+    font-family: var(--font-heading--family);
+    font-size: 32px;
+    font-weight: 700;
+    line-height: 52px;
+    color: var(--sn-ld-heading);
+
+    @media screen and (max-width: 749px) {
+      font-size: 21px;
+      line-height: 40px;
+    }
+  }
+
+  .sn-ld-intro .sn-ld-title:not(.custom-typography) > * {
+    @media screen and (max-width: 749px) {
+      font-size: 22px;
+      line-height: 52px;
+    }
+  }
+
+  .sn-ld-body:not(.custom-typography) > * {
+    font-size: 16px;
+    font-weight: 400;
+    line-height: 28px;
+    color: var(--sn-ld-text);
+
+    @media screen and (max-width: 749px) {
+      font-size: 13.5px;
+    }
+  }
+
+  .sn-ld-body--lead:not(.custom-typography) > * {
+    font-size: 18px;
+    line-height: 32px;
+
+    @media screen and (max-width: 749px) {
+      font-size: 12px;
+      line-height: 24px;
+    }
+  }
+
+  .sn-ld-subtitle:not(.custom-typography) > * {
+    font-size: 24px;
+    font-weight: 600;
+    line-height: 40px;
+    color: var(--sn-ld-heading);
+
+    @media screen and (max-width: 749px) {
+      font-size: 16px;
+      font-weight: 500;
+      line-height: 28px;
+    }
+  }
+
+  :is(.sn-ld-note, .sn-ld-list-label):not(.custom-typography) > * {
+    font-size: 14px;
+    font-weight: 600;
+    line-height: 24px;
+    color: var(--sn-ld-heading);
+
+    @media screen and (max-width: 749px) {
+      font-size: 12px;
+    }
+  }
+
+  .sn-ld-item-title:not(.custom-typography) > * {
+    font-size: 16px;
+    font-weight: 700;
+    line-height: 27px;
+    color: var(--sn-ld-heading);
+
+    @media screen and (max-width: 749px) {
+      font-size: 14.5px;
+    }
+  }
+
+  .sn-ld-item-body:not(.custom-typography) > * {
+    font-size: 14px;
+    font-weight: 400;
+    line-height: 24px;
+    color: var(--sn-ld-text);
+
+    @media screen and (max-width: 749px) {
+      font-size: 12px;
+    }
+  }
+
+  /* --- Feature row: icon tile beside title + body; gap = the row group's Gap / Mobile gap ------------- */
+  .sn-ld-item > .group-block-content {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr);
+    grid-template-areas:
+      'icon title'
+      'icon body';
+    grid-template-rows: auto 1fr;
+    align-items: start;
+    column-gap: var(--gap);
+    row-gap: 1px;
+
+    @media screen and (max-width: 749px) {
+      column-gap: var(--sn-gap-mobile, var(--gap));
+    }
+
+    > .icon-block,
+    > .sn-ld-led {
+      grid-area: icon;
+    }
+
+    > .sn-ld-item-title {
+      grid-area: title;
+      padding-block-start: 4px;
+    }
+
+    > .sn-ld-item-body {
+      grid-area: body;
+    }
+  }
+
+  /* A row without a body line: title centred on the tile */
+  .sn-ld-item:not(:has(.sn-ld-item-body)) > .group-block-content > .sn-ld-item-title {
+    grid-row: 1 / span 2;
+    align-self: center;
+    padding-block-start: 0;
+  }
+
+  /* Icon tile around the native icon (icon size = the icon block's Width / Mobile width) */
+  .sn-ld-item > .group-block-content > .icon-block {
+    align-items: center;
+    justify-content: center;
+    padding: var(--sn-ld-tile-pad);
+    border: 1px solid #dcf2fb;
+    border-radius: 50%;
+    background-color: #fff;
+    box-shadow: 0 8px 16px rgb(13 64 128 / 0.08);
+  }
+
+  /* LED indicator: 52px tile, 15px dot in the group's Background colour (+ soft halo; optional blink class) */
+  .sn-ld-item--led > .group-block-content {
+    align-items: center;
+
+    > .sn-ld-item-title {
+      padding-block-start: 0;
+    }
+  }
+
+  .sn-ld-led.sn-ld-led {
+    display: grid;
+    place-items: center;
+    inline-size: 52px;
+    block-size: 52px;
+    padding: 0;
+    border: 1px solid #dcf2fb;
+    border-radius: 50%;
+    background: #fff;
+    box-shadow: 0 6px 14px rgb(13 64 128 / 0.08);
+
+    &::before {
+      content: '';
+      inline-size: 15px;
+      block-size: 15px;
+      border-radius: 50%;
+      background-color: var(--color-background, #ef4444);
+      box-shadow: 0 0 0 6px rgb(var(--color-background-rgb, 239 68 68) / 0.16);
+    }
+
+    > .group-block-content {
+      display: none;
+    }
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .sn-ld-led--blink::before {
+      animation: sn-ld-blink 1.2s ease-in-out infinite;
+    }
+  }
+
+  /* --- Images (picked in the editor; rounded 24 = image block Border radius) ------------------------- */
+  .sn-ld-group .image-block {
+    min-inline-size: 0;
+  }
+
+  .sn-ld-group .image-block__image {
+    inline-size: 100%;
+    block-size: auto;
+  }
+
+  /* --- Intro ---------------------------------------------------------------------------------------- */
+  .sn-ld-intro .sn-ld-body {
+    max-inline-size: 957px;
+  }
+
+  /* --- Content groups: copy / image / list placed by grid areas --------------------------------------- */
+  .sn-ld-group:not(.sn-ld-intro) > .group-block-content {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-areas:
+      'copy'
+      'image'
+      'list';
+    row-gap: 14px;
+
+    > .sn-ld-copy {
+      grid-area: copy;
+    }
+
+    > .image-block {
+      grid-area: image;
+    }
+
+    > .sn-ld-list {
+      grid-area: list;
+    }
+  }
+
+  /* Mobile / tablet (Figma 390): stacked; Box contents = image beside the list; Modes / Water = image behind the
+     rows on the left */
+  @media screen and (max-width: 989px) {
+    .sn-ld-box > .group-block-content {
+      --sn-ld-tile-pad: 9px;
+
+      grid-template-columns: minmax(0, 160px) minmax(0, 1fr);
+      grid-template-areas:
+        'copy copy'
+        'image list';
+      column-gap: 12px;
+      align-items: center;
+
+      .sn-ld-item-title:not(.custom-typography) > * {
+        font-size: 12.5px;
+      }
+
+      .sn-ld-item-body:not(.custom-typography) > * {
+        font-size: 10.5px;
+        color: #0f64a8;
+      }
+    }
+
+    :is(.sn-ld-modes, .sn-ld-water) > .group-block-content {
+      grid-template-areas:
+        'copy'
+        'stack';
+
+      > .image-block,
+      > .sn-ld-list {
+        grid-area: stack;
+      }
+
+      > .image-block {
+        z-index: 0;
+        justify-self: end;
+        align-self: center;
+        inline-size: 55%;
+        margin-inline-end: -8%;
+      }
+
+      > .sn-ld-list {
+        z-index: 1;
+        position: relative;
+      }
+    }
+
+    .sn-ld-brush > .group-block-content > .image-block {
+      justify-self: center;
+      inline-size: 70%;
+      max-inline-size: 246px;
+    }
+  }
+
+  /* Desktop (Figma 1480): RTL grid, first column = right */
+  @media screen and (min-width: 990px) {
+    --sn-ld-tile-pad: 15px;
+
+    :is(.sn-ld-box, .sn-ld-brush, .sn-ld-water, .sn-ld-battery) {
+      --sn-ld-tile-pad: 12px;
+    }
+
+    .sn-ld-sonic > .group-block-content {
+      grid-template-columns: minmax(0, 420px) minmax(0, 412px) minmax(0, 1fr);
+      grid-template-areas: 'copy image list';
+      column-gap: 17px;
+      align-items: start;
+
+      > .sn-ld-copy {
+        padding-block-start: 72px;
+      }
+
+      > .sn-ld-list {
+        justify-self: end;
+        inline-size: min(100%, 380px);
+        padding-block-start: 61px;
+      }
+    }
+
+    .sn-ld-box > .group-block-content {
+      grid-template-columns: minmax(0, 420px) minmax(0, 1fr);
+      grid-template-areas:
+        'copy image'
+        'list image';
+      grid-template-rows: auto 1fr;
+      row-gap: 10px;
+      align-items: start;
+
+      > .sn-ld-copy {
+        padding-block-start: 8px;
+      }
+
+      > .image-block {
+        align-self: center;
+        justify-self: center;
+        inline-size: min(100%, 805px);
+      }
+    }
+
+    .sn-ld-modes > .group-block-content {
+      grid-template-columns: minmax(0, 411px) minmax(0, 377px) minmax(0, 1fr);
+      grid-template-areas: 'copy image list';
+      align-items: start;
+
+      > .sn-ld-copy {
+        padding-block-start: 130px;
+      }
+
+      > .image-block {
+        justify-self: center;
+        inline-size: min(100%, 241px);
+        margin-block-start: -52px;
+      }
+
+      > .sn-ld-list {
+        justify-self: end;
+        inline-size: min(100%, 380px);
+        padding-block-start: 20px;
+      }
+    }
+
+    /* Figma: the tall product image is tilted 3° with a soft drop shadow */
+    .sn-ld-modes > .group-block-content > .image-block .image-block__image {
+      rotate: 3deg;
+      filter: drop-shadow(-14px 24px 44px rgb(5 31 77 / 0.3));
+    }
+
+    :is(.sn-ld-brush, .sn-ld-water) > .group-block-content {
+      grid-template-columns: minmax(0, 454px) minmax(0, 1fr);
+      grid-template-areas:
+        'copy image'
+        'list image';
+      grid-template-rows: auto 1fr;
+      row-gap: 26px;
+      align-items: start;
+
+      > .sn-ld-list {
+        inline-size: min(100%, 392px);
+      }
+    }
+
+    .sn-ld-brush > .group-block-content {
+      > .sn-ld-copy {
+        padding-block-start: 22px;
+      }
+
+      > .image-block {
+        justify-self: end;
+        inline-size: min(100%, 638px);
+        margin-block-start: 47px;
+        margin-inline-end: 30px;
+      }
+    }
+
+    .sn-ld-water > .group-block-content > .image-block {
+      justify-self: end;
+      inline-size: min(100%, 540px);
+      margin-block-start: -68px;
+      margin-inline-end: 101px;
+    }
+
+    .sn-ld-battery > .group-block-content {
+      grid-template-columns: minmax(0, 404px) minmax(0, 400px) minmax(0, 1fr);
+      grid-template-areas: 'copy image list';
+      column-gap: 64px;
+      align-items: center;
+
+      > .sn-ld-copy {
+        gap: 16px;
+      }
+    }
+
+    .sn-ld-copy .sn-ld-body {
+      max-inline-size: 400px;
+    }
+  }
+
+  /* Optional floor shadow under the Cleaning modes image (custom class sn-ld-floor on the group) */
+  .sn-ld-floor > .group-block-content > .image-block {
+    position: relative;
+    isolation: isolate;
+
+    &::after {
+      content: '';
+      position: absolute;
+      inset-block-end: -30px;
+      inset-inline-start: 50%;
+      translate: 50% 0;
+      inline-size: min(260px, 90%);
+      block-size: 42px;
+      border-radius: 50%;
+      background: radial-gradient(closest-side, rgb(13 64 128 / 0.22), transparent);
+      filter: blur(6px);
+      z-index: -1;
+      pointer-events: none;
+    }
+  }
+
+  /* Water image: Figma dashed 1.5px frame */
+  .sn-ld-water .image-block__image {
+    border: 1.5px dashed #dcf2fb;
+  }
+}
+
+@keyframes sn-ld-blink {
+  0%,
+  100% {
+    opacity: 1;
+  }
+
+  50% {
+    opacity: 0.35;
+  }
+}
