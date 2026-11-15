@@ -1849,6 +1849,9 @@
                   "snosha-f1-1",
                   "snosha-f2"
                 ],
+                "add_icon": "plus",
+                "add_icon_size": 24,
+                "add_icon_color": "",
                 "layout_type": "grid",
                 "carousel_on_mobile": false,
                 "max_products": 2,
@@ -1862,10 +1865,7 @@
                 "padding-block-start": 0,
                 "padding-block-end": 0,
                 "padding-inline-start": 0,
-                "padding-inline-end": 0,
-                "add_icon": "plus",
-                "add_icon_size": 16,
-                "add_icon_color": ""
+                "padding-inline-end": 0
               },
               "blocks": {
                 "sn_xsell_heading": {
@@ -2565,17 +2565,17 @@
         "sn_acc_body_weight": "400",
         "sn_acc_body_weight_mobile": "400",
         "sn_acc_bold_weight": "700",
-        "sn_acc_title_line": 29,
-        "sn_acc_paragraph_gap": 0,
-        "sn_acc_paragraph_gap_mobile": 0,
-        "padding-block-start": 24,
-        "padding-block-end": 60,
         "sn_acc_body_color": "#5a5a59",
         "sn_acc_bold_size": 14,
         "sn_acc_bold_size_mobile": 14,
         "sn_acc_bold_color": "#131311",
         "sn_acc_bold_gap": 0,
-        "sn_acc_bold_gap_mobile": 0
+        "sn_acc_bold_gap_mobile": 0,
+        "sn_acc_title_line": 29,
+        "sn_acc_paragraph_gap": 0,
+        "sn_acc_paragraph_gap_mobile": 0,
+        "padding-block-start": 24,
+        "padding-block-end": 60
       }
     }
   },
