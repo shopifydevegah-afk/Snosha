@@ -30,6 +30,11 @@
       --carousel-active-zoom: {{ section.settings.active_card_zoom | divided_by: 100.0 }};
       --carousel-card-width-mobile: {{ section.settings.card_width_mobile }}px;
       --carousel-image-fit: {{ section.settings.image_fit | default: 'contain' }};
+      {%- comment -%} Snosha P02: card image heights (unitless, for ratio math) and phone padding; read only by custom-class CSS. {%- endcomment -%}
+      --carousel-image-height: {{ section.settings.card_image_height | default: 292 }};
+      --carousel-image-height-mobile: {{ section.settings.card_image_height_mobile | default: 162 }};
+      --sn-padding-block-start-mobile: {{ section.settings['padding-block-start-mobile'] | default: 0 }}px;
+      --sn-padding-block-end-mobile: {{ section.settings['padding-block-end-mobile'] | default: 0 }}px;
     {% endif %}
     {% if section.settings.mobile_centered %}--carousel-mobile-card-width: {{ section.settings.mobile_card_width }}px;{% endif %}
     {% if section.settings.custom_class != blank or section.settings.mobile_gap_custom %}--carousel-gap-mobile: {{ section.settings.columns_gap_mobile }}px;{% endif %}
@@ -333,6 +338,54 @@
       "step": 2,
       "unit": "px",
       "default": 262,
+      "visible_if": "{{ section.settings.custom_class != blank }}"
+    },
+    {
+      "type": "range",
+      "id": "card_image_height",
+      "label": "Card image height — Desktop",
+      "info": "Read by the section's custom CSS class. With Card width — Desktop it sets the image shape; narrower screens keep the shape.",
+      "min": 120,
+      "max": 600,
+      "step": 2,
+      "unit": "px",
+      "default": 292,
+      "visible_if": "{{ section.settings.custom_class != blank }}"
+    },
+    {
+      "type": "range",
+      "id": "card_image_height_mobile",
+      "label": "Card image height — Mobile",
+      "info": "Phones (below 750px). Read by the section's custom CSS class.",
+      "min": 80,
+      "max": 480,
+      "step": 2,
+      "unit": "px",
+      "default": 162,
+      "visible_if": "{{ section.settings.custom_class != blank }}"
+    },
+    {
+      "type": "range",
+      "id": "padding-block-start-mobile",
+      "label": "Top padding — Mobile",
+      "info": "Phones (below 750px). Read by the section's custom CSS class.",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 40,
+      "visible_if": "{{ section.settings.custom_class != blank }}"
+    },
+    {
+      "type": "range",
+      "id": "padding-block-end-mobile",
+      "label": "Bottom padding — Mobile",
+      "info": "Phones (below 750px). Read by the section's custom CSS class.",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 40,
       "visible_if": "{{ section.settings.custom_class != blank }}"
     }
   ],

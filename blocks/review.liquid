@@ -2,7 +2,13 @@
 
 {% liquid
   assign block_settings = block.settings
+  # Snosha (opt-in "Rating summary"): outside a product context (e.g. a carousel header on the
+  # product template) fall back to the template's product. Off = native.
+  assign sn_page_product = product
   assign product = closest.product
+  if product == blank and block_settings.show_score
+    assign product = sn_page_product
+  endif
   assign rating = product.metafields.reviews.rating.value.rating
   assign scale_max = product.metafields.reviews.rating.value.scale_max
   assign rating_count = product.metafields.reviews.rating_count
@@ -25,6 +31,30 @@
     }
   {% endstyle %}
 {% endif %}
+
+{%- liquid
+  # Snosha (opt-in "Rating summary"): sizes and colours as CSS variables; 0 / blank = native.
+  capture sn_rating_vars
+    if block_settings.score_size > 0
+      echo '--sn-score-size: ' | append: block_settings.score_size | append: 'px;'
+    endif
+    if block_settings.score_size_mobile > 0
+      echo '--sn-score-size-mobile: ' | append: block_settings.score_size_mobile | append: 'px;'
+    endif
+    if block_settings.star_size > 0
+      echo '--sn-star-size: ' | append: block_settings.star_size | append: 'px;'
+    endif
+    if block_settings.star_size_mobile > 0
+      echo '--sn-star-size-mobile: ' | append: block_settings.star_size_mobile | append: 'px;'
+    endif
+    if block_settings.score_color != blank
+      echo '--sn-score-color: ' | append: block_settings.score_color | append: ';'
+    endif
+    if block_settings.count_color != blank
+      echo '--sn-count-color: ' | append: block_settings.count_color | append: ';'
+    endif
+  endcapture
+-%}
 
 {%- if block_settings.font_size_mobile > 0 -%}
   {%- comment -%} Opt-in mobile size for the label and review count text. {%- endcomment -%}
@@ -58,7 +88,7 @@
 
   <div
     class="rating-wrapper rating-wrapper-{{ block.id }} justify-{{ block_settings.alignment }} size-style"
-    style="{% render 'size-style', settings: block_settings %}"
+    style="{% render 'size-style', settings: block_settings %}{{ sn_rating_vars }}"
     {{ block.shopify_attributes }}
   >
     <svg
@@ -79,6 +109,12 @@
         </symbol>
       </defs>
     </svg>
+    {%- if block_settings.show_score -%}
+      {%- comment -%} Snosha (opt-in): average score from the same rating metafield, e.g. "4.8 / 5" (LTR digits). {%- endcomment -%}
+      <span class="rating-score {{ block_settings.type_preset }}" dir="ltr" aria-hidden="true">
+        {{- rating | round: 1 }} / {{ scale_max -}}
+      </span>
+    {%- endif -%}
     <div
       class="rating"
       style="--star-size: calc(var(--font-{{ block_settings.type_preset }}--size) * 1.1);"
@@ -119,8 +155,14 @@
           <span class="rating-count-separator">|</span>
         {%- endif -%}
         {%- if block_settings.show_number -%}
-          {{- rating_count }}
-          {{ 'content.reviews' | t }}
+          {%- if block_settings.count_text != blank -%}
+            {%- comment -%} Snosha (opt-in): merchant wording; [count] = the same rating_count metafield. {%- endcomment -%}
+            {%- assign sn_count = rating_count.value | default: rating_count | append: '' -%}
+            {{- block_settings.count_text | escape | replace: '[count]', sn_count -}}
+          {%- else -%}
+            {{- rating_count }}
+            {{ 'content.reviews' | t }}
+          {%- endif -%}
         {%- endif -%}
       </p>
     {%- endif -%}
@@ -176,6 +218,33 @@
 
   .filled-star {
     fill: var(--star-fill-color);
+  }
+
+  /* Snosha (opt-in "Rating summary" settings). Every fallback is the native value. */
+  .rating-wrapper .stars {
+    height: var(--sn-star-size, var(--star-size));
+  }
+
+  .rating-wrapper .rating-count {
+    color: var(--sn-count-color, var(--star-fill-color));
+  }
+
+  .rating-wrapper .rating-score {
+    margin: 0;
+    white-space: nowrap;
+    unicode-bidi: isolate;
+    color: var(--sn-score-color, var(--color));
+    font-size: var(--sn-score-size, var(--font-size, inherit));
+  }
+
+  @media screen and (max-width: 749px) {
+    .rating-wrapper .stars {
+      height: var(--sn-star-size-mobile, var(--sn-star-size, var(--star-size)));
+    }
+
+    .rating-wrapper .rating-score {
+      font-size: var(--sn-score-size-mobile, var(--sn-score-size, var(--font-size, inherit)));
+    }
   }
 {% endstylesheet %}
 
@@ -239,6 +308,83 @@
       "type": "color",
       "id": "text_color",
       "label": "t:settings.text_color",
+      "placeholder": "t:settings.default"
+    },
+    {
+      "type": "header",
+      "content": "Rating summary",
+      "info": "Optional. Score, stars and count all come from the product's rating metafields (review app). Nothing shows when the product has no rating."
+    },
+    {
+      "type": "checkbox",
+      "id": "show_score",
+      "label": "Show average score",
+      "info": "Shows the average as \"4.8 / 5\" before the stars.",
+      "default": false
+    },
+    {
+      "type": "text",
+      "id": "count_text",
+      "label": "Review count text",
+      "info": "[count] is replaced with the number of reviews, e.g. بناءً على ([count] تقييم). Blank = default wording."
+    },
+    {
+      "type": "range",
+      "id": "score_size",
+      "label": "Score size — Desktop",
+      "info": "0 = same as the text style.",
+      "min": 0,
+      "max": 48,
+      "step": 1,
+      "unit": "px",
+      "default": 0,
+      "visible_if": "{{ block.settings.show_score }}"
+    },
+    {
+      "type": "range",
+      "id": "score_size_mobile",
+      "label": "Score size — Mobile",
+      "info": "0 = same as desktop.",
+      "min": 0,
+      "max": 48,
+      "step": 0.5,
+      "unit": "px",
+      "default": 0,
+      "visible_if": "{{ block.settings.show_score }}"
+    },
+    {
+      "type": "color",
+      "id": "score_color",
+      "label": "Score color",
+      "placeholder": "t:settings.default",
+      "visible_if": "{{ block.settings.show_score }}"
+    },
+    {
+      "type": "range",
+      "id": "star_size",
+      "label": "Star size — Desktop",
+      "info": "0 = follows the text style.",
+      "min": 0,
+      "max": 48,
+      "step": 1,
+      "unit": "px",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "star_size_mobile",
+      "label": "Star size — Mobile",
+      "info": "0 = same as desktop.",
+      "min": 0,
+      "max": 48,
+      "step": 0.5,
+      "unit": "px",
+      "default": 0
+    },
+    {
+      "type": "color",
+      "id": "count_color",
+      "label": "Review count color",
       "placeholder": "t:settings.default"
     },
     {
