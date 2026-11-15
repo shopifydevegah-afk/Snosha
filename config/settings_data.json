@@ -121,18 +121,6 @@
         "settings": {
           "widget_type": "review-widget"
         }
-      },
-      "316487575649303945": {
-        "type": "shopify://apps/easify-options/blocks/app-embed-block/d2288b18-c1ba-42f5-b3b3-26c75c8820bf",
-<<<<<<< HEAD
-        "disabled": true,
-=======
-        "disabled": false,
->>>>>>> 810349dffddac508aac9f07cc8a296502932562a
-        "settings": {
-          "path_loading_mode": "include",
-          "page_paths": ""
-        }
       }
     },
     "color_palette": {
