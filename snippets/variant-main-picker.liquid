@@ -71,6 +71,20 @@
             assign option_id_attribute = 'data-option-id="' | append: fieldset_id | append: '"'
             assign longest_value = 0
           endif
+
+          # Project extension (Snosha, opt-in): storefront label for options whose Admin name is in the
+          # "Option names to relabel" list (e.g. Color → اللون). Visible label only; option data is untouched.
+          assign option_label = product_option.name
+          if block_settings.option_label != blank
+            assign option_name_key = product_option.name | downcase | strip
+            assign relabel_names = block_settings.option_label_match | downcase | split: ','
+            for relabel_name in relabel_names
+              assign relabel_key = relabel_name | strip
+              if relabel_key == option_name_key
+                assign option_label = block_settings.option_label
+              endif
+            endfor
+          endif
         -%}
 
         {%- if product_option.values.size == 1 and variant_style != 'swatch' -%}
@@ -78,7 +92,7 @@
             class="variant-option"
             data-testid="variant-option-single"
           >
-            {{- product_option.name | escape -}}
+            {{- option_label | escape -}}
             <span
               class="variant-option__swatch-value"
               data-testid="variant-option-single-value"
@@ -94,7 +108,7 @@
             {{ option_id_attribute }}
           >
             <legend>
-              {{ product_option.name | escape -}}
+              {{ option_label | escape -}}
               {%- if variant_style == 'swatch' -%}
                 <span class="variant-option__swatch-value">{{ product_option.selected_value }}</span>
               {%- endif %}
@@ -196,7 +210,7 @@
           %}
 
           <div class="variant-option variant-option--dropdowns">
-            <label for="Option-{{ block.id }}-{{ forloop.index0 }}">{{ product_option.name | escape }}</label>
+            <label for="Option-{{ block.id }}-{{ forloop.index0 }}">{{ option_label | escape }}</label>
             <div
               class="variant-option__select-wrapper"
               style="

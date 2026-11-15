@@ -1,0 +1,105 @@
+{%- comment -%}
+  Project block (Snosha): one colour of "Linked colour products" (Theme Editor source).
+  Destination product = product picker; name = "Colour name" or the product title; fill = "Colour", else "Image",
+  else the product's featured image. The item for the product being viewed is the selected one (aria-current).
+  Outputs a marker comment with the selected name, read by the parent block for its «اللون: …» label.
+{%- endcomment -%}
+{%- liquid
+  assign item = block.settings.product
+  assign current = closest.product
+  assign item_name = block.settings.color_name | strip
+  if item_name == blank and item != blank
+    assign item_name = item.title
+  endif
+  assign is_current = false
+  if item != blank and current != blank and item.id == current.id
+    assign is_current = true
+  endif
+
+  assign fill_style = ''
+  if block.settings.color != blank
+    assign fill_style = '--linked-color-fill: ' | append: block.settings.color | append: ';'
+  elsif block.settings.image != blank
+    assign fill_url = block.settings.image | image_url: width: 96
+    assign fill_style = "--linked-color-image: url('" | append: fill_url | append: "');"
+  elsif item.featured_image != blank
+    assign fill_url = item.featured_image | image_url: width: 96
+    assign fill_style = "--linked-color-image: url('" | append: fill_url | append: "');"
+  endif
+-%}
+
+{%- if item != blank -%}
+  <li
+    class="linked-colors__entry"
+    {{ block.shopify_attributes }}
+  >
+    <a
+      class="linked-colors__item{% unless item.available %} linked-colors__item--unavailable{% endunless %}"
+      href="{{ item.url }}"
+      {% if is_current %}
+        aria-current="true"
+      {% endif %}
+      aria-label="{{ item_name | escape }}{% unless item.available %} - {{ 'products.product.sold_out' | t }}{% endunless %}"
+    >
+      <span
+        class="linked-colors__swatch"
+        {% if fill_style != blank %}
+          style="{{ fill_style | escape }}"
+        {% endif %}
+      ></span>
+      <span
+        class="linked-colors__name"
+        aria-hidden="true"
+      >
+        {{- item_name | escape -}}
+      </span>
+    </a>
+    {%- if is_current -%}
+      <!--sn-current:{{ item_name | escape }}:sn-->
+    {%- endif -%}
+  </li>
+{%- elsif request.design_mode -%}
+  <li
+    class="linked-colors__entry linked-colors__entry--empty"
+    {{ block.shopify_attributes }}
+  >
+    <span class="linked-colors__swatch"></span>
+    <span class="linked-colors__name">{{ block.settings.color_name | default: '—' | escape }}</span>
+  </li>
+{%- endif -%}
+
+{% schema %}
+{
+  "name": "Colour",
+  "tag": null,
+  "settings": [
+    {
+      "type": "product",
+      "id": "product",
+      "label": "Destination product"
+    },
+    {
+      "type": "text",
+      "id": "color_name",
+      "label": "Colour name",
+      "info": "Leave empty to use the product title."
+    },
+    {
+      "type": "color",
+      "id": "color",
+      "label": "Colour"
+    },
+    {
+      "type": "image_picker",
+      "id": "image",
+      "label": "Image (when no colour is set)",
+      "info": "Empty = the product's featured image."
+    }
+  ],
+  "presets": [
+    {
+      "name": "Colour"
+    }
+  ]
+}
+{% endschema %}

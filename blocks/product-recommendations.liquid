@@ -45,7 +45,7 @@
   data-section-id="{{ section.id }}"
   data-product-id="{{ closest.product.id }}"
   data-intent="{{ block_settings.recommendation_type }}"
-  data-recommendations-performed="{{ recommendations.performed }}"
+  data-recommendations-performed="{% if block_settings.product_source == 'manual' %}true{% else %}{{ recommendations.performed }}{% endif %}"
   data-hydration-key="product-recommendations-{{ block.id }}"
   {% if request.visual_preview_mode %}
     data-shopify-editor-preview
@@ -73,11 +73,18 @@
       {% content_for 'blocks' %}
     </div>
 
-    {%- if recommendations.performed or closest.product == blank -%}
+    {%- comment -%}
+      Project extension (Snosha, opt-in "Products from: Manual selection"): the merchant's picked products are
+      rendered on the page itself (no recommendations request; data-recommendations-performed is true). Default
+      "Shopify recommendations" = native behaviour below. The two sources are never mixed.
+    {%- endcomment -%}
+    {%- if block_settings.product_source == 'manual' or recommendations.performed or closest.product == blank -%}
       {% liquid
         assign products = recommendations.products
 
-        if closest.product == blank
+        if block_settings.product_source == 'manual'
+          assign products = block_settings.manual_products
+        elsif closest.product == blank
           # Onboarding mode: Show placeholder products
           for i in (1..block_settings.max_products)
             assign products = products | append: ', '
@@ -121,8 +128,15 @@
           assign has_recommendations = 'true'
         else
           assign has_recommendations = 'false'
+          # Editor only: keep an empty manual list visible with a note instead of hiding the block
+          if block_settings.product_source == 'manual' and request.design_mode
+            assign has_recommendations = 'editor-empty'
+          endif
         endif
       %}
+      {%- if has_recommendations == 'editor-empty' -%}
+        <p class="product-recommendations__editor-note">Select products in "Manual products".</p>
+      {%- endif -%}
 
       <div
         class="
@@ -240,6 +254,30 @@
     {
       "type": "paragraph",
       "content": "t:content.complementary_products"
+    },
+    {
+      "type": "select",
+      "id": "product_source",
+      "label": "Products from",
+      "options": [
+        {
+          "value": "recommendations",
+          "label": "Shopify recommendations (Search & Discovery)"
+        },
+        {
+          "value": "manual",
+          "label": "Manual selection"
+        }
+      ],
+      "default": "recommendations",
+      "info": "Manual selection shows the same products on every product using this template. An empty source hides the block on the store."
+    },
+    {
+      "type": "product_list",
+      "id": "manual_products",
+      "label": "Manual products",
+      "info": "Used only when \"Products from\" is Manual selection.",
+      "limit": 10
     },
     {
       "type": "header",

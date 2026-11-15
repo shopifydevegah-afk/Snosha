@@ -74,6 +74,22 @@
       echo ' --sn-thumb-gap-mobile: ' | append: bs.thumb_gap_mobile | append: 'px;'
     endcapture
   endif
+
+  # Styled stage + zoom: a real, focusable zoom button on every carousel slide (Figma 44 circle, 18 search icon).
+  # It calls the same native zoom dialog as a click on the slide. [index] / [number] are filled in per slide.
+  assign sn_zoom_button = ''
+  if bs.stage_style and bs.zoom
+    assign sn_zoom_label = 'actions.zoom_media' | t: index: '[number]' | escape
+    capture sn_zoom_button
+      echo '<button type="button" class="button button-unstyled product-media-gallery__zoom" aria-label="'
+      echo sn_zoom_label
+      echo '" on:click="#zoom-dialog-' | append: block.id | append: '/open/[index]" on:pointerenter="/preloadImage/[index]">'
+      echo '<svg aria-hidden="true" focusable="false" width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">'
+      echo '<path d="M14 7.5C14 11.09 11.09 14 7.5 14S1 11.09 1 7.5 3.91 1 7.5 1 14 3.91 14 7.5Z" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>'
+      echo '<path d="M16.5 16.5 12.2 12.2" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>'
+      echo '</svg></button>'
+    endcapture
+  endif
 -%}
 
 {% render 'product-media-gallery-content',
@@ -84,7 +100,8 @@
   block: block,
   section: section,
   extra_style: sn_style,
-  overlay: sn_overlay
+  overlay: sn_overlay,
+  zoom_button: sn_zoom_button
 %}
 
 {% schema %}

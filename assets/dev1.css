@@ -2340,46 +2340,55 @@
     }
   }
 
-  /* Zoom marker (Figma 44 circle, 18 search icon; bottom 27 / start 25, mobile 24 / 16). In the carousel the
-     whole slide is Horizon's zoom trigger (it opens the zoom dialog); the marker is its visible cue and lets
-     clicks through to the slide. Shown only on slides that have zoom. */
-  .media-gallery--carousel slideshow-slide[on\:click*='zoom-dialog'] {
+  /* Zoom button (Figma 190:10217: 44 circle, white 92%, soft shadow, 18 search icon stroke 1.6; bottom 27 /
+     right 25, mobile 24 / 16). A real <button> on every slide ("Styled stage" + Zoom), opening the native zoom
+     dialog like a click on the slide. Its own SVG follows the Figma geometry: the theme's icon-search.svg draws
+     the glyph in ~58% of its box (and its stroke variable is lost as a mask), which is why it looked too small.
+     Sizes = "Zoom button size" / "Zoom icon size". Only this gallery's button; other search icons unchanged. */
+  .media-gallery--carousel slideshow-slide.product-media-container {
+    position: relative;
+  }
+
+  .product-media-gallery__zoom {
     --sn-zoom-bottom: 27px;
     --sn-zoom-start: 25px;
 
-    position: relative;
+    position: absolute;
+    z-index: 2;
+    inset-block-end: var(--sn-zoom-bottom);
+    inset-inline-start: var(--sn-zoom-start);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    inline-size: var(--sn-zoom-size, 44px);
+    block-size: var(--sn-zoom-size, 44px);
+    padding: 0;
+    border-radius: 50%;
+    background-color: rgb(255 255 255 / 0.92);
+    box-shadow: 0 12px 16px rgb(15 100 168 / 0.1);
+    color: var(--color-primary-button-background, #176bb0);
+    cursor: zoom-in;
 
     @media screen and (max-width: 749px) {
       --sn-zoom-bottom: 24px;
       --sn-zoom-start: 16px;
     }
 
-    &::before,
-    &::after {
-      content: '';
-      position: absolute;
-      z-index: 1;
-      pointer-events: none;
-    }
-
-    &::before {
-      inset-block-end: var(--sn-zoom-bottom);
-      inset-inline-start: var(--sn-zoom-start);
-      inline-size: var(--sn-zoom-size, 44px);
-      block-size: var(--sn-zoom-size, 44px);
-      border-radius: 50%;
-      background-color: rgb(255 255 255 / 0.92);
-      box-shadow: 0 12px 16px rgb(15 100 168 / 0.1);
-    }
-
-    &::after {
-      inset-block-end: calc(var(--sn-zoom-bottom) + (var(--sn-zoom-size, 44px) - var(--sn-zoom-icon-size, 18px)) / 2);
-      inset-inline-start: calc(var(--sn-zoom-start) + (var(--sn-zoom-size, 44px) - var(--sn-zoom-icon-size, 18px)) / 2);
+    svg {
+      flex: 0 0 auto;
       inline-size: var(--sn-zoom-icon-size, 18px);
       block-size: var(--sn-zoom-icon-size, 18px);
-      background-color: var(--color-primary-button-background, #176bb0);
-      mask: url('icon-search.svg') center / contain no-repeat;
     }
+
+    &:focus-visible {
+      outline: var(--focus-outline-width, 2px) solid var(--color-primary-button-background, #176bb0);
+      outline-offset: 2px;
+    }
+  }
+
+  /* 3D models open their own viewer, not the zoom dialog */
+  .product-media-container--model .product-media-gallery__zoom {
+    display: none;
   }
 
   /* Arrows (desktop; Horizon hides them on mobile, where swipe and thumbnails navigate). Grey round buttons;
@@ -2616,7 +2625,7 @@
 
     legend {
       float: inline-start;
-      margin-inline-end: 4px;
+      margin-inline-end: var(--sn-swatch-legend-gap, 4px);
       font-size: 16px;
       font-weight: 600;
       line-height: 27px;
@@ -2693,8 +2702,9 @@
 
   /* Linked colour products (separate products): same look as the variant swatches */
   .linked-colors {
-    gap: 4px var(--sn-swatch-gap, 8px);
     --sn-swatch-ring: calc((var(--sn-swatch-size, 34px) - var(--sn-swatch-dot, 24px)) / 2);
+
+    gap: 4px var(--sn-swatch-legend-gap, 4px);
   }
 
   .linked-colors__legend {
@@ -2911,6 +2921,17 @@
       grid-template-columns: minmax(0, 1fr);
     }
 
+    /* Theme Editor only: "Manual selection" with no products picked yet */
+    .product-recommendations__editor-note {
+      margin: 0;
+      padding: 12px 14px;
+      border: 1px dashed #dcf2fb;
+      border-radius: 18px;
+      font-size: 12px;
+      line-height: 20px;
+      color: #5a5a59;
+    }
+
     .product-recommendations__skeleton-item {
       aspect-ratio: auto;
       min-block-size: calc(var(--sn-xsell-thumb, 56px) + 2 * var(--sn-xsell-pad-block, 10px) + 2px);
@@ -3047,10 +3068,13 @@
   }
 
   /* --- Description & policies ----------------------------------------------------------------------
-     Row gap, padding, radius, colours, heading size / weight / line height, icon size = native Accordion
-     settings. Icon tile, mobile heading size and body text = section settings. Body: Figma 14/28 #5a5a59,
-     sub-headings 14 Bold / line 40 #131311; product description HTML (p, h2–h6, strong, lists) normalised so
-     nested rich text adds no extra margins. */
+     Figma 190:10342 / 190:11054: title 16/27 SemiBold #131311; body 14/28 Regular #5a5a59; sub-headings 14 Bold,
+     line 40, #131311; rows 14 / 16 (mobile 20) padding, 10 apart.
+     Title = native Accordion typography (Typography "Custom": size / weight / line height); mobile title size =
+     section setting. Body = each row's text block typography (Custom: Size, Weight, Line height, Mobile size,
+     Mobile line height, Color); a text block left on a preset gets the Figma 14/28 instead. Sub-heading line
+     height / paragraph spacing / icon tile = section settings. Description HTML (p, h2–h6, strong, lists) is
+     normalised so nested rich text adds no extra margins. */
   .accordion--cards {
     .details__header {
       color: #131311;
@@ -3071,19 +3095,46 @@
     }
 
     .details-content {
-      font-size: var(--sn-acc-body, 14px);
-      line-height: var(--sn-acc-body-line, 28px);
       color: #5a5a59;
       text-align: start;
 
-      @media screen and (max-width: 749px) {
-        font-size: var(--sn-acc-body-mobile, 14px);
+      /* Text block on a preset: Figma body */
+      .text-block:not(.custom-typography) {
+        font-size: 14px;
+        font-weight: 400;
+        line-height: 28px;
+        color: #5a5a59;
+
+        > * {
+          font-size: inherit;
+          line-height: inherit;
+        }
       }
 
-      .text-block:not(.custom-typography) {
-        font-size: inherit;
-        line-height: inherit;
-        color: inherit;
+      /* Text block on Custom: its own Weight and Line height (vars from blocks/text.liquid); Size and the mobile
+         size / line height are applied natively */
+      .text-block.custom-typography {
+        font-weight: var(--sn-font-weight, 400);
+
+        > * {
+          font-weight: inherit;
+        }
+      }
+
+      .text-block.custom-typography:not(.text-block--m-lh) {
+        &,
+        > * {
+          line-height: var(--sn-line-height, 2);
+        }
+      }
+
+      @media screen and (min-width: 750px) {
+        .text-block.custom-typography.text-block--m-lh {
+          &,
+          > * {
+            line-height: var(--sn-line-height, 2);
+          }
+        }
       }
 
       :is(p, ul, ol) {
@@ -3098,16 +3149,13 @@
         padding-inline-start: 1.25em;
       }
 
+      /* Sub-headings follow the body size (1em), bold, own line height */
       :is(h1, h2, h3, h4, h5, h6) {
         margin: 0;
-        font-size: var(--sn-acc-body, 14px);
+        font-size: 1em;
         font-weight: 700;
         line-height: var(--sn-acc-title-line, 40px);
         color: #131311;
-
-        @media screen and (max-width: 749px) {
-          font-size: var(--sn-acc-body-mobile, 14px);
-        }
       }
 
       :is(strong, b) {

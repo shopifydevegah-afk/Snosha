@@ -201,6 +201,7 @@
       --sn-trust-pad-block: {{ s.sn_trust_pad_block }}px;
       --sn-trust-pad-block-mobile: {{ s.sn_trust_pad_block_mobile }}px;
       --sn-trust-tile: {{ s.sn_trust_tile }}px;
+      --sn-swatch-legend-gap: {{ s.sn_swatch_legend_gap }}px;
       --sn-trust-text: {{ s.sn_trust_text }}px;
       --sn-trust-text-mobile: {{ s.sn_trust_text_mobile }}px;
       --sn-xsell-thumb: {{ s.sn_xsell_thumb }}px;
@@ -210,12 +211,23 @@
       --sn-xsell-add: {{ s.sn_xsell_add }}px;
       --sn-acc-tile: {{ s.sn_acc_tile }}px;
       --sn-acc-heading-mobile: {{ s.sn_acc_heading_mobile }}px;
-      --sn-acc-body: {{ s.sn_acc_body }}px;
-      --sn-acc-body-mobile: {{ s.sn_acc_body_mobile }}px;
-      --sn-acc-body-line: {{ s.sn_acc_body_line }}px;
       --sn-acc-title-line: {{ s.sn_acc_title_line }}px;
       --sn-acc-paragraph-gap: {{ s.sn_acc_paragraph_gap }}px;
     }
+    {%- comment -%} Trust icon size (0 = each icon block's own Width): uploaded icons carry an inline width, hence !important {%- endcomment -%}
+    {%- if s.sn_trust_icon > 0 %}
+    #shopify-section-{{ section.id }} .sn-product-trust .icon-block__media {
+      width: {{ s.sn_trust_icon }}px !important;
+      height: auto;
+    }
+    {%- endif %}
+    {%- if s.sn_trust_icon_mobile > 0 %}
+    @media screen and (max-width: 749px) {
+      #shopify-section-{{ section.id }} .sn-product-trust .icon-block__media {
+        width: {{ s.sn_trust_icon_mobile }}px !important;
+      }
+    }
+    {%- endif %}
   {% endstyle %}
 {%- endif -%}
 
@@ -600,6 +612,16 @@
     },
     {
       "type": "range",
+      "id": "sn_swatch_legend_gap",
+      "label": "Gap between colour label and swatches",
+      "min": 0,
+      "max": 24,
+      "step": 1,
+      "unit": "px",
+      "default": 4
+    },
+    {
+      "type": "range",
       "id": "sn_button_height",
       "label": "Add to cart height, desktop",
       "min": 40,
@@ -641,18 +663,18 @@
     {
       "type": "range",
       "id": "sn_trust_pad_start",
-      "label": "Trust pill padding at icon side, desktop",
+      "label": "Trust pill right padding (icon side), desktop",
       "min": 0,
       "max": 30,
       "step": 1,
       "unit": "px",
       "default": 12,
-      "info": "Icon side = right in Arabic."
+      "info": "Applies to every trust pill. Right / left as seen on the Arabic store; English mirrors them."
     },
     {
       "type": "range",
       "id": "sn_trust_pad_start_mobile",
-      "label": "Trust pill padding at icon side, mobile",
+      "label": "Trust pill right padding (icon side), mobile",
       "min": 0,
       "max": 30,
       "step": 1,
@@ -662,7 +684,7 @@
     {
       "type": "range",
       "id": "sn_trust_pad_end",
-      "label": "Trust pill padding at text side, desktop",
+      "label": "Trust pill left padding (text side), desktop",
       "min": 0,
       "max": 30,
       "step": 1,
@@ -672,7 +694,7 @@
     {
       "type": "range",
       "id": "sn_trust_pad_end_mobile",
-      "label": "Trust pill padding at text side, mobile",
+      "label": "Trust pill left padding (text side), mobile",
       "min": 0,
       "max": 30,
       "step": 1,
@@ -708,6 +730,27 @@
       "step": 1,
       "unit": "px",
       "default": 28
+    },
+    {
+      "type": "range",
+      "id": "sn_trust_icon",
+      "label": "Trust icon size, desktop",
+      "min": 0,
+      "max": 32,
+      "step": 1,
+      "unit": "px",
+      "default": 18,
+      "info": "0 = each icon block's own Width."
+    },
+    {
+      "type": "range",
+      "id": "sn_trust_icon_mobile",
+      "label": "Trust icon size, mobile",
+      "min": 0,
+      "max": 32,
+      "step": 1,
+      "unit": "px",
+      "default": 16
     },
     {
       "type": "range",
@@ -798,36 +841,6 @@
       "step": 1,
       "unit": "px",
       "default": 16
-    },
-    {
-      "type": "range",
-      "id": "sn_acc_body",
-      "label": "Accordion text size, desktop",
-      "min": 10,
-      "max": 20,
-      "step": 1,
-      "unit": "px",
-      "default": 14
-    },
-    {
-      "type": "range",
-      "id": "sn_acc_body_mobile",
-      "label": "Accordion text size, mobile",
-      "min": 10,
-      "max": 20,
-      "step": 1,
-      "unit": "px",
-      "default": 14
-    },
-    {
-      "type": "range",
-      "id": "sn_acc_body_line",
-      "label": "Accordion text line height",
-      "min": 16,
-      "max": 48,
-      "step": 1,
-      "unit": "px",
-      "default": 28
     },
     {
       "type": "range",
