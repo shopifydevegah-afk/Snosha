@@ -465,10 +465,95 @@
         "padding-block-start": 48,
         "padding-block-end": 48
       }
+    },
+    "section_snHowToVideo": {
+      "type": "section",
+      "name": "How to use video",
+      "blocks": {
+        "text_htuHead": {
+          "type": "text",
+          "name": "t:names.heading",
+          "settings": {
+            "text": "<h2>طريقة الاستخدام</h2>",
+            "width": "100%",
+            "max_width": "none",
+            "alignment": "center",
+            "type_preset": "custom",
+            "font": "var(--font-body--family)",
+            "font_size": "2rem",
+            "font_weight": "600",
+            "line_height": "normal",
+            "line_height_exact": 163,
+            "letter_spacing": "normal",
+            "case": "none",
+            "wrap": "pretty",
+            "font_size_mobile": 22,
+            "line_height_mobile": 50,
+            "text_color": "#12568d",
+            "padding-block-start": 0,
+            "padding-block-end": 0,
+            "padding-inline-start": 0,
+            "padding-inline-end": 0
+          }
+        },
+        "video_htuMain": {
+          "type": "video",
+          "name": "t:names.video",
+          "settings": {
+            "source": "uploaded",
+            "uploaded_aspect_ratio": "9/16",
+            "media_fit": "cover",
+            "video_autoplay": false,
+            "video_loop": true,
+            "custom_width": 100,
+            "custom_width_mobile": 100,
+            "max_width": 400,
+            "max_width_mobile": 300,
+            "poster_overlay_color": "#0a295233",
+            "poster_overlay_mobile": false,
+            "play_button_style": "custom",
+            "play_button_size": 88,
+            "play_button_size_mobile": 56,
+            "play_button_icon_size": 32,
+            "play_button_radius": 44,
+            "play_button_background": "#ffffff",
+            "play_button_icon_color": "#176bb0",
+            "play_button_shadow_color": "#00337366",
+            "border": "none",
+            "border_radius": 24,
+            "border_radius_mobile": 16,
+            "padding-block-start": 0,
+            "padding-block-end": 0,
+            "padding-inline-start": 0,
+            "padding-inline-end": 0
+          }
+        }
+      },
+      "block_order": [
+        "text_htuHead",
+        "video_htuMain"
+      ],
+      "settings": {
+        "content_direction": "column",
+        "vertical_on_mobile": true,
+        "horizontal_alignment_flex_direction_column": "center",
+        "vertical_alignment_flex_direction_column": "center",
+        "gap": 28,
+        "section_width": "page-width",
+        "background_media": "none",
+        "border": "none",
+        "border_width": 1,
+        "border_opacity": 100,
+        "border_radius": 0,
+        "padding-block-start": 60,
+        "padding-block-end": 60,
+        "custom_class": "sn-product-how-to-video"
+      }
     }
   },
   "order": [
     "main",
+    "section_snHowToVideo",
     "product_recommendations_qggXJq"
   ]
 }

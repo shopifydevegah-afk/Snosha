@@ -75,6 +75,12 @@ One record per S01–S15, in Figma order. Where an old planning placeholder cont
 | S14 | FAQ | `217:14604` | `217:14813` | index.json | Dev3 | IMPLEMENTED (2026-11-12; needs commit + push to reach the editor; visual QA PENDING USER REVIEW) | B + C (opt-in) | `section` (`section_sn14Faq`, native FAQ preset structure) + `group` / `text` / `accordion` / `_accordion-row` blocks | `sn-home-faq` | Merchant writes answers 1–3, 5, 6 |
 | S15 | Footer | `190:4048` | `190:14491` | footer-group (global) | Main | IMPLEMENTED | B/C | `footer` (blocks: `group`, `image`, `text`, `menu` ×3, `email-signup`) + `footer-utilities` (`footer-copyright`) | `sn-footer-main`, `sn-footer-utilities` | Global: affects all pages. The merchant assigns menus and the logo. Visual QA pending user review |
 
+**Product page (PDP) workstream** — separate `P##` IDs from the Figma product-page frame numbers, so the homepage S01–S15 IDs stay untouched:
+
+| ID | Section | Desktop node | Mobile node | Target | Owner | Status | Cat. | Native component | Custom class | Dependencies / blockers |
+|---|---|---|---|---|---|---|---|---|---|---|
+| P05 | How To Use Video ("05 How To Use Video") | `190:10510` | `190:11221` | `templates/product.json` (user choice 2026-11-15) | Dev3 | IMPLEMENTED (2026-11-15; needs commit + push; visual QA PENDING USER REVIEW) | B + C (opt-in) | `section` (`section_snHowToVideo`, Horizon "Video" preset structure) + `text` + `video` | `sn-product-how-to-video` | Merchant uploads the video and poster |
+
 ## E. Section decisions
 
 Each section gets its own subsection here (with the Native Reuse Audit) when its task starts.
@@ -1906,6 +1912,70 @@ Verified in code and docs on 2026-11-08 before deciding:
   - Keyboard: Tab / Enter / Space toggle; focus ring visible.
   - Empty-answer rows don't show an empty panel. Two-state test (class off).
 
+### P05 PDP How To Use Video — IMPLEMENTED 2026-11-15 (Dev3), visual QA PENDING USER REVIEW
+
+- **Figma read (2026-11-15, `get_design_context` with screenshots, both nodes accessible).** The mobile node is `190:11221`; the original brief's mobile link pointed to the desktop node.
+  - **Desktop `190:10510`** (1480):
+    - Padding 60 / 60. Container max 1376, inline padding 20, centered, gap 28.
+    - Heading Cairo SemiBold 32/52 `#12568d`, centered.
+    - Video 400 × 711 (≈ 9:16), radius 24. Poster cover-cropped from a landscape image.
+    - Overlay ("Video Cover") `rgba(10,41,82,0.2)`.
+    - Play: 88 white circle (radius 44), shadow `0 14 34 rgba(0,51,115,0.4)`, icon 34 box with a solid triangle `#176bb0`.
+  - **Mobile `190:11221`** (390):
+    - Padding 40 / 40, inline 20, gap 14.
+    - Heading 22/52.
+    - Video 300 × 533, radius 16. **No overlay layer.**
+    - Play 56 circle, same shadow and icon.
+- **Native Reuse Audit:**
+  - Inspected:
+    - Sections: `section` (Horizon "Video" preset `t:names.video_section` = `section` + `video` block).
+    - Blocks: `video`, `text`.
+    - Snippets: `video` (3 callers, untouched), `deferred-media-video-styles`, `video-placeholder-styles`, `text`, `text-responsive-style`, `text-block-styles`.
+    - `assets/icon-play.svg` (solid triangle, same shape as Figma).
+  - **Match:** native `section` (already has `custom_class` from S14), a `text` heading and the `video` block. The video block renders `<deferred-media>`:
+    - The poster is a real `<button>` with a localized aria-label; the video loads on click.
+    - Plays muted with native controls; YouTube/Vimeo `video_url` is kept.
+  - **Reused from S09:** `uploaded_poster`, `uploaded_aspect_ratio`, the custom play button (size, icon size, radius, colors, custom icon image).
+  - **Gaps:** mobile play size, play shadow, poster overlay (desktop only in Figma), px max width per viewport, mobile radius, fit option.
+  - **Category B + C.** No new section.
+- **Schema extensions (`blocks/video.liquid`, 28 → 36 settings, all opt-in; defaults = native / S09 output):**
+  - `media_fit` (cover / contain; poster + uploaded video).
+  - `max_width` (0–1000 px) and `max_width_mobile` (0 = same as desktop).
+  - "Poster overlay": `poster_overlay_color` (alpha; empty = none) and `poster_overlay_mobile`. Drawn on the poster button, so it fades out with the poster when the video plays.
+  - `play_button_size_mobile` (0 = same as desktop) and `play_button_shadow_color` (alpha; empty = none; geometry 0 14 34 as Figma).
+  - `border_radius_mobile` (0 = same as desktop).
+  - The 5 S09 video blocks use none of the new keys, so their output is unchanged.
+- **Instance `section_snHowToVideo`** in `templates/product.json`, inserted after `main` and before `product_recommendations_qggXJq`:
+  - Section: column, centered, gap 28, page-width, padding 60 / 60, `custom_class: sn-product-how-to-video`.
+  - `text_htuHead`: `<h2>طريقة الاستخدام</h2>`, custom preset 2rem, weight 600, line height exact 163% (≈ 52px), mobile 22 / 50, `#12568d`, centered.
+  - `video_htuMain`:
+    - Uploaded source, **no video or poster written** (merchant picks them). Ratio 9:16, fit cover.
+    - Max width 400 / mobile 300; radius 24 / mobile 16.
+    - Overlay `#0a295233`, off on mobile.
+    - Play custom 88 / mobile 56, icon 32 (matches Figma's visible triangle at 34 with the native icon's proportions), radius 44, `#ffffff` / `#176bb0`, shadow `#00337366`.
+    - Loop on (native default). Autoplay off.
+- **Sizing:** width 100% capped at 400 / 300, so the frame shrinks on screens narrower than the cap. The 9:16 ratio sets the height and the section height is content-driven.
+- **Media workflow:**
+  - Theme Editor → product page → "How to use video" → Video block → upload or select the video (or a YouTube/Vimeo URL) and an optional "Poster image".
+  - Poster fallback: selected poster → the video's own preview image → native placeholder.
+  - Poster crop = the image's focal point (Shopify Files).
+  - Same video on every product using `product.json`; per-product videos can later use the video setting's dynamic source (a product metafield) once its definition exists.
+- **CSS (`assets/dev3.css`, `.sn-product-how-to-video`, collision check: no matches):**
+  - Mobile gutters 20.
+  - Mobile padding 41 / 40 and gap 15. The text block's mobile line height maxes at 50 vs Figma 52, so 1px moves above the heading and 1px into the gap; heading and video positions match Figma.
+  - Applies the heading block's exact weight and desktop line height (`--sn-font-weight` / `--sn-line-height` from the text block).
+  - Everything else is settings.
+- **Files:** `blocks/video.liquid`, `assets/dev3.css`, `templates/product.json` (additions only). `index.json` and S09 are untouched.
+- **Static validation:**
+  - Theme Check = **11**: the post-merge baseline. The two new offenses are `ExcessiveSettingsCount` on `blocks/group.liquid` (44) and `sections/section.liquid` (46), both already at HEAD from the dev1/dev2 merge, not from this change.
+  - Template checked against the schemas: keys, options, ranges/steps, allowed blocks, refs, no `""` pickers, no duplicate IDs.
+  - Video schema range steps ≤ 101. CSS braces balanced, CRLF kept.
+- **Sync:** reaches the editor only after commit + push (GitHub-connected theme).
+- **Visual QA — PENDING USER REVIEW:**
+  - Desktop 1480: heading 32/52, 28 gap, 400 × 711 frame radius 24, overlay, 88 button + shadow centered.
+  - Mobile 390: 300 × 533 radius 16, no overlay, 56 button.
+  - Playback (click / Enter / Space, controls, muted start); poster crop; narrow phones (< 340) shrink the frame; two-state test (class off).
+
 ## F. QA & progress
 
 One QA row per S-ID. `PASS (local)` and Theme Check results describe **historical developer-reported checks** on individual branches, not checks rerun during this documentation merge. Final desktop/mobile/RTL visual QA remains `PENDING USER REVIEW` absent user evidence.
@@ -1927,6 +1997,8 @@ One QA row per S-ID. `PASS (local)` and Theme Check results describe **historica
 | S13 | Done (both Figma nodes reported) | Local checks reported in S13 implementation details; compare with actual branch | PENDING USER REVIEW | PENDING USER REVIEW | PENDING USER REVIEW | Merchant supplies 4 icons | PENDING USER REVIEW (`CLASS_PLUS_SETTINGS`) | Mobile order and centred subheading are merchant decisions |
 | S14 | PASS (2026-11-12, both nodes read with screenshots) | PASS (local only: Theme Check = 9 baseline, template checked against schemas, CSS braces) | PENDING USER REVIEW | PENDING USER REVIEW | PENDING USER REVIEW | Optional icon image picker on the accordion; render PENDING USER REVIEW | PENDING USER REVIEW (two-state test) | Checklist: E › S14 › Visual QA |
 | S15 | PASS (get_design_context, 2026-11-11) | PASS: Theme Check = baseline 9, footer-group JSON and 4 schemas parse, no duplicate IDs | PENDING USER REVIEW | PENDING USER REVIEW | PENDING USER REVIEW | PENDING USER REVIEW (logo via image picker) | PENDING USER REVIEW (expected `CLASS_PLUS_SETTINGS: footer/utilities padding, copyright settings`) | Fix rounds 1–2 (2026-11-11): menu typography, single copyright line in Figma order (`dir` rtl + `bdi`) with its own desktop/mobile typography; merchant: pick the logo, set the logo link; test newsletter submit; check the settings change the text at both breakpoints |
+
+| P05 (PDP) | PASS (2026-11-15, both nodes read with screenshots) | PASS (local only: Theme Check = 11 post-merge baseline, template checked against schemas, CSS braces) | PENDING USER REVIEW | PENDING USER REVIEW | PENDING USER REVIEW | Video + poster pickers in the editor; render PENDING USER REVIEW | PENDING USER REVIEW (two-state test) | Checklist: E › P05 › Visual QA |
 
 **QA provenance:** Any historic agent-operated S04 preview observations predate the no-preview policy; they do not constitute current user approval.
 
@@ -2029,6 +2101,7 @@ One QA row per S-ID. `PASS (local)` and Theme Check results describe **historica
 | 2026-11-12 | Mobile refinement by Dev1 (no preview). S12: card title mobile text-wrap pretty→wrap (Chrome pretty pulls a 2nd word down; Figma 190:4349 breaks greedily), only while the native Text wrap is pretty. S03: mobile beam ring gets a base #63cdff 40% ring so the outline runs all round incl. bottom (Figma 335:4229 / 190:4081 screenshots). S06: chip icons Mobile width 20 (existing icon setting width_mobile; desktop 16 unchanged). S10: price block no longer stretches on phones (base.css .layout-panel-flex--row > .text-block flex:1 pushed the discount pill to the far left); N2 description font_size_mobile 9 / line_height_mobile 16 restored (merge reset them to 0). S10 header subtitle already 15/38 = Figma, unchanged | User mobile review | dev1.css, index.json (6 values) | Visual QA PENDING USER REVIEW |
 | 2026-11-12 | Final mobile refinements by Dev1 (Figma 335:4229 + 190:4167 re-read; user screenshots sampled). S12: heading max-inline-size 9em on phones → «نصائح أذكى للعناية» / «بفمك» as requested by the merchant (note: Figma 190:4349 renders it on one line). S03: mobile ring = the Figma clipped card shadow seen through the 2px frame (vertical tint rgb(13 64 128 / .03→.15) ≈ sampled rgb(218 226 235) at the bottom), outer box-shadow removed (Figma clips it), cyan 40% ring removed. S06: chip icon Mobile width 20→24 (Figma vector box 24 in 26 badge), mobile cap 20→24 | Merchant mobile review | dev1.css, index.json (4 values) | Visual QA PENDING USER REVIEW |
 | 2026-11-12 | S12 correction by Dev1: the merchant meant the ARTICLE CARD title, not the section heading. Section heading max-inline-size 9em (phones) reverted → single line again. Card title: the earlier rule matched [style*="--text-wrap: pretty"], but typography-style writes --text-wrap only for the Custom preset, so it never applied; the rte title inherited text-wrap: pretty from .text-block.rte (text-block-styles). Now phones: .featured-blog-posts-card__content > h4 .text-block:not(.custom-typography) → text-wrap: wrap (greedy, Figma 190:4349) | Merchant correction | dev1.css | Visual QA PENDING USER REVIEW |
+| 2026-11-15 | PDP workstream added (`P##` IDs). P05 How To Use Video implemented by Dev3 on `templates/product.json` (user choice) with the native `section` + `text` + `video` (`section_snHowToVideo`). Opt-in `video` extensions: `media_fit`, `max_width`/`max_width_mobile`, poster overlay (+ mobile toggle), `play_button_size_mobile`, `play_button_shadow_color`, `border_radius_mobile`. Theme Check baseline is now 11 after the dev1/dev2 merge (`group` 44 and `section` 46 settings) | User request + Figma `190:10510` / `190:11221` | P05; shared opt-in: `video` (S09 unchanged) | Merchant uploads video + poster; commit + push; visual QA by the user |
 
 ## Merge reconciliation note — 2026-11-12 (documentation only)
 

@@ -557,3 +557,47 @@
     }
   }
 }
+
+/* ==========================================================================
+   sn-product-how-to-video — PDP "How To Use Video" (owner: Dev3). Native `section`
+   (Horizon "Video" preset structure) on templates/product.json.
+   Figma desktop 190:10510, mobile 190:11221.
+   Video size, ratio, radius, overlay and play button are video-block settings;
+   heading size, weight, color and mobile size/line height are text-block settings.
+   This file only adds mobile section spacing and applies the heading's exact
+   weight / line height (text-block "Weight" and "Line height (exact)").
+   ========================================================================== */
+.sn-product-how-to-video {
+  /* Figma mobile: 20px side padding */
+  &.section {
+    @media screen and (max-width: 749px) {
+      --page-margin: 20px;
+    }
+  }
+
+  /* Figma mobile: padding 40 / 40, heading line box 52, heading → video gap 14 (desktop values are section settings).
+     The text block's mobile line height stops at 50, so 1px goes above the heading and 1px into the gap:
+     heading text and video land on the Figma positions (66 / 106). */
+  @media screen and (max-width: 749px) {
+    .section-content-wrapper {
+      row-gap: 15px;
+      padding-block: calc(41px + var(--section-top-offset, 0px)) 40px;
+    }
+  }
+
+  /* Heading: exact weight and line height from the text block's settings */
+  .text-block.custom-typography {
+    &,
+    > * {
+      margin: 0;
+      font-weight: var(--sn-font-weight, var(--font-weight));
+    }
+
+    @media screen and (min-width: 750px) {
+      &,
+      > * {
+        line-height: var(--sn-line-height, var(--line-height));
+      }
+    }
+  }
+}
