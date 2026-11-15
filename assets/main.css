@@ -903,3 +903,187 @@
     }
   }
 }
+
+
+/* sn-product-contact — section (P03 Contact) | Figma desktop 190:10844, mobile 190:11633 | owner: Main
+   Native section (Rich text name) → group card → image (logo), text ×2, group → button ×2.
+   Settings drive: section padding / max width (+ Mobile), card colour / border / radius / padding /
+   gaps, logo width, text sizes / weights / line heights (+ Mobile), button colours / sizes / padding /
+   radius / icon / contact links. Literals below are commented Figma constants with no native control. */
+.sn-product-contact {
+  /* Phone padding / gap from the section's Mobile settings (the native pair is desktop) */
+  @media screen and (max-width: 749px) {
+    > .custom-section-content > .section-content-wrapper {
+      gap: var(--sn-gap-mobile, var(--gap));
+      padding-block:
+        calc(var(--sn-padding-block-start-mobile, 40px) + var(--section-top-offset, 0px))
+        var(--sn-padding-block-end-mobile, 40px);
+      padding-inline: var(--sn-padding-inline-mobile, 4px);
+    }
+  }
+
+  /* Text: weight + exact line height from each text block (custom style); phone size and line
+     height come from the blocks' native Font size / Line height — Mobile. */
+  .text-block.custom-typography,
+  .text-block.custom-typography > * {
+    font-weight: var(--sn-font-weight, var(--font-weight));
+  }
+
+  .text-block.custom-typography > * {
+    margin-block: 0;
+  }
+
+  @media screen and (min-width: 750px) {
+    .text-block.custom-typography,
+    .text-block.custom-typography > * {
+      line-height: var(--sn-line-height, var(--line-height));
+    }
+  }
+
+  .sn-product-contact-text {
+    opacity: 0.8; /* Figma rgba(255,255,255,0.8) on the block's text colour (colour setting has no alpha) */
+  }
+
+  /* Groups: phone gap from each group's Mobile gap */
+  @media screen and (max-width: 749px) {
+    :is(.sn-product-contact-card, .sn-product-contact-actions) > .group-block-content {
+      gap: var(--sn-gap-mobile, var(--gap));
+    }
+  }
+
+  /* ---------- Card ---------- */
+  .sn-product-contact-card {
+    position: relative;
+    isolation: isolate;
+    box-shadow: 0 24px 56px 0 rgb(0 26 64 / 0.35); /* Figma card shadow */
+
+    /* Figma gradient over the group's Background colour (#12568d = middle stop). Desktop also
+       carries the sparkles and dots (decorative, behind the content, not interactive). */
+    background-repeat: no-repeat;
+    background-image:
+      url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2024%2024%22%3E%3Cpath%20d%3D%22M12%202.09C12.6%207.49%2016.6%2011.49%2022%2012.09C16.6%2012.69%2012.6%2016.69%2012%2022.09C11.4%2016.69%207.4%2012.69%202%2012.09C7.4%2011.49%2011.4%207.49%2012%202.09Z%22%20fill%3D%22white%22%20fill-opacity%3D%220.38%22%2F%3E%3C%2Fsvg%3E"),
+      url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2024%2024%22%3E%3Cpath%20d%3D%22M12%202.09C12.6%207.49%2016.6%2011.49%2022%2012.09C16.6%2012.69%2012.6%2016.69%2012%2022.09C11.4%2016.69%207.4%2012.69%202%2012.09C7.4%2011.49%2011.4%207.49%2012%202.09Z%22%20fill%3D%22white%22%20fill-opacity%3D%220.38%22%2F%3E%3C%2Fsvg%3E"),
+      url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2024%2024%22%3E%3Cpath%20d%3D%22M12%202.09C12.6%207.49%2016.6%2011.49%2022%2012.09C16.6%2012.69%2012.6%2016.69%2012%2022.09C11.4%2016.69%207.4%2012.69%202%2012.09C7.4%2011.49%2011.4%207.49%2012%202.09Z%22%20fill%3D%22white%22%20fill-opacity%3D%220.38%22%2F%3E%3C%2Fsvg%3E"),
+      url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2024%2024%22%3E%3Cpath%20d%3D%22M12%202.09C12.6%207.49%2016.6%2011.49%2022%2012.09C16.6%2012.69%2012.6%2016.69%2012%2022.09C11.4%2016.69%207.4%2012.69%202%2012.09C7.4%2011.49%2011.4%207.49%2012%202.09Z%22%20fill%3D%22white%22%20fill-opacity%3D%220.38%22%2F%3E%3C%2Fsvg%3E"),
+      radial-gradient(circle closest-side, rgb(99 205 255 / 0.45) 98%, transparent),
+      radial-gradient(circle closest-side, rgb(99 205 255 / 0.4) 98%, transparent),
+      radial-gradient(circle closest-side, rgb(99 205 255 / 0.35) 98%, transparent),
+      linear-gradient(39.64deg, #0e3b6b 8.75%, #12568d 54.13%, #0a2e55 91.25%);
+    background-size: 24px 24px, 24px 24px, 24px 24px, 24px 24px, 5px 5px, 4px 4px, 3px 3px, auto;
+    /* Figma positions (physical, as drawn): sparkles 205/33 L, 257/223 R, 137/63 R, 59/163 L;
+       dots 90/79 R, 159/239 L, 272/49 R */
+    background-position:
+      left 205px top 33px,
+      right 257px top 223px,
+      right 137px top 63px,
+      left 59px top 163px,
+      right 90px top 79px,
+      left 159px top 239px,
+      right 272px top 49px,
+      0 0;
+
+    /* Rings: dashed 420 (top-left, fading) and solid 380 (bottom-right) */
+    &::before,
+    &::after {
+      content: '';
+      position: absolute;
+      z-index: -1;
+      border-radius: 50%;
+      pointer-events: none;
+    }
+
+    &::before {
+      inline-size: 420px;
+      block-size: 420px;
+      left: -151px;
+      top: -151px;
+      border: 1.5px dashed rgb(99 205 255 / 0.45);
+      mask-image: linear-gradient(135deg, #000 25%, transparent 80%);
+    }
+
+    &::after {
+      inline-size: 380px;
+      block-size: 380px;
+      right: -165px;
+      top: 109px;
+      border: 1px solid rgb(99 205 255 / 0.18);
+    }
+
+    /* Logo: Figma artwork 178 × 36 sits in a 140 × 28.3 slot (mobile 100 × 20.2), so it overlaps
+       the gaps; width = image block Fixed width (178). */
+    .image-block {
+      margin-block: -3.86px;
+    }
+
+    .image-block--sn-fixed {
+      inline-size: var(--sn-image-width);
+      max-inline-size: 100%;
+
+      @media screen and (max-width: 749px) {
+        inline-size: var(--sn-image-width-mobile, var(--sn-image-width));
+      }
+    }
+
+    .image-block__image {
+      block-size: auto;
+    }
+
+    /* Phones: Figma mobile card (radius 20, padding 28 / 18, no border, gradient 75.87°, no decor) */
+    @media screen and (max-width: 749px) {
+      --border-radius: 20px;
+
+      border-radius: 20px;
+      border-width: 0;
+      padding: 28px 18px;
+      background-image: linear-gradient(75.87deg, #0e3b6b 8.75%, #12568d 54.13%, #0a2e55 91.25%);
+      background-size: auto;
+      background-position: 0 0;
+
+      &::before,
+      &::after {
+        display: none;
+      }
+
+      .image-block {
+        margin-block: -7.9px;
+      }
+    }
+  }
+
+  /* ---------- Buttons ---------- */
+  .sn-product-contact-actions :is(.button, .button-secondary, .button-custom) {
+    font-size: var(--sn-button-font-size, var(--font-paragraph--size));
+    font-weight: var(--sn-button-font-weight, var(--button-font-weight-primary));
+    line-height: calc(26 / 16); /* Figma 16/26 */
+    border-radius: var(--sn-button-radius, var(--style-border-radius-buttons-primary));
+    padding-block: var(--sn-button-padding-block, var(--button-padding-block));
+    padding-inline: var(--sn-button-padding-inline, var(--button-padding-inline));
+    --button-border-width: var(--sn-button-border-width, var(--style-border-width-secondary));
+
+    @media screen and (max-width: 749px) {
+      font-size: var(--sn-button-font-size-mobile, var(--sn-button-font-size, var(--font-paragraph--size)));
+    }
+  }
+
+  /* Primary CTA (first button): Figma glow; secondary (second): frosted glass */
+  .sn-product-contact-actions > .group-block-content > a:first-child {
+    box-shadow:
+      0 14px 28px 0 rgb(0 26 64 / 0.4),
+      0 0 30px 2px rgb(99 205 255 / 0.4);
+  }
+
+  .sn-product-contact-actions > .group-block-content > a:nth-child(2) {
+    backdrop-filter: blur(7px);
+  }
+
+  .sn-product-contact-actions a:focus-visible {
+    outline: 2px solid #ffffff;
+    outline-offset: 3px;
+  }
+
+  @media screen and (max-width: 749px) {
+    .sn-product-contact-actions > .group-block-content {
+      align-items: stretch;
+    }
+  }
+}

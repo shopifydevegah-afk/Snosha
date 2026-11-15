@@ -1,9 +1,85 @@
 
-{% render 'button', link: block.settings.link %}
+{%- liquid
+  # Snosha (opt-in "Contact link"): builds a WhatsApp or email link from plain settings.
+  # Default "Link" = native (the Link setting). Invalid / empty contact details fall back to the
+  # Link setting, so no broken destination is generated (blank → native disabled link).
+  assign button_link = block.settings.link
+  case block.settings.contact_type
+    when 'whatsapp'
+      assign sn_wa_digits = ''
+      assign sn_wa_chars = block.settings.whatsapp_number | default: '' | split: ''
+      for sn_char in sn_wa_chars
+        if '0123456789' contains sn_char
+          assign sn_wa_digits = sn_wa_digits | append: sn_char
+        endif
+      endfor
+      # "00" international prefix → wa.me wants the number without it
+      assign sn_wa_start = sn_wa_digits | slice: 0, 2
+      if sn_wa_start == '00'
+        assign sn_wa_digits = sn_wa_digits | slice: 2, 20
+      endif
+      if sn_wa_digits.size >= 8
+        assign button_link = 'https://wa.me/' | append: sn_wa_digits
+        if block.settings.whatsapp_message != blank
+          assign sn_wa_text = block.settings.whatsapp_message | url_encode | replace: '+', '%20'
+          assign button_link = button_link | append: '?text=' | append: sn_wa_text
+        endif
+      endif
+    when 'email'
+      assign sn_email = block.settings.email_address | default: '' | strip
+      assign sn_email_ok = false
+      if sn_email contains '@' and sn_email contains '.'
+        assign sn_email_ok = true
+      endif
+      if sn_email contains ' ' or sn_email contains '"' or sn_email contains '<'
+        assign sn_email_ok = false
+      endif
+      if sn_email_ok
+        if block.settings.email_client == 'gmail'
+          assign sn_email_enc = sn_email | url_encode
+          assign button_link = 'https://mail.google.com/mail/?view=cm&fs=1&to=' | append: sn_email_enc
+        else
+          assign button_link = 'mailto:' | append: sn_email
+        endif
+      endif
+  endcase
+-%}
+{% render 'button', link: button_link %}
+{%- comment -%} Snosha (opt-in): icon before the label (inside the same link), drawn as a pseudo-element; none = native. {%- endcomment -%}
+{%- if block.settings.icon != blank and block.settings.icon != 'none' -%}
+  {%- liquid
+    if block.settings.icon == 'whatsapp'
+      assign sn_icon_url = 'icon-whatsapp.svg' | asset_url
+    else
+      assign sn_icon_url = 'icon-mail.svg' | asset_url
+    endif
+  -%}
+  {% style %}
+    .{{ block.settings.style_class }}--{{ block.id }} {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: {{ block.settings.icon_gap }}px;
+    }
+    .{{ block.settings.style_class }}--{{ block.id }}::before {
+      content: '';
+      flex: none;
+      inline-size: {{ block.settings.icon_size }}px;
+      block-size: {{ block.settings.icon_size }}px;
+      {%- if block.settings.icon == 'whatsapp' %}
+        background: url('{{ sn_icon_url }}') center / contain no-repeat; /* brand colours */
+      {%- else %}
+        background-color: currentColor; /* follows the button text colour */
+        mask: url('{{ sn_icon_url }}') center / contain no-repeat;
+      {%- endif %}
+    }
+  {% endstyle %}
+{%- endif -%}
 {%- comment -%} Snosha (opt-in): button shape as CSS vars, only when the section has a custom class; read by that class's CSS. {%- endcomment -%}
 {%- if section.settings.custom_class != blank -%}
   {% style %}
     .{{ block.settings.style_class }}--{{ block.id }} {
+      {%- if block.settings.font_size_mobile > 0 %}--sn-button-font-size-mobile: {{ block.settings.font_size_mobile }}px;{% endif %}
       --sn-button-font-size: {{ block.settings.font_size }}px;
       --sn-button-font-weight: {{ block.settings.font_weight }};
       --sn-button-border-width: {{ block.settings.border_width }}px;
@@ -221,6 +297,127 @@
       "step": 1,
       "unit": "px",
       "default": 28
+    },
+    {
+      "type": "range",
+      "id": "font_size_mobile",
+      "label": "Text size — Mobile",
+      "info": "Phones (below 750px), in sections with a custom class. 0 = same as desktop.",
+      "min": 0,
+      "max": 32,
+      "step": 1,
+      "unit": "px",
+      "default": 0
+    },
+    {
+      "type": "header",
+      "content": "Contact link"
+    },
+    {
+      "type": "select",
+      "id": "contact_type",
+      "label": "Link type",
+      "info": "WhatsApp and Email build the link from the details below; if they are empty or invalid, the Link above is used.",
+      "options": [
+        {
+          "value": "link",
+          "label": "Link"
+        },
+        {
+          "value": "whatsapp",
+          "label": "WhatsApp"
+        },
+        {
+          "value": "email",
+          "label": "Email"
+        }
+      ],
+      "default": "link"
+    },
+    {
+      "type": "text",
+      "id": "whatsapp_number",
+      "label": "WhatsApp number",
+      "info": "International format with country code, e.g. 201XXXXXXXXX. Spaces, + and dashes are removed.",
+      "visible_if": "{{ block.settings.contact_type == 'whatsapp' }}"
+    },
+    {
+      "type": "text",
+      "id": "whatsapp_message",
+      "label": "Prefilled message",
+      "info": "Optional. Text that appears in the customer's WhatsApp chat box.",
+      "visible_if": "{{ block.settings.contact_type == 'whatsapp' }}"
+    },
+    {
+      "type": "text",
+      "id": "email_address",
+      "label": "Email address",
+      "visible_if": "{{ block.settings.contact_type == 'email' }}"
+    },
+    {
+      "type": "select",
+      "id": "email_client",
+      "label": "Open with",
+      "info": "Default email app uses mailto: (the customer's device decides which app opens). Gmail opens Gmail's web compose window.",
+      "options": [
+        {
+          "value": "mailto",
+          "label": "Default email app"
+        },
+        {
+          "value": "gmail",
+          "label": "Gmail (web)"
+        }
+      ],
+      "default": "mailto",
+      "visible_if": "{{ block.settings.contact_type == 'email' }}"
+    },
+    {
+      "type": "header",
+      "content": "Icon"
+    },
+    {
+      "type": "select",
+      "id": "icon",
+      "label": "Icon",
+      "info": "Shown before the label, inside the same link.",
+      "options": [
+        {
+          "value": "none",
+          "label": "None"
+        },
+        {
+          "value": "whatsapp",
+          "label": "WhatsApp"
+        },
+        {
+          "value": "email",
+          "label": "Email"
+        }
+      ],
+      "default": "none"
+    },
+    {
+      "type": "range",
+      "id": "icon_size",
+      "label": "Icon size",
+      "min": 12,
+      "max": 40,
+      "step": 1,
+      "unit": "px",
+      "default": 22,
+      "visible_if": "{{ block.settings.icon != 'none' }}"
+    },
+    {
+      "type": "range",
+      "id": "icon_gap",
+      "label": "Icon gap",
+      "min": 0,
+      "max": 24,
+      "step": 1,
+      "unit": "px",
+      "default": 10,
+      "visible_if": "{{ block.settings.icon != 'none' }}"
     }
   ],
   "presets": [
