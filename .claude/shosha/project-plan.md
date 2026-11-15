@@ -1933,6 +1933,7 @@ Verified in code and docs on 2026-11-08 before deciding:
 - **Media:** logo and toothbrush are empty image pickers (merchant uploads); with the class, an empty image renders nothing on the live store.
 - **Checks:** Theme Check 11 offenses before and after (all pre-existing; the documented 9 is out of date after the merges); `product.json` parses, diff = insertion only; `dev2.css` braces balanced.
 - **Not implemented / limits:** Figma "Section Glow" and toothbrush "Floor Shadow" (SVG contents not read); mobile manual header 80% white (text colour has no alpha, white used); mobile cells are 10–11px as in Figma (small).
+- **Fix 2026-11-15 (section not appearing):** commit befd9bb was pushed to origin/dev2, but section `padding-block-end` was 140 while the `section` schema range is 0–100, so Shopify rejected `product.json` on GitHub sync and kept the old template. Set to 100; the remaining 40px are a desktop-only `margin-block-end` on `.sn-pc-table` in dev2.css. All other section/block values checked against their schemas (ranges, steps, select options, block_order): valid. **Rule for templates:** validate setting values against schema ranges before pushing (Theme Check does not).
 - **Visual QA:** PENDING USER REVIEW (rule 13).
 
 ## F. QA & progress
@@ -2067,3 +2068,4 @@ One QA row per S-ID. `PASS (local)` and Theme Check results describe **historica
 - Preserved **all detailed S01–S15 section decisions and refinements in E** and **the complete chronological change log in H** without removing superseded history.
 - No Git merge status, template integrity, schema acceptance, remote Shopify state or current CSS initialization was validated by this document edit.
 | 2026-11-15 | PDP-01 comparison table on `templates/product.json` as native composition (user choice over a custom section): `section` + row groups + text blocks with mobile text; `text` font size options 14.5/15/15.5/17px | Native-first; user chose C knowing the strip/table look stays as scoped CSS (section/group at the settings cap) | `product.json`, `blocks/text.liquid`, `dev2.css` | Logo + toothbrush uploads; visual QA by the user |
+| 2026-11-15 | PDP-01 fix: product.json rejected by Shopify sync (section bottom padding 140 > max 100) | Out-of-range value invalidates the whole template; 40px moved to scoped CSS | `product.json`, `dev2.css` | Push dev2, then confirm in the editor |
