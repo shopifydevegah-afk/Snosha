@@ -288,6 +288,7 @@
       --sn-acc-bold-size-mobile: {{ s.sn_acc_bold_size_mobile }}px;
       --sn-acc-bold-color: {{ s.sn_acc_bold_color }};
       --sn-acc-bold-gap: {{ s.sn_acc_bold_gap }}px;
+      --sn-acc-bold-gap-mobile: {{ s.sn_acc_bold_gap_mobile }}px;
       --sn-acc-paragraph-gap-mobile: {{ s.sn_acc_paragraph_gap_mobile }}px;
     }
     {%- comment -%} Trust icon size (0 = each icon block's own Width): uploaded icons carry an inline width, hence !important {%- endcomment -%}
@@ -1329,7 +1330,18 @@
     {
       "type": "range",
       "id": "sn_acc_bold_gap",
-      "label": "Gap below bold titles",
+      "label": "Bold heading to paragraph gap — Desktop",
+      "min": 0,
+      "max": 24,
+      "step": 1,
+      "unit": "px",
+      "default": 0,
+      "info": "Space under a bold title line (a paragraph that starts with bold text followed by a line break, a bold-only paragraph, or a heading). Bold words inside a sentence are not affected. Figma: 0."
+    },
+    {
+      "type": "range",
+      "id": "sn_acc_bold_gap_mobile",
+      "label": "Bold heading to paragraph gap — Mobile",
       "min": 0,
       "max": 24,
       "step": 1,
@@ -1349,17 +1361,18 @@
     {
       "type": "range",
       "id": "sn_acc_paragraph_gap",
-      "label": "Accordion paragraph spacing, desktop",
+      "label": "Paragraph spacing — Desktop",
       "min": 0,
       "max": 24,
       "step": 1,
       "unit": "px",
-      "default": 0
+      "default": 0,
+      "info": "Gap between consecutive paragraphs, e.g. between the two description groups (each group = bold title + line break + text). A blank line typed in the text adds nothing. Figma: 0."
     },
     {
       "type": "range",
       "id": "sn_acc_paragraph_gap_mobile",
-      "label": "Accordion paragraph spacing, mobile",
+      "label": "Paragraph spacing — Mobile",
       "min": 0,
       "max": 24,
       "step": 1,

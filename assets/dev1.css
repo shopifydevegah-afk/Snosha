@@ -3172,6 +3172,33 @@
     }
   }
 
+  /* Add button icon from the Complementary Products block ("Add button icon", "Custom add button icon",
+     "Add icon size", "Add icon colour"): drawn as a mask on the button's own icon span (no second icon); the
+     button text stays its accessible name and its action is native. Output only when an icon is chosen
+     (class .sn-add-icon); "Theme default" keeps the card image block's quick-add icon settings / native icon. */
+  .product-recommendations.sn-add-icon button.quick-add__button {
+    color: var(--sn-add-icon-color, var(--sn-quick-add-fg, var(--color-primary-button-text, #fff)));
+
+    > .add-to-cart-icon {
+      inline-size: var(--sn-add-icon-size, 16px);
+      block-size: var(--sn-add-icon-size, 16px);
+      background-color: currentcolor;
+      -webkit-mask: var(--sn-add-icon) center / contain no-repeat;
+      mask: var(--sn-add-icon) center / contain no-repeat;
+
+      > svg {
+        visibility: hidden;
+      }
+    }
+  }
+
+  /* "Custom image": the uploaded image itself (its own colours), not a single-colour silhouette */
+  .product-recommendations.sn-add-icon--image button.quick-add__button > .add-to-cart-icon {
+    background: var(--sn-add-icon) center / contain no-repeat;
+    -webkit-mask: none;
+    mask: none;
+  }
+
   /* --- Description & policies ----------------------------------------------------------------------
      Figma 190:10342 / 190:11053: row title 16/27 SemiBold #131311; inner titles 14 Bold #131311 (box 29); body
      14/28 Regular #5a5a59; no paragraph gaps; content right under the header; rows 14 / 16 (mobile 20) padding,
@@ -3255,12 +3282,16 @@
         }
       }
 
-      /* SPACING: no browser / rich-text margins; paragraph gap desktop / mobile (Figma 0) */
+      /* SPACING: no browser / rich-text margins. "Paragraph spacing" (desktop / mobile, Figma 0) is the gap between
+         consecutive paragraphs, lists and headings — in the description this is the gap between the two groups
+         (each group is one paragraph: bold title + line break + text). A blank line typed between groups is an
+         empty <p></p> that the theme hides (base.css p:empty); the next paragraph still gets this same gap, so the
+         blank line neither adds space nor changes the setting. */
       :is(p, ul, ol, h1, h2, h3, h4, h5, h6) {
         margin: 0;
       }
 
-      :is(p, ul, ol) + :is(p, ul, ol) {
+      :is(p, ul, ol, h1, h2, h3, h4, h5, h6) + :is(p, ul, ol, h1, h2, h3, h4, h5, h6) {
         margin-block-start: var(--sn-acc-paragraph-gap, 0px);
 
         @media screen and (max-width: 749px) {
@@ -3301,12 +3332,20 @@
       :is(h1, h2, h3, h4, h5, h6),
       p:has(> :is(strong, b):only-child) {
         margin-block-end: var(--sn-acc-bold-gap, 0px);
+
+        @media screen and (max-width: 749px) {
+          margin-block-end: var(--sn-acc-bold-gap-mobile, 0px);
+        }
       }
 
       /* c) bold title then a line break outside it: own line box */
       p > :is(strong, b):first-child:has(+ br) {
         display: inline-block;
         margin-block-end: var(--sn-acc-bold-gap, 0px);
+
+        @media screen and (max-width: 749px) {
+          margin-block-end: var(--sn-acc-bold-gap-mobile, 0px);
+        }
       }
 
       /* d) line break INSIDE the bold: as an inline-block the break would end inside the box and the text would
@@ -3314,6 +3353,10 @@
       p > :is(strong, b):first-child:has(> br:last-child) {
         display: block;
         margin-block-end: var(--sn-acc-bold-gap, 0px);
+
+        @media screen and (max-width: 749px) {
+          margin-block-end: var(--sn-acc-bold-gap-mobile, 0px);
+        }
       }
 
       /* b) a paragraph that is only a bold title uses the title line height */

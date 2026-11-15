@@ -1862,7 +1862,10 @@
                 "padding-block-start": 0,
                 "padding-block-end": 0,
                 "padding-inline-start": 0,
-                "padding-inline-end": 0
+                "padding-inline-end": 0,
+                "add_icon": "plus",
+                "add_icon_size": 16,
+                "add_icon_color": ""
               },
               "blocks": {
                 "sn_xsell_heading": {
@@ -1947,7 +1950,7 @@
                         "quick_add_mobile": true,
                         "quick_add_label": "",
                         "quick_add_style": "native",
-                        "quick_add_icon": "plus",
+                        "quick_add_icon": "native",
                         "quick_add_icon_position": "start",
                         "quick_add_icon_size": 16,
                         "quick_add_radius": 12,
@@ -2571,7 +2574,8 @@
         "sn_acc_bold_size": 14,
         "sn_acc_bold_size_mobile": 14,
         "sn_acc_bold_color": "#131311",
-        "sn_acc_bold_gap": 0
+        "sn_acc_bold_gap": 0,
+        "sn_acc_bold_gap_mobile": 0
       }
     }
   },
