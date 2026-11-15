@@ -89,7 +89,7 @@
             "thumbnail_position": "bottom",
             "thumbnail_width": 72,
             "thumbnail_radius": 14,
-            "aspect_ratio": "adapt",
+            "aspect_ratio": "1/1.25",
             "constrain_to_viewport": false,
             "media_fit": "contain",
             "media_radius": 28,
@@ -730,6 +730,7 @@
                 },
                 "accelerated-checkout": {
                   "type": "accelerated-checkout",
+                  "disabled": true,
                   "static": true,
                   "settings": {},
                   "blocks": {}
@@ -1686,7 +1687,7 @@
               "type": "accordion",
               "settings": {
                 "icon": "caret",
-                "icon_color": "#176BB0",
+                "icon_color": "#176bb0",
                 "dividers": false,
                 "divider_color": "",
                 "type_preset": "h6",
