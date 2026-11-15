@@ -3096,21 +3096,23 @@
   }
 
   /* Native quick add as the round button (Add = straight to cart; Choose = native options window).
-     Position: the button is absolute on the whole row (centred, button side = physical left in Arabic). Root cause
-     of the earlier jump: the single-variant "Add" button sits inside the native quick-add product form, whose
-     `container-type: inline-size` (layout containment) made the FORM its positioning box; with the quick-add
-     wrapper static, that form lay in the 56px image cell, so the Add button was placed against the image (right),
-     unlike the "Choose" button. The form is no containment box here, so both buttons use the row. Native hover
-     `scale: 1.03` / width expansion are neutralised: hover only darkens the colour.
+     Position: absolute on the whole card row (centred, button side = physical left in Arabic); the quick-add wrapper
+     and the image cell are static, so the row (.product-card__content, relative) is the positioning box.
+     Hover jump — root cause: the theme setting "Card hover effect: Subtle zoom" (snippets/card-hover-effect-styles)
+     gives `.product-card:hover .card-gallery` a `transform: scale(1.015)`. A transformed element becomes the
+     positioning box of its absolute descendants, and the button lives inside .card-gallery, so on hover it was
+     placed against the 56px image (right side). The Lift / Scale effects transform the whole card the same way.
+     Here the hover effect is switched off for these rows (the transform itself, not countered), so the box never
+     changes; native hover `scale: 1.03` / width expansion are neutralised too: hover only darkens the colour.
      Icon / size / colours = the card image block's quick-add settings ("Button icon": Plus / Shopping cart /
      Custom image / Default, "Icon size", "Button background", "Button text and icon"); defaults theme blue / white. */
-  .product-recommendations .card-gallery .quick-add,
-  .product-recommendations .quick-add__product-form-component {
-    position: static;
+  .product-recommendations .product-card:is(:hover, :focus-within),
+  .product-recommendations .product-card:is(:hover, :focus-within) :is(.card-gallery, .product-card__image) {
+    transform: none;
   }
 
-  .product-recommendations .quick-add__product-form-component .shopify-product-form {
-    container-type: normal;
+  .product-recommendations .card-gallery .quick-add {
+    position: static;
   }
 
   .product-recommendations button.quick-add__button {
@@ -3171,13 +3173,14 @@
   }
 
   /* --- Description & policies ----------------------------------------------------------------------
-     Figma 190:10342 / 190:11054: title 16/27 SemiBold #131311; body 14/28 Regular #5a5a59; sub-headings 14 Bold,
-     line 40, #131311; rows 14 / 16 (mobile 20) padding, 10 apart.
-     Title = native Accordion typography (Typography "Custom": size / weight / line height); mobile title size =
-     section setting. Body = each row's text block typography (Custom: Size, Weight, Line height, Mobile size,
-     Mobile line height, Color); a text block left on a preset gets the Figma 14/28 instead. Sub-heading line
-     height / paragraph spacing / icon tile = section settings. Description HTML (p, h2–h6, strong, lists) is
-     normalised so nested rich text adds no extra margins. */
+     Figma 190:10342 / 190:11053: row title 16/27 SemiBold #131311; inner titles 14 Bold #131311 (box 29); body
+     14/28 Regular #5a5a59; no paragraph gaps; content right under the header; rows 14 / 16 (mobile 20) padding,
+     10 apart.
+     Row title = native Accordion typography (Custom: size / weight / line height) + mobile size (section).
+     Inner padding / space under the row title / row gap = native Accordion settings (row padding, content gap).
+     Text = Product information › Snosha layout › Accordion text: body size / line height / weight desktop+mobile,
+     body colour, bold weight + colour, bold title size desktop+mobile, title line height, gap below titles,
+     paragraph gap desktop+mobile. A row text block switched to Custom typography keeps its own values. */
   .accordion--cards {
     .details__header {
       color: #131311;
@@ -3198,17 +3201,18 @@
     }
 
     .details-content {
-      color: #5a5a59;
+      color: var(--sn-acc-body-color, #5a5a59);
       text-align: start;
 
-      /* Text block on a preset: section settings "Accordion text" (Figma 14 / 28 / Regular, mobile the same);
-         the block's own Text colour still applies */
+      /* BODY (text block on a preset): Snosha layout › Accordion text — size, line height, weight desktop/mobile,
+         body colour (Figma 14 / 28 / Regular / #5a5a59). Applied to the text block and its paragraphs / list
+         items only, never to headings or bold runs. */
       .text-block:not(.custom-typography) {
         font-family: var(--font-body--family);
         font-size: var(--sn-acc-body, 14px);
         font-weight: var(--sn-acc-body-weight, 400);
         line-height: var(--sn-acc-body-line, 28px);
-        color: var(--color, #5a5a59);
+        color: var(--sn-acc-body-color, #5a5a59);
 
         @media screen and (max-width: 749px) {
           font-size: var(--sn-acc-body-mobile, 14px);
@@ -3216,28 +3220,28 @@
           line-height: var(--sn-acc-body-line-mobile, 28px);
         }
 
-        > *,
-        :is(p, li) {
+        :is(p, li, ul, ol) {
           font-family: inherit;
           font-size: inherit;
           font-weight: inherit;
           line-height: inherit;
+          color: inherit;
         }
       }
 
-      /* Text block on Custom: its own Weight and Line height (vars from blocks/text.liquid); Size and the mobile
-         size / line height are applied natively */
+      /* Text block on Custom typography: its own Weight and Line height (vars from blocks/text.liquid); Size and
+         the mobile size / line height are applied natively */
       .text-block.custom-typography {
         font-weight: var(--sn-font-weight, 400);
 
-        > * {
+        :is(p, li) {
           font-weight: inherit;
         }
       }
 
       .text-block.custom-typography:not(.text-block--m-lh) {
         &,
-        > * {
+        :is(p, li) {
           line-height: var(--sn-line-height, 2);
         }
       }
@@ -3245,13 +3249,14 @@
       @media screen and (min-width: 750px) {
         .text-block.custom-typography.text-block--m-lh {
           &,
-          > * {
+          :is(p, li) {
             line-height: var(--sn-line-height, 2);
           }
         }
       }
 
-      :is(p, ul, ol) {
+      /* SPACING: no browser / rich-text margins; paragraph gap desktop / mobile (Figma 0) */
+      :is(p, ul, ol, h1, h2, h3, h4, h5, h6) {
         margin: 0;
       }
 
@@ -3267,38 +3272,53 @@
         padding-inline-start: 1.25em;
       }
 
-      /* Hierarchy: sub-headings and bold text keep "Bold text and sub-heading weight" (Figma Bold #131311),
-         independent of the body weight; sub-headings follow the body size (1em) */
-      :is(h1, h2, h3, h4, h5, h6) {
-        margin: 0;
-        font-size: 1em;
-        font-weight: var(--sn-acc-bold-weight, 700);
-        line-height: var(--sn-acc-title-line, 40px);
-        color: #131311;
-      }
-
+      /* BOLD: every <strong>/<b> keeps "Bold text and sub-heading weight" + "Bold text colour" (Figma Bold
+         #131311), whatever the body weight — the body weight is never applied to bold runs. */
       :is(strong, b) {
         font-weight: var(--sn-acc-bold-weight, 700);
-        color: #131311;
+        color: var(--sn-acc-bold-color, #131311);
       }
 
-      /* Rich text title lines: a bold title that starts a paragraph and is followed by a line break (outside or
-         inside the bold) gets the sub-heading line height (Figma: title box 29, line 40) */
+      /* TITLES: headings in the text and bold runs used as titles get "Bold title size" desktop / mobile, the
+         sub-heading line height (Figma 14 Bold, box 29) and "Gap below bold titles". Bold words inside a sentence
+         keep the body size. Title forms in Shopify rich text:
+         a) <h2>…<h6>;  b) <p><strong>title</strong></p>;  c) <p><strong>title</strong><br>text;
+         d) <p><strong>title<br></strong>text (line break inside the bold). */
+      :is(h1, h2, h3, h4, h5, h6),
+      p:has(> :is(strong, b):only-child) > :is(strong, b),
+      p > :is(strong, b):first-child:has(+ br),
+      p > :is(strong, b):first-child:has(> br:last-child) {
+        font-size: var(--sn-acc-bold-size, 14px);
+        font-weight: var(--sn-acc-bold-weight, 700);
+        line-height: var(--sn-acc-title-line, 29px);
+        color: var(--sn-acc-bold-color, #131311);
+
+        @media screen and (max-width: 749px) {
+          font-size: var(--sn-acc-bold-size-mobile, 14px);
+        }
+      }
+
+      :is(h1, h2, h3, h4, h5, h6),
+      p:has(> :is(strong, b):only-child) {
+        margin-block-end: var(--sn-acc-bold-gap, 0px);
+      }
+
+      /* c) bold title then a line break outside it: own line box */
       p > :is(strong, b):first-child:has(+ br) {
         display: inline-block;
-        line-height: var(--sn-acc-title-line, 40px);
+        margin-block-end: var(--sn-acc-bold-gap, 0px);
       }
 
-      /* Title whose line break is INSIDE the bold (<strong>title<br></strong>text): as an inline-block the break
-         ended inside the box and the text continued on the same line, so it is its own line here */
+      /* d) line break INSIDE the bold: as an inline-block the break would end inside the box and the text would
+         continue on the same line, so the title is its own block line */
       p > :is(strong, b):first-child:has(> br:last-child) {
         display: block;
-        line-height: var(--sn-acc-title-line, 40px);
+        margin-block-end: var(--sn-acc-bold-gap, 0px);
       }
 
-      /* A paragraph that is only a bold title (<p><strong>title</strong></p>) uses the same line */
+      /* b) a paragraph that is only a bold title uses the title line height */
       p:has(> :is(strong, b):only-child) {
-        line-height: var(--sn-acc-title-line, 40px);
+        line-height: var(--sn-acc-title-line, 29px);
       }
 
       /* Editor artefact: after a title-only paragraph, a bold run that is just a line break at the start of the
@@ -3306,6 +3326,11 @@
          removed; text, bold and ordinary line breaks are kept. */
       p:has(> :is(strong, b):only-child) + p > :is(strong, b):first-child:has(> br:only-child):not(:has(+ br)) {
         display: none;
+      }
+
+      a {
+        color: var(--color-primary-button-background, #176bb0);
+        text-decoration: underline;
       }
     }
   }

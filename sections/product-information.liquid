@@ -283,6 +283,11 @@
       --sn-acc-body-weight: {{ s.sn_acc_body_weight }};
       --sn-acc-body-weight-mobile: {{ s.sn_acc_body_weight_mobile }};
       --sn-acc-bold-weight: {{ s.sn_acc_bold_weight }};
+      --sn-acc-body-color: {{ s.sn_acc_body_color }};
+      --sn-acc-bold-size: {{ s.sn_acc_bold_size }}px;
+      --sn-acc-bold-size-mobile: {{ s.sn_acc_bold_size_mobile }}px;
+      --sn-acc-bold-color: {{ s.sn_acc_bold_color }};
+      --sn-acc-bold-gap: {{ s.sn_acc_bold_gap }}px;
       --sn-acc-paragraph-gap-mobile: {{ s.sn_acc_paragraph_gap_mobile }}px;
     }
     {%- comment -%} Trust icon size (0 = each icon block's own Width): uploaded icons carry an inline width, hence !important {%- endcomment -%}
@@ -1286,6 +1291,50 @@
       ],
       "default": "700",
       "info": "Keeps bold text and headings in the description bold, whatever the body weight."
+    },
+    {
+      "type": "color",
+      "id": "sn_acc_body_color",
+      "label": "Body text colour",
+      "default": "#5A5A59",
+      "info": "A row text block with its own Text colour keeps it."
+    },
+    {
+      "type": "range",
+      "id": "sn_acc_bold_size",
+      "label": "Bold title size, desktop",
+      "min": 10,
+      "max": 28,
+      "step": 1,
+      "unit": "px",
+      "default": 14,
+      "info": "Bold titles that start a paragraph and headings in the text. Bold words inside a sentence keep the body size."
+    },
+    {
+      "type": "range",
+      "id": "sn_acc_bold_size_mobile",
+      "label": "Bold title size, mobile",
+      "min": 10,
+      "max": 28,
+      "step": 1,
+      "unit": "px",
+      "default": 14
+    },
+    {
+      "type": "color",
+      "id": "sn_acc_bold_color",
+      "label": "Bold text colour",
+      "default": "#131311"
+    },
+    {
+      "type": "range",
+      "id": "sn_acc_bold_gap",
+      "label": "Gap below bold titles",
+      "min": 0,
+      "max": 24,
+      "step": 1,
+      "unit": "px",
+      "default": 0
     },
     {
       "type": "range",
