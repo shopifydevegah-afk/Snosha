@@ -2,7 +2,8 @@
   Project block (Snosha): one colour of "Linked colour products" (Theme Editor source).
   Destination product = product picker; name = "Colour name" or the product title; fill = "Colour", else "Image",
   else the product's featured image. The item for the product being viewed is the selected one (aria-current).
-  Outputs a marker comment with the selected name, read by the parent block for its «اللون: …» label.
+  Outputs a marker comment with the selected name, read by the parent block for its «اللون: …» label, and
+  data-color-key (the "Colour name", lower case) so the parent can also select it from a variant's colour value.
 {%- endcomment -%}
 {%- liquid
   assign item = block.settings.product
@@ -11,6 +12,8 @@
   if item_name == blank and item != blank
     assign item_name = item.title
   endif
+  # Key used to match this item to a colour option value of a variant product (explicit "Colour name" only)
+  assign color_key = block.settings.color_name | downcase | strip | escape
   assign is_current = false
   if item != blank and current != blank and item.id == current.id
     assign is_current = true
@@ -36,6 +39,7 @@
     <a
       class="linked-colors__item{% unless item.available %} linked-colors__item--unavailable{% endunless %}"
       href="{{ item.url }}"
+      data-color-key="{{ color_key }}"
       {% if is_current %}
         aria-current="true"
       {% endif %}
@@ -82,7 +86,7 @@
       "type": "text",
       "id": "color_name",
       "label": "Colour name",
-      "info": "Leave empty to use the product title."
+      "info": "Write it exactly like the colour in Product Admin (e.g. وردي) so a product with colour variants links this swatch too. Empty = product title."
     },
     {
       "type": "color",

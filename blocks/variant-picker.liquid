@@ -9,10 +9,13 @@
 
 {%- comment -%}
   Project extension (Snosha, opt-in): linked colour products. "Colour" child blocks (destination product picker,
-  colour name, colour / image). When one of them points at the product being viewed, the picker shows these
-  colours as links in place of that product's colour option (matched by "Option names to relabel"); the native
-  colour inputs stay in the form, hidden, so variant state and Add to cart are untouched. No Colour items, or
-  the product isn't one of them = native picker only.
+  colour name, colour / image). The picker shows these colours as links (each opens its own product page) in
+  place of the colour option (option names from "Option names to relabel") when either:
+  a) one of the items points at the product being viewed (one product per colour) → that item is selected; or
+  b) the product has colour VARIANTS and an item's "Colour name" equals one of its colour values → the item
+     matching the selected variant's colour is selected; the others open their own products.
+  The native colour inputs stay in the form, hidden, so variant state and Add to cart are untouched. No Colour
+  items, or no match = native picker only.
 {%- endcomment -%}
 {%- capture sn_linked_entries -%}
   {% content_for 'blocks' %}
@@ -21,18 +24,10 @@
   assign sn_linked_html = ''
   assign sn_linked_option = ''
   assign sn_linked_active = false
-  if sn_linked_entries contains 'aria-current="true"'
-    assign sn_linked_active = true
-  elsif request.design_mode and sn_linked_entries contains 'linked-colors__entry'
-    assign sn_linked_active = true
-  endif
+  assign sn_current_name = ''
 
-  if sn_linked_active and product_resource != blank
-    assign sn_current_name = ''
-    if sn_linked_entries contains '<!--sn-current:'
-      assign sn_current_name = sn_linked_entries | split: '<!--sn-current:' | last | split: ':sn-->' | first
-    endif
-
+  if product_resource != blank and sn_linked_entries contains 'linked-colors__entry'
+    # Colour option of this product (by name)
     assign sn_match_names = block.settings.option_label_match | downcase | split: ','
     for sn_option in product_resource.options_with_values
       assign sn_option_key = sn_option.name | downcase | strip
@@ -40,9 +35,39 @@
         assign sn_match_key = sn_match | strip
         if sn_match_key == sn_option_key and sn_linked_option == blank
           assign sn_linked_option = sn_option.name
+          assign sn_colour_option = sn_option
         endif
       endfor
     endfor
+
+    if sn_linked_entries contains 'aria-current="true"'
+      # a) this product is one of the destinations
+      assign sn_linked_active = true
+      if sn_linked_entries contains '<!--sn-current:'
+        assign sn_current_name = sn_linked_entries | split: '<!--sn-current:' | last | split: ':sn-->' | first
+      endif
+    elsif sn_linked_option != blank
+      # b) colour variants: select the item whose "Colour name" is the selected colour value
+      for sn_value in sn_colour_option.values
+        assign sn_value_key = sn_value.name | downcase | strip | escape
+        assign sn_key_attr = 'data-color-key="' | append: sn_value_key | append: '"'
+        if sn_linked_entries contains sn_key_attr
+          assign sn_linked_active = true
+        endif
+      endfor
+      if sn_linked_active
+        assign sn_selected_key = sn_colour_option.selected_value | downcase | strip | escape
+        assign sn_key_attr = 'data-color-key="' | append: sn_selected_key | append: '"'
+        assign sn_key_current = sn_key_attr | append: ' aria-current="true"'
+        assign sn_linked_entries = sn_linked_entries | replace: sn_key_attr, sn_key_current
+        assign sn_current_name = sn_colour_option.selected_value | escape
+      endif
+    elsif request.design_mode
+      assign sn_linked_active = true
+    endif
+  endif
+
+  if sn_linked_active
 
     assign sn_linked_label = block.settings.option_label
     if sn_linked_label == blank
@@ -67,7 +92,7 @@
   {%- comment -%} Product without a colour option (e.g. one product per colour): colours shown on their own {%- endcomment -%}
   {%- if sn_linked_html != blank and sn_linked_option == blank -%}
     <div
-      class="variant-picker spacing-style"
+      class="linked-colors-wrapper spacing-style"
       style="{% render 'spacing-style', settings: block.settings %}"
     >
       {{ sn_linked_html }}

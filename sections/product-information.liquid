@@ -36,8 +36,27 @@
     assign initial_quantity = current_variant.quantity_rule.min | default: 1
   %}
 
+  {%- liquid
+    # Project extension (Snosha, opt-in "Sticky bar style: Full-width bar"): full-width bar with a quantity control
+    # that drives the main form's own quantity selector, own label and icon toggle. Floating card = native.
+    assign sn_sticky_bar = false
+    if section.settings.sn_sticky_style == 'bar'
+      assign sn_sticky_bar = true
+    endif
+    assign sn_sticky_icon = true
+    if sn_sticky_bar and section.settings.sn_sticky_show_icon == false
+      assign sn_sticky_icon = false
+    endif
+    assign sn_sticky_quantity = false
+    if sn_sticky_bar and section.settings.sn_sticky_show_quantity
+      assign sn_sticky_quantity = true
+    endif
+  -%}
   <sticky-add-to-cart
-    class="sticky-add-to-cart"
+    class="sticky-add-to-cart{% if sn_sticky_bar %} sn-sticky-bar{% unless section.settings.sn_sticky_show_image %} sn-sticky-bar--no-image{% endunless %}{% unless section.settings.sn_sticky_show_compare %} sn-sticky-bar--no-compare{% endunless %}{% if section.settings.sn_sticky_quantity_mobile %} sn-sticky-bar--quantity-mobile{% endif %}{% endif %}"
+    {% if sn_sticky_bar %}
+      style="--sn-sticky-bg: {{ section.settings.sn_sticky_background }}; --sn-sticky-width: {{ section.settings.sn_sticky_width }}px; --sn-sticky-padding: {{ section.settings.sn_sticky_padding }}px; --sn-sticky-padding-mobile: {{ section.settings.sn_sticky_padding_mobile }}px; --sn-sticky-image: {{ section.settings.sn_sticky_image_size }}px; --sn-sticky-button-width: {{ section.settings.sn_sticky_button_width }}px; --sn-sticky-button-height: {{ section.settings.sn_sticky_button_height }}px;{% unless section.settings.sn_sticky_shadow %} --sn-sticky-shadow: none;{% endunless %}"
+    {% endif %}
     data-variant-available="{{ current_variant.available }}"
     data-product-id="{{ product.id }}"
     data-current-variant-id="{{ current_variant.id }}"
@@ -121,6 +140,44 @@
         {% render 'price', product_resource: product, show_sale_price_first: true %}
       </div>
 
+      {%- if sn_sticky_quantity and current_variant.available -%}
+        {%- comment -%}
+          Quantity control of the full-width bar: its buttons call the MAIN product form's quantity selector
+          (same min / max / step rules); the number is the bar's own quantityNumber ref, kept in sync by
+          sticky-add-to-cart.js. The sticky button then submits the main form, so quantity and variant match.
+          Visual order "− 1 +" left to right, as the reference.
+        {%- endcomment -%}
+        {%- capture sn_main_quantity -%}#shopify-section-{{ section.id }} .product-details quantity-selector-component{%- endcapture -%}
+        <div
+          class="sticky-add-to-cart__quantity"
+          dir="ltr"
+        >
+          <button
+            type="button"
+            class="sticky-add-to-cart__quantity-button"
+            aria-label="{{ 'accessibility.decrease_quantity' | t }}"
+            on:click="{{ sn_main_quantity }}/decreaseQuantity"
+          >
+            <span class="svg-wrapper">{{- 'icon-minus.svg' | inline_asset_content -}}</span>
+          </button>
+          <span
+            class="sticky-add-to-cart__quantity-value"
+            ref="quantityNumber"
+            aria-live="polite"
+          >
+            {{- initial_quantity -}}
+          </span>
+          <button
+            type="button"
+            class="sticky-add-to-cart__quantity-button sticky-add-to-cart__quantity-button--plus"
+            aria-label="{{ 'accessibility.increase_quantity' | t }}"
+            on:click="{{ sn_main_quantity }}/increaseQuantity"
+          >
+            <span class="svg-wrapper">{{- 'icon-plus.svg' | inline_asset_content -}}</span>
+          </button>
+        </div>
+      {%- endif -%}
+
       <button
         type="button"
         class="sticky-add-to-cart__button add-to-cart-button button"
@@ -133,14 +190,16 @@
         <span
           class="add-to-cart-text"
         >
-          {% if current_variant.available %}
+          {% if current_variant.available and sn_sticky_icon %}
             <span class="svg-wrapper">
               {{- 'icon-add-to-cart.svg' | inline_asset_content -}}
             </span>
           {% endif %}
           <span class="add-to-cart-text__content">
             <span>
-              {%- if current_variant.available -%}
+              {%- if current_variant.available and sn_sticky_bar and section.settings.sn_sticky_label != blank -%}
+                {{- section.settings.sn_sticky_label | escape -}}
+              {%- elsif current_variant.available -%}
                 {{- 'products.product.add_to_cart' | t -}}
               {%- elsif current_variant == blank -%}
                 {{- 'products.product.unavailable' | t -}}
@@ -156,9 +215,11 @@
                 style="display: none;"
               {% endif %}
             >
-              {{- ' (' -}}
-              <span ref="quantityNumber">{{- initial_quantity -}}</span>
-              {{- ')' -}}
+              {%- unless sn_sticky_quantity and current_variant.available -%}
+                {{- ' (' -}}
+                <span ref="quantityNumber">{{- initial_quantity -}}</span>
+                {{- ')' -}}
+              {%- endunless -%}
             </span>
           </span>
         </span>
@@ -518,6 +579,146 @@
       "id": "enable_sticky_add_to_cart",
       "label": "t:settings.enable_sticky_add_to_cart",
       "default": true
+    },
+    {
+      "type": "select",
+      "id": "sn_sticky_style",
+      "label": "Sticky bar style",
+      "options": [
+        {
+          "value": "floating",
+          "label": "Floating card"
+        },
+        {
+          "value": "bar",
+          "label": "Full-width bar"
+        }
+      ],
+      "default": "floating",
+      "visible_if": "{{ section.settings.enable_sticky_add_to_cart }}"
+    },
+    {
+      "type": "text",
+      "id": "sn_sticky_label",
+      "label": "Sticky button label",
+      "info": "Shown while the product can be added. Empty = theme translation.",
+      "visible_if": "{{ section.settings.enable_sticky_add_to_cart and section.settings.sn_sticky_style == 'bar' }}"
+    },
+    {
+      "type": "checkbox",
+      "id": "sn_sticky_show_icon",
+      "label": "Show cart icon on the sticky button",
+      "default": true,
+      "visible_if": "{{ section.settings.enable_sticky_add_to_cart and section.settings.sn_sticky_style == 'bar' }}"
+    },
+    {
+      "type": "checkbox",
+      "id": "sn_sticky_show_quantity",
+      "label": "Show quantity",
+      "info": "Changes the quantity of the main product form.",
+      "default": true,
+      "visible_if": "{{ section.settings.enable_sticky_add_to_cart and section.settings.sn_sticky_style == 'bar' }}"
+    },
+    {
+      "type": "checkbox",
+      "id": "sn_sticky_quantity_mobile",
+      "label": "Show quantity on mobile",
+      "default": false,
+      "visible_if": "{{ section.settings.enable_sticky_add_to_cart and section.settings.sn_sticky_style == 'bar' }}"
+    },
+    {
+      "type": "checkbox",
+      "id": "sn_sticky_show_image",
+      "label": "Show product image",
+      "default": true,
+      "visible_if": "{{ section.settings.enable_sticky_add_to_cart and section.settings.sn_sticky_style == 'bar' }}"
+    },
+    {
+      "type": "checkbox",
+      "id": "sn_sticky_show_compare",
+      "label": "Show compare-at price",
+      "default": true,
+      "visible_if": "{{ section.settings.enable_sticky_add_to_cart and section.settings.sn_sticky_style == 'bar' }}"
+    },
+    {
+      "type": "color",
+      "id": "sn_sticky_background",
+      "label": "Sticky bar background",
+      "default": "#FFFFFF",
+      "visible_if": "{{ section.settings.enable_sticky_add_to_cart and section.settings.sn_sticky_style == 'bar' }}"
+    },
+    {
+      "type": "checkbox",
+      "id": "sn_sticky_shadow",
+      "label": "Top border and shadow",
+      "default": true,
+      "visible_if": "{{ section.settings.enable_sticky_add_to_cart and section.settings.sn_sticky_style == 'bar' }}"
+    },
+    {
+      "type": "range",
+      "id": "sn_sticky_width",
+      "label": "Sticky bar content width",
+      "min": 600,
+      "max": 2000,
+      "step": 20,
+      "unit": "px",
+      "default": 1340,
+      "visible_if": "{{ section.settings.enable_sticky_add_to_cart and section.settings.sn_sticky_style == 'bar' }}"
+    },
+    {
+      "type": "range",
+      "id": "sn_sticky_padding",
+      "label": "Sticky bar top/bottom padding, desktop",
+      "min": 0,
+      "max": 40,
+      "step": 1,
+      "unit": "px",
+      "default": 14,
+      "visible_if": "{{ section.settings.enable_sticky_add_to_cart and section.settings.sn_sticky_style == 'bar' }}"
+    },
+    {
+      "type": "range",
+      "id": "sn_sticky_padding_mobile",
+      "label": "Sticky bar top/bottom padding, mobile",
+      "min": 0,
+      "max": 40,
+      "step": 1,
+      "unit": "px",
+      "default": 10,
+      "visible_if": "{{ section.settings.enable_sticky_add_to_cart and section.settings.sn_sticky_style == 'bar' }}"
+    },
+    {
+      "type": "range",
+      "id": "sn_sticky_image_size",
+      "label": "Sticky bar image size",
+      "min": 32,
+      "max": 96,
+      "step": 1,
+      "unit": "px",
+      "default": 64,
+      "visible_if": "{{ section.settings.enable_sticky_add_to_cart and section.settings.sn_sticky_style == 'bar' }}"
+    },
+    {
+      "type": "range",
+      "id": "sn_sticky_button_width",
+      "label": "Sticky button width, desktop",
+      "min": 100,
+      "max": 320,
+      "step": 4,
+      "unit": "px",
+      "default": 176,
+      "visible_if": "{{ section.settings.enable_sticky_add_to_cart and section.settings.sn_sticky_style == 'bar' }}"
+    },
+    {
+      "type": "range",
+      "id": "sn_sticky_button_height",
+      "label": "Sticky button and quantity height",
+      "min": 36,
+      "max": 72,
+      "step": 1,
+      "unit": "px",
+      "default": 58,
+      "visible_if": "{{ section.settings.enable_sticky_add_to_cart and section.settings.sn_sticky_style == 'bar' }}"
     },
     {
       "type": "color",

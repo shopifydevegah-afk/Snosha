@@ -2137,7 +2137,7 @@
                 "row_padding_inline": 16,
                 "row_padding_inline_mobile": 20,
                 "summary_gap": 12,
-                "content_gap": 10,
+                "content_gap": 0,
                 "icon_size": 18,
                 "background_color": "",
                 "text_color": "",
@@ -2543,7 +2543,22 @@
         "sn_acc_body_weight": "400",
         "sn_acc_body_weight_mobile": "400",
         "sn_acc_bold_weight": "700",
-        "sn_acc_paragraph_gap_mobile": 0
+        "sn_acc_paragraph_gap_mobile": 0,
+        "sn_sticky_style": "bar",
+        "sn_sticky_label": "أضف إلى السلة",
+        "sn_sticky_show_icon": false,
+        "sn_sticky_show_quantity": true,
+        "sn_sticky_quantity_mobile": false,
+        "sn_sticky_show_image": true,
+        "sn_sticky_show_compare": true,
+        "sn_sticky_background": "#ffffff",
+        "sn_sticky_shadow": true,
+        "sn_sticky_width": 1340,
+        "sn_sticky_padding": 14,
+        "sn_sticky_padding_mobile": 10,
+        "sn_sticky_image_size": 64,
+        "sn_sticky_button_width": 176,
+        "sn_sticky_button_height": 58
       }
     }
   },

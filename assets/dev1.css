@@ -2964,53 +2964,84 @@
     }
   }
 
-  /* Card row (Figma 560×76): thumb 56 · name + supporting line · price · round Add (native quick add) */
+  /* Card row — Figma 190:10320 / 190:11031: 560 (mobile 350) × 76, border 1 #dcf2fb, radius 18, gradient #f0fafe
+     (physical left) → white; padding 10, 14 on the image side / 10 on the button side; gap 12. RTL right → left:
+     image 56 (white, 1px #dcf2fb, radius 14) · name 16/27 SemiBold #131311 (mobile 14) + line 12/20 #5a5a59
+     (mobile 10) · price 16/27 Bold blue · round add 38 (blue, shadow 0 8 8 rgb(15 100 168 / .3), plus 16).
+     Areas are placed by CLASS: the image block also outputs an inline <style> and a hidden zoom-out <h3>, so
+     position-based (nth-child) placement put the name, line and price in the wrong cells. Sizes / padding =
+     Product information › Snosha layout ("Complementary …"); count, row gap, heading gap = block settings. */
   .product-recommendations .product-card__content {
     position: relative;
     display: grid;
     grid-template-columns: var(--sn-xsell-thumb, 56px) minmax(0, 1fr) auto var(--sn-xsell-add, 38px);
+    grid-template-rows: auto auto;
     grid-template-areas:
       'thumb title price add'
       'thumb sub price add';
     align-items: center;
+    align-content: center;
     column-gap: 12px;
     row-gap: 1px;
+    min-block-size: calc(var(--sn-xsell-thumb, 56px) + 2 * var(--sn-xsell-pad-block, 10px) + 2px);
     padding-block: var(--sn-xsell-pad-block, 10px);
     padding-inline: var(--sn-xsell-pad-start, 14px) var(--sn-xsell-pad-end, 10px);
     border: 1px solid #dcf2fb;
     border-radius: 18px;
+    background-color: #fff;
     background-image: linear-gradient(to right, #f0fafe, #fff); /* Figma: tinted on the physical left */
 
-    > :nth-child(1) {
+    > .card-gallery {
       grid-area: thumb;
     }
 
-    > :nth-child(2) {
+    /* Product title block: <a class="contents"> › text block (the link box is display: contents) */
+    > a > .text-block,
+    > .text-block:has([role='heading']) {
       grid-area: title;
       align-self: end;
+      min-inline-size: 0;
     }
 
-    > :nth-child(3) {
+    > .text-block:not(product-price, :has([role='heading'])) {
       grid-area: sub;
       align-self: start;
+      min-inline-size: 0;
+      overflow: hidden;
     }
 
-    > :nth-child(4) {
+    > product-price {
       grid-area: price;
+      align-self: center;
+    }
+
+    > :is(style, .product-grid-view-zoom-out--details) {
+      display: none;
+    }
+
+    @media screen and (max-width: 749px) {
+      column-gap: 10px;
     }
   }
 
   .product-recommendations .card-gallery {
-    position: static; /* the quick add is placed on the whole row, not on the thumb */
+    position: static; /* the quick add is placed on the whole row, not on the image */
     overflow: visible;
     inline-size: var(--sn-xsell-thumb, 56px);
     block-size: var(--sn-xsell-thumb, 56px);
+    padding: 0;
     border: 1px solid #dcf2fb;
     border-radius: 14px;
     background-color: #fff;
 
     img {
       border-radius: 13px;
+      object-fit: contain;
+    }
+
+    /* Sale / sold-out badges don't fit a 56px image (the price shows the sale) */
+    .product-badges {
+      display: none;
     }
   }
 
@@ -3018,11 +3049,14 @@
     margin: 0;
   }
 
-  .product-recommendations .product-card__content > :nth-child(2) :is(h3, h4, p, a) {
+  .product-recommendations .product-card__content [role='heading'] {
+    overflow: hidden;
     font-size: 16px;
     font-weight: 600;
     line-height: 27px;
     color: #131311;
+    text-overflow: ellipsis;
+    white-space: nowrap;
 
     @media screen and (max-width: 749px) {
       font-size: 14px;
@@ -3030,41 +3064,55 @@
   }
 
   /* Supporting line (product description by default; connect a metafield in the editor), one line */
-  .product-recommendations .product-card__content > :nth-child(3) {
+  .product-recommendations .product-card__content > .text-block:not(product-price, :has([role='heading'])) > * {
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 1;
+    line-clamp: 1;
     overflow: hidden;
+    font-size: 12px;
+    font-weight: 400;
+    line-height: 20px;
+    color: #5a5a59;
 
-    > * {
-      display: -webkit-box;
-      -webkit-box-orient: vertical;
-      -webkit-line-clamp: 1;
-      line-clamp: 1;
-      overflow: hidden;
-      font-size: 12px;
-      line-height: 20px;
-      color: #5a5a59;
-
-      @media screen and (max-width: 749px) {
-        font-size: 10px;
-      }
+    @media screen and (max-width: 749px) {
+      font-size: 10px;
     }
   }
 
-  .product-recommendations .product-card__content > :nth-child(4) .price {
-    font-size: 16px;
-    font-weight: 700;
-    line-height: 27px;
-    color: var(--color-primary-button-background, #176bb0);
+  .product-recommendations .product-card__content > product-price {
+    .price {
+      font-size: 16px;
+      font-weight: 700;
+      line-height: 27px;
+      color: var(--color-primary-button-background, #176bb0);
+      white-space: nowrap;
+    }
+
+    /* One price in the row, as Figma */
+    :is(.compare-at-price, .price-discount-badge, .tax-note, .installments) {
+      display: none;
+    }
   }
 
-  /* Native quick add as the round "+" (Add = straight to cart; Choose = native options window) */
+  /* Native quick add as the round "+" (Add = straight to cart; Choose = native options window). The quick-add
+     wrapper is made static so the button is placed on the whole row (centred, button side). */
+  .product-recommendations .card-gallery .quick-add {
+    position: static;
+  }
+
   .product-recommendations button.quick-add__button {
+    position: absolute;
+    z-index: 2;
     display: flex;
+    align-items: center;
     opacity: 1;
     inset-block: 50% auto;
-    inset-inline-end: var(--sn-xsell-pad-end, 10px);
+    inset-inline: auto var(--sn-xsell-pad-end, 10px);
     translate: 0 -50%;
     inline-size: var(--sn-xsell-add, 38px);
     block-size: var(--sn-xsell-add, 38px);
+    min-inline-size: 0;
     justify-content: center;
     padding: 0;
     border: 0;
@@ -3211,6 +3259,11 @@
         line-height: var(--sn-acc-title-line, 40px);
       }
 
+      /* A paragraph that is only a bold title (<p><strong>title</strong></p>) uses the same line */
+      p:has(> :is(strong, b):only-child) {
+        line-height: var(--sn-acc-title-line, 40px);
+      }
+
       /* Editor artefact: after a title-only paragraph, a bold run that is just a line break at the start of the
          next paragraph (<p><strong><br></strong>text) made a blank line under the title. Only that pattern is
          removed; text, bold and ordinary line breaks are kept. */
@@ -3232,4 +3285,243 @@
   font-weight: 600;
   line-height: 27px;
   color: #131311;
+}
+
+/* ==========================================================================
+   Product page — Sticky add to cart, "Full-width bar" | owner: Dev1
+   Native Horizon sticky-add-to-cart (sections/product-information.liquid), opt-in class .sn-sticky-bar
+   (Product information › Sticky add to cart › "Sticky bar style: Full-width bar"). Reference: merchant
+   screenshot (full-width white bar at the bottom; RTL right → left: image · title + price … quantity · button).
+   Visibility stays native (shown after the main buy buttons scroll away, hidden near the footer); the button
+   submits the main product form; the quantity buttons drive the main form's quantity selector.
+   Settings: background, top border + shadow, content width, padding desktop/mobile, image size, button width,
+   button + quantity height, show image / compare-at price / quantity (+ mobile), label, icon.
+   ========================================================================== */
+.sn-sticky-bar .sticky-add-to-cart__bar {
+  --sn-sticky-gutter: max(var(--page-margin, 20px), calc((100vw - var(--sn-sticky-width, 1340px)) / 2));
+
+  inset-inline: 0;
+  inset-block-end: 0;
+  inline-size: 100%;
+  max-inline-size: none;
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto auto;
+  grid-template-areas:
+    'image info quantity button'
+    'image price quantity button';
+  align-items: center;
+  column-gap: 16px;
+  row-gap: 2px;
+  padding-block: var(--sn-sticky-padding, 14px) calc(var(--sn-sticky-padding, 14px) + var(--safe-area-inset-bottom, 0px));
+  padding-inline: var(--sn-sticky-gutter);
+  border-radius: 0;
+  border-block-start: 1px solid #eef2f5;
+  background-color: var(--sn-sticky-bg, #fff);
+  box-shadow: var(--sn-sticky-shadow, 0 -8px 24px rgb(13 64 128 / 0.06));
+  transform: translateY(calc(100% + 8px));
+
+  /* the native floating card draws its glass border with ::before */
+  &::before {
+    display: none;
+  }
+
+  &[data-stuck='true'] {
+    transform: none;
+  }
+}
+
+.sn-sticky-bar[style*='--sn-sticky-shadow: none'] .sticky-add-to-cart__bar {
+  border-block-start: 0;
+}
+
+.sn-sticky-bar:not([data-variant-available='true']) .sticky-add-to-cart__bar {
+  transform: translateY(calc(100% + 8px));
+}
+
+.sn-sticky-bar .sticky-add-to-cart__image {
+  grid-area: image;
+  inline-size: var(--sn-sticky-image, 64px);
+  block-size: var(--sn-sticky-image, 64px);
+  height: var(--sn-sticky-image, 64px);
+  border: 1px solid #dcf2fb;
+  border-radius: 12px;
+  background-color: #fff;
+
+  img {
+    object-fit: contain;
+  }
+}
+
+.sn-sticky-bar--no-image .sticky-add-to-cart__image {
+  display: none;
+}
+
+.sn-sticky-bar .sticky-add-to-cart__info {
+  grid-area: info;
+  align-self: end;
+  padding-inline-start: 0;
+}
+
+.sn-sticky-bar .sticky-add-to-cart__title {
+  font-size: 18px;
+  font-weight: 700;
+  line-height: 28px;
+  color: var(--color-primary-button-background, #176bb0);
+}
+
+/* Reference: title + price only (the title of a colour product already names the colour) */
+.sn-sticky-bar .sticky-add-to-cart__variant {
+  display: none;
+}
+
+.sn-sticky-bar .sticky-add-to-cart__price {
+  grid-area: price;
+  align-self: start;
+  font-size: 16px;
+  font-weight: 600;
+  line-height: 24px;
+  color: #131311;
+
+  .compare-at-price {
+    font-size: 14px;
+    font-weight: 400;
+    color: #5a5a59;
+  }
+}
+
+.sn-sticky-bar--no-compare .sticky-add-to-cart__price .compare-at-price {
+  display: none;
+}
+
+/* Quantity pill: "− 1 +" left to right, + on a light-blue circle */
+.sn-sticky-bar .sticky-add-to-cart__quantity {
+  grid-area: quantity;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 6px;
+  block-size: var(--sn-sticky-button-height, 58px);
+  min-inline-size: 142px;
+  padding-inline: 8px;
+  border: 1.5px solid #dcf2fb;
+  border-radius: 999px;
+  background-color: #fff;
+}
+
+.sn-sticky-bar .sticky-add-to-cart__quantity-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  inline-size: 40px;
+  block-size: 40px;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: transparent;
+  color: var(--color-primary-button-background, #176bb0);
+  cursor: pointer;
+
+  &--plus {
+    background-color: #eaf3fb;
+  }
+
+  .svg-wrapper,
+  svg {
+    inline-size: 16px;
+    block-size: 16px;
+  }
+
+  &:focus-visible {
+    outline: var(--focus-outline-width, 2px) solid var(--color-primary-button-background, #176bb0);
+    outline-offset: 2px;
+  }
+}
+
+.sn-sticky-bar .sticky-add-to-cart__quantity-value {
+  min-inline-size: 24px;
+  font-size: 17px;
+  font-weight: 700;
+  text-align: center;
+  color: #131311;
+}
+
+.sn-sticky-bar .sticky-add-to-cart__button {
+  grid-area: button;
+  justify-content: center;
+  inline-size: var(--sn-sticky-button-width, 176px);
+  height: var(--sn-sticky-button-height, 58px);
+  padding-inline: 20px;
+  border-radius: 12px;
+  font-size: 16px;
+  font-weight: 600;
+  line-height: 26px;
+}
+
+@media screen and (max-width: 749px) {
+  .sn-sticky-bar .sticky-add-to-cart__bar {
+    --sn-sticky-gutter: var(--page-margin, 20px);
+
+    grid-template-columns: auto minmax(0, 1fr) auto;
+    grid-template-areas:
+      'image info button'
+      'image price button';
+    column-gap: 10px;
+    padding-block: var(--sn-sticky-padding-mobile, 10px)
+      calc(var(--sn-sticky-padding-mobile, 10px) + var(--safe-area-inset-bottom, 0px));
+  }
+
+  .sn-sticky-bar--quantity-mobile .sticky-add-to-cart__bar {
+    grid-template-columns: auto minmax(0, 1fr) auto auto;
+    grid-template-areas:
+      'image info quantity button'
+      'image price quantity button';
+  }
+
+  .sn-sticky-bar:not(.sn-sticky-bar--quantity-mobile) .sticky-add-to-cart__quantity {
+    display: none;
+  }
+
+  .sn-sticky-bar .sticky-add-to-cart__image {
+    inline-size: 48px;
+    block-size: 48px;
+    height: 48px;
+  }
+
+  .sn-sticky-bar .sticky-add-to-cart__title {
+    display: block;
+    font-size: 14px;
+    line-height: 22px;
+  }
+
+  .sn-sticky-bar .sticky-add-to-cart__price {
+    font-size: 14px;
+    line-height: 20px;
+
+    .compare-at-price {
+      font-size: 12px;
+    }
+  }
+
+  .sn-sticky-bar .sticky-add-to-cart__quantity {
+    block-size: 44px;
+    min-inline-size: 104px;
+    padding-inline: 4px;
+  }
+
+  .sn-sticky-bar .sticky-add-to-cart__quantity-button {
+    inline-size: 32px;
+    block-size: 32px;
+  }
+
+  /* Mobile keeps the text label (the native mobile card shows only the icon) */
+  .sn-sticky-bar .sticky-add-to-cart__button {
+    inline-size: auto;
+    height: 44px;
+    padding: 0 16px;
+    font-size: 14px;
+  }
+
+  .sn-sticky-bar .sticky-add-to-cart__bar .add-to-cart-text__content {
+    display: initial;
+  }
 }
