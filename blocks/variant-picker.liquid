@@ -8,14 +8,13 @@
 -%}
 
 {%- comment -%}
-  Project extension (Snosha, opt-in): linked colour products. "Colour" child blocks (destination product picker,
-  colour name, colour / image). The picker shows these colours as links (each opens its own product page) in
-  place of the colour option (option names from "Option names to relabel") when either:
-  a) one of the items points at the product being viewed (one product per colour) → that item is selected; or
-  b) the product has colour VARIANTS and an item's "Colour name" equals one of its colour values → the item
-     matching the selected variant's colour is selected; the others open their own products.
-  The native colour inputs stay in the form, hidden, so variant state and Add to cart are untouched. No Colour
-  items, or no match = native picker only.
+  Project extension (Snosha, opt-in): linked colour buttons. "Colour" child blocks (colour name, colour / image,
+  destination product). As soon as at least one Colour item has a destination product, the picker shows the
+  Colour items as round buttons (same look as the swatches), each opening its own product page, in place of the
+  colour option (option names from "Option names to relabel"), or on their own when the product has no colour
+  option. Selected button: the item whose product is the one being viewed; otherwise the item whose
+  "Colour name" equals the selected colour value. The native colour inputs stay in the form, hidden, so
+  variant state and Add to cart are untouched. No Colour item with a product = native picker only.
 {%- endcomment -%}
 {%- capture sn_linked_entries -%}
   {% content_for 'blocks' %}
@@ -40,30 +39,48 @@
       endfor
     endfor
 
-    if sn_linked_entries contains 'aria-current="true"'
-      # a) this product is one of the destinations
+    # Active as soon as one Colour item has a destination product (rendered as a link); in the editor also
+    # while items are still being set up
+    if sn_linked_entries contains 'linked-colors__item'
       assign sn_linked_active = true
+    elsif request.design_mode
+      assign sn_linked_active = true
+    endif
+
+    # Exactly ONE selected button. If several Colour items point at the product being viewed (e.g. the same
+    # product chosen for every colour), they all came back selected: keep only the one whose "Colour name"
+    # equals the selected colour value, else the first of them.
+    assign sn_current_count = sn_linked_entries | split: 'aria-current="true"' | size | minus: 1
+    if sn_current_count > 1
+      assign sn_selected_key = ''
+      if sn_linked_option != blank
+        assign sn_selected_key = sn_colour_option.selected_value | downcase | strip | escape
+      endif
+      assign sn_key_attr = 'data-color-key="' | append: sn_selected_key | append: '"'
+      if sn_selected_key != blank and sn_linked_entries contains sn_key_attr
+        assign sn_linked_entries = sn_linked_entries | remove: 'aria-current="true"'
+        assign sn_key_current = sn_key_attr | append: ' aria-current="true"'
+        assign sn_linked_entries = sn_linked_entries | replace: sn_key_attr, sn_key_current
+        assign sn_current_name = sn_colour_option.selected_value | escape
+      else
+        assign sn_first_current = sn_linked_entries | split: '<!--sn-current:'
+        assign sn_current_name = sn_first_current[1] | split: ':sn-->' | first
+        assign sn_linked_entries = sn_linked_entries | remove: 'aria-current="true"' | replace_first: 'class="linked-colors__item', 'aria-current="true" class="linked-colors__item'
+      endif
+    elsif sn_current_count == 1
+      # The product being viewed is one of the destinations → that button is selected
       if sn_linked_entries contains '<!--sn-current:'
         assign sn_current_name = sn_linked_entries | split: '<!--sn-current:' | last | split: ':sn-->' | first
       endif
     elsif sn_linked_option != blank
-      # b) colour variants: select the item whose "Colour name" is the selected colour value
-      for sn_value in sn_colour_option.values
-        assign sn_value_key = sn_value.name | downcase | strip | escape
-        assign sn_key_attr = 'data-color-key="' | append: sn_value_key | append: '"'
-        if sn_linked_entries contains sn_key_attr
-          assign sn_linked_active = true
-        endif
-      endfor
-      if sn_linked_active
-        assign sn_selected_key = sn_colour_option.selected_value | downcase | strip | escape
-        assign sn_key_attr = 'data-color-key="' | append: sn_selected_key | append: '"'
+      # Product with colour variants → the button whose "Colour name" is the selected colour
+      assign sn_selected_key = sn_colour_option.selected_value | downcase | strip | escape
+      assign sn_key_attr = 'data-color-key="' | append: sn_selected_key | append: '"'
+      if sn_linked_entries contains sn_key_attr
         assign sn_key_current = sn_key_attr | append: ' aria-current="true"'
         assign sn_linked_entries = sn_linked_entries | replace: sn_key_attr, sn_key_current
         assign sn_current_name = sn_colour_option.selected_value | escape
       endif
-    elsif request.design_mode
-      assign sn_linked_active = true
     endif
   endif
 

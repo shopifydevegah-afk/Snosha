@@ -19,6 +19,21 @@
     assign is_current = true
   endif
 
+  # Link: the destination product; when that product has a variant whose colour value equals "Colour name"
+  # (e.g. one product with وردي / أزرق / … variants), link to that variant so the page opens with this colour
+  # selected (its images, price, availability) and this button gets the selected ring.
+  assign item_url = item.url
+  if item != blank and color_key != blank
+    for item_variant in item.variants
+      for item_value in item_variant.options
+        assign item_value_key = item_value | downcase | strip | escape
+        if item_value_key == color_key and item_url == item.url
+          assign item_url = item_variant.url
+        endif
+      endfor
+    endfor
+  endif
+
   assign fill_style = ''
   if block.settings.color != blank
     assign fill_style = '--linked-color-fill: ' | append: block.settings.color | append: ';'
@@ -38,7 +53,7 @@
   >
     <a
       class="linked-colors__item{% unless item.available %} linked-colors__item--unavailable{% endunless %}"
-      href="{{ item.url }}"
+      href="{{ item_url }}"
       data-color-key="{{ color_key }}"
       {% if is_current %}
         aria-current="true"
@@ -67,7 +82,12 @@
     class="linked-colors__entry linked-colors__entry--empty"
     {{ block.shopify_attributes }}
   >
-    <span class="linked-colors__swatch"></span>
+    <span
+      class="linked-colors__swatch"
+      {% if fill_style != blank %}
+        style="{{ fill_style | escape }}"
+      {% endif %}
+    ></span>
     <span class="linked-colors__name">{{ block.settings.color_name | default: '—' | escape }}</span>
   </li>
 {%- endif -%}

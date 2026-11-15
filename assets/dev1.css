@@ -2660,16 +2660,9 @@
       border: 0;
       border-radius: 50%;
       outline: none;
-      box-shadow:
-        0 0 0 calc(var(--sn-swatch-ring) - 1px) var(--color-background, #fff),
-        0 0 0 var(--sn-swatch-ring) #dcf2fb;
+      /* Not selected: no border at all (only the selected colour has the blue ring) */
+      box-shadow: none;
       transition: box-shadow var(--animation-speed, 0.2s) ease;
-    }
-
-    .variant-option__button-label--has-swatch:hover .swatch {
-      box-shadow:
-        0 0 0 calc(var(--sn-swatch-ring) - 1px) var(--color-background, #fff),
-        0 0 0 var(--sn-swatch-ring) rgb(23 107 176 / 0.45);
     }
 
     .variant-option__button-label--has-swatch:has(:checked) .swatch {
@@ -2736,11 +2729,11 @@
     block-size: var(--sn-swatch-dot, 24px);
     margin: var(--sn-swatch-ring);
     border: 0;
-    box-shadow:
-      0 0 0 calc(var(--sn-swatch-ring) - 1px) var(--color-background, #fff),
-      0 0 0 var(--sn-swatch-ring) #dcf2fb;
+    /* Not selected: no border at all (only the selected colour has the blue ring) */
+    box-shadow: none;
   }
 
+  /* Selected (the product being viewed): blue ring */
   .linked-colors__item[aria-current='true'] .linked-colors__swatch {
     outline: none;
     box-shadow:

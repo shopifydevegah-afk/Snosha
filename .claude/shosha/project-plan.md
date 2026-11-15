@@ -2015,6 +2015,12 @@ Verified in code and docs on 2026-11-08 before deciding:
 - **Files:** blocks/product-recommendations.liquid, sections/product-information.liquid, assets/dev1.css, templates/product.json.
 - **Checks:** template validator 74 / 0 errors; Theme Check: no errors in touched files (2 stock UnknownFilter), warning ExcessiveSettingsCount (82); CSS braces 544/544; setting → CSS trace 0 unmapped. **NOT VERIFIED at runtime** (no browser): icon rendering, custom image, spacing values.
 
+### P01 refinement — round 10: colour buttons → products (2026-11-15, Dev1)
+- **Request:** the colour swatches as buttons, each opening a product chosen in the Theme Editor, same look as now.
+- **Change:** Variant picker › Colour items are active as soon as one item has a destination product (no exact name match needed any more). They replace the colour option visually (same 34 ring / 24 fill / name below look), each a link to its product; selected = the item whose product is being viewed, else the item whose Colour name equals the selected colour value. Native colour inputs stay hidden in the form (variant state / Add to cart untouched). No item with a product = native swatches.
+- **Template:** 4 Colour items pre-added to `variant_picker_R3rGDr` from Figma (وردي #f2bfc9, أزرق #176bb0, أبيض #ffffff, أسود #131311), destination product EMPTY → shown in the editor only (with their colour) until the merchant picks each product. Editor-only empty items now show their colour.
+- **Files:** blocks/variant-picker.liquid, blocks/_linked-color.liquid, templates/product.json. Validator 78 blocks / 0 errors; Theme Check no new errors. NOT VERIFIED at runtime.
+
 ## F. QA & progress
 
 One QA row per S-ID. `PASS (local)` and Theme Check results describe **historical developer-reported checks** on individual branches, not checks rerun during this documentation merge. Final desktop/mobile/RTL visual QA remains `PENDING USER REVIEW` absent user evidence.

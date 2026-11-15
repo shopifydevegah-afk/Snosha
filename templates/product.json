@@ -1099,7 +1099,46 @@
                 "padding-inline-start": 0,
                 "padding-inline-end": 0
               },
-              "blocks": {}
+              "blocks": {
+                "sn_color_pink": {
+                  "type": "_linked-color",
+                  "settings": {
+                    "color_name": "وردي",
+                    "color": "#f2bfc9"
+                  },
+                  "blocks": {}
+                },
+                "sn_color_blue": {
+                  "type": "_linked-color",
+                  "settings": {
+                    "color_name": "أزرق",
+                    "color": "#176bb0"
+                  },
+                  "blocks": {}
+                },
+                "sn_color_white": {
+                  "type": "_linked-color",
+                  "settings": {
+                    "color_name": "أبيض",
+                    "color": "#ffffff"
+                  },
+                  "blocks": {}
+                },
+                "sn_color_black": {
+                  "type": "_linked-color",
+                  "settings": {
+                    "color_name": "أسود",
+                    "color": "#131311"
+                  },
+                  "blocks": {}
+                }
+              },
+              "block_order": [
+                "sn_color_pink",
+                "sn_color_blue",
+                "sn_color_white",
+                "sn_color_black"
+              ]
             },
             "buy_buttons_eYQEYi": {
               "type": "buy-buttons",
