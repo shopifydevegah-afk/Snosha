@@ -644,3 +644,46 @@
     }
   }
 }
+
+/* ==========================================================================
+   sn-product-related — PDP "منتجات ذات صلة" (P06, owner: Dev3). Native
+   `product-recommendations` (related intent) on templates/product.json, with the
+   classes "sn-home-bestsellers sn-product-related": cards, quick add, badges, rating,
+   price row, CTA and progress colors come from the S05 rules above (same `_product-card`
+   block tree). Figma desktop 190:10816, mobile 190:11593.
+   Card width, arrows, gaps and paddings are section settings; this modifier only sets
+   the Figma mobile section spacing and the heading text block.
+   ========================================================================== */
+.sn-home-bestsellers.sn-product-related {
+  /* Figma mobile: padding 40 / 40, gaps 22 (S05 adds the 11px carousel padding) */
+  --sn-bs-m-pad-top: 40px;
+  --sn-bs-m-pad-bottom: 40px;
+  --sn-bs-m-gap: 22px;
+
+  /* Heading: native text block. Size, color, alignment and mobile size/line height are
+     text-block settings; exact weight and desktop line height come from its settings too. */
+  .section-resource-list__content > .text-block.custom-typography {
+    &,
+    > * {
+      margin: 0;
+      font-weight: var(--sn-font-weight, var(--font-weight));
+    }
+
+    @media screen and (min-width: 750px) {
+      &,
+      > * {
+        line-height: var(--sn-line-height, var(--line-height));
+      }
+    }
+
+    /* Figma mobile title row: 44px (38px line + 3px above/below), Cairo Bold */
+    @media screen and (max-width: 749px) {
+      padding-block: 3px;
+
+      &,
+      > * {
+        font-weight: 700;
+      }
+    }
+  }
+}
