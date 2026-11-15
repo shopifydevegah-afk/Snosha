@@ -11,6 +11,33 @@
   {% render 'variant-main-picker', product_resource: product_resource, section: section, product: product %}
 {% endunless %}
 
+{% stylesheet %}
+  /* Project extension (Snosha, opt-in "Show names under swatches"): name below the swatch; the selected ring
+     moves from the label to the swatch so it does not surround the name. Absent names = native rules only. */
+  .variant-option__button-label--has-swatch:has(> .variant-option__swatch-name) {
+    display: inline-flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--gap-2xs, 4px);
+
+    &:hover,
+    &:has(:checked) {
+      outline: none;
+    }
+
+    &:has(:checked) .swatch {
+      outline: var(--focus-outline-width) solid var(--color-selected-variant-border);
+      outline-offset: var(--focus-outline-offset);
+    }
+  }
+
+  .variant-option__swatch-name {
+    font-size: var(--font-size--xs, 0.75rem);
+    line-height: 1.6;
+    text-align: center;
+  }
+{% endstylesheet %}
+
 {% schema %}
 {
   "name": "t:names.product_variant_picker",
@@ -41,6 +68,14 @@
       "id": "show_swatches",
       "label": "t:settings.swatches",
       "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_swatch_names",
+      "label": "Show names under swatches",
+      "info": "Each colour's name from its product option value.",
+      "default": false,
+      "visible_if": "{{ block.settings.show_swatches }}"
     },
     {
       "type": "header",

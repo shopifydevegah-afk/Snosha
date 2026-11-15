@@ -1,0 +1,211 @@
+{%- comment -%}
+  Project block (Snosha product page): colours sold as SEPARATE products.
+  Reads a "Product - list" metafield on the current product (default custom.color_products) that lists every
+  colour of the family, the current product included. Each entry links to that product's page; the current
+  product is marked selected (aria-current). Name: each product's colour-name metafield (default
+  custom.color_name), else its title. Fill: each product's colour metafield (default custom.color_swatch),
+  else its featured image.
+  Renders nothing when the metafield is empty or lists fewer than two products, so products whose colours are
+  variants keep using the native Variant picker. Navigation only: price, availability and the cart always come
+  from the product page that opens.
+{%- endcomment -%}
+{%- liquid
+  assign bs = block.settings
+  assign current = closest.product
+  assign family = null
+  assign parts = bs.list_metafield | strip | split: '.'
+  if current != blank and parts.size == 2
+    assign family = current.metafields[parts.first][parts.last].value
+  endif
+
+  assign name_parts = bs.name_metafield | strip | split: '.'
+  assign fill_parts = bs.swatch_metafield | strip | split: '.'
+
+  assign current_name = ''
+  if family != blank and family.size > 1
+    for item in family
+      if item.id == current.id
+        if name_parts.size == 2
+          assign current_name = item.metafields[name_parts.first][name_parts.last].value | append: ''
+        endif
+        if current_name == blank
+          assign current_name = item.title
+        endif
+      endif
+    endfor
+  endif
+-%}
+
+{%- if family != blank and family.size > 1 -%}
+  <div
+    class="linked-colors"
+    role="group"
+    aria-labelledby="LinkedColors-{{ block.id }}"
+    {{ block.shopify_attributes }}
+  >
+    <p
+      class="linked-colors__legend"
+      id="LinkedColors-{{ block.id }}"
+    >
+      {{- bs.label | escape -}}
+      {%- if current_name != blank -%}
+        <span class="linked-colors__value">{{ current_name | escape }}</span>
+      {%- endif -%}
+    </p>
+    <ul class="linked-colors__list list-unstyled">
+      {%- for item in family -%}
+        {%- liquid
+          assign item_name = ''
+          if name_parts.size == 2
+            assign item_name = item.metafields[name_parts.first][name_parts.last].value | append: ''
+          endif
+          if item_name == blank
+            assign item_name = item.title
+          endif
+          assign item_fill = ''
+          if fill_parts.size == 2
+            assign item_fill = item.metafields[fill_parts.first][fill_parts.last].value | append: ''
+          endif
+          assign is_current = false
+          if item.id == current.id
+            assign is_current = true
+          endif
+        -%}
+        <li class="linked-colors__entry">
+          <a
+            class="linked-colors__item{% unless item.available %} linked-colors__item--unavailable{% endunless %}"
+            href="{{ item.url }}"
+            {% if is_current %}
+              aria-current="true"
+            {% endif %}
+            aria-label="{{ item_name | escape }}{% unless item.available %} - {{ 'products.product.sold_out' | t }}{% endunless %}"
+          >
+            <span
+              class="linked-colors__swatch"
+              {% if item_fill != blank %}
+                style="--linked-color-fill: {{ item_fill | escape }};"
+              {% elsif item.featured_image != blank %}
+                style="--linked-color-image: url('{{ item.featured_image | image_url: width: 96 }}');"
+              {% endif %}
+            ></span>
+            {%- if bs.show_names -%}
+              <span
+                class="linked-colors__name"
+                aria-hidden="true"
+              >
+                {{- item_name | escape -}}
+              </span>
+            {%- endif -%}
+          </a>
+        </li>
+      {%- endfor -%}
+    </ul>
+  </div>
+{%- endif -%}
+
+{% stylesheet %}
+  .linked-colors {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-start;
+    gap: var(--gap-xs, 8px);
+  }
+
+  .linked-colors__legend {
+    margin: 0;
+  }
+
+  .linked-colors__value {
+    padding-inline-start: var(--padding-xs, 4px);
+  }
+
+  .linked-colors__list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--gap-xs, 8px);
+    margin: 0;
+  }
+
+  .linked-colors__item {
+    display: inline-flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--gap-2xs, 4px);
+    color: inherit;
+    text-decoration: none;
+  }
+
+  .linked-colors__swatch {
+    display: block;
+    inline-size: 28px;
+    block-size: 28px;
+    border-radius: 50%;
+    border: 1px solid rgb(var(--color-foreground-rgb) / 0.15);
+    background: var(--linked-color-fill, var(--linked-color-image, none) center / cover no-repeat);
+  }
+
+  .linked-colors__item[aria-current='true'] .linked-colors__swatch {
+    outline: var(--focus-outline-width, 1px) solid currentcolor;
+    outline-offset: 2px;
+  }
+
+  .linked-colors__item--unavailable .linked-colors__swatch {
+    opacity: 0.5;
+  }
+
+  .linked-colors__name {
+    font-size: var(--font-size--xs, 0.75rem);
+    line-height: 1.6;
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "Linked colour products",
+  "tag": null,
+  "settings": [
+    {
+      "type": "paragraph",
+      "content": "For colours sold as separate products. Shown only when the product's list metafield has two or more products. Colours that are variants of one product use the Variant picker instead."
+    },
+    {
+      "type": "text",
+      "id": "label",
+      "label": "Label",
+      "default": "اللون"
+    },
+    {
+      "type": "text",
+      "id": "list_metafield",
+      "label": "Colour products metafield (namespace.key)",
+      "info": "Product metafield of type Product (list). Add every colour of the family, this product included.",
+      "default": "custom.color_products"
+    },
+    {
+      "type": "text",
+      "id": "name_metafield",
+      "label": "Colour name metafield (namespace.key)",
+      "info": "Single line text on each product. Empty = product title.",
+      "default": "custom.color_name"
+    },
+    {
+      "type": "text",
+      "id": "swatch_metafield",
+      "label": "Colour fill metafield (namespace.key)",
+      "info": "Color metafield on each product. Empty = product image.",
+      "default": "custom.color_swatch"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_names",
+      "label": "Show names under swatches",
+      "default": true
+    }
+  ],
+  "presets": [
+    {
+      "name": "Linked colour products"
+    }
+  ]
+}
+{% endschema %}

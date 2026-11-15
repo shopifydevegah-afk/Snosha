@@ -12,6 +12,17 @@
   assign scoped_class = block.settings.style_class | append: '--' | append: block.id
   assign class = 'add-to-cart-button ' | append: block.settings.style_class | append: ' ' | append: scoped_class
   assign id = 'BuyButtons-ProductSubmitButton-' | append: block.id
+
+  # Project extension (Snosha product page, opt-in): own label for the purchasable state only (sold out /
+  # unavailable keep the native translated text) and an icon toggle. Blank label + icon on = native button.
+  assign sn_button_text = add_to_cart_text
+  if can_add_to_cart and block.settings.custom_label != blank
+    assign sn_button_text = block.settings.custom_label
+  endif
+  assign sn_show_icon = can_add_to_cart
+  if block.settings.show_icon == false
+    assign sn_show_icon = false
+  endif
 %}
 {% render 'button-custom-styles', block_settings: block.settings, block_id: block.id %}
 {% render 'add-to-cart-button-styles' %}
@@ -25,9 +36,9 @@
     id: id,
     class: class,
     can_add_to_cart: can_add_to_cart,
-    show_icon: can_add_to_cart,
+    show_icon: sn_show_icon,
     product: closest.product,
-    add_to_cart_text: add_to_cart_text,
+    add_to_cart_text: sn_button_text,
     data_testid: 'standalone-add-to-cart'
   %}
 </span>
@@ -86,6 +97,22 @@
       "default": "{{ settings.color_palette.background }}",
       "alpha": true,
       "visible_if": "{{ block.settings.style_class == 'button-custom' }}"
+    },
+    {
+      "type": "header",
+      "content": "Button content"
+    },
+    {
+      "type": "text",
+      "id": "custom_label",
+      "label": "Button label",
+      "info": "Shown while the product can be added to the cart. Leave empty for the theme's translated text. Sold out and unavailable texts stay native."
+    },
+    {
+      "type": "checkbox",
+      "id": "show_icon",
+      "label": "Show cart icon",
+      "default": true
     }
   ]
 }

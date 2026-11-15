@@ -148,6 +148,12 @@
                     variant_image: featured_media,
                     mode: 'unscaled'
                   %}
+                  {%- comment -%} Project extension (Snosha, opt-in): visible value name under the swatch {%- endcomment -%}
+                  {%- if block_settings.show_swatch_names -%}
+                    <span class="variant-option__swatch-name" aria-hidden="true">
+                      {{- product_option_value.name | escape -}}
+                    </span>
+                  {%- endif -%}
                 {% else %}
                   {% if product_option_value.available == true %}
                     <span
