@@ -7,7 +7,8 @@
 {%- endcomment -%}
 {%- liquid
   assign item = block.settings.product
-  assign current = closest.product
+  # Product being viewed: passed by the Variant picker; the page product as a fallback
+  assign current = closest.product | default: product
   assign item_name = block.settings.color_name | strip
   if item_name == blank and item != blank
     assign item_name = item.title
@@ -56,6 +57,7 @@
       href="{{ item_url }}"
       data-color-key="{{ color_key }}"
       {% if is_current %}
+        data-current-color="{{ color_key }}"
         aria-current="true"
       {% endif %}
       aria-label="{{ item_name | escape }}{% unless item.available %} - {{ 'products.product.sold_out' | t }}{% endunless %}"

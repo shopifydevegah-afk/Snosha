@@ -12,12 +12,16 @@
   destination product). As soon as at least one Colour item has a destination product, the picker shows the
   Colour items as round buttons (same look as the swatches), each opening its own product page, in place of the
   colour option (option names from "Option names to relabel"), or on their own when the product has no colour
-  option. Selected button: the item whose product is the one being viewed; otherwise the item whose
-  "Colour name" equals the selected colour value. The native colour inputs stay in the form, hidden, so
+  option. Selected button (blue ring) = only the item whose destination product is the one being viewed; no
+  such item = no ring (never a default colour). The native colour inputs stay in the form, hidden, so
   variant state and Add to cart are untouched. No Colour item with a product = native picker only.
 {%- endcomment -%}
+{%- comment -%}
+  The product being viewed is passed explicitly: the Colour items compare their destination product with it
+  (closest.product is not reliably inherited by children of this block).
+{%- endcomment -%}
 {%- capture sn_linked_entries -%}
-  {% content_for 'blocks' %}
+  {% content_for 'blocks', closest.product: product_resource %}
 {%- endcapture -%}
 {%- liquid
   assign sn_linked_html = ''
@@ -47,39 +51,36 @@
       assign sn_linked_active = true
     endif
 
-    # Exactly ONE selected button. If several Colour items point at the product being viewed (e.g. the same
-    # product chosen for every colour), they all came back selected: keep only the one whose "Colour name"
-    # equals the selected colour value, else the first of them.
-    assign sn_current_count = sn_linked_entries | split: 'aria-current="true"' | size | minus: 1
+    # Selected ring = ONLY the Colour item whose destination product is the product being viewed (marked
+    # aria-current by the item itself). No item for this product = no ring, no default colour.
+    # If several items point at this same product, one ring: the item whose "Colour name" is the selected
+    # variant's colour (when the product has colour variants), otherwise the first of those items.
+    assign sn_current_parts = sn_linked_entries | split: 'aria-current="true"'
+    assign sn_current_count = sn_current_parts.size | minus: 1
     if sn_current_count > 1
       assign sn_selected_key = ''
       if sn_linked_option != blank
         assign sn_selected_key = sn_colour_option.selected_value | downcase | strip | escape
       endif
-      assign sn_key_attr = 'data-color-key="' | append: sn_selected_key | append: '"'
-      if sn_selected_key != blank and sn_linked_entries contains sn_key_attr
+      assign sn_current_attr = 'data-current-color="' | append: sn_selected_key | append: '"'
+      if sn_selected_key != blank and sn_linked_entries contains sn_current_attr
         assign sn_linked_entries = sn_linked_entries | remove: 'aria-current="true"'
-        assign sn_key_current = sn_key_attr | append: ' aria-current="true"'
-        assign sn_linked_entries = sn_linked_entries | replace: sn_key_attr, sn_key_current
+        assign sn_current_with = sn_current_attr | append: ' aria-current="true"'
+        assign sn_linked_entries = sn_linked_entries | replace: sn_current_attr, sn_current_with
         assign sn_current_name = sn_colour_option.selected_value | escape
       else
+        # keep the first selected item only
+        assign sn_rebuilt = sn_current_parts.first | append: 'aria-current="true"'
+        for sn_part in sn_current_parts offset: 1
+          assign sn_rebuilt = sn_rebuilt | append: sn_part
+        endfor
+        assign sn_linked_entries = sn_rebuilt
         assign sn_first_current = sn_linked_entries | split: '<!--sn-current:'
         assign sn_current_name = sn_first_current[1] | split: ':sn-->' | first
-        assign sn_linked_entries = sn_linked_entries | remove: 'aria-current="true"' | replace_first: 'class="linked-colors__item', 'aria-current="true" class="linked-colors__item'
       endif
     elsif sn_current_count == 1
-      # The product being viewed is one of the destinations → that button is selected
       if sn_linked_entries contains '<!--sn-current:'
         assign sn_current_name = sn_linked_entries | split: '<!--sn-current:' | last | split: ':sn-->' | first
-      endif
-    elsif sn_linked_option != blank
-      # Product with colour variants → the button whose "Colour name" is the selected colour
-      assign sn_selected_key = sn_colour_option.selected_value | downcase | strip | escape
-      assign sn_key_attr = 'data-color-key="' | append: sn_selected_key | append: '"'
-      if sn_linked_entries contains sn_key_attr
-        assign sn_key_current = sn_key_attr | append: ' aria-current="true"'
-        assign sn_linked_entries = sn_linked_entries | replace: sn_key_attr, sn_key_current
-        assign sn_current_name = sn_colour_option.selected_value | escape
       endif
     endif
   endif

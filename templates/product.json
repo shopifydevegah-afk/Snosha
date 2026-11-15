@@ -1103,6 +1103,7 @@
                 "sn_color_pink": {
                   "type": "_linked-color",
                   "settings": {
+                    "product": "snosha-f1",
                     "color_name": "وردي",
                     "color": "#f2bfc9"
                   },
@@ -1111,6 +1112,7 @@
                 "sn_color_blue": {
                   "type": "_linked-color",
                   "settings": {
+                    "product": "snosha-n2",
                     "color_name": "أزرق",
                     "color": "#176bb0"
                   },
@@ -1119,6 +1121,7 @@
                 "sn_color_white": {
                   "type": "_linked-color",
                   "settings": {
+                    "product": "فرشاة-الأطفال",
                     "color_name": "أبيض",
                     "color": "#ffffff"
                   },
@@ -1127,6 +1130,7 @@
                 "sn_color_black": {
                   "type": "_linked-color",
                   "settings": {
+                    "product": "snosha-tongue-cleaner",
                     "color_name": "أسود",
                     "color": "#131311"
                   },
