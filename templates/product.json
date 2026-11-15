@@ -3620,7 +3620,9 @@
                     "email_client": "gmail",
                     "icon": "email",
                     "icon_size": 22,
-                    "icon_gap": 10
+                    "icon_gap": 10,
+                    "mobile_order": 2,
+                    "effect": "glass"
                   },
                   "blocks": {}
                 },
@@ -3654,7 +3656,9 @@
                     "email_client": "mailto",
                     "icon": "whatsapp",
                     "icon_size": 22,
-                    "icon_gap": 10
+                    "icon_gap": 10,
+                    "mobile_order": 1,
+                    "effect": "glow"
                   },
                   "blocks": {}
                 }

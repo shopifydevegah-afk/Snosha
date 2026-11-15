@@ -1065,15 +1065,18 @@
     }
   }
 
-  /* Primary CTA (first button): Figma glow; secondary (second): frosted glass */
-  .sn-product-contact-actions > .group-block-content > a:first-child {
+  /* Button "Effect" setting: Glow = Figma primary shadow + halo, Glass = Figma frosted blur.
+     The block outputs 1 / nothing, so the effect follows its button whatever the block order. */
+  .sn-product-contact-actions :is(.button, .button-secondary, .button-custom) {
     box-shadow:
-      0 14px 28px 0 rgb(0 26 64 / 0.4),
-      0 0 30px 2px rgb(99 205 255 / 0.4);
-  }
+      0 14px 28px 0 rgb(0 26 64 / calc(0.4 * var(--sn-button-glow, 0))),
+      0 0 30px 2px rgb(99 205 255 / calc(0.4 * var(--sn-button-glow, 0)));
+    backdrop-filter: blur(calc(7px * var(--sn-button-glass, 0)));
 
-  .sn-product-contact-actions > .group-block-content > a:nth-child(2) {
-    backdrop-filter: blur(7px);
+    /* Button "Order — Mobile" (Figma phone: WhatsApp first) */
+    @media screen and (max-width: 749px) {
+      order: var(--sn-button-order-mobile, 0);
+    }
   }
 
   .sn-product-contact-actions a:focus-visible {

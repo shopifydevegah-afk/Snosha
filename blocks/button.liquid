@@ -80,6 +80,8 @@
   {% style %}
     .{{ block.settings.style_class }}--{{ block.id }} {
       {%- if block.settings.font_size_mobile > 0 %}--sn-button-font-size-mobile: {{ block.settings.font_size_mobile }}px;{% endif %}
+      {%- if block.settings.mobile_order > 0 %}--sn-button-order-mobile: {{ block.settings.mobile_order }};{% endif %}
+      {%- if block.settings.effect == 'glow' %}--sn-button-glow: 1;{% elsif block.settings.effect == 'glass' %}--sn-button-glass: 1;{% endif %}
       --sn-button-font-size: {{ block.settings.font_size }}px;
       --sn-button-font-weight: {{ block.settings.font_weight }};
       --sn-button-border-width: {{ block.settings.border_width }}px;
@@ -308,6 +310,37 @@
       "step": 1,
       "unit": "px",
       "default": 0
+    },
+    {
+      "type": "range",
+      "id": "mobile_order",
+      "label": "Order — Mobile",
+      "info": "Phones, in sections with a custom class. 0 = block order; lower numbers come first. Visual only (Tab follows the block order).",
+      "min": 0,
+      "max": 9,
+      "step": 1,
+      "default": 0
+    },
+    {
+      "type": "select",
+      "id": "effect",
+      "label": "Effect",
+      "info": "In sections with a custom class: Glow = soft shadow and light halo, Glass = blurred see-through background.",
+      "options": [
+        {
+          "value": "none",
+          "label": "None"
+        },
+        {
+          "value": "glow",
+          "label": "Glow"
+        },
+        {
+          "value": "glass",
+          "label": "Glass"
+        }
+      ],
+      "default": "none"
     },
     {
       "type": "header",

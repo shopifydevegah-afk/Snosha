@@ -1989,6 +1989,7 @@ Verified in code and docs on 2026-11-08 before deciding:
 - **Static checks:** Theme Check 11 = baseline; template settings validated against the schemas: 0 problems; CSS braces balanced.
 - **UNVERIFIED:** group background shorthand vs the gradient layer; Shopify editor accepting `rgba()` button colours from JSON; mask support for the mail icon in older browsers.
 - **PENDING USER REVIEW:** 1480 / 1024 / 768 / 390 / 320 vs Figma; WhatsApp and email links after filling the number / address (and with them empty: disabled, no link); Gmail vs default app; focus and hover; decor not overlapping text at narrow desktop widths; class on/off.
+- **Fix 2026-11-15 (WhatsApp under email on phones):** the merchant set the block order email → WhatsApp in the Theme Editor (desktop matches Figma: WhatsApp on the visual left), so the phone stack showed email first, and the position-based glow / blur would have landed on the wrong buttons. New `button` settings (27 → 29, class-bound vars): `mobile_order` (0 = block order) → `order` on phones; `effect` (None / Glow / Glass) → `--sn-button-glow` / `--sn-button-glass` multipliers for the Figma shadow and blur in `main.css`. Template: WhatsApp `mobile_order` 1 + Glow, email 2 + Glass; block order kept as the merchant set it. Theme Check 11.
 
 ## F. QA & progress
 
