@@ -2861,7 +2861,10 @@
       background-color: #fff;
       filter: drop-shadow(0 6px 6px rgb(15 100 168 / 0.06));
 
+      min-block-size: var(--sn-trust-height, 0px);
+
       @media screen and (max-width: 749px) {
+        min-block-size: var(--sn-trust-height-mobile, 0px);
         padding-block: var(--sn-trust-pad-block-mobile, 5px);
         padding-inline: var(--sn-trust-pad-start-mobile, 5px) var(--sn-trust-pad-end-mobile, 8px);
       }
@@ -2919,6 +2922,28 @@
 
     .resource-list {
       grid-template-columns: minmax(0, 1fr);
+    }
+
+    /* Theme Editor only: when Search & Discovery returns no complementary products, the native CSS hides the
+       block (correct on the store). In the editor it stays visible with this note, so an empty response is not
+       mistaken for a rendering bug. */
+    .shopify-design-mode &:has([data-has-recommendations='false']) {
+      display: block;
+
+      .section-resource-list__content {
+        display: none;
+      }
+
+      [data-has-recommendations='false']::before {
+        content: 'Search & Discovery returned no complementary products for this product (shown in the editor only).';
+        display: block;
+        padding: 12px 14px;
+        border: 1px dashed #dcf2fb;
+        border-radius: 18px;
+        font-size: 12px;
+        line-height: 20px;
+        color: #5a5a59;
+      }
     }
 
     /* Theme Editor only: "Manual selection" with no products picked yet */
@@ -3098,15 +3123,26 @@
       color: #5a5a59;
       text-align: start;
 
-      /* Text block on a preset: Figma body */
+      /* Text block on a preset: section settings "Accordion text" (Figma 14 / 28 / Regular, mobile the same);
+         the block's own Text colour still applies */
       .text-block:not(.custom-typography) {
-        font-size: 14px;
-        font-weight: 400;
-        line-height: 28px;
-        color: #5a5a59;
+        font-family: var(--font-body--family);
+        font-size: var(--sn-acc-body, 14px);
+        font-weight: var(--sn-acc-body-weight, 400);
+        line-height: var(--sn-acc-body-line, 28px);
+        color: var(--color, #5a5a59);
 
-        > * {
+        @media screen and (max-width: 749px) {
+          font-size: var(--sn-acc-body-mobile, 14px);
+          font-weight: var(--sn-acc-body-weight-mobile, 400);
+          line-height: var(--sn-acc-body-line-mobile, 28px);
+        }
+
+        > *,
+        :is(p, li) {
+          font-family: inherit;
           font-size: inherit;
+          font-weight: inherit;
           line-height: inherit;
         }
       }
@@ -3143,34 +3179,42 @@
 
       :is(p, ul, ol) + :is(p, ul, ol) {
         margin-block-start: var(--sn-acc-paragraph-gap, 0px);
+
+        @media screen and (max-width: 749px) {
+          margin-block-start: var(--sn-acc-paragraph-gap-mobile, 0px);
+        }
       }
 
       :is(ul, ol) {
         padding-inline-start: 1.25em;
       }
 
-      /* Sub-headings follow the body size (1em), bold, own line height */
+      /* Hierarchy: sub-headings and bold text keep "Bold text and sub-heading weight" (Figma Bold #131311),
+         independent of the body weight; sub-headings follow the body size (1em) */
       :is(h1, h2, h3, h4, h5, h6) {
         margin: 0;
         font-size: 1em;
-        font-weight: 700;
+        font-weight: var(--sn-acc-bold-weight, 700);
         line-height: var(--sn-acc-title-line, 40px);
         color: #131311;
       }
 
       :is(strong, b) {
-        font-weight: 700;
+        font-weight: var(--sn-acc-bold-weight, 700);
         color: #131311;
       }
 
-      /* Rich text paragraphs that start with a bold title (title<br>text) */
-      p > :is(strong, b):first-child:has(+ br) {
+      /* Rich text title lines: a bold title that starts a paragraph and is followed by a line break (outside or
+         inside the bold) gets the sub-heading line height (Figma: title box 29, line 40) */
+      p > :is(strong, b):first-child:is(:has(+ br), :has(> br:last-child)) {
         display: inline-block;
         line-height: var(--sn-acc-title-line, 40px);
       }
 
-      p:has(> br:only-child),
-      p > br:first-child {
+      /* Editor artefact: after a title-only paragraph, a bold run that is just a line break at the start of the
+         next paragraph (<p><strong><br></strong>text) made a blank line under the title. Only that pattern is
+         removed; text, bold and ordinary line breaks are kept. */
+      p:has(> :is(strong, b):only-child) + p > :is(strong, b):first-child:has(> br:only-child):not(:has(+ br)) {
         display: none;
       }
     }

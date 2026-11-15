@@ -213,6 +213,16 @@
       --sn-acc-heading-mobile: {{ s.sn_acc_heading_mobile }}px;
       --sn-acc-title-line: {{ s.sn_acc_title_line }}px;
       --sn-acc-paragraph-gap: {{ s.sn_acc_paragraph_gap }}px;
+      --sn-trust-height: {{ s.sn_trust_height }}px;
+      --sn-trust-height-mobile: {{ s.sn_trust_height_mobile }}px;
+      --sn-acc-body: {{ s.sn_acc_body }}px;
+      --sn-acc-body-mobile: {{ s.sn_acc_body_mobile }}px;
+      --sn-acc-body-line: {{ s.sn_acc_body_line }}px;
+      --sn-acc-body-line-mobile: {{ s.sn_acc_body_line_mobile }}px;
+      --sn-acc-body-weight: {{ s.sn_acc_body_weight }};
+      --sn-acc-body-weight-mobile: {{ s.sn_acc_body_weight_mobile }};
+      --sn-acc-bold-weight: {{ s.sn_acc_bold_weight }};
+      --sn-acc-paragraph-gap-mobile: {{ s.sn_acc_paragraph_gap_mobile }}px;
     }
     {%- comment -%} Trust icon size (0 = each icon block's own Width): uploaded icons carry an inline width, hence !important {%- endcomment -%}
     {%- if s.sn_trust_icon > 0 %}
@@ -723,6 +733,27 @@
     },
     {
       "type": "range",
+      "id": "sn_trust_height",
+      "label": "Trust pill height, desktop",
+      "min": 0,
+      "max": 64,
+      "step": 1,
+      "unit": "px",
+      "default": 48,
+      "info": "0 = height from padding and icon tile."
+    },
+    {
+      "type": "range",
+      "id": "sn_trust_height_mobile",
+      "label": "Trust pill height, mobile",
+      "min": 0,
+      "max": 64,
+      "step": 1,
+      "unit": "px",
+      "default": 38
+    },
+    {
+      "type": "range",
       "id": "sn_trust_tile",
       "label": "Trust icon tile size",
       "min": 20,
@@ -843,9 +874,142 @@
       "default": 16
     },
     {
+      "type": "header",
+      "content": "Accordion text"
+    },
+    {
+      "type": "paragraph",
+      "content": "Body text of every accordion row whose text block uses a preset typography. A text block set to Custom typography keeps its own values."
+    },
+    {
+      "type": "range",
+      "id": "sn_acc_body",
+      "label": "Body size, desktop",
+      "min": 10,
+      "max": 24,
+      "step": 1,
+      "unit": "px",
+      "default": 14
+    },
+    {
+      "type": "range",
+      "id": "sn_acc_body_mobile",
+      "label": "Body size, mobile",
+      "min": 10,
+      "max": 24,
+      "step": 1,
+      "unit": "px",
+      "default": 14
+    },
+    {
+      "type": "range",
+      "id": "sn_acc_body_line",
+      "label": "Body line height, desktop",
+      "min": 14,
+      "max": 48,
+      "step": 1,
+      "unit": "px",
+      "default": 28
+    },
+    {
+      "type": "range",
+      "id": "sn_acc_body_line_mobile",
+      "label": "Body line height, mobile",
+      "min": 14,
+      "max": 48,
+      "step": 1,
+      "unit": "px",
+      "default": 28
+    },
+    {
+      "type": "select",
+      "id": "sn_acc_body_weight",
+      "label": "Body weight, desktop",
+      "options": [
+        {
+          "value": "300",
+          "label": "Light"
+        },
+        {
+          "value": "400",
+          "label": "Regular"
+        },
+        {
+          "value": "500",
+          "label": "Medium"
+        },
+        {
+          "value": "600",
+          "label": "SemiBold"
+        },
+        {
+          "value": "700",
+          "label": "Bold"
+        }
+      ],
+      "default": "400"
+    },
+    {
+      "type": "select",
+      "id": "sn_acc_body_weight_mobile",
+      "label": "Body weight, mobile",
+      "options": [
+        {
+          "value": "300",
+          "label": "Light"
+        },
+        {
+          "value": "400",
+          "label": "Regular"
+        },
+        {
+          "value": "500",
+          "label": "Medium"
+        },
+        {
+          "value": "600",
+          "label": "SemiBold"
+        },
+        {
+          "value": "700",
+          "label": "Bold"
+        }
+      ],
+      "default": "400"
+    },
+    {
+      "type": "select",
+      "id": "sn_acc_bold_weight",
+      "label": "Bold text and sub-heading weight",
+      "options": [
+        {
+          "value": "300",
+          "label": "Light"
+        },
+        {
+          "value": "400",
+          "label": "Regular"
+        },
+        {
+          "value": "500",
+          "label": "Medium"
+        },
+        {
+          "value": "600",
+          "label": "SemiBold"
+        },
+        {
+          "value": "700",
+          "label": "Bold"
+        }
+      ],
+      "default": "700",
+      "info": "Keeps bold text and headings in the description bold, whatever the body weight."
+    },
+    {
       "type": "range",
       "id": "sn_acc_title_line",
-      "label": "Accordion sub-heading line height",
+      "label": "Sub-heading line height (bold titles in the text)",
       "min": 16,
       "max": 48,
       "step": 1,
@@ -855,7 +1019,17 @@
     {
       "type": "range",
       "id": "sn_acc_paragraph_gap",
-      "label": "Accordion paragraph spacing",
+      "label": "Accordion paragraph spacing, desktop",
+      "min": 0,
+      "max": 24,
+      "step": 1,
+      "unit": "px",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "sn_acc_paragraph_gap_mobile",
+      "label": "Accordion paragraph spacing, mobile",
       "min": 0,
       "max": 24,
       "step": 1,

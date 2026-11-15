@@ -5,6 +5,8 @@
   @param {object} [block] - The block object
   @param {object} section - The section object.
   @param {object} product - The current product object (used to determine selected variant state).
+  @param {string} [linked_colors] - Project extension (Snosha): linked colour products markup shown in place of the option named `linked_option`. Blank = native output
+  @param {string} [linked_option] - Project extension (Snosha): name of the option replaced by `linked_colors`; its native inputs stay in the form, hidden
 {%- enddoc -%}
 
 {% assign block_settings = block.settings %}
@@ -85,7 +87,18 @@
               endif
             endfor
           endif
+
+          # Project extension (Snosha): linked colour products replace this option visually
+          assign hide_native_option = false
+          if linked_colors != blank and linked_option != blank and product_option.name == linked_option
+            assign hide_native_option = true
+          endif
         -%}
+
+        {%- if hide_native_option -%}
+          {{ linked_colors }}
+          <div class="variant-option-linked-native" hidden>
+        {%- endif -%}
 
         {%- if product_option.values.size == 1 and variant_style != 'swatch' -%}
           <div
@@ -253,6 +266,9 @@
                 {%- render 'icon', icon: 'caret' -%}
               </svg>
             </div>
+          </div>
+        {%- endif -%}
+        {%- if hide_native_option -%}
           </div>
         {%- endif -%}
       {%- endfor -%}

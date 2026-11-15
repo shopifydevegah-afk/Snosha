@@ -7,8 +7,79 @@
   endif
 -%}
 
+{%- comment -%}
+  Project extension (Snosha, opt-in): linked colour products. "Colour" child blocks (destination product picker,
+  colour name, colour / image). When one of them points at the product being viewed, the picker shows these
+  colours as links in place of that product's colour option (matched by "Option names to relabel"); the native
+  colour inputs stay in the form, hidden, so variant state and Add to cart are untouched. No Colour items, or
+  the product isn't one of them = native picker only.
+{%- endcomment -%}
+{%- capture sn_linked_entries -%}
+  {% content_for 'blocks' %}
+{%- endcapture -%}
+{%- liquid
+  assign sn_linked_html = ''
+  assign sn_linked_option = ''
+  assign sn_linked_active = false
+  if sn_linked_entries contains 'aria-current="true"'
+    assign sn_linked_active = true
+  elsif request.design_mode and sn_linked_entries contains 'linked-colors__entry'
+    assign sn_linked_active = true
+  endif
+
+  if sn_linked_active and product_resource != blank
+    assign sn_current_name = ''
+    if sn_linked_entries contains '<!--sn-current:'
+      assign sn_current_name = sn_linked_entries | split: '<!--sn-current:' | last | split: ':sn-->' | first
+    endif
+
+    assign sn_match_names = block.settings.option_label_match | downcase | split: ','
+    for sn_option in product_resource.options_with_values
+      assign sn_option_key = sn_option.name | downcase | strip
+      for sn_match in sn_match_names
+        assign sn_match_key = sn_match | strip
+        if sn_match_key == sn_option_key and sn_linked_option == blank
+          assign sn_linked_option = sn_option.name
+        endif
+      endfor
+    endfor
+
+    assign sn_linked_label = block.settings.option_label
+    if sn_linked_label == blank
+      assign sn_linked_label = sn_linked_option
+    endif
+
+    capture sn_linked_html
+      echo '<div class="linked-colors linked-colors--picker" role="group" aria-labelledby="LinkedColors-' | append: block.id | append: '">'
+      echo '<p class="linked-colors__legend" id="LinkedColors-' | append: block.id | append: '">'
+      echo sn_linked_label | escape
+      if sn_current_name != blank
+        echo '<span class="linked-colors__value">' | append: sn_current_name | append: '</span>'
+      endif
+      echo '</p><ul class="linked-colors__list list-unstyled">'
+      echo sn_linked_entries
+      echo '</ul></div>'
+    endcapture
+  endif
+-%}
+
 {% unless product_resource == blank %}
-  {% render 'variant-main-picker', product_resource: product_resource, section: section, product: product %}
+  {%- comment -%} Product without a colour option (e.g. one product per colour): colours shown on their own {%- endcomment -%}
+  {%- if sn_linked_html != blank and sn_linked_option == blank -%}
+    <div
+      class="variant-picker spacing-style"
+      style="{% render 'spacing-style', settings: block.settings %}"
+    >
+      {{ sn_linked_html }}
+    </div>
+  {%- endif -%}
+  {% render 'variant-main-picker',
+    product_resource: product_resource,
+    section: section,
+    product: product,
+    linked_colors: sn_linked_html,
+    linked_option: sn_linked_option
+  %}
 {% endunless %}
 
 {% stylesheet %}
@@ -42,6 +113,11 @@
 {
   "name": "t:names.product_variant_picker",
   "tag": null,
+  "blocks": [
+    {
+      "type": "_linked-color"
+    }
+  ],
   "settings": [
     {
       "type": "header",
