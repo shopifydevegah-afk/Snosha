@@ -562,3 +562,70 @@
     }
   }
 }
+
+/* ==========================================================================
+   sn-product-before-after — section "Image compare" preset on product.custom-snosha-product
+   (product page Before & After) | Figma desktop 190:10376 (1480), mobile 190:11087 (390) | owner: Main
+   The section also carries Dev2's `sn-home-before-after` class as a shared variant: it supplies the
+   slider behaviour (RTL handle fix, 3px divider, 34×58 / 29×48 grip handle, label chips) and the
+   settings-driven text/mobile layout, so nothing is copied here. This block only adds the product
+   differences (centred single column, description width, mobile line heights, label offsets).
+   ========================================================================== */
+.sn-product-before-after {
+  /* Description: Figma text box max 860px, centred (desktop; narrower screens are below it anyway) */
+  .text-block.custom-typography:has(> p) {
+    max-inline-size: 860px;
+    margin-inline: auto;
+  }
+
+  /* Label offsets (Figma desktop): "قبل" 21px from the inline-start edge, "بعد" 23px from the
+     inline-end edge, 26px from the top. Higher specificity than the shared 16px inset. */
+  &.sn-home-before-after [data-orientation='horizontal'] .comparison-slider__text--before {
+    inset-inline-start: 21px;
+  }
+
+  &.sn-home-before-after [data-orientation='horizontal'] .comparison-slider__text--after {
+    inset-inline-end: 23px;
+  }
+
+  &.sn-home-before-after [data-orientation='horizontal'][data-text-position='start'] .comparison-slider__text {
+    inset-block-start: 26px;
+  }
+
+  @media screen and (max-width: 749px) {
+    /* Heading: Figma 328px text box (keeps its two-line wrap) */
+    .text-block.custom-typography:has(> h2) {
+      max-inline-size: 328px;
+      margin-inline: auto;
+    }
+
+    /* Mobile line heights: the text block's "Line height — Mobile" (px) when set, else Figma 52 / 32px.
+       The shared rule applies the desktop line height on phones, so it is re-applied here. */
+    .text-block.custom-typography:has(> h2),
+    .text-block.custom-typography > h2 {
+      line-height: var(--line-height-mobile, 52px);
+    }
+
+    .text-block.custom-typography:has(> p),
+    .text-block.custom-typography > p {
+      line-height: var(--line-height-mobile, 32px);
+    }
+
+    /* Label chips: Figma 45×21 (12px text) → 12px inline padding; offsets 19 / 32px, top 12px */
+    &.sn-home-before-after .comparison-slider__text {
+      padding-inline: 12px;
+    }
+
+    &.sn-home-before-after [data-orientation='horizontal'] .comparison-slider__text--before {
+      inset-inline-start: 19px;
+    }
+
+    &.sn-home-before-after [data-orientation='horizontal'] .comparison-slider__text--after {
+      inset-inline-end: 32px;
+    }
+
+    &.sn-home-before-after [data-orientation='horizontal'][data-text-position='start'] .comparison-slider__text {
+      inset-block-start: 12px;
+    }
+  }
+}

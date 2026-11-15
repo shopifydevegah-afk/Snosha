@@ -325,6 +325,114 @@
         "padding-block-end": 0
       }
     },
+    "before_after_sn_product": {
+      "type": "section",
+      "name": "t:names.image_compare",
+      "blocks": {
+        "text_sn_pba_heading": {
+          "type": "text",
+          "name": "t:names.heading",
+          "settings": {
+            "text": "<h2>النتيجة بعد الاستخدام المنتظم لفرشاة SNOSHA</h2>",
+            "width": "100%",
+            "max_width": "none",
+            "alignment": "center",
+            "type_preset": "custom",
+            "font": "var(--font-heading--family)",
+            "font_size": "2rem",
+            "mobile_font_size": 22,
+            "font_weight": "600",
+            "line_height": "normal",
+            "line_height_exact": 163,
+            "letter_spacing": "normal",
+            "case": "none",
+            "wrap": "wrap",
+            "text_color": "#12568d"
+          },
+          "blocks": {}
+        },
+        "text_sn_pba_description": {
+          "type": "text",
+          "name": "t:names.description",
+          "settings": {
+            "text": "<p>التنظيف المنتظم مع فرشاة SNOSHA يساعدك على إزالة بقايا الطعام والتصبغات السطحية التي تتراكم مع الوقت لابتسامة تبدو أنظف وأكثر انتعاشًا. جرب SNOSHA وشوف الفرق بنفسك.</p>",
+            "width": "100%",
+            "max_width": "none",
+            "alignment": "center",
+            "type_preset": "custom",
+            "font": "var(--font-body--family)",
+            "font_size": "1.125rem",
+            "mobile_font_size": 12,
+            "font_weight": "400",
+            "line_height": "normal",
+            "line_height_exact": 178,
+            "letter_spacing": "normal",
+            "case": "none",
+            "wrap": "wrap",
+            "text_color": "#5a5a59"
+          },
+          "blocks": {}
+        },
+        "comparison_slider_sn_pba": {
+          "type": "comparison-slider",
+          "settings": {
+            "slider_style": "horizontal",
+            "show_text": true,
+            "before_text": "قبل",
+            "after_text": "بعد",
+            "text_preset": "paragraph",
+            "text_position_horizontal": "start",
+            "text_position_vertical": "start",
+            "text_background": true,
+            "text_background_color": "#ffffff",
+            "text_corner_radius": 50,
+            "text_size": 20,
+            "text_size_mobile": 12,
+            "text_padding_block": 8,
+            "text_padding_block_mobile": 2,
+            "text_padding_inline": 20,
+            "text_color": "#12568d",
+            "image_ratio": "custom",
+            "custom_ratio": 42,
+            "custom_ratio_mobile": 73,
+            "width": "fill",
+            "width_mobile": "fill",
+            "height": "fit",
+            "slider_bg_color": "#ffffff",
+            "slider_handle_color": "#131311d9",
+            "border": "none",
+            "border_radius": 24,
+            "border_radius_mobile": 24
+          },
+          "blocks": {}
+        }
+      },
+      "block_order": [
+        "text_sn_pba_heading",
+        "text_sn_pba_description",
+        "comparison_slider_sn_pba"
+      ],
+      "settings": {
+        "content_direction": "column",
+        "vertical_on_mobile": true,
+        "horizontal_alignment_flex_direction_column": "center",
+        "vertical_alignment_flex_direction_column": "center",
+        "gap": 24,
+        "section_width": "page-width",
+        "background_color": "",
+        "padding-block-start": 60,
+        "padding-block-end": 60,
+        "padding-inline-start": 0,
+        "padding-inline-end": 0,
+        "content_max_width": 1336,
+        "padding-block-start-mobile": 40,
+        "padding-block-end-mobile": 40,
+        "padding-inline-mobile": 4,
+        "gap_mobile": 12,
+        "mobile_reverse_order": false,
+        "custom_class": "sn-home-before-after sn-product-before-after"
+      }
+    },
     "product_recommendations_qggXJq": {
       "type": "product-recommendations",
       "blocks": {
@@ -470,6 +578,7 @@
   },
   "order": [
     "main",
+    "before_after_sn_product",
     "product_recommendations_qggXJq"
   ]
 }
