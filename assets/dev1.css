@@ -2733,15 +2733,15 @@
     box-shadow: none;
   }
 
-  /* Click feedback: the button being clicked takes the ring at once (the other loses it) while its product page
+  /* Click feedback (only while the button is pressed, not on focus): the button being clicked takes the ring at once (the other loses it) while its product page
      loads; on the new page the ring comes from aria-current (the product being viewed) */
-  .linked-colors__list:has(.linked-colors__item:is(:active, :focus):not([aria-current='true']))
+  .linked-colors__list:has(.linked-colors__item:active:not([aria-current='true']))
     .linked-colors__item[aria-current='true']
     .linked-colors__swatch {
     box-shadow: none;
   }
 
-  .linked-colors__list .linked-colors__item:is(:active, :focus) .linked-colors__swatch {
+  .linked-colors__list .linked-colors__item:active .linked-colors__swatch {
     box-shadow:
       0 0 0 calc(var(--sn-swatch-ring) - 2px) var(--color-background, #fff),
       0 0 0 var(--sn-swatch-ring) var(--color-primary-button-background, #176bb0);

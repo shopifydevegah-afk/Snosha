@@ -7,17 +7,30 @@
 {%- endcomment -%}
 {%- liquid
   assign item = block.settings.product
-  # Product being viewed: passed by the Variant picker; the page product as a fallback
-  assign current = closest.product | default: product
+  # Product being viewed = the PAGE product (global `product`). Not closest.product: inside this block,
+  # closest.product resolves to the block's OWN "product" setting, so every item matched itself and all
+  # colours came out selected.
+  assign current = product
   assign item_name = block.settings.color_name | strip
   if item_name == blank and item != blank
     assign item_name = item.title
   endif
   # Key used to match this item to a colour option value of a variant product (explicit "Colour name" only)
   assign color_key = block.settings.color_name | downcase | strip | escape
+  # Current colour = this item's product is the product being viewed: same product id, or (independent check)
+  # the page address is this product's page (/products/<handle>, with or without a language prefix)
   assign is_current = false
-  if item != blank and current != blank and item.id == current.id
-    assign is_current = true
+  if item != blank
+    if current != blank and item.id == current.id
+      assign is_current = true
+    elsif request.page_type == 'product'
+      assign item_path = '/products/' | append: item.handle
+      assign page_path = request.path | url_decode
+      assign page_tail = page_path | split: '/products/' | last | prepend: '/products/'
+      if page_tail == item_path
+        assign is_current = true
+      endif
+    endif
   endif
 
   # Link: the destination product; when that product has a variant whose colour value equals "Colour name"

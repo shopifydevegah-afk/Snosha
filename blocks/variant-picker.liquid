@@ -17,11 +17,11 @@
   variant state and Add to cart are untouched. No Colour item with a product = native picker only.
 {%- endcomment -%}
 {%- comment -%}
-  The product being viewed is passed explicitly: the Colour items compare their destination product with it
-  (closest.product is not reliably inherited by children of this block).
+  Colour items compare their destination product with the page product (global `product`); they cannot use
+  closest.product, which inside each item resolves to the item's own "product" setting.
 {%- endcomment -%}
 {%- capture sn_linked_entries -%}
-  {% content_for 'blocks', closest.product: product_resource %}
+  {% content_for 'blocks' %}
 {%- endcapture -%}
 {%- liquid
   assign sn_linked_html = ''
@@ -101,7 +101,19 @@
       endif
       echo '</p><ul class="linked-colors__list list-unstyled">'
       echo sn_linked_entries
-      echo '</ul></div>'
+      echo '</ul>'
+      # Theme Editor only: which product this page is and which Colour item matched it (diagnostic)
+      if request.design_mode
+        echo '<p class="linked-colors__debug" style="flex-basis:100%;margin:0;font-size:11px;line-height:16px;color:#5a5a59;">'
+        echo 'Page product: ' | append: product_resource.handle | append: ' — matched colour: '
+        if sn_current_name != blank
+          echo sn_current_name
+        else
+          echo 'none'
+        endif
+        echo ' (' | append: sn_current_count | append: ')</p>'
+      endif
+      echo '</div>'
     endcapture
   endif
 -%}
