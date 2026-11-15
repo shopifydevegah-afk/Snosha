@@ -709,14 +709,16 @@
    sn-product-comparison — product page comparison table (templates/product.json)
    Native "section" (preset name "Section"): heading group + table group (class "sn-pc-table") holding
    one row group per comparison row (class "sn-pc-row"; header row "sn-pc-row sn-pc-head"), each with
-   3 text blocks (classes "sn-pc-crit" · "sn-pc-strip" · "sn-pc-manual"), plus the decorative
-   toothbrush image block. Figma desktop 190:10461 (1480 frame) · mobile 190:11173 (390 frame) · dev2.
-   Text, mobile text, sizes, weights, colors, section paddings, logo/brush images and widths are Theme
-   Editor settings. Literals below are Figma constants with no setting (column geometry, table/strip
-   look, toothbrush position), each commented.
+   3 text blocks (classes "sn-pc-crit" · "sn-pc-strip" · "sn-pc-manual"), the decorative toothbrush image
+   block and the "Comparison table style" block (blocks/sn-comparison-style.liquid).
+   Figma desktop 190:10461 (1480 frame) · mobile 190:11173 (390 frame) · dev2.
+   Every table size, color and toothbrush position comes from the style block (--pc-*-d / --pc-*-m);
+   the fallbacks below are the Figma values, used when that block is deleted.
+   Geometry is in design px × --pc-u (1px at the design table width: 1120 desktop, 350 mobile), so the
+   columns, padding and SNOSHA strip keep the Figma proportions when the table is narrower.
    ========================================================================== */
 .section-background:has(+ .sn-product-comparison) {
-  /* Figma "06 Comparison" fill (desktop 69.29°, mobile 82.97°) */
+  /* Figma "06 Comparison" fill (desktop 69.29°, mobile 82.97°); the native background colour is the fallback */
   background-image: linear-gradient(69.29deg, #0e3b6b 8.75%, #12568d 54.13%, #0a2e55 91.25%);
 
   @media screen and (max-width: 749px) {
@@ -725,21 +727,34 @@
 }
 
 .sn-product-comparison {
-  /* Desktop geometry (Figma table 1120): right pad 154 · criterion 248 · strip 376 · gap 12 ·
-     manual 310 · left pad 20. Percentages keep the proportions below 1120. */
-  --pc-pad-start: 13.75%;
-  --pc-pad-end: 1.786%;
-  --pc-col-crit: 26.216%; /* 248 / 946 */
-  --pc-col-strip: 39.746%; /* 376 / 946 */
-  --pc-gap: 12px;
-  --pc-head-h: 64px;
-  --pc-row-h: 78px; /* minimum: longer text grows the whole row */
-  --pc-radius: 24px;
-  --pc-strip-out-top: 20px; /* the strip rises above the table … */
-  --pc-strip-out-bottom: 34px; /* … and hangs below it */
-  --pc-strip-pad: 18px;
-  --pc-line-start: -36px; /* row lines run from x 28 to x 1002 of the 1120 table */
-  --pc-line-end: 8px;
+  /* Active values — desktop */
+  --pc-w: var(--pc-table-w, 1120);
+  --pc-inline: min(100%, calc(var(--pc-w) * 1px));
+  --pc-pad-s: var(--pc-pad-s-d, 154);
+  --pc-pad-e: var(--pc-pad-e-d, 20);
+  --pc-crit: var(--pc-crit-d, 248);
+  --pc-strip: var(--pc-strip-d, 376);
+  --pc-gap: var(--pc-gap-d, 12px);
+  --pc-strip-pad: var(--pc-strip-pad-d, 18px);
+  --pc-row-h: var(--pc-row-h-d, 78px);
+  --pc-head-h: var(--pc-head-h-d, 64px);
+  --pc-radius: var(--pc-radius-d, 24px);
+  --pc-strip-radius: var(--pc-strip-radius-d, 20px);
+  --pc-out-top: var(--pc-strip-out-top-d, 20px);
+  --pc-out-bottom: var(--pc-strip-out-bottom-d, 34px);
+  /* Toothbrush (measured on the Figma stage render, PNG 1456×2544 drawn 448 wide = 40% of the table):
+     centre at 99% of the table, visible base 14 below the table bottom → image box bottom 36 below
+     (transparent space under the base). Desktop is anchored by its bottom, so it stands on the floor line.
+     Figma draws it over the table's right edge (in front). */
+  --pc-brush-x: var(--pc-brush-x-d, 99%);
+  --pc-brush-top: auto;
+  --pc-brush-bottom: calc(var(--pc-brush-below-d, 36px) * -1);
+  --pc-brush-rot: var(--pc-brush-rot-d, 0deg);
+  --pc-brush-z: var(--pc-brush-z-d, 4);
+  --pc-brush-display: var(--pc-brush-display-d, flex);
+  --pc-shadow-display: var(--pc-shadow-display-d, block);
+  --pc-line-s: -36; /* Figma row lines run from x 28 to x 1002 of the 1120 table */
+  --pc-line-e: 8;
 
   overflow-x: clip; /* the toothbrush may hang past the page edge */
 
@@ -747,6 +762,11 @@
     max-inline-size: var(--sn-content-max-width, none);
     margin-inline: auto;
     inline-size: 100%;
+
+    /* Heading above the table layer, so the toothbrush never covers it */
+    > .group-block:not(.sn-pc-table) {
+      z-index: 1;
+    }
   }
 
   /* Text: weight + exact line height from each text block */
@@ -760,26 +780,38 @@
     margin-block: 0;
   }
 
-  /* ---------- Table box ---------- */
-  .sn-pc-table {
-    inline-size: min(100%, 1120px);
-    margin-inline: auto;
-    padding-inline: var(--pc-pad-start) var(--pc-pad-end);
-    background: rgb(255 255 255 / 0.09);
-    border: 1px solid rgb(255 255 255 / 0.2);
-    border-radius: var(--pc-radius);
-    box-shadow: 0 24px 60px 0 rgb(0 20 51 / 0.45);
-    backdrop-filter: blur(12px);
+  .sn-pc-style {
+    display: none;
+  }
 
-    /* Figma bottom padding is 140, but the section's "Bottom padding" setting maxes out at 100
-       (a higher value makes Shopify reject product.json), so the remaining 40px live here. */
-    @media screen and (min-width: 750px) {
-      margin-block-end: 40px;
+  /* ---------- Table: own stacking context.
+     Layers: toothbrush "behind" (0) < glass box (1) < SNOSHA strip (2) < rows (3) < toothbrush "in front" (4).
+     The glass box is a pseudo-element (not the group's own background), so an image inside the table
+     can sit behind it. ---------- */
+  .sn-pc-table {
+    container-type: inline-size;
+    inline-size: var(--pc-inline);
+    margin-inline: auto;
+    position: relative;
+    z-index: 0;
+    --pc-u: calc(100cqi / var(--pc-w));
+
+    &::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      z-index: 1;
+      background: var(--pc-table-bg, rgb(255 255 255 / 0.09));
+      border: 1px solid var(--pc-table-border, rgb(255 255 255 / 0.2));
+      border-radius: var(--pc-radius);
+      box-shadow: 0 24px 60px 0 rgb(0 20 51 / 0.45); /* Figma; no setting */
+      backdrop-filter: blur(12px); /* Figma; no setting */
+      pointer-events: none;
     }
 
     > .group-block-content {
-      position: relative;
       gap: 0;
+      padding-inline: calc(var(--pc-pad-s) * var(--pc-u)) calc(var(--pc-pad-e) * var(--pc-u));
     }
 
     /* Raised SNOSHA strip: one layer behind the middle column of all rows, so it follows any number
@@ -787,15 +819,16 @@
     > .group-block-content::before {
       content: '';
       position: absolute;
-      inset-block: calc(var(--pc-strip-out-top) * -1) calc(var(--pc-strip-out-bottom) * -1);
-      inset-inline-start: var(--pc-col-crit);
-      inline-size: var(--pc-col-strip);
-      background: linear-gradient(to bottom, #fff, #f0fafe);
+      z-index: 2;
+      inset-block: calc(var(--pc-out-top) * -1) calc(var(--pc-out-bottom) * -1);
+      inset-inline-start: calc((var(--pc-pad-s) + var(--pc-crit)) * var(--pc-u));
+      inline-size: calc(var(--pc-strip) * var(--pc-u));
+      background: linear-gradient(to bottom, var(--pc-strip-top, #fff), var(--pc-strip-bottom, #f0fafe));
       border: 1.5px solid rgb(255 255 255 / 0.9);
-      border-radius: 20px;
+      border-radius: var(--pc-strip-radius);
       box-shadow:
         0 26px 54px 0 rgb(0 26 64 / 0.5),
-        0 0 44px 0 rgb(99 205 255 / 0.45);
+        0 0 44px 0 rgb(99 205 255 / 0.45); /* Figma; no setting */
       pointer-events: none;
     }
   }
@@ -803,11 +836,14 @@
   /* ---------- Rows: one 3-column grid per row, so its three cells always share one height ---------- */
   .sn-pc-row {
     position: relative;
-    z-index: 1;
+    z-index: 3;
 
     > .group-block-content {
       display: grid;
-      grid-template-columns: var(--pc-col-crit) var(--pc-col-strip) minmax(0, 1fr);
+      grid-template-columns:
+        calc(var(--pc-crit) * var(--pc-u))
+        calc(var(--pc-strip) * var(--pc-u))
+        minmax(0, 1fr);
       gap: 0;
       align-items: stretch;
       min-block-size: var(--pc-row-h);
@@ -844,14 +880,14 @@
   }
 
   .sn-pc-row:not(.sn-pc-head) {
-    /* Table row line (Figma "Row Divider", white 14%) */
+    /* Table row line (Figma "Row Divider") */
     &::before {
       content: '';
       position: absolute;
       inset-block-start: 0;
-      inset-inline: var(--pc-line-start) var(--pc-line-end);
+      inset-inline: calc(var(--pc-line-s) * var(--pc-u)) calc(var(--pc-line-e) * var(--pc-u));
       block-size: 1px;
-      background: rgb(255 255 255 / 0.14);
+      background: var(--pc-row-line, rgb(255 255 255 / 0.14));
     }
 
     /* Line across the white strip (Figma "Strip Line") */
@@ -859,10 +895,10 @@
       content: '';
       position: absolute;
       inset-block-start: 0;
-      inset-inline-start: var(--pc-col-crit);
-      inline-size: var(--pc-col-strip);
+      inset-inline-start: calc(var(--pc-crit) * var(--pc-u));
+      inline-size: calc(var(--pc-strip) * var(--pc-u));
       block-size: 1px;
-      background: rgb(23 107 176 / 0.14);
+      background: var(--pc-strip-line, rgb(23 107 176 / 0.14));
     }
   }
 
@@ -889,15 +925,40 @@
   }
 
   /* ---------- Decorative toothbrush: image block placed directly in the table group ----------
-     Width = the block's native custom width (% of the table); position + tilt = Figma. Physical
-     left/top: the photo does not mirror in RTL. Decorative, so no pointer events. */
+     Width = the image block's own custom width (% of the table). Centre, bottom/top, rotation, layer and
+     visibility = "Comparison image position" block. Physical left: the photo does not mirror in RTL.
+     z-index makes it its own stacking context, so the floor shadow (z -1) paints under the photo. */
   .sn-pc-table > .group-block-content > .image-block {
+    --pc-brush-w: var(--size-style-width);
     position: absolute;
-    z-index: 2;
-    left: 93.76%; /* Figma: brush 907–1303 on the 1120 table (content box starts at x 20) */
-    top: -126px;
-    rotate: 2.68deg;
+    z-index: var(--pc-brush-z);
+    display: var(--pc-brush-display);
+    left: calc(var(--pc-brush-x) - var(--pc-brush-w) / 2);
+    top: var(--pc-brush-top);
+    bottom: var(--pc-brush-bottom);
+    rotate: var(--pc-brush-rot);
     pointer-events: none;
+
+    @media screen and (max-width: 749px) {
+      --pc-brush-w: var(--size-style-width-mobile, var(--size-style-width));
+    }
+
+    /* Floor shadow (Figma 190:10507: ellipse 240×40 = 54% of the image, #000d26 50%, blur 11; centred under
+       the brush, centre 24 above the image box bottom). Moves and scales with the image. */
+    &::before {
+      content: '';
+      display: var(--pc-shadow-display);
+      position: absolute;
+      z-index: -1;
+      inline-size: var(--pc-shadow-w, 54%);
+      aspect-ratio: 6;
+      left: calc(50% - var(--pc-shadow-w, 54%) / 2 + var(--pc-shadow-x, 0px));
+      bottom: var(--pc-shadow-y, 24px);
+      translate: 0 50%;
+      border-radius: 50%;
+      background: rgb(0 13 38 / var(--pc-shadow-opacity, 0.5));
+      filter: blur(11px);
+    }
 
     .image-block__image,
     .placeholder-image {
@@ -907,21 +968,32 @@
     }
   }
 
-  /* ---------- Mobile ≤749 (Figma 190:11173) ---------- */
+  /* ---------- Mobile ≤749 (Figma 190:11173, table 350) ---------- */
   @media screen and (max-width: 749px) {
-    /* Table 350: right pad 15 · criterion 91 · strip 138 · gap 10 · manual 91 · left pad 5 */
-    --pc-pad-start: 4.286%;
-    --pc-pad-end: 1.429%;
-    --pc-col-crit: 27.576%; /* 91 / 330 */
-    --pc-col-strip: 41.818%; /* 138 / 330 */
-    --pc-gap: 10px;
-    --pc-head-h: 46px;
-    --pc-radius: 16px;
-    --pc-strip-out-top: 16px;
-    --pc-strip-out-bottom: 16px;
-    --pc-strip-pad: 8px;
-    --pc-line-start: -4px;
-    --pc-line-end: 4px;
+    --pc-w: 350;
+    --pc-inline: calc(var(--pc-table-w-m, 100) * 1%);
+    --pc-pad-s: var(--pc-pad-s-m, 15);
+    --pc-pad-e: var(--pc-pad-e-m, 5);
+    --pc-crit: var(--pc-crit-m, 91);
+    --pc-strip: var(--pc-strip-m, 138);
+    --pc-gap: var(--pc-gap-m, 15px); /* Figma: manual text box 86 wide, 15 from the strip */
+    --pc-strip-pad: var(--pc-strip-pad-m, 8px);
+    --pc-row-h: var(--pc-row-h-m, 78px);
+    --pc-head-h: var(--pc-head-h-m, 46px);
+    --pc-radius: var(--pc-radius-m, 16px);
+    --pc-strip-radius: var(--pc-strip-radius-m, 14px);
+    --pc-out-top: var(--pc-strip-out-top-m, 16px);
+    --pc-out-bottom: var(--pc-strip-out-bottom-m, 16px);
+    /* Figma 190:11180: ~81 wide, centre 311 of the 350 table, top 127 above the table, behind it */
+    --pc-brush-x: var(--pc-brush-x-m, 89%);
+    --pc-brush-top: var(--pc-brush-y-m, -126px);
+    --pc-brush-bottom: auto;
+    --pc-brush-rot: var(--pc-brush-rot-m, 0deg);
+    --pc-brush-z: var(--pc-brush-z-m, 0);
+    --pc-brush-display: var(--pc-brush-display-m, flex);
+    --pc-shadow-display: var(--pc-shadow-display-m, none);
+    --pc-line-s: -5; /* Figma lines x 10–340 of the 350 table */
+    --pc-line-e: 5;
 
     > .custom-section-content > .section-content-wrapper {
       flex-direction: var(--sn-mobile-direction, column);
@@ -937,22 +1009,14 @@
     }
 
     .sn-pc-table > .group-block-content::before {
-      background: linear-gradient(to bottom, #fff, #f7fbfe 50%, #eaf6fd);
       border-color: #fff;
-      border-radius: 14px;
       box-shadow:
         0 14px 26px 0 rgb(3 20 51 / 0.5),
-        0 0 30px 4px rgb(99 205 255 / 0.65);
+        0 0 30px 4px rgb(99 205 255 / 0.65); /* Figma mobile; no setting */
     }
 
     .image-block--sn-fixed {
       width: var(--sn-image-width-mobile, var(--sn-image-width));
-    }
-
-    .sn-pc-table > .group-block-content > .image-block {
-      left: 73.6%; /* Figma: brush 268–394 on the 390 frame, beside the heading */
-      top: -127px;
-      rotate: none;
     }
   }
 }
