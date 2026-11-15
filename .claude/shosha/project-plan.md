@@ -81,6 +81,7 @@ One record per S01–S15, in Figma order. Where an old planning placeholder cont
 |---|---|---|---|---|---|---|---|---|---|---|
 | P05 | How To Use Video ("05 How To Use Video") | `190:10510` | `190:11221` | `templates/product.json` (user choice 2026-11-15) | Dev3 | IMPLEMENTED (2026-11-15; needs commit + push; visual QA PENDING USER REVIEW) | B + C (opt-in) | `section` (`section_snHowToVideo`, Horizon "Video" preset structure) + `text` + `video` | `sn-product-how-to-video` | Merchant uploads the video and poster |
 | P09 | How To Use steps ("09 How To Use", كيفية الاستخدام) | `190:10750` | `190:11464` | `templates/product.json` (after P05) | Dev3 | IMPLEMENTED (2026-11-15; needs commit + push; visual QA PENDING USER REVIEW) | B + D (opt-in) | `section` (`section_snHowToSteps`) + `text` + `group` + new theme block `numbered-list` (children: `text`) + `icon` | `sn-product-how-to-steps` | Optional: merchant uploads the Figma sparkle as the note icon image (native `star` is the fallback) |
+| P10 | Storage & Care tabs ("10 Storage & Care", شروط الاستخدام والتخزين) | `190:10753` | `190:11511` | `templates/product.json` (after P09) | Dev3 | IMPLEMENTED (2026-11-15; needs commit + push; visual QA PENDING USER REVIEW) | D + B (opt-in) | `section` (`section_snStorageCare`) + `text` + new theme block `tabs` → private `_tab` → `numbered-list` (dots) → `text` | `sn-product-storage-care` | Merchant writes the content of tabs 2 and 3 (empty tabs are hidden on the live store until filled) |
 
 ## E. Section decisions
 
@@ -2016,6 +2017,37 @@ Verified in code and docs on 2026-11-08 before deciding:
   - Mobile 390: 20px gutters, card padding 14, numbers 11px, wrapped lines and note, no horizontal overflow.
   - Editor: add / reorder / hide a step → numbers update; badge and card settings apply; two-state test (class off).
 
+### P10 PDP Storage & Care tabs (شروط الاستخدام والتخزين) — IMPLEMENTED 2026-11-15 (Dev3), visual QA PENDING USER REVIEW
+- **Figma:** desktop `190:10753` ("10 Storage & Care"), mobile `190:11511`. Both read with `get_design_context` + screenshots on 2026-11-15. Bullet asset = 7px circle `#63CDFF`, centered 13.5px from the row top (CSS dot, no asset).
+- **Spec (desktop / mobile):**
+  - Section padding 60/60, max 1376 with 20px sides / 40/40 with 20px sides. Heading → tabs gap 18 / 14. Heading Cairo Bold 32/52 / 22/52 `#12568D`, centered.
+  - Tabs centered, gap 10 / 6, pill padding 24×10 / 10×6, Cairo SemiBold 16 / 11.5, radius 999.
+  - Inactive: white, border 1 `#DCF2FB`, text `#176BB0`. Active: gradient left `#63CDFF` → right `#0F64A8` (Figma `to-r`), white text, shadow `0 8px 18px rgba(15,100,168,.3)`. Active tab is the first (right-most in RTL).
+  - Tabs → panel gap 22 / 16. Panel white, border 1 `#DCF2FB`, radius 16, shadow `0 8px 18px rgba(13,64,128,.06)`, padding 24 / 26, sides 28 / 14.
+  - Points: row gap 12, dot → text gap 10, Cairo Regular 16/28 / 13/28 `#5A5A59`, start-aligned (right in RTL), dot on the right.
+- **Native Reuse Audit:**
+  - No native tabs component. `layered-slideshow` has a `tablist`, but it is a separate section with unlabeled buttons, drag-to-expand media panels and fixed heights → not reusable for labeled text tabs.
+  - `accordion` / `_accordion-row` use `<details>`: one-of-many toggles with summaries above each panel, not a tablist with one shared panel area.
+  - Theme blocks cannot read their child blocks' settings, so a parent cannot server-render the tab labels. Each `_tab` renders its own panel with `data-tab-label`; a small script builds the buttons.
+  - `section` (native, unchanged), `text` and P09's `numbered-list` cover the heading and the points.
+- **Category:** D (new reusable `tabs` + private `_tab` blocks, new `assets/sn-tabs.js`) + B (opt-in `marker` on `numbered-list`). No new section (no category E).
+- **Extensions:**
+  - New `blocks/tabs.liquid` ("Tabs", 34 settings, children `_tab` only): screen-reader name; tab alignment, gaps, paddings, text size (desktop + mobile), weight, radius, border width; inactive background / text / border / hover-focus border; active gradient left / right, text, border, shadow color; panel gap (desktop + mobile), background, border width / color, radius, shadow color, padding top / bottom / sides / mobile sides; `custom_class`. Loads `sn-tabs.js` as a module (same pattern as `carousel-active-card.js`).
+  - New `blocks/_tab.liquid` ("Tab"): `label`, `open_by_default`; children `@theme` / `@app`. Renders `role="tabpanel"` with `tabindex="0"` and `hidden` unless open. A tab with no content renders nothing on the live store; in the theme editor it shows an empty dashed drop area.
+  - New `assets/sn-tabs.js` (`<sn-tabs>` custom element, no imports): builds `<button role="tab">` per panel inside the `role="tablist"`, links `aria-controls` / `aria-labelledby`, roving `tabindex`, `aria-selected`, `hidden` panels. Keys: Left / Right (RTL-aware, wrap), Home, End; Enter / Space via the native button. Rebuilds on editor add / remove / reorder / relabel (MutationObserver) keeping the current tab; `shopify:block:select` opens the selected tab. Per-instance IDs from block IDs.
+  - `blocks/numbered-list.liquid` (14 → 18 settings, opt-in): `marker` (number / dot, default number), `dot_size`, `dot_color`, `dot_offset`. P09 (no `marker` key) still renders numbers.
+- **Instance (`section_snStorageCare`, "Storage and care"):** after `section_snHowToSteps`. Heading `text_scHead`; `tabs_scTabs` → `tab_scSafe` ("للاستخدام الآمن", open by default) → `numbered_list_scSafe` (dots 7 `#63cdff`, offset 10, gap 12, dot → text 10) → 7 `text_scSafe1–7` (exact Figma copy); `tab_scCare` ("للتنظيف والصيانة") and `tab_scStorage` ("للتخزين") are empty (no content invented).
+  - Section settings as P09: gap 18, padding 60/60, sides 20, `content_max_width` 1376; mobile padding 41/40, side 4, gap 15 (heading mobile line height capped at 50 → 1px into top padding and gap).
+  - Points: 1rem, weight 400, exact line height 175 %, mobile 13 / 28px, `#5a5a59`, alignment "left" (= start = right in RTL).
+- **CSS (`assets/dev3.css`):** `.sn-product-storage-care` joins the P09 rule (`.sn-product-how-to-steps, .sn-product-storage-care`): phone section padding/gap and the text blocks' exact weight / desktop line height. Tabs and panel look come from the `tabs` block settings, so removing the class keeps working tabs.
+- **Shared content:** every product on `templates/product.json` shows the same tabs. Different products need a duplicated template (no metafields created).
+- **Files:** `blocks/tabs.liquid` (new), `blocks/_tab.liquid` (new), `assets/sn-tabs.js` (new), `blocks/numbered-list.liquid`, `templates/product.json`, `assets/dev3.css`, plan, both registry copies.
+- **Validation (local only):** Theme Check = **11** = baseline (no offenses from the new files). `node --check assets/sn-tabs.js` OK. Template checked against the schemas, no duplicate IDs; `main`, P05, P09 untouched. Schema ranges ≤ 101 steps, defaults on-step. CSS braces balanced, CRLF kept. Class and element name unique.
+- **Sync:** reaches the editor only after commit + push.
+- **Visual QA — PENDING USER REVIEW:**
+  - Desktop 1480 / mobile 390: pill sizes and gradient, panel card, dots on the right, wrapped mobile lines, three pills on one line at 390.
+  - Behavior: click / tap switches panels, arrow keys + Home / End, focus outline, screen reader announces tabs; editor: select a tab block opens it, add / reorder / rename tabs; two instances on one page; empty tabs hidden on the live store.
+
 ## F. QA & progress
 
 One QA row per S-ID. `PASS (local)` and Theme Check results describe **historical developer-reported checks** on individual branches, not checks rerun during this documentation merge. Final desktop/mobile/RTL visual QA remains `PENDING USER REVIEW` absent user evidence.
@@ -2040,6 +2072,7 @@ One QA row per S-ID. `PASS (local)` and Theme Check results describe **historica
 
 | P05 (PDP) | PASS (2026-11-15, both nodes read with screenshots) | PASS (local only: Theme Check = 11 post-merge baseline, template checked against schemas, CSS braces) | PENDING USER REVIEW | PENDING USER REVIEW | PENDING USER REVIEW | Video + poster pickers in the editor; render PENDING USER REVIEW | PENDING USER REVIEW (two-state test) | Checklist: E › P05 › Visual QA |
 | P09 (PDP) | PASS (2026-11-15, both nodes read with screenshots) | PASS (local only: Theme Check = 11 baseline, template checked against schemas, schema ranges, CSS braces) | PENDING USER REVIEW | PENDING USER REVIEW | PENDING USER REVIEW | Note icon: native `star` fallback; Figma sparkle via image upload (optional) | PENDING USER REVIEW (two-state test) | Checklist: E › P09 › Visual QA |
+| P10 (PDP) | PASS (2026-11-15, both nodes read with screenshots) | PASS (local only: Theme Check = 11 baseline, `node --check sn-tabs.js`, template checked against schemas, schema ranges, CSS braces) | PENDING USER REVIEW | PENDING USER REVIEW | PENDING USER REVIEW | No media | PENDING USER REVIEW (tabs + keyboard + editor behavior) | Checklist: E › P10 › Visual QA |
 
 **QA provenance:** Any historic agent-operated S04 preview observations predate the no-preview policy; they do not constitute current user approval.
 
@@ -2144,6 +2177,7 @@ One QA row per S-ID. `PASS (local)` and Theme Check results describe **historica
 | 2026-11-12 | S12 correction by Dev1: the merchant meant the ARTICLE CARD title, not the section heading. Section heading max-inline-size 9em (phones) reverted → single line again. Card title: the earlier rule matched [style*="--text-wrap: pretty"], but typography-style writes --text-wrap only for the Custom preset, so it never applied; the rte title inherited text-wrap: pretty from .text-block.rte (text-block-styles). Now phones: .featured-blog-posts-card__content > h4 .text-block:not(.custom-typography) → text-wrap: wrap (greedy, Figma 190:4349) | Merchant correction | dev1.css | Visual QA PENDING USER REVIEW |
 | 2026-11-15 | PDP workstream added (`P##` IDs). P05 How To Use Video implemented by Dev3 on `templates/product.json` (user choice) with the native `section` + `text` + `video` (`section_snHowToVideo`). Opt-in `video` extensions: `media_fit`, `max_width`/`max_width_mobile`, poster overlay (+ mobile toggle), `play_button_size_mobile`, `play_button_shadow_color`, `border_radius_mobile`. Theme Check baseline is now 11 after the dev1/dev2 merge (`group` 44 and `section` 46 settings) | User request + Figma `190:10510` / `190:11221` | P05; shared opt-in: `video` (S09 unchanged) | Merchant uploads video + poster; commit + push; visual QA by the user |
 | 2026-11-15 | P09 How To Use steps implemented by Dev3 on `templates/product.json` (`section_snHowToSteps`, after P05): native `section` + `text` + `group` + `icon`, plus new reusable theme block `numbered-list` (auto-numbered `text` children via CSS counter, shared badge settings). Opt-in `group` extensions: custom mobile padding and box shadow (44 → 51 settings, Theme Check still 11) | User request + Figma `190:10750` / `190:11464` | P09; shared opt-in: `group` | Commit + push; optional sparkle image upload; visual QA by the user |
+| 2026-11-15 | P10 Storage & Care tabs implemented by Dev3 on `templates/product.json` (`section_snStorageCare`, after P09): native `section` + `text`, new reusable `tabs` + private `_tab` theme blocks with `assets/sn-tabs.js` (ARIA tablist built from tab labels, RTL-aware keys, editor-aware), and opt-in dot markers on `numbered-list`. Tabs 2–3 left empty for the merchant (hidden on the live store until filled) | User request + Figma `190:10753` / `190:11511` | P10; shared opt-in: `numbered-list` (P09 unchanged) | Commit + push; merchant content for tabs 2–3; visual QA by the user |
 
 ## Merge reconciliation note — 2026-11-12 (documentation only)
 

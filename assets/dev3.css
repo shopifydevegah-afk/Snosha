@@ -610,8 +610,12 @@
    Card, note, badge, colors and sizes are block settings. This file only applies the
    section's Mobile padding / Mobile gap settings and the text blocks' exact weight and
    desktop line height ("Weight" / "Exact line height").
+   Also used by sn-product-storage-care — PDP "شروط الاستخدام والتخزين" (P10, Figma desktop
+   190:10753, mobile 190:11511): heading `text` + `tabs` → `_tab` → `numbered-list` (dots).
+   Tab pills and panel card are `tabs` block settings; same section/text rules as above.
    ========================================================================== */
-.sn-product-how-to-steps {
+.sn-product-how-to-steps,
+.sn-product-storage-care {
   /* Phones: section "Mobile top/bottom padding", "Mobile side padding" (added to the 16px page
      margin → Figma 20px) and "Mobile gap". Heading line box is 52 in Figma but the text block's
      mobile line height stops at 50, so top padding is 41 and gap 15 in the settings. */

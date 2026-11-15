@@ -1,0 +1,69 @@
+{%- doc -%}
+  Snosha P10 (Dev3): one tab of the `tabs` block. Renders only its panel; `assets/sn-tabs.js`
+  builds the tab button from `data-tab-label`. Empty tabs are skipped on the live store and
+  shown as an empty placeholder in the theme editor.
+{%- enddoc -%}
+
+{%- capture children -%}
+  {% content_for 'blocks' %}
+{%- endcapture -%}
+
+{%- liquid
+  assign has_content = false
+  if children != blank
+    assign has_content = true
+  endif
+-%}
+
+{%- if has_content or request.design_mode -%}
+  <div
+    id="SnTabPanel-{{ block.id }}"
+    class="sn-tabs__panel{% unless has_content %} sn-tabs__panel--empty{% endunless %}"
+    role="tabpanel"
+    tabindex="0"
+    data-tab-label="{{ block.settings.label | escape }}"
+    {% if block.settings.open_by_default %}
+      data-open
+    {% else %}
+      hidden
+    {% endif %}
+    {{ block.shopify_attributes }}
+  >
+    {{ children }}
+  </div>
+{%- endif -%}
+
+{% schema %}
+{
+  "name": "Tab",
+  "tag": null,
+  "blocks": [
+    {
+      "type": "@theme"
+    },
+    {
+      "type": "@app"
+    }
+  ],
+  "settings": [
+    {
+      "type": "text",
+      "id": "label",
+      "label": "Tab label",
+      "default": "Tab"
+    },
+    {
+      "type": "checkbox",
+      "id": "open_by_default",
+      "label": "Open by default",
+      "info": "If no tab is set, the first tab opens. Tabs without content are hidden on the live store.",
+      "default": false
+    }
+  ],
+  "presets": [
+    {
+      "name": "Tab"
+    }
+  ]
+}
+{% endschema %}
