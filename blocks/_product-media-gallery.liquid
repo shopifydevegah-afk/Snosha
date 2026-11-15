@@ -8,6 +8,33 @@
   section: section
 %}
 
+{%- comment -%}
+  Project extension (Snosha product page, opt-in): product badge over the gallery, e.g. «الأكثر مبيعًا».
+  Same source logic and setting IDs as the product card gallery's badge: a product metafield
+  (default custom.product_badge, so it appears only on products that have it) or a fixed text.
+  Source "None" (default) outputs nothing = native gallery. Decorative label, not the sale badge.
+{%- endcomment -%}
+{%- liquid
+  assign sn_badge_text = ''
+  assign sn_badge_product = closest.product
+  if sn_badge_product != blank and block.settings.custom_badge_source != blank and block.settings.custom_badge_source != 'none'
+    if block.settings.custom_badge_source == 'metafield'
+      assign sn_badge_parts = block.settings.custom_badge_metafield | strip | split: '.'
+      if sn_badge_parts.size == 2
+        assign sn_badge_namespace = sn_badge_parts.first
+        assign sn_badge_key = sn_badge_parts.last
+        assign sn_badge_text = sn_badge_product.metafields[sn_badge_namespace][sn_badge_key].value | append: ''
+      endif
+    else
+      assign sn_badge_text = block.settings.custom_badge_text
+    endif
+    assign sn_badge_text = sn_badge_text | strip_html | strip
+  endif
+-%}
+{%- if sn_badge_text != blank -%}
+  <span class="product-media-gallery__badge">{{ sn_badge_text | escape }}</span>
+{%- endif -%}
+
 {% schema %}
 {
   "name": "t:names.product_media",
@@ -275,6 +302,44 @@
       "id": "hide_variants",
       "default": false,
       "label": "t:settings.hide_unselected_variant_media"
+    },
+    {
+      "type": "header",
+      "content": "Product badge"
+    },
+    {
+      "type": "select",
+      "id": "custom_badge_source",
+      "label": "Badge source",
+      "options": [
+        {
+          "value": "none",
+          "label": "None"
+        },
+        {
+          "value": "metafield",
+          "label": "Product metafield"
+        },
+        {
+          "value": "text",
+          "label": "Fixed text"
+        }
+      ],
+      "default": "none",
+      "info": "Metafield: shown only on products that have a value. Fixed text: shown on every product using this template."
+    },
+    {
+      "type": "text",
+      "id": "custom_badge_metafield",
+      "label": "Metafield (namespace.key)",
+      "default": "custom.product_badge",
+      "visible_if": "{{ block.settings.custom_badge_source == 'metafield' }}"
+    },
+    {
+      "type": "text",
+      "id": "custom_badge_text",
+      "label": "Badge text",
+      "visible_if": "{{ block.settings.custom_badge_source == 'text' }}"
     },
     {
       "type": "header",

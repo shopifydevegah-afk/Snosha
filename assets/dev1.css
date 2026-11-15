@@ -2215,3 +2215,640 @@
 :where(.sn-home-blog .blog-post-card__content-text) {
   color: var(--color, #5a5a59);
 }
+
+/* ==========================================================================
+   Product page — Product Hero + Buy Box | owner: Dev1
+   Figma desktop 190:10204 (1480; container 1376, columns 1336 = gallery 712 + 64 + buy box 560),
+   mobile 190:10914 (390; stage 352×364, buy box 350).
+   Native composition: section `product-information` (class sn-product-hero) → static `_product-media-gallery`
+   (carousel + thumbnails, zoom) and `_product-details` → review, group (title + price), group
+   .sn-product-promo, group .sn-product-benefits (text rows), variant-picker, buy-buttons, group
+   .sn-product-trust (pills = group › icon + text), product-recommendations (complementary), text,
+   accordion (row cards). Breadcrumbs: native `section` (class sn-product-breadcrumbs) above, block
+   `breadcrumbs`. Product data (title, media, price, variants, description, recommendations) is native.
+   ========================================================================== */
+.sn-product-breadcrumbs {
+  --page-content-width: 1336px;
+  --page-width: calc(var(--page-content-width) + var(--page-margin) * 2);
+
+  @media screen and (max-width: 749px) {
+    --page-margin: 20px;
+
+    &.spacing-style {
+      padding-block: calc(10px + var(--section-top-offset, 0px)) 0;
+    }
+  }
+
+  .breadcrumbs {
+    font-family: var(--font-body--family);
+    font-size: 14px;
+    font-weight: 400;
+    line-height: 24px;
+    color: #5a5a59;
+  }
+
+  .breadcrumbs__item::before {
+    color: #5a5a59;
+  }
+
+  .breadcrumbs__item--current {
+    color: #131311;
+  }
+}
+
+.sn-product-hero {
+  --page-content-width: 1336px;
+  --page-width: calc(var(--page-content-width) + var(--page-margin) * 2);
+
+  @media screen and (max-width: 749px) {
+    /* Figma mobile: buy box 350 wide (20px gutters); 16 below the breadcrumb, 24 at the bottom */
+    --page-margin: 20px;
+
+    &.spacing-style {
+      padding-block: calc(16px + var(--section-top-offset, 0px)) 24px;
+    }
+  }
+
+  /* --- Columns: buy box 560 + gap 64 + gallery 712 (the native Gap is split as padding, 32 + 32) ------
+     RTL: "Media position: Right" puts the gallery in the second column = physical left, as in Figma. */
+  @media screen and (min-width: 750px) {
+    &.product-information .product-information__grid.product-information--media-right {
+      /* Figma gap 64 (the native Gap setting stops at 48); the columns read it from here */
+      --gap: 64px;
+
+      grid-template-columns: minmax(0, 592fr) minmax(0, 744fr);
+    }
+  }
+
+  /* --- Gallery ------------------------------------------------------------------------------------- */
+  .product-information__media {
+    position: relative;
+  }
+
+  /* Main stage: Figma 712×660 (mobile 352×364), soft grey, 1px #dcf2fb, radius = native Media corner radius */
+  .media-gallery--carousel .product-media-container {
+    --gallery-aspect-ratio: 712 / 660;
+
+    background-color: rgb(235 237 238 / 0.85);
+    border: 1px solid #dcf2fb;
+    border-radius: var(--media-radius, 28px);
+    overflow: hidden;
+
+    @media screen and (max-width: 749px) {
+      --gallery-aspect-ratio: 352 / 364;
+    }
+
+    /* Product photo inset inside the stage (Figma Main Photo: 76 / 33 / 82 of 712) */
+    img {
+      object-fit: contain;
+      padding: 4.6% 10.67% 11.5%;
+    }
+  }
+
+  @media screen and (max-width: 749px) {
+    /* Figma mobile stage 352 wide, 19px from the screen edges */
+    media-gallery.media-gallery--carousel {
+      padding-inline: 19px;
+    }
+  }
+
+  /* Zoom marker (Figma: 44 circle, bottom 27 / inline 25): visual cue only; the slide itself opens the
+     native zoom dialog, so the marker appears only on slides that have zoom. */
+  .media-gallery--carousel slideshow-slide[on\:click*='zoom-dialog'] {
+    position: relative;
+
+    &::before,
+    &::after {
+      content: '';
+      position: absolute;
+      z-index: 1;
+      pointer-events: none;
+    }
+
+    &::before {
+      inset-block-end: 27px;
+      inset-inline-start: 25px;
+      inline-size: 44px;
+      block-size: 44px;
+      border-radius: 50%;
+      background-color: rgb(255 255 255 / 0.92);
+      box-shadow: 0 12px 16px rgb(15 100 168 / 0.1);
+    }
+
+    &::after {
+      inset-block-end: calc(27px + 13px);
+      inset-inline-start: calc(25px + 13px);
+      inline-size: 18px;
+      block-size: 18px;
+      background-color: #176bb0;
+      mask: url('icon-search.svg') center / contain no-repeat;
+    }
+
+    @media screen and (max-width: 749px) {
+      &::before {
+        inset-block-end: 24px;
+        inset-inline-start: 16px;
+      }
+
+      &::after {
+        inset-block-end: calc(24px + 13px);
+        inset-inline-start: calc(16px + 13px);
+      }
+    }
+  }
+
+  /* Thumbnails: Figma 104 (mobile 66) squares, 12 (mobile 8) apart, from the start edge, 23 (mobile 16)
+     below the stage; selected = 2px #176bb0. (The native "Thumbnail width" stops at 72, so the Figma
+     size is set here.) */
+  .media-gallery--carousel .slideshow-controls__thumbnails {
+    gap: 12px;
+    margin-inline: 0;
+    padding-inline: 0;
+    padding-block: 23px 0;
+
+    @media screen and (max-width: 749px) {
+      gap: 8px;
+      padding-block: 16px 0;
+    }
+
+    .slideshow-control {
+      --aspect-ratio: 1;
+
+      inline-size: 104px;
+      aspect-ratio: 1;
+      border: 1px solid #dcf2fb;
+      border-radius: var(--thumbnail-radius, 14px);
+      background-color: #fff;
+      overflow: hidden;
+
+      @media screen and (max-width: 749px) {
+        inline-size: 66px;
+        border-radius: 12px;
+      }
+
+      img {
+        object-fit: contain;
+        border-radius: 0;
+      }
+
+      &[aria-selected='true'] {
+        outline: none;
+        border: 2px solid #176bb0;
+      }
+    }
+  }
+
+  /* Product badge (gallery "Product badge" setting, e.g. metafield custom.product_badge) */
+  .product-media-gallery__badge {
+    position: absolute;
+    z-index: 2;
+    inset-block-start: 19px;
+    inset-inline-start: 19px;
+    padding: 4px 12px;
+    border-radius: 8px;
+    background-color: #176bb0;
+    color: #fff;
+    font-size: 12px;
+    font-weight: 600;
+    line-height: 18px;
+    pointer-events: none;
+
+    @media screen and (max-width: 749px) {
+      inset-block-start: 20px;
+      inset-inline-start: 39px; /* 19 stage inset + 20 */
+    }
+  }
+
+  /* --- Buy box --------------------------------------------------------------------------------------- */
+  /* Title (H1 of the title text block): Figma 38/64 Bold #176bb0; mobile 24 (Figma line box 64, used 40
+     so a wrapped title stays readable) */
+  .product-details h1 {
+    margin: 0;
+    font-family: var(--font-heading--family);
+    font-size: 38px;
+    font-weight: 700;
+    line-height: 64px;
+    color: #176bb0;
+
+    @media screen and (max-width: 749px) {
+      font-size: 24px;
+      line-height: 40px;
+    }
+  }
+
+  /* Price: current 32/52 SemiBold (mobile 26: the price block's "Price size — Mobile" stops at 24, so it is
+     left at 0 and the Figma size applies; a value set there still wins), compare-at 14/22 */
+  .product-details product-price {
+    .price {
+      font-size: 32px;
+      font-weight: 600;
+      line-height: 52px;
+      color: #131311;
+    }
+
+    .compare-at-price {
+      font-size: 14px;
+      font-weight: 400;
+      line-height: 22px;
+      color: #5a5a59;
+    }
+
+    .price-discount-badge {
+      padding: 4px 12px;
+      font-weight: 600;
+      line-height: 18px;
+    }
+  }
+
+  @media screen and (max-width: 749px) {
+    .product-details product-price .price {
+      font-size: var(--price-font-size-mobile, 26px);
+    }
+  }
+
+  /* Promotional capsule: native group background / radius / padding; Figma dashed 1.2px border */
+  .sn-product-promo {
+    border: 1.2px dashed rgb(23 107 176 / 0.55);
+
+    @media screen and (max-width: 749px) {
+      padding-block: 6px;
+    }
+
+    .text-block,
+    .text-block > * {
+      margin: 0;
+      font-size: 12px;
+      font-weight: 600;
+      line-height: 20px;
+      color: #176bb0;
+    }
+  }
+
+  /* Benefits: one text block per row; check tile 22 (mobile 20) #f0fafe, radius 10, check 10 #176bb0 */
+  .sn-product-benefits > .group-block-content > .text-block {
+    flex-direction: row;
+    align-items: center;
+    gap: 8px;
+
+    &::before {
+      content: '';
+      flex: 0 0 auto;
+      inline-size: 22px;
+      block-size: 22px;
+      border-radius: 10px;
+      background:
+        url('icon-checkmark.svg') center / 10px 10px no-repeat,
+        #f0fafe;
+
+      @media screen and (max-width: 749px) {
+        inline-size: 20px;
+        block-size: 20px;
+      }
+    }
+
+    > * {
+      flex: 1 1 0;
+      min-inline-size: 0;
+      margin: 0;
+      font-size: 14px;
+      font-weight: 400;
+      line-height: 24px;
+      color: #131311;
+
+      @media screen and (max-width: 749px) {
+        font-size: 13.5px;
+      }
+    }
+  }
+
+  /* Colour: legend («اللون: …», native selected value) beside the swatches, Figma 16/27 SemiBold #12568d */
+  .variant-option--swatches {
+    --variant-picker-swatch-width: 34px;
+    --variant-picker-swatch-height: 34px;
+
+    gap: 8px;
+
+    legend {
+      float: inline-start;
+      margin-inline-end: 4px;
+      font-size: 16px;
+      font-weight: 600;
+      line-height: 27px;
+      color: #12568d;
+    }
+  }
+
+  /* Purchase row: quantity (121×50, mobile 105×46) + Add to cart (58 high, radius 12, #176bb0) */
+  .product-form-buttons:not(.product-form-buttons--stacked) {
+    gap: 12px;
+    align-items: center;
+
+    @media screen and (max-width: 749px) {
+      gap: 10px;
+    }
+  }
+
+  .product-form-buttons .add-to-cart-button {
+    min-block-size: 58px;
+    border-radius: 12px;
+    border-color: #176bb0;
+    background-color: #176bb0;
+    color: #fff;
+    font-size: 16px;
+    font-weight: 600;
+    line-height: 26px;
+  }
+
+  .product-form-buttons .quantity-selector {
+    block-size: 50px;
+    min-inline-size: 121px;
+    padding-inline: 6px;
+    border: 1.5px solid #dcf2fb;
+    border-radius: 999px;
+    background-color: #fff;
+    box-shadow: 0 6px 14px rgb(13 64 128 / 0.07);
+    color: #176bb0;
+
+    input {
+      font-size: 17px;
+      font-weight: 700;
+      color: #12568d;
+    }
+
+    @media screen and (max-width: 749px) {
+      block-size: 46px;
+      min-inline-size: 105px;
+      padding-inline: 5px;
+
+      input {
+        font-size: 15px;
+        color: #131311;
+      }
+    }
+  }
+
+  /* Trust pills: 2 columns (Figma 272×48 / mobile 170×38), white, 1px #dcf2fb, radius 999, soft shadow;
+     icon tile 28 gradient, icon 18 (mobile 16), text 12/20 (mobile 10.5) SemiBold */
+  .sn-product-trust > .group-block-content {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8px;
+
+    @media screen and (max-width: 749px) {
+      gap: 10px;
+    }
+
+    > .group-block {
+      min-inline-size: 0;
+      padding: 10px 12px;
+      border: 1px solid #dcf2fb;
+      border-radius: 999px;
+      background-color: #fff;
+      filter: drop-shadow(0 6px 6px rgb(15 100 168 / 0.06));
+
+      @media screen and (max-width: 749px) {
+        min-block-size: 38px;
+        padding-block: 5px;
+        padding-inline: 5px 12px;
+      }
+
+      > .group-block-content {
+        flex-wrap: nowrap;
+        align-items: center;
+        gap: 3px;
+      }
+    }
+
+    .icon-block {
+      flex: 0 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      inline-size: 28px;
+      block-size: 28px;
+      border-radius: 14px;
+      background-image: linear-gradient(to bottom, #dcf2fb, #f0fafe);
+    }
+
+    .icon-block__media {
+      max-inline-size: 18px;
+      max-block-size: 18px;
+
+      @media screen and (max-width: 749px) {
+        max-inline-size: 16px;
+        max-block-size: 16px;
+      }
+    }
+
+    .text-block {
+      flex: 1 1 0;
+      min-inline-size: 0;
+    }
+
+    .text-block > * {
+      margin: 0;
+      font-size: 12px;
+      font-weight: 600;
+      line-height: 20px;
+      color: #131311;
+
+      @media screen and (max-width: 749px) {
+        font-size: 10.5px;
+      }
+    }
+  }
+
+  /* --- Complementary products («كمّل روتينك», native recommendations, intent=complementary) --------- */
+  .product-recommendations {
+    > .section-resource-list__content .text-block > * {
+      margin: 0;
+      font-size: 16px;
+      font-weight: 600;
+      line-height: 27px;
+      color: #12568d;
+    }
+
+    .resource-list {
+      grid-template-columns: minmax(0, 1fr);
+      gap: 10px;
+    }
+  }
+
+  /* Card row (Figma 560×76): thumb 56 · name + supporting line · price · round Add (native quick add) */
+  .product-recommendations .product-card__content {
+    position: relative;
+    display: grid;
+    grid-template-columns: 56px minmax(0, 1fr) auto 38px;
+    grid-template-areas:
+      'thumb title price add'
+      'thumb sub price add';
+    align-items: center;
+    column-gap: 12px;
+    row-gap: 1px;
+    padding-block: 10px;
+    padding-inline: 14px 10px;
+    border: 1px solid #dcf2fb;
+    border-radius: 18px;
+    background-image: linear-gradient(to right, #f0fafe, #fff);
+
+    > :nth-child(1) {
+      grid-area: thumb;
+    }
+
+    > :nth-child(2) {
+      grid-area: title;
+      align-self: end;
+    }
+
+    > :nth-child(3) {
+      grid-area: sub;
+      align-self: start;
+    }
+
+    > :nth-child(4) {
+      grid-area: price;
+    }
+  }
+
+  .product-recommendations .card-gallery {
+    position: static; /* the quick add is placed on the whole row, not on the 56px thumb */
+    overflow: visible;
+    inline-size: 56px;
+    block-size: 56px;
+    border: 1px solid #dcf2fb;
+    border-radius: 14px;
+    background-color: #fff;
+
+    img {
+      border-radius: 13px;
+    }
+  }
+
+  .product-recommendations .product-card__content .text-block > * {
+    margin: 0;
+  }
+
+  .product-recommendations .product-card__content > :nth-child(2) :is(h3, h4, p, a) {
+    font-size: 16px;
+    font-weight: 600;
+    line-height: 27px;
+    color: #131311;
+
+    @media screen and (max-width: 749px) {
+      font-size: 14px;
+    }
+  }
+
+  /* Supporting line (product description by default; connect a metafield in the editor), one line */
+  .product-recommendations .product-card__content > :nth-child(3) {
+    overflow: hidden;
+
+    > * {
+      display: -webkit-box;
+      -webkit-box-orient: vertical;
+      -webkit-line-clamp: 1;
+      line-clamp: 1;
+      overflow: hidden;
+      font-size: 12px;
+      line-height: 20px;
+      color: #5a5a59;
+
+      @media screen and (max-width: 749px) {
+        font-size: 10px;
+      }
+    }
+  }
+
+  .product-recommendations .product-card__content > :nth-child(4) .price {
+    font-size: 16px;
+    font-weight: 700;
+    line-height: 27px;
+    color: #176bb0;
+  }
+
+  /* Native quick add as the 38px round "+" (Add = straight to cart; Choose = native options window) */
+  .product-recommendations button.quick-add__button {
+    display: flex;
+    opacity: 1;
+    inset-block: 50% auto;
+    inset-inline-end: 10px;
+    translate: 0 -50%;
+    inline-size: 38px;
+    block-size: 38px;
+    justify-content: center;
+    padding: 0;
+    border: 0;
+    border-radius: 19px;
+    background: #176bb0;
+    color: #fff;
+    font-size: 0; /* label stays available to screen readers */
+    filter: drop-shadow(0 8px 8px rgb(15 100 168 / 0.3));
+
+    &:is(:hover, :focus-visible) {
+      inline-size: 38px;
+      padding: 0;
+    }
+
+    > .add-to-cart-icon {
+      display: none;
+    }
+
+    &:not([data-added='true'])::after {
+      content: '';
+      inline-size: 16px;
+      block-size: 16px;
+      background-color: currentcolor;
+      mask: url('icon-plus.svg') center / contain no-repeat;
+    }
+  }
+
+  /* --- Description & policies ---------------------------------------------------------------------- */
+  .accordion--cards {
+    .details__header {
+      font-size: 16px;
+      font-weight: 600;
+      line-height: 27px;
+      color: #131311;
+    }
+
+    /* Row icon in a 32px tile (#f0fafe, radius 10) at the start; chevron at the end */
+    .details__icon {
+      box-sizing: content-box;
+      padding: 7px;
+      border-radius: 10px;
+      background-color: #f0fafe;
+      color: #176bb0;
+    }
+
+    .details-content {
+      font-size: 14px;
+      line-height: 28px;
+      color: #5a5a59;
+
+      :is(h1, h2, h3, h4, h5, h6, strong, b) {
+        margin: 0;
+        font-size: 14px;
+        font-weight: 700;
+        line-height: 40px;
+        color: #131311;
+      }
+
+      p {
+        margin: 0;
+      }
+    }
+  }
+}
+
+/* Headings «كمّل روتينك» / «الوصف والسياسات» are plain text blocks; Figma 16/27 SemiBold */
+.sn-product-hero .product-details .text-block:has(> p:only-child) > p {
+  margin: 0;
+}
+
+.sn-product-hero .sn-product-label > * {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 600;
+  line-height: 27px;
+  color: #131311;
+}
