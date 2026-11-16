@@ -2684,7 +2684,7 @@
         "judge_me_reviews_cards_carousel_hLRBLM": {
           "type": "shopify://apps/judge-me-reviews/blocks/cards_carousel/61ccd3b1-a9f2-4160-9fe9-4fec8413e5d8",
           "settings": {
-            "show_sample_reviews": true,
+            "show_sample_reviews": false,
             "reviews_selection": "product_reviews",
             "products": [],
             "filter_pinned": false,
@@ -2703,24 +2703,30 @@
             "show_product_name": true,
             "hide_arrows_mobile": true,
             "arrows_position": "sides",
-            "max_width": 1100,
+            "max_width": 1400,
             "corner_styling": "soft",
             "header_text_color": "#000000",
-            "text_color": "#000000",
-            "card_color": "#F9F9F9",
-            "stars_color": "",
-            "arrows_color": "#000000",
+            "text_color": "#131311",
+            "card_color": "#FFFFFF",
+            "stars_color": "#176BB0",
+            "arrows_color": "#12568D",
             "transition_speed": 5,
             "header_text": "",
             "show_average_rating": false,
             "rating_display": "default"
           }
+        },
+        "rv_carousel_controls": {
+          "type": "sn-reviews-carousel",
+          "settings": {},
+          "blocks": {}
         }
       },
       "block_order": [
         "rv_title",
         "rv_summary",
-        "judge_me_reviews_cards_carousel_hLRBLM"
+        "judge_me_reviews_cards_carousel_hLRBLM",
+        "rv_carousel_controls"
       ],
       "settings": {
         "content_direction": "column",

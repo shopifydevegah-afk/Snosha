@@ -4252,7 +4252,8 @@
    `review` block (real average + count from the review app's reviews.rating / reviews.rating_count metafields,
    SVG stars; opt-in "Show average score" / "Review count text" / empty-state text) and the Judge.me
    "Cards Carousel" app block (added by the merchant in the Theme Editor; Reviews selection = Current product).
-   Review cards are rendered by Judge.me — their Figma styling is pending the widget's live markup (see plan P03).
+   Review cards are rendered by Judge.me; their Figma styling is at the end of this block (markup read from the
+   extension's public carousels.css / media_carousel.js, judgeme-860, 2026-11-16 — re-check after Judge.me updates).
    ========================================================================== */
 .sn-product-reviews {
   --sn-rv-heading: #12568d;
@@ -4334,5 +4335,254 @@
   .shopify-app-block {
     inline-size: 100%;
     max-inline-size: 1336px;
+  }
+
+  /* ---- Judge.me Cards Carousel → Figma cards ----------------------------------------------------
+     Markup = Judge.me theme app extension "cards_carousel" (judgeme-860: carousels.css / media_carousel.js):
+     .jdgm-cards-carousel > .jdgm-header + .jdgm-content > [.jdgm-arrow, .jdgm-cards-wrapper > .jdgm-videos-container
+     > .jdgm-media-card (img, .jdgm-text, .jdgm-rating-section > .jdgm-stars, .jdgm-reviewer-info, .jdgm-product-name), .jdgm-arrow].
+     Card width / gap / visible count are the widget's own CSS variables (its JS slides by offsetLeft, so it follows them). */
+  .jdgm-cards-carousel {
+    --sn-rv-card-border: #dcf2fb;
+    --sn-rv-image-ratio: 0.79; /* Figma photo 250 / card 316 */
+    --stars-color: var(--sn-rv-star);
+    padding: 0;
+    font-family: var(--font-body--family);
+    text-align: start;
+
+    /* Heading + real summary come from the section's own blocks */
+    .jdgm-header {
+      display: none;
+    }
+
+    .jdgm-content {
+      margin: 0;
+    }
+
+    /* Native scroll-snap row on every screen size (Judge.me's slider has no swipe and its translateX(-offsetLeft)
+       moves the wrong way in RTL). Arrows + progress: assets/sn-reviews-carousel.js (block "Reviews carousel
+       controls"). Padding keeps the card shadow inside the clipping scroller. */
+    .jdgm-cards-wrapper {
+      max-width: none;
+      padding-block: 6px 40px;
+      margin-block: -6px -40px;
+      overflow-x: auto;
+      overscroll-behavior-x: contain;
+      scroll-snap-type: x mandatory;
+      scroll-behavior: smooth;
+      scrollbar-width: none;
+
+      &::-webkit-scrollbar {
+        display: none;
+      }
+    }
+
+    /* !important: the widget writes an inline translateX (arrows + autoplay); native scrolling replaces it, so both
+       must not move the row at the same time. */
+    .jdgm-cards-wrapper .jdgm-videos-container {
+      transform: none !important;
+      transition: none;
+    }
+
+    .jdgm-media-card {
+      --clamp: 3;
+      scroll-snap-align: start;
+      border: 1px solid var(--sn-rv-card-border);
+      border-radius: 20px;
+      background: #fff;
+      box-shadow: 0 18px 38px -6px rgb(13 56 115 / 0.12), 0 2px 8px rgb(13 56 115 / 0.06);
+      cursor: pointer;
+
+      > img {
+        display: block;
+        height: calc(var(--card-width) * var(--sn-rv-image-ratio));
+      }
+
+      .jdgm-video-controls {
+        height: calc(var(--card-width) * var(--sn-rv-image-ratio));
+      }
+
+      .jdgm-text {
+        position: relative;
+        display: block;
+        min-height: 0;
+        max-height: none;
+        padding: 18px 20px 0;
+        padding-inline-end: 52px;
+        font-size: 16px;
+        line-height: 28px;
+        color: var(--sn-rv-text);
+        text-align: start;
+
+        p {
+          max-width: none;
+          line-height: inherit;
+          text-align: start;
+        }
+
+        /* Figma quote mark (decorative: empty alt text) */
+        &::after {
+          content: "\201D";
+          content: "\201D" / "";
+          position: absolute;
+          inset-block-start: 10px;
+          inset-inline-end: 18px;
+          font-size: 52px;
+          font-weight: 700;
+          line-height: 1;
+          color: rgb(99 205 255 / 0.3);
+        }
+      }
+
+      .jdgm-rating-section {
+        align-items: flex-start;
+        gap: 10px;
+        padding: 10px 20px 20px;
+      }
+
+      .jdgm-rating-section .jdgm-stars {
+        gap: 3px;
+      }
+
+      .jdgm-rating-section .jdgm-star {
+        font-size: 16px;
+        color: var(--sn-rv-star);
+      }
+
+      .jdgm-rating-section .jdgm-reviewer-info {
+        justify-content: flex-start;
+      }
+
+      .jdgm-rating-section .jdgm-reviewer-name {
+        font-size: 16px;
+        font-weight: 700;
+        line-height: 27px;
+        color: var(--sn-rv-text);
+      }
+
+      .jdgm-rating-section :is(.jdgm-product-name a, .jdgm-product-name--unlinked, .jdgm-store-review-label) {
+        font-size: 12px;
+        line-height: 20px;
+        color: rgb(90 90 89 / 0.75);
+        text-align: start;
+      }
+    }
+
+    /* Arrows: Figma 52px white circles, 16px outside the cards (display / opacity stay with the widget) */
+    .jdgm-arrow {
+      position: absolute;
+      inset-block-start: 50%;
+      z-index: 3;
+      inline-size: 52px;
+      block-size: 52px;
+      border: 1px solid var(--sn-rv-card-border);
+      border-radius: 50%;
+      background: rgb(255 255 255 / 0.97);
+      box-shadow: 0 6px 14px rgb(13 64 128 / 0.08);
+      color: var(--sn-rv-star);
+      transform: translateY(-50%);
+
+      &:first-child {
+        inset-inline-start: -16px;
+      }
+
+      &:last-child {
+        inset-inline-end: -16px;
+      }
+
+      svg {
+        inline-size: 14px;
+        block-size: 22px;
+      }
+
+      &:focus-visible {
+        outline: 2px solid var(--sn-rv-star);
+        outline-offset: 2px;
+      }
+
+      /* At the start / end of the row (set by sn-reviews-carousel.js) */
+      &:disabled {
+        opacity: 0.4;
+        cursor: default;
+      }
+    }
+
+    /* RTL: the first (previous) arrow sits on the right → point it outwards like Figma */
+    &:dir(rtl) .jdgm-arrow svg {
+      transform: scaleX(-1);
+    }
+
+    /* Desktop: Figma 4 × 316 + 3 × 24 = 1336; cards shrink evenly below that width */
+    @media screen and (min-width: 990px) {
+      --jm-card-gap: 24px;
+      --visible-cards: var(--slides-count, 4);
+      --card-width: min(
+        316px,
+        calc((100cqi - (var(--slides-count, 4) - 1) * 24px) / var(--slides-count, 4))
+      );
+    }
+
+    /* Mobile (Figma 190:11101): 160px cards, 12px gap, next card peeking, native swipe + progress */
+    @media screen and (max-width: 749px) {
+      --jm-card-gap: 12px;
+      --card-width: 160px;
+      --sn-rv-image-ratio: 0.8125; /* 130 / 160 */
+      .jdgm-media-card {
+        --clamp: 4;
+        border-radius: 14px;
+        scroll-snap-align: start;
+
+        .jdgm-text {
+          padding: 12px 10px 0;
+          padding-inline-end: 30px;
+          font-size: 11px;
+          line-height: 22px;
+
+          &::after {
+            inset-block-start: 8px;
+            inset-inline-end: 8px;
+            font-size: 35px;
+          }
+        }
+
+        .jdgm-rating-section {
+          gap: 6px;
+          padding: 8px 10px 14px;
+        }
+
+        .jdgm-rating-section .jdgm-star {
+          font-size: 12px;
+        }
+
+        .jdgm-rating-section .jdgm-reviewer-name {
+          font-size: 11px;
+          line-height: 20px;
+        }
+
+        .jdgm-rating-section :is(.jdgm-product-name a, .jdgm-product-name--unlinked, .jdgm-store-review-label) {
+          font-size: 9.5px;
+          line-height: 16px;
+        }
+      }
+
+      /* Progress bar (Figma 350×4, #dcf2fb, fill #63cdff → #0f64a8, filling from the inline start).
+         --sn-rv-progress = visible share → 1, written from the row's real scroll position by sn-reviews-carousel.js;
+         shown only when the row can scroll. */
+      &[data-sn-rv-scrollable]::after {
+        content: "";
+        display: block;
+        inline-size: 100%;
+        block-size: 4px;
+        margin-block-start: 24px;
+        border-radius: 4px;
+        background:
+          linear-gradient(to right, #63cdff, #0f64a8) no-repeat left / calc(var(--sn-rv-progress, 0) * 100%) 100%,
+          #dcf2fb;
+      }
+
+      &[data-sn-rv-scrollable]:dir(rtl)::after {
+        background-position: right;
+      }
+    }
   }
 }
