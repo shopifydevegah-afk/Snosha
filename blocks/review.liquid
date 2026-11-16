@@ -61,6 +61,15 @@
     style="{% render 'size-style', settings: block_settings %}"
     {{ block.shopify_attributes }}
   >
+    {%- if block_settings.show_score -%}
+      {%- comment -%}
+        Snosha (opt-in): average score "x.x / scale" from the same review-app metafield as the stars.
+        Decorative for assistive tech (the stars carry the accessible rating label).
+      {%- endcomment -%}
+      <p class="rating-score {{ block_settings.type_preset }}" aria-hidden="true">
+        {{- rating | times: 1.0 | round: 1 }} / {{ scale_max -}}
+      </p>
+    {%- endif -%}
     <svg
       class="visually-hidden"
       style="width: 0; height: 0;"
@@ -119,8 +128,13 @@
           <span class="rating-count-separator">|</span>
         {%- endif -%}
         {%- if block_settings.show_number -%}
-          {{- rating_count }}
-          {{ 'content.reviews' | t }}
+          {%- if block_settings.count_text != blank and block_settings.stars_style != 'single' -%}
+            {%- comment -%} Snosha (opt-in): merchant wording around the real review count, e.g. بناءً على ([count] تقييم) {%- endcomment -%}
+            {{- block_settings.count_text | escape | replace: '[count]', rating_count -}}
+          {%- else -%}
+            {{- rating_count }}
+            {{ 'content.reviews' | t }}
+          {%- endif -%}
         {%- endif -%}
       </p>
     {%- endif -%}
@@ -128,6 +142,15 @@
       {%- comment -%} Opt-in label; only reachable when real rating data exists. {%- endcomment -%}
       <span class="rating-label {{ block_settings.type_preset }}">{{ block_settings.label | escape }}</span>
     {%- endif -%}
+  </div>
+{%- elsif block_settings.empty_text != blank -%}
+  {%- comment -%} Snosha (opt-in): honest empty state when the product has no rating yet (no stars, no score) {%- endcomment -%}
+  <div
+    class="rating-wrapper rating-wrapper--empty rating-wrapper-{{ block.id }} justify-{{ block_settings.alignment }} size-style"
+    style="{% render 'size-style', settings: block_settings %}"
+    {{ block.shopify_attributes }}
+  >
+    <p class="rating-empty {{ block_settings.type_preset }}">{{ block_settings.empty_text | escape }}</p>
   </div>
 {%- endif -%}
 
@@ -223,6 +246,26 @@
       "id": "label",
       "label": "Label",
       "info": "Shown next to the stars only when the product has rating data. Leave blank to hide."
+    },
+    {
+      "type": "checkbox",
+      "id": "show_score",
+      "label": "Show average score",
+      "info": "Shows the real average, e.g. 4.8 / 5, before the stars.",
+      "default": false
+    },
+    {
+      "type": "text",
+      "id": "count_text",
+      "label": "Review count text",
+      "info": "[count] = the real number of reviews, e.g. بناءً على ([count] تقييم). Leave blank for the default wording.",
+      "visible_if": "{{ block.settings.show_number }}"
+    },
+    {
+      "type": "text",
+      "id": "empty_text",
+      "label": "Text when there are no reviews",
+      "info": "Shown instead of the stars when the product has no reviews yet. Leave blank to show nothing."
     },
     {
       "type": "range",

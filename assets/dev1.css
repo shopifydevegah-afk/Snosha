@@ -4244,3 +4244,95 @@
     opacity: 0.35;
   }
 }
+
+/* ==========================================================================
+   Product page — Reviews (P03) | owner: Dev1
+   Figma desktop 190:10390 (1480; container 1376 → 1336), mobile 190:11101 (390).
+   ONE native `section` (custom class sn-product-reviews) holding: heading `text` (sn-rv-title), the native
+   `review` block (real average + count from the review app's reviews.rating / reviews.rating_count metafields,
+   SVG stars; opt-in "Show average score" / "Review count text" / empty-state text) and the Judge.me
+   "Cards Carousel" app block (added by the merchant in the Theme Editor; Reviews selection = Current product).
+   Review cards are rendered by Judge.me — their Figma styling is pending the widget's live markup (see plan P03).
+   ========================================================================== */
+.sn-product-reviews {
+  --sn-rv-heading: #12568d;
+  --sn-rv-star: #176bb0;
+  --sn-rv-text: #131311;
+  --sn-rv-muted: #5a5a59;
+
+  /* Mobile spacing from the section's Mobile gap / padding settings (vars written by section.liquid) */
+  @media screen and (max-width: 749px) {
+    > .custom-section-content > .section-content-wrapper {
+      gap: var(--sn-gap-mobile, var(--gap));
+      padding-block: calc(var(--sn-padding-block-start-mobile, var(--padding-block-start)) + var(--section-top-offset, 0px))
+        var(--sn-padding-block-end-mobile, var(--padding-block-end));
+    }
+  }
+
+  /* Heading: Cairo SemiBold 32/52 (mobile 22/52), centred */
+  .sn-rv-title:not(.custom-typography) > * {
+    margin: 0;
+    font-family: var(--font-heading--family);
+    font-size: 32px;
+    font-weight: 600;
+    line-height: 52px;
+    color: var(--sn-rv-heading);
+    text-align: center;
+
+    @media screen and (max-width: 749px) {
+      font-size: 22px;
+    }
+  }
+
+  /* Rating summary (Figma 190:10394): score 24/40 SemiBold · 5 stars 22 (gap 4) · count 14/24, items 14 apart.
+     DOM order score → stars → count = right → left in RTL. */
+  .rating-wrapper {
+    --star-fill-color: var(--sn-rv-star);
+    --star-fill-color-rgb: 23 107 176;
+
+    gap: 14px;
+    min-block-size: 40px;
+  }
+
+  .rating {
+    gap: 4px;
+  }
+
+  .rating .stars {
+    inline-size: 22px;
+    block-size: 22px;
+  }
+
+  .rating-score {
+    margin: 0;
+    font-size: 24px;
+    font-weight: 600;
+    line-height: 40px;
+    color: var(--sn-rv-text);
+    white-space: nowrap;
+    direction: ltr; /* keeps "4.8 / 5" in reading order inside the RTL row */
+
+    @media screen and (max-width: 749px) {
+      font-size: 19px;
+    }
+  }
+
+  .rating-wrapper .rating-count,
+  .rating-empty {
+    margin: 0;
+    font-size: 14px;
+    font-weight: 400;
+    line-height: 24px;
+    color: var(--sn-rv-muted);
+
+    @media screen and (max-width: 749px) {
+      font-size: 11px;
+    }
+  }
+
+  /* Judge.me app block: full carousel width (Figma viewport 1336) */
+  .shopify-app-block {
+    inline-size: 100%;
+    max-inline-size: 1336px;
+  }
+}
