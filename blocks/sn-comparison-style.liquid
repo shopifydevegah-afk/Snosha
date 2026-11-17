@@ -1,0 +1,96 @@
+{%- comment -%}
+  Snosha Dev2 (PDP-01): "Comparison table style". Place it inside a comparison table group (custom class
+  "sn-pc-table", inside a section with the class "sn-product-comparison"). It renders nothing visible; it only
+  sets the CSS variables that assets/dev2.css reads for that one section. Desktop px values are design px at
+  the desktop table width; mobile px values are design px of a 350px-wide table and scale with it.
+  Delete the block to fall back to the Figma defaults in dev2.css.
+{%- endcomment -%}
+{%- liquid
+  assign s = block.settings
+  assign uid = 'SnPcStyle-' | append: block.id
+-%}
+{% style %}
+  .shopify-section:has(#{{ uid }}) {
+    --pc-table-w: {{ s.table_width }};
+    --pc-table-w-m: {{ s.table_width_mobile }};
+    --pc-pad-s-d: {{ s.pad_start }};
+    --pc-pad-s-m: {{ s.pad_start_mobile }};
+    --pc-pad-e-d: {{ s.pad_end }};
+    --pc-pad-e-m: {{ s.pad_end_mobile }};
+    --pc-crit-d: {{ s.crit_width }};
+    --pc-crit-m: {{ s.crit_width_mobile }};
+    --pc-strip-d: {{ s.strip_width }};
+    --pc-strip-m: {{ s.strip_width_mobile }};
+    --pc-gap-d: {{ s.col_gap }}px;
+    --pc-gap-m: {{ s.col_gap_mobile }}px;
+    --pc-strip-pad-d: {{ s.strip_pad }}px;
+    --pc-strip-pad-m: {{ s.strip_pad_mobile }}px;
+    --pc-row-h-d: {{ s.row_height }}px;
+    --pc-row-h-m: {{ s.row_height_mobile }}px;
+    --pc-head-h-d: {{ s.head_height }}px;
+    --pc-head-h-m: {{ s.head_height_mobile }}px;
+    --pc-radius-d: {{ s.radius }}px;
+    --pc-radius-m: {{ s.radius_mobile }}px;
+    --pc-strip-radius-d: {{ s.strip_radius }}px;
+    --pc-strip-radius-m: {{ s.strip_radius_mobile }}px;
+    --pc-strip-out-top-d: {{ s.strip_top }}px;
+    --pc-strip-out-top-m: {{ s.strip_top_mobile }}px;
+    --pc-strip-out-bottom-d: {{ s.strip_bottom }}px;
+    --pc-strip-out-bottom-m: {{ s.strip_bottom_mobile }}px;
+    {%- if s.table_bg != blank %} --pc-table-bg: {{ s.table_bg }};{% endif %}
+    {%- if s.table_border != blank %} --pc-table-border: {{ s.table_border }};{% endif %}
+    {%- if s.strip_color_top != blank %} --pc-strip-top: {{ s.strip_color_top }};{% endif %}
+    {%- if s.strip_color_bottom != blank %} --pc-strip-bottom: {{ s.strip_color_bottom }};{% endif %}
+    {%- if s.row_line != blank %} --pc-row-line: {{ s.row_line }};{% endif %}
+    {%- if s.strip_line != blank %} --pc-strip-line: {{ s.strip_line }};{% endif %}
+  }
+{% endstyle %}
+<div id="{{ uid }}" class="sn-pc-style" hidden {{ block.shopify_attributes }}></div>
+
+{% schema %}
+{
+  "name": "Comparison table style",
+  "settings": [
+    {
+      "type": "paragraph",
+      "content": "Sizes and colors of the comparison table this block sits in. Desktop values are px at the desktop table width. Mobile values are px of a 350px-wide phone table and scale with the screen."
+    },
+    { "type": "header", "content": "Table" },
+    { "type": "range", "id": "table_width", "label": "Table width — Desktop", "min": 600, "max": 1400, "step": 8, "unit": "px", "default": 1120 },
+    { "type": "range", "id": "table_width_mobile", "label": "Table width — Mobile", "min": 70, "max": 100, "step": 1, "unit": "%", "default": 100 },
+    { "type": "range", "id": "pad_start", "label": "Space before criterion column — Desktop", "info": "Right side in Arabic.", "min": 0, "max": 200, "step": 2, "unit": "px", "default": 154 },
+    { "type": "range", "id": "pad_start_mobile", "label": "Space before criterion column — Mobile", "min": 0, "max": 40, "step": 1, "unit": "px", "default": 15 },
+    { "type": "range", "id": "pad_end", "label": "Space after manual column — Desktop", "min": 0, "max": 100, "step": 1, "unit": "px", "default": 20 },
+    { "type": "range", "id": "pad_end_mobile", "label": "Space after manual column — Mobile", "min": 0, "max": 40, "step": 1, "unit": "px", "default": 5 },
+    { "type": "range", "id": "radius", "label": "Corner radius — Desktop", "min": 0, "max": 50, "step": 1, "unit": "px", "default": 24 },
+    { "type": "range", "id": "radius_mobile", "label": "Corner radius — Mobile", "min": 0, "max": 50, "step": 1, "unit": "px", "default": 16 },
+    { "type": "color", "id": "table_bg", "label": "Table background", "alpha": true, "default": "#ffffff17" },
+    { "type": "color", "id": "table_border", "label": "Table border", "alpha": true, "default": "#ffffff33" },
+    { "type": "header", "content": "Columns and rows" },
+    { "type": "range", "id": "crit_width", "label": "Criterion column — Desktop", "min": 100, "max": 400, "step": 4, "unit": "px", "default": 248 },
+    { "type": "range", "id": "crit_width_mobile", "label": "Criterion column — Mobile", "min": 50, "max": 150, "step": 1, "unit": "px", "default": 91 },
+    { "type": "range", "id": "strip_width", "label": "SNOSHA column — Desktop", "min": 200, "max": 500, "step": 4, "unit": "px", "default": 376 },
+    { "type": "range", "id": "strip_width_mobile", "label": "SNOSHA column — Mobile", "min": 80, "max": 180, "step": 1, "unit": "px", "default": 138 },
+    { "type": "range", "id": "col_gap", "label": "Gap before manual column — Desktop", "min": 0, "max": 40, "step": 1, "unit": "px", "default": 12 },
+    { "type": "range", "id": "col_gap_mobile", "label": "Gap before manual column — Mobile", "min": 0, "max": 40, "step": 1, "unit": "px", "default": 15 },
+    { "type": "range", "id": "strip_pad", "label": "SNOSHA cell side padding — Desktop", "min": 0, "max": 40, "step": 1, "unit": "px", "default": 18 },
+    { "type": "range", "id": "strip_pad_mobile", "label": "SNOSHA cell side padding — Mobile", "min": 0, "max": 40, "step": 1, "unit": "px", "default": 8 },
+    { "type": "range", "id": "row_height", "label": "Minimum row height — Desktop", "info": "Longer text still grows the whole row.", "min": 40, "max": 140, "step": 1, "unit": "px", "default": 78 },
+    { "type": "range", "id": "row_height_mobile", "label": "Minimum row height — Mobile", "min": 40, "max": 140, "step": 1, "unit": "px", "default": 78 },
+    { "type": "range", "id": "head_height", "label": "Header row height — Desktop", "min": 30, "max": 130, "step": 1, "unit": "px", "default": 64 },
+    { "type": "range", "id": "head_height_mobile", "label": "Header row height — Mobile", "min": 30, "max": 130, "step": 1, "unit": "px", "default": 46 },
+    { "type": "color", "id": "row_line", "label": "Row divider", "alpha": true, "default": "#ffffff24" },
+    { "type": "header", "content": "SNOSHA column" },
+    { "type": "range", "id": "strip_top", "label": "Rises above table — Desktop", "min": 0, "max": 60, "step": 1, "unit": "px", "default": 20 },
+    { "type": "range", "id": "strip_top_mobile", "label": "Rises above table — Mobile", "min": 0, "max": 60, "step": 1, "unit": "px", "default": 16 },
+    { "type": "range", "id": "strip_bottom", "label": "Hangs below table — Desktop", "min": 0, "max": 60, "step": 1, "unit": "px", "default": 34 },
+    { "type": "range", "id": "strip_bottom_mobile", "label": "Hangs below table — Mobile", "min": 0, "max": 60, "step": 1, "unit": "px", "default": 16 },
+    { "type": "range", "id": "strip_radius", "label": "Corner radius — Desktop", "min": 0, "max": 50, "step": 1, "unit": "px", "default": 20 },
+    { "type": "range", "id": "strip_radius_mobile", "label": "Corner radius — Mobile", "min": 0, "max": 50, "step": 1, "unit": "px", "default": 14 },
+    { "type": "color", "id": "strip_color_top", "label": "Top color", "default": "#ffffff" },
+    { "type": "color", "id": "strip_color_bottom", "label": "Bottom color", "default": "#f0fafe" },
+    { "type": "color", "id": "strip_line", "label": "Row divider", "alpha": true, "default": "#176bb024" }
+  ],
+  "presets": [{ "name": "Comparison table style" }]
+}
+{% endschema %}

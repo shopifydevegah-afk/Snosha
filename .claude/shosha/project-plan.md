@@ -84,6 +84,16 @@ Product templates: `templates/product.json` (default, used) and `templates/produ
 | P01 | Product Hero + Buy Box | `190:10204` | `190:10914` | product.json | Dev1 | REFINED (2026-11-15, round 9 after merchant review; visual + commerce QA PENDING USER REVIEW) | A + B/D (opt-in) + 1 new block | `product-information` (`_product-media-gallery` carousel + thumbnails + zoom, `_product-details` › `review`, `group`(title text + `price`), `group`, `text`, `variant-picker`, `buy-buttons`, `product-recommendations` (complementary), `accordion`/`_accordion-row`); breadcrumb = native `section` + new block `breadcrumbs` | `sn-product-hero`, `sn-product-breadcrumbs`, `sn-product-promo`, `sn-product-benefits`, `sn-product-trust`, `sn-product-label` | See E › P01 |
 | P02 | Product Long Description | `190:10527` | `190:11237` | product.json (`sn_long_description`, after `main`) | Dev1 | REFINED (2026-11-15, round 2 with merchant media; visual QA PENDING USER REVIEW) | A + C + B (image block opt-in) | one native `section` › 7 native `group` content groups › `group` (copy) + `image` + `group` (list) › `group` rows › `icon` / `text` | `sn-ld` (section), `sn-ld-group`, `sn-ld-intro/-sonic/-box/-modes/-brush/-battery/-water`, `sn-ld-floor`, `sn-ld-copy`, `sn-ld-list`, `sn-ld-item(-led)`, `sn-ld-led(-blink)`, `sn-ld-title/-subtitle/-body(-lead)/-note/-list-label/-item-title/-item-body` | See E › P02 |
 | P03 | Product Reviews | `190:10390` | `190:11101` | product.json (`sn_product_reviews`, between `main` and `sn_long_description`, Figma order) | Dev1 | PARTIAL (2026-11-16): wrapper + heading + real rating summary done; Judge.me Cards Carousel block to be added by the merchant; card styling BLOCKED on live widget markup | A + B (review block opt-in) + app block | native `section` › `text` + native `review` + Judge.me **Cards Carousel** app block | `sn-product-reviews` (section), `sn-rv-title` | See E › P03 |
+**Product page (PDP) workstream** — separate `P##` IDs from the Figma product-page frame numbers, so the homepage S01–S15 IDs stay untouched:
+
+| ID | Section | Desktop node | Mobile node | Target | Owner | Status | Cat. | Native component | Custom class | Dependencies / blockers |
+|---|---|---|---|---|---|---|---|---|---|---|
+| PDP-01 | Product comparison table (ليه تشتري SNOSHA N2؟) | `190:10461` | `190:11173` | `templates/product.json` (`comparison_sn_product`) | Dev2 | IMPLEMENTED (developer-reported 2026-11-15; visual QA PENDING USER REVIEW) | C + opt-in blocks | `section` + native `group`/`text`/`image`, `sn-comparison-style` + `sn-comparison-image` blocks | `sn-product-comparison` | Shopify initially rejected invalid padding (140 > 100); subsequent correction documented in E/H. Confirm final synced template and images. |
+| P05 | How To Use Video ("05 How To Use Video") | `190:10510` | `190:11221` | `templates/product.json` (user choice 2026-11-15) | Dev3 | IMPLEMENTED (2026-11-15; needs commit + push; visual QA PENDING USER REVIEW) | B + C (opt-in) | `section` (`section_snHowToVideo`, Horizon "Video" preset structure) + `text` + `video` | `sn-product-how-to-video` | Merchant uploads the video and poster |
+| P06 | Related products ("06 Featured Collection" on the PDP, منتجات ذات صلة) | `190:10816` | `190:11593` | `templates/product.json` (after P05) | Dev3 | IMPLEMENTED (2026-11-15; needs commit + push; visual QA PENDING USER REVIEW) | B + C (opt-in) | `product-recommendations` (`product_recommendations_snRelated`, intent `related`) + S05 `_product-card` block tree | `sn-home-bestsellers sn-product-related` | Recommendations come from Shopify (Search & Discovery can curate). New products may have none → section hidden (merchant can choose catalog / collection fallback) |
+| P06b | You may also like (قد يعجبك أيضًا) — same design as P06 | (user screenshots, 2026-11-15) | (user screenshots) | `templates/product.json` (after P06) | Dev3 | IMPLEMENTED (2026-11-15; needs commit + push; visual QA PENDING USER REVIEW) | A (P06 configuration) | `product-recommendations` (`product_recommendations_snMayLike`, intent `complementary`) + S05 card tree | `sn-home-bestsellers sn-product-related` | Complementary products come from Search & Discovery; until set, the fallback collection `الأكثر-مبيعًا` (S05's collection) shows |
+| P09 | How To Use steps ("09 How To Use", كيفية الاستخدام) | `190:10750` | `190:11464` | `templates/product.json` (after P05) | Dev3 | IMPLEMENTED (2026-11-15; needs commit + push; visual QA PENDING USER REVIEW) | B + D (opt-in) | `section` (`section_snHowToSteps`) + `text` + `group` + new theme block `numbered-list` (children: `text`) + `icon` | `sn-product-how-to-steps` | Optional: merchant uploads the Figma sparkle as the note icon image (native `star` is the fallback) |
+| P10 | Storage & Care tabs ("10 Storage & Care", شروط الاستخدام والتخزين) | `190:10753` | `190:11511` | `templates/product.json` (after P09) | Dev3 | IMPLEMENTED (2026-11-15; needs commit + push; visual QA PENDING USER REVIEW) | D + B (opt-in) | `section` (`section_snStorageCare`) + `text` + new theme block `tabs` → private `_tab` → `numbered-list` (dots) → `text` | `sn-product-storage-care` | Merchant writes the content of tabs 2 and 3 (empty tabs are hidden on the live store until filled) |
 
 ## E. Section decisions
 
@@ -2051,6 +2061,225 @@ Verified in code and docs on 2026-11-08 before deciding:
 - **Round 4 (2026-11-17):** mobile still not sliding. Root cause found in Judge.me `video_carousel.js` (loaded by the block): `addSwipeSupport` puts a non-passive `touchmove` on `.jdgm-content` that calls `preventDefault()` on horizontal moves (kills native scroll), a `focusin` handler resets `.jdgm-cards-wrapper.scrollLeft = 0`, and `cloneCards` adds `jdgm-clone-before/after` duplicates for its infinite loop. Fix: sn-reviews-carousel.js stops touch* / focusin / focusout propagation in the capture phase at the carousel (no preventDefault, so native scroll + focus still work); dev1.css hides the clone cards. `node --check` OK, braces 696/696. NOT VERIFIED.
 - **Files:** templates/product.json (new section, 2 blocks), blocks/review.liquid (3 opt-in settings), assets/dev1.css (block "Product page — Reviews (P03)").
 - **Checks:** schemas parse, no duplicate ids; all template settings exist in their schemas; Theme Check = baseline 13 offenses (none in touched files); dev1.css braces 659/659; class collision check: none. No preview / runtime evidence: summary rendering, Judge.me loading, RTL arrows NOT VERIFIED.
+### PDP-01 — Product page comparison table ("ليه تشتري SNOSHA N2؟") · Dev2 · 2026-11-15
+- **Template:** `templates/product.json` (default; user's choice), section `comparison_sn_product` inserted after `main`. `product.custom-snosha-product.json` not touched. Not a homepage S-number.
+- **Figma** (read via the Figma plugin, 2026-11-15):
+  - Desktop `190:10461`: gradient 69.29° #0e3b6b 8.75% → #12568d 54.13% → #0a2e55 91.25%; padding 60/140; container 1376 + 20; heading → stage 36.
+    - Heading 32/52 600 white; subheading 18/32 white 88%; gap 6.
+    - Table 1120: white 9% fill, 1px white 20% border, radius 24, blur 12, shadow 0 24 60 rgb(0 20 51/.45). Head row 64, rows 78. Criterion 15.5 600 right (header 17 700); manual 14.5 400 centred (header 16 600); row lines white 14% x 28–1002.
+    - Strip 376, offset 30px left of centre, 20 above / 34 below the table, radius 20, 1.5px white 90% border, gradient white → #f0fafe, shadows 0 26 54 rgb(0 26 64/.5) + 0 0 44 rgb(99 205 255/.45); logo 140×28; cells 15 600 #12568d; lines rgb(23 107 176/.14).
+    - Toothbrush photo ≈396×743, tilted 2.68°, overlapping the table's right end; "Section Glow" and "Floor Shadow" SVGs (not implemented, see limits).
+  - Mobile `190:11173`: gradient 82.97°; padding 40/52, side 20, gap 27; heading 20/52 (−7 margin), subheading 12/32.
+    - Table 350, radius 16, head row 46, rows 78; criterion 11 600 (header 12.5 700); manual 10 (header 11 600, white 80%).
+    - Strip 138 centred, 16 above/below, radius 14, gradient white → #f7fbfe → #eaf6fd, shadows 0 14 26 rgb(3 20 51/.5) + 0 0 30 4 rgb(99 205 255/.65); logo 114×23; cells 10 600.
+    - Toothbrush 126 wide at the top right beside the heading, no tilt.
+  - All row strings match the task's list (desktop and shortened mobile copy).
+- **Native audit:** no comparison table exists (`comparison-slider` is the before/after image slider, not used). Options given to the user: custom section (E, recommended) vs native composition. **User chose native composition (C).**
+- **Structure** (native `section`, name `t:names.custom_section`, class `sn-product-comparison`):
+  - Heading group (gap 6 / mobile 0): heading + subheading text blocks (mobile size/line height via the text block's "Font size — Mobile"/"Line height — Mobile").
+  - Table group (class `sn-pc-table`):
+    - Header row group (`sn-pc-row sn-pc-head`): text "المعيار" · image block (logo, fixed 140 / mobile 114) · text "الفرشاة اليدوية العادية" (mobile text "اليدوية العادية").
+    - 7 row groups (`sn-pc-row`), each 3 text blocks with classes `sn-pc-crit` / `sn-pc-strip` / `sn-pc-manual`; desktop text + native "mobile text" (blank = desktop text).
+    - Image block (toothbrush), custom width 42% / mobile 38% of the table.
+  - Rows can be added (duplicate a row group), removed and reordered in the editor; each row is its own 3-column grid, so its cells share a height. The strip is one layer behind the middle column of all rows, so it follows the row count and heights.
+- **Schema:** `text` font size options 14.5 / 15 / 15.5 / 17px added (options only, no new setting). No other schema change; `section` and `group` are already over the 40-setting cap, so no settings were added there.
+- **CSS:** `assets/dev2.css` under `.sn-product-comparison`. Literals (no setting fits under the caps): column geometry, table box, strip look, row lines, toothbrush position/tilt, background gradient (native background colour #12568d stays as the fallback).
+- **Accessibility:** group/text markup (no `<table>` semantics), a known trade-off of the native option. Reading order per row: criterion → SNOSHA → manual. Mobile copy is a second element shown only on phones (one read at a time).
+- **Media:** logo and toothbrush are empty image pickers (merchant uploads); with the class, an empty image renders nothing on the live store.
+- **Checks:** Theme Check 11 offenses before and after (all pre-existing; the documented 9 is out of date after the merges); `product.json` parses, diff = insertion only; `dev2.css` braces balanced.
+- **Not implemented / limits:** Figma "Section Glow" and toothbrush "Floor Shadow" (SVG contents not read); mobile manual header 80% white (text colour has no alpha, white used); mobile cells are 10–11px as in Figma (small).
+- **Fix 2026-11-15 (section not appearing):** commit befd9bb was pushed to origin/dev2, but section `padding-block-end` was 140 while the `section` schema range is 0–100, so Shopify rejected `product.json` on GitHub sync and kept the old template. Set to 100; the remaining 40px are a desktop-only `margin-block-end` on `.sn-pc-table` in dev2.css. All other section/block values checked against their schemas (ranges, steps, select options, block_order): valid. **Rule for templates:** validate setting values against schema ranges before pushing (Theme Check does not).
+- **Refinement 2026-11-15 (PDP-01b, Figma re-read 190:10461 / 190:11173 / 190:10509 / 190:11177):**
+  - Root causes: (1) table padding % resolved against the section wrapper (1336), not the table, so the criterion column started 183px in instead of 154 and the strip sat off; (2) desktop gap 36 is section→stage, but the table sits 37px inside the stage → real heading→table gap 73; (3) toothbrush tilt came from our CSS `rotate: 2.68deg` (Figma rotates the frame; user wants upright); (4) mobile brush in Figma is object-contain in a 126×160 box → ~81px wide, we used 126px, and the table glass was the group's own background so a child image could never go behind it; (5) desktop bottom 140 was capped at 100.
+  - Mobile "heading under the header" in the user screenshot: measured from the screenshot, the section top is ~18px above the viewport top, i.e. the page was scrolled under the sticky header; padding 40 / gap 27 / heading 45+32 match Figma. No change.
+  - Changes: new theme block `blocks/sn-comparison-style.liquid` ("Comparison table style", 40 settings, user-approved over adding to group/image) placed in the table group; `section` bottom padding range 0–100 step 1 → 0–200 step 2 (no odd stored values on any branch); template: bottom 140, gap 73, brush width 35% / 23%, style block added; dev2.css PDP-01 block rewritten: geometry in design px × `--pc-u` (container query unit on the table), glass box as `::before` so layers are brush-behind 0 < glass 1 < strip 2 < rows 3 < brush-front 4; heading group z 1; brush desktop front / mobile behind, upright.
+  - Still CSS literals: section gradient + angles, table/strip shadows, blur, strip border, mobile strip mid stop (#f7fbfe; one bottom colour #f0fafe for both).
+  - Heading mobile: Figma line height 52 with −7px margin = 45px box; kept as line height 45 (range max 50), no negative margin.
+- **Refinement 2026-11-15 (PDP-01c, Figma re-read 190:11181 / 190:11205 / 190:10507 / 190:10509):**
+  - Mobile alignment (Figma): criterion = right (already right); SNOSHA = centre (already centre); manual = right in rows 1–4 and 7, centre in rows 5–6 and the header — we had all manual cells centred. Fix: native text block "Text alignment (mobile)" = Start on manual cells 1–4, 7 (no new setting). Mobile gap before manual column 10 → 15 (Figma text box 86 wide).
+  - Desktop toothbrush: was top-anchored (−129 from table top) with left 81% on an assumed image crop, so its base depended on the uploaded PNG's height. Now centred at 102% of the table (Figma centre 1140/1120) and anchored by its bottom 15px below the table bottom (Figma upright box bottom), behind the table (merchant request; Figma has it on top). Mobile unchanged: top −126, centre 89%, behind.
+  - Floor shadow (Figma 240×40 ellipse, #000d26 50%, blur 11): CSS `::before` on the image block (z −1 inside its stacking context), sized as % of the image and positioned from its centre/bottom, so it follows width/position changes. No image picker needed.
+  - Controls: toothbrush settings moved out of "Comparison table style" (now 32) into new block `blocks/sn-comparison-image.liquid` "Comparison image position" (14: show on, desktop centre/bottom/rotation/layer, mobile centre/top/rotation/layer, shadow show/width/opacity/x/y). Width stays the image block's native width.
+- **Refinement 2026-11-15 (PDP-01d, from user screenshots + Figma stage render 190:10463 and brush PNG):**
+  - Desktop brush: the uploaded PNG is Figma's raw image (1456×2544, visible x 544–930 / y 156–2470). Measured on the render: drawn 448 wide (40% of the table, was 35%), centre 99% (was 102%), visible base 14 below the table → image box bottom 36 below (was 15, base floated because of the transparent space under it), in FRONT of the table as in Figma (PDP-01c had put it behind; the glass blurred its left side and hid the shadow). Shadow: centred under the brush (x 0, was −32), 54% of the image width, centre 24 above the image bottom.
+  - Mobile text: section width page-width added Horizon's 16px mobile page margin on top of the 20px padding → table 318 instead of 350 at 390, so cells wrapped where Figma does not. Section width → full-width (desktop unchanged: content max width 1376 + padding 20 = Figma 1336). Text still follows the viewport: below 390 some cells can wrap.
+- **Visual QA:** PENDING USER REVIEW (rule 13).
+### P05 PDP How To Use Video — IMPLEMENTED 2026-11-15 (Dev3), visual QA PENDING USER REVIEW
+
+- **Figma read (2026-11-15, `get_design_context` with screenshots, both nodes accessible).** The mobile node is `190:11221`; the original brief's mobile link pointed to the desktop node.
+  - **Desktop `190:10510`** (1480):
+    - Padding 60 / 60. Container max 1376, inline padding 20, centered, gap 28.
+    - Heading Cairo SemiBold 32/52 `#12568d`, centered.
+    - Video 400 × 711 (≈ 9:16), radius 24. Poster cover-cropped from a landscape image.
+    - Overlay ("Video Cover") `rgba(10,41,82,0.2)`.
+    - Play: 88 white circle (radius 44), shadow `0 14 34 rgba(0,51,115,0.4)`, icon 34 box with a solid triangle `#176bb0`.
+  - **Mobile `190:11221`** (390):
+    - Padding 40 / 40, inline 20, gap 14.
+    - Heading 22/52.
+    - Video 300 × 533, radius 16. **No overlay layer.**
+    - Play 56 circle, same shadow and icon.
+- **Native Reuse Audit:**
+  - Inspected:
+    - Sections: `section` (Horizon "Video" preset `t:names.video_section` = `section` + `video` block).
+    - Blocks: `video`, `text`.
+    - Snippets: `video` (3 callers, untouched), `deferred-media-video-styles`, `video-placeholder-styles`, `text`, `text-responsive-style`, `text-block-styles`.
+    - `assets/icon-play.svg` (solid triangle, same shape as Figma).
+  - **Match:** native `section` (already has `custom_class` from S14), a `text` heading and the `video` block. The video block renders `<deferred-media>`:
+    - The poster is a real `<button>` with a localized aria-label; the video loads on click.
+    - Plays muted with native controls; YouTube/Vimeo `video_url` is kept.
+  - **Reused from S09:** `uploaded_poster`, `uploaded_aspect_ratio`, the custom play button (size, icon size, radius, colors, custom icon image).
+  - **Gaps:** mobile play size, play shadow, poster overlay (desktop only in Figma), px max width per viewport, mobile radius, fit option.
+  - **Category B + C.** No new section.
+- **Schema extensions (`blocks/video.liquid`, 28 → 36 settings, all opt-in; defaults = native / S09 output):**
+  - `media_fit` (cover / contain; poster + uploaded video).
+  - `max_width` (0–1000 px) and `max_width_mobile` (0 = same as desktop).
+  - "Poster overlay": `poster_overlay_color` (alpha; empty = none) and `poster_overlay_mobile`. Drawn on the poster button, so it fades out with the poster when the video plays.
+  - `play_button_size_mobile` (0 = same as desktop) and `play_button_shadow_color` (alpha; empty = none; geometry 0 14 34 as Figma).
+  - `border_radius_mobile` (0 = same as desktop).
+  - The 5 S09 video blocks use none of the new keys, so their output is unchanged.
+- **Instance `section_snHowToVideo`** in `templates/product.json`, inserted after `main` and before `product_recommendations_qggXJq`:
+  - Section: column, centered, gap 28, page-width, padding 60 / 60, `custom_class: sn-product-how-to-video`.
+  - `text_htuHead`: `<h2>طريقة الاستخدام</h2>`, custom preset 2rem, weight 600, line height exact 163% (≈ 52px), mobile 22 / 50, `#12568d`, centered.
+  - `video_htuMain`:
+    - Uploaded source, **no video or poster written** (merchant picks them). Ratio 9:16, fit cover.
+    - Max width 400 / mobile 300; radius 24 / mobile 16.
+    - Overlay `#0a295233`, off on mobile.
+    - Play custom 88 / mobile 56, icon 32 (matches Figma's visible triangle at 34 with the native icon's proportions), radius 44, `#ffffff` / `#176bb0`, shadow `#00337366`.
+    - Loop on (native default). Autoplay off.
+- **Sizing:** width 100% capped at 400 / 300, so the frame shrinks on screens narrower than the cap. The 9:16 ratio sets the height and the section height is content-driven.
+- **Media workflow:**
+  - Theme Editor → product page → "How to use video" → Video block → upload or select the video (or a YouTube/Vimeo URL) and an optional "Poster image".
+  - Poster fallback: selected poster → the video's own preview image → native placeholder.
+  - Poster crop = the image's focal point (Shopify Files).
+  - Same video on every product using `product.json`; per-product videos can later use the video setting's dynamic source (a product metafield) once its definition exists.
+- **CSS (`assets/dev3.css`, `.sn-product-how-to-video`, collision check: no matches):**
+  - Mobile gutters 20.
+  - Mobile padding 41 / 40 and gap 15. The text block's mobile line height maxes at 50 vs Figma 52, so 1px moves above the heading and 1px into the gap; heading and video positions match Figma.
+  - Applies the heading block's exact weight and desktop line height (`--sn-font-weight` / `--sn-line-height` from the text block).
+  - Everything else is settings.
+- **Files:** `blocks/video.liquid`, `assets/dev3.css`, `templates/product.json` (additions only). `index.json` and S09 are untouched.
+- **Static validation:**
+  - Theme Check = **11**: the post-merge baseline. The two new offenses are `ExcessiveSettingsCount` on `blocks/group.liquid` (44) and `sections/section.liquid` (46), both already at HEAD from the dev1/dev2 merge, not from this change.
+  - Template checked against the schemas: keys, options, ranges/steps, allowed blocks, refs, no `""` pickers, no duplicate IDs.
+  - Video schema range steps ≤ 101. CSS braces balanced, CRLF kept.
+- **Sync:** reaches the editor only after commit + push (GitHub-connected theme).
+- **Visual QA — PENDING USER REVIEW:**
+  - Desktop 1480: heading 32/52, 28 gap, 400 × 711 frame radius 24, overlay, 88 button + shadow centered.
+  - Mobile 390: 300 × 533 radius 16, no overlay, 56 button.
+  - Playback (click / Enter / Space, controls, muted start); poster crop; narrow phones (< 340) shrink the frame; two-state test (class off).
+
+### P06 PDP Related products (منتجات ذات صلة) — IMPLEMENTED 2026-11-15 (Dev3), visual QA PENDING USER REVIEW
+- **Figma:** desktop `190:10816`, mobile `190:11593` ("06 Featured Collection"). Both read with `get_design_context` + screenshots on 2026-11-15. The frame has no fill (white page); the black seen in exported screenshots is the Figma canvas → no section background set.
+- **Spec (desktop / mobile):**
+  - Padding 60 / 54 + 15.55 carousel padding (= 70) / 40 / 40. Heading Cairo SemiBold 32/52 / Bold 24/38 (44px row), `#12568D`, centered. Heading → cards 46 + 15.55 (= 62) / 22 + 11.
+  - Desktop: horizontal carousel, cards 316 (image 316², ~542 tall), gap 24, partial cards at the edges; arrows 52px, white 97 %, border 1 `#DCF2FB`, shadow `0 2px 6px rgba(8,46,102,.12), 0 10px 26px rgba(8,46,102,.3)`, chevron 26px, 46px from the edges, vertically centred on the cards.
+  - Mobile: cards 165 (image 165², ~283 tall), gap 12, 24px gutters, quick-add circle 32; progress track 342 × 4 `#DCF2FB`, thumb gradient `#63CDFF` → `#0F64A8`. No arrows on mobile.
+  - Card = the S05 card (same Figma component): badge, title, description, rating, price + compare-at + discount badge, View product, hover quick-add bar.
+- **Native Reuse Audit:**
+  - `sections/product-recommendations.liquid` (native "Product recommendations"): Shopify `recommendations` object via the Section Rendering API (`product-recommendations.js`, `morphSection`), intent `related` / `complementary`, current product excluded by Shopify, Search & Discovery manual related products supported. Renders the same static `_product-card` block (id `static-product-card`) and `resource-list-carousel` snippet as S05's `product-list`.
+  - Native empty state: no products → `data-has-recommendations="false"` → section hidden by CSS. Native fallback for `related` with zero results = other catalog products.
+  - Missing: `custom_class`, progress bar, fixed desktop card width, arrow appearance (native arrows only fade in on hover, icon/shape only), fallback choice. `product-list` (S05) is collection-based → not a related source.
+- **Category:** B (opt-in settings on the native section) + C (S05 block tree + shared `scroll-progress`). No new section.
+- **Extensions — `sections/product-recommendations.liquid` (17 → 30 settings, all opt-in; the existing `product.custom-snosha-product.json` instance sets none of them → native output):**
+  - `empty_fallback` (catalog = native default / collection / none) + `fallback_collection` (current product excluded; empty = hide).
+  - `card_width` (0–400, 0 = by columns) → `sn-reco--card-width` sets `--slide-width` on desktop.
+  - `scroll_progress` (off / mobile only / mobile and desktop) → renders `snippets/scroll-progress.liquid` inside the loaded branch (binds after the recommendations arrive; hidden when nothing scrolls).
+  - `arrows_custom` + `arrow_size`, `arrow_icon_size`, `arrow_radius`, `arrow_inset`, `arrow_background`, `arrow_icon_color`, `arrow_border_color`, `arrow_shadow_color` → `sn-reco--arrows`: native slideshow arrows always visible on desktop, styled by vars, native disabled state (hidden at the ends) and RTL mirroring kept, hidden ≤749px.
+  - `custom_class` on the `.section` element (also enables the text block's exact weight / line height vars).
+  - Section `{% stylesheet %}` holds only the opt-in class rules.
+- **Instance (`product_recommendations_snRelated`, "Related products"):** after `section_snHowToVideo` (Figma order 05 → 06 → 09 → 10). `product` = `{{ closest.product }}`, `related`, `empty_fallback` none, carousel, max 8, gap 24, `chevron` + `circle`, `card_width` 316, progress mobile only, custom arrows (52 / 26 / 50 % / 46 / `#fffffff7` / `#176bb0` / `#dcf2fb` / `#082e664d`), page width, gap 62, padding 60 / 70, class `sn-home-bestsellers sn-product-related`.
+  - Heading `text_snRelHead` (`<h2>منتجات ذات صلة</h2>`, 2rem, 600, 163 %, mobile 24 / 38, `#12568d`, centred).
+  - `static-product-card` = exact copy of S05 `product_list_fa6P9H` card tree (gallery with quick add + metafield badge, title, description, review, price with discount badge, View product group) minus two empty `mobile_text` values.
+- **CSS (`assets/dev3.css`):** S05 `.sn-home-bestsellers` rules style the cards, quick add, price row, rating, progress colors and the mobile 165px slide width (unchanged). New `.sn-home-bestsellers.sn-product-related` only overrides the mobile spacing vars (40 / 40 / 22) and the heading (exact weight, desktop line height, mobile 3px row padding and Bold). S05/S07 selectors and values untouched.
+- **Data:** titles, images, descriptions, prices, compare-at, badges (`custom.product_badge`) and ratings are product data. Discount badge only when compare-at > price; stars only with real review data.
+- **Files:** `sections/product-recommendations.liquid`, `templates/product.json`, `assets/dev3.css`, plan, both registry copies.
+- **Validation (local only):** Theme Check = **11** = baseline. Template checked against `product-recommendations` + block schemas (static card skipped for the allowed-type check), no duplicate IDs; P05 / P09 / P10 re-checked. Schema ranges ≤ 101 steps. CSS braces balanced, CRLF kept. Classes unique.
+- **Sync:** reaches the editor only after commit + push.
+- **Visual QA — PENDING USER REVIEW:**
+  - Desktop 1480: 316 cards / 24 gap, partial next cards, arrows 52 at 46px, arrows hide at the ends, hover quick add, heading 32/52.
+  - Mobile 390: 165 cards / 12 gap, quick-add circle, progress follows the swipe in RTL, heading 24/38.
+  - Data: different products show different recommendations; zero recommendations hides the section; theme editor re-render.
+  - Limitation: the Figma desktop centres the strip (cards cut on both sides); the real carousel starts at the inline-start page margin and scrolls.
+- **2026-11-15 follow-up (user request):**
+  - New opt-in setting `extra_products` (product list, up to 12): merchant-picked products added after the recommendations / fallback; the current product and repeats are skipped; shown even with zero recommendations. Recommendations themselves stay capped at 10 by Shopify (`max_products` 3–10 unchanged). Section now 31 settings.
+  - `slide_count` for both carousels now uses the rendered slide count (`slides.size`) instead of `recommendations.products.size`, so fallback / extra products get a correct slideshow timeline (same value when only recommendations render).
+  - Merchant had moved P06 to the end of the page in the editor (commit `aec04bf`); kept.
+  - Second instance **P06b `product_recommendations_snMayLike`** ("You may also like", heading `<h2>قد يعجبك أيضًا</h2>`) directly after P06: exact copy of P06 settings and card tree, but intent `complementary` (so it does not repeat P06's related products) and `empty_fallback` = collection `الأكثر-مبيعًا`. The merchant can switch the type, fallback, or add extra products in the editor.
+  - Validation: both instances checked against the schemas, Theme Check = 11 = baseline.
+- **2026-11-15 mobile fix (user screenshot vs Figma `190:11593` / `190:11613`, same layout):**
+  - Progress bar did not appear: it arrives inside the recommendations HTML (`morphSection`), where `<script>` tags do not run, so `scroll-progress.js` was never loaded on the PDP. The section now loads `scroll-progress.js` at its top when `scroll_progress` is on.
+  - Card corners: Figma mobile has the cart circle on the start side (right in RTL) and the badge on the end side; P06 / P06b gallery blocks now use `quick_add_mobile_position` top-start and `custom_badge_position_mobile` top-end (S05 on index unchanged).
+  - Rating row shows only with real review data (Figma stars are sample data). Theme Check = 11.
+
+### P09 PDP How To Use steps (كيفية الاستخدام) — IMPLEMENTED 2026-11-15 (Dev3), visual QA PENDING USER REVIEW
+- **Figma:** desktop `190:10750` ("09 How To Use"), mobile `190:11464`. Both read with `get_design_context` + screenshots on 2026-11-15.
+- **Spec (desktop / mobile):**
+  - Section padding 60/60, content max 1376 with 20px sides (card 1336) / padding 40/40, 20px sides (card 350). Heading → card gap 18 / 14.
+  - Heading Cairo Bold 32/52 / 22/52, `#12568D`, centered.
+  - Card `#F0FAFE`, border 1 `#DCF2FB`, radius 16, shadow `0 8px 18px rgba(13,64,128,.06)`, padding 16 + steps 16 top (= 32), 24 bottom, 24 / 14 sides. Steps → note gap 18.
+  - Steps: gap 16, number → text gap 12, text Cairo Regular 16/28 / 12.5/28 `#5A5A59`, start-aligned (right in RTL).
+  - Badge 30 × 30 circle, gradient top `#63CDFF` → bottom `#0F64A8`, white Cairo Bold 14 / 11 (mobile is 11 in Figma, not 14).
+  - Note: white, border 1 `#DCF2FB`, radius 14, padding 14/20, icon → text gap 10, Cairo SemiBold 14/24 / 11/24 `#176BB0`, sparkle 18 on the start side. Mobile note wraps.
+  - "Acc" in the Figma layer name is not an interaction: static, always-expanded list (no accordion, no JS).
+- **Native Reuse Audit:**
+  - `section` (native "Section", name unchanged) holds heading `text` + card `group`. Has desktop padding/gap, `content_max_width`, and Dev2's mobile padding/gap settings (vars consumed by class CSS).
+  - `group` covers card + note: background color, border, radius, padding, gap, row/column. Missing: phone padding (desktop padding > 20 scales by 0.7 below 990px) and shadow.
+  - `text` covers every string with the existing custom typography settings (size, weight, exact line height, mobile px size/line height, color, alignment).
+  - `icon` covers the note icon: icon list + image upload + size + color. No sparkle in the native list; `star` is the fallback, image upload carries the Figma sparkle.
+  - No native numbered list exists. Badges must be shared, settings-driven and follow reordering → one small reusable theme block instead of 8 hardcoded badges or one block type per step.
+- **Category:** B (opt-in `group` settings) + D (new reusable theme block). No new section (no category E).
+- **Extensions:**
+  - `blocks/group.liquid` (44 → 51 settings, opt-in): `padding_mobile_custom` + `padding-block-start-mobile` / `padding-block-end-mobile` / `padding-inline-mobile` (class `sn-group--pad-mobile`, ≤749px); `shadow_color` (alpha, empty = none) + `shadow_blur` + `shadow_offset_y` (class `sn-group--shadow`). Classes and vars are only output when the settings are used, so existing groups render as before.
+  - New `blocks/numbered-list.liquid` ("Numbered list", theme block, `tag: null`, children: `text` only, 14 settings): step gap / mobile gap, number → text gap, first number, badge size / mobile size, number size / mobile size, weight, number color, gradient top / bottom (alpha; empty bottom = solid), radius %, `custom_class`. Numbers are a CSS counter on the direct `.text-block` children, so add / remove / duplicate / reorder keeps 1…n; hidden mobile-text copies (`display: none`) do not count. Badge sits on the inline-start side (right in RTL) via a 2-column grid; no absolute positioning.
+- **Instance (`section_snHowToSteps`, "How to use steps"):** after `section_snHowToVideo`. Heading `text_htsHead`; card `group_htsCard` ("Guide card") → `numbered_list_htsSteps` ("Steps", 8 `text_htsStep1–8` with the exact Figma copy) + `group_htsNote` ("Note") → `icon_htsNote` (`star`, 18, `#176bb0`) + `text_htsNote`.
+  - Section: gap 18, padding 60/60, sides 20/20, `content_max_width` 1376; mobile padding 41/40, side 4 (+16 page margin = 20), gap 15.
+  - The heading's mobile line height stops at 50 (Figma 52): 1px moved into the mobile top padding and 1px into the mobile gap, same as P05.
+  - Card: column, gap 18, `#f0fafe`, border solid 1 `#dcf2fb`, radius 16, padding 32/24/24/24, custom mobile padding 32/24/14, shadow `#0d40800f` blur 18 y 8.
+  - Steps: 1rem, weight 400, exact line height 175 %, mobile 12.5 / 28px, `#5a5a59`, alignment "left" (= start = right in RTL). Badge 30, number 14 / mobile 11, Bold, white, `#63cdff` → `#0f64a8`, 50 %.
+  - Note: row, gap 10, white, border 1 `#dcf2fb`, radius 14, padding 14/14/20/20; text 0.875rem, 600, 171 %, mobile 11 / 24px, `#176bb0`.
+- **CSS (`assets/dev3.css`, `.sn-product-how-to-steps`):** phone section padding/gap from the section's mobile settings, and the text blocks' exact weight + desktop exact line height (P05 pattern). Everything else is settings. Removing the class falls back to native weight/line height and scaled mobile section spacing.
+- **Shared content:** every product on `templates/product.json` shows these steps. For other products, assign a duplicated product template with its own steps (no metafields created).
+- **Files:** `blocks/group.liquid`, `blocks/numbered-list.liquid` (new), `templates/product.json`, `assets/dev3.css`, plan, both registry copies.
+- **Validation (local only):**
+  - Theme Check = **11** = post-merge baseline. `group` stays one `ExcessiveSettingsCount` offense (44 → 51 settings); the new block has none.
+  - Template checked against the schemas (keys, options, ranges/steps, allowed blocks, no duplicate IDs). `main` and P05 untouched. No `""` written for color settings.
+  - Schema ranges ≤ 101 steps, defaults on-step. CSS braces balanced, CRLF kept. Class unique.
+- **Sync:** reaches the editor only after commit + push.
+- **Visual QA — PENDING USER REVIEW:**
+  - Desktop 1480: card 1336 wide, badges on the right, 16 gaps, note at the bottom with icon on the right, soft shadow.
+  - Mobile 390: 20px gutters, card padding 14, numbers 11px, wrapped lines and note, no horizontal overflow.
+  - Editor: add / reorder / hide a step → numbers update; badge and card settings apply; two-state test (class off).
+
+### P10 PDP Storage & Care tabs (شروط الاستخدام والتخزين) — IMPLEMENTED 2026-11-15 (Dev3), visual QA PENDING USER REVIEW
+- **Figma:** desktop `190:10753` ("10 Storage & Care"), mobile `190:11511`. Both read with `get_design_context` + screenshots on 2026-11-15. Bullet asset = 7px circle `#63CDFF`, centered 13.5px from the row top (CSS dot, no asset).
+- **Spec (desktop / mobile):**
+  - Section padding 60/60, max 1376 with 20px sides / 40/40 with 20px sides. Heading → tabs gap 18 / 14. Heading Cairo Bold 32/52 / 22/52 `#12568D`, centered.
+  - Tabs centered, gap 10 / 6, pill padding 24×10 / 10×6, Cairo SemiBold 16 / 11.5, radius 999.
+  - Inactive: white, border 1 `#DCF2FB`, text `#176BB0`. Active: gradient left `#63CDFF` → right `#0F64A8` (Figma `to-r`), white text, shadow `0 8px 18px rgba(15,100,168,.3)`. Active tab is the first (right-most in RTL).
+  - Tabs → panel gap 22 / 16. Panel white, border 1 `#DCF2FB`, radius 16, shadow `0 8px 18px rgba(13,64,128,.06)`, padding 24 / 26, sides 28 / 14.
+  - Points: row gap 12, dot → text gap 10, Cairo Regular 16/28 / 13/28 `#5A5A59`, start-aligned (right in RTL), dot on the right.
+- **Native Reuse Audit:**
+  - No native tabs component. `layered-slideshow` has a `tablist`, but it is a separate section with unlabeled buttons, drag-to-expand media panels and fixed heights → not reusable for labeled text tabs.
+  - `accordion` / `_accordion-row` use `<details>`: one-of-many toggles with summaries above each panel, not a tablist with one shared panel area.
+  - Theme blocks cannot read their child blocks' settings, so a parent cannot server-render the tab labels. Each `_tab` renders its own panel with `data-tab-label`; a small script builds the buttons.
+  - `section` (native, unchanged), `text` and P09's `numbered-list` cover the heading and the points.
+- **Category:** D (new reusable `tabs` + private `_tab` blocks, new `assets/sn-tabs.js`) + B (opt-in `marker` on `numbered-list`). No new section (no category E).
+- **Extensions:**
+  - New `blocks/tabs.liquid` ("Tabs", 34 settings, children `_tab` only): screen-reader name; tab alignment, gaps, paddings, text size (desktop + mobile), weight, radius, border width; inactive background / text / border / hover-focus border; active gradient left / right, text, border, shadow color; panel gap (desktop + mobile), background, border width / color, radius, shadow color, padding top / bottom / sides / mobile sides; `custom_class`. Loads `sn-tabs.js` as a module (same pattern as `carousel-active-card.js`).
+  - New `blocks/_tab.liquid` ("Tab"): `label`, `open_by_default`; children `@theme` / `@app`. Renders `role="tabpanel"` with `tabindex="0"` and `hidden` unless open. A tab with no content renders nothing on the live store; in the theme editor it shows an empty dashed drop area.
+  - New `assets/sn-tabs.js` (`<sn-tabs>` custom element, no imports): builds `<button role="tab">` per panel inside the `role="tablist"`, links `aria-controls` / `aria-labelledby`, roving `tabindex`, `aria-selected`, `hidden` panels. Keys: Left / Right (RTL-aware, wrap), Home, End; Enter / Space via the native button. Rebuilds on editor add / remove / reorder / relabel (MutationObserver) keeping the current tab; `shopify:block:select` opens the selected tab. Per-instance IDs from block IDs.
+  - `blocks/numbered-list.liquid` (14 → 18 settings, opt-in): `marker` (number / dot, default number), `dot_size`, `dot_color`, `dot_offset`. P09 (no `marker` key) still renders numbers.
+- **Instance (`section_snStorageCare`, "Storage and care"):** after `section_snHowToSteps`. Heading `text_scHead`; `tabs_scTabs` → `tab_scSafe` ("للاستخدام الآمن", open by default) → `numbered_list_scSafe` (dots 7 `#63cdff`, offset 10, gap 12, dot → text 10) → 7 `text_scSafe1–7` (exact Figma copy); `tab_scCare` ("للتنظيف والصيانة") and `tab_scStorage` ("للتخزين") are empty (no content invented).
+  - Section settings as P09: gap 18, padding 60/60, sides 20, `content_max_width` 1376; mobile padding 41/40, side 4, gap 15 (heading mobile line height capped at 50 → 1px into top padding and gap).
+  - Points: 1rem, weight 400, exact line height 175 %, mobile 13 / 28px, `#5a5a59`, alignment "left" (= start = right in RTL).
+- **CSS (`assets/dev3.css`):** `.sn-product-storage-care` joins the P09 rule (`.sn-product-how-to-steps, .sn-product-storage-care`): phone section padding/gap and the text blocks' exact weight / desktop line height. Tabs and panel look come from the `tabs` block settings, so removing the class keeps working tabs.
+- **Shared content:** every product on `templates/product.json` shows the same tabs. Different products need a duplicated template (no metafields created).
+- **Files:** `blocks/tabs.liquid` (new), `blocks/_tab.liquid` (new), `assets/sn-tabs.js` (new), `blocks/numbered-list.liquid`, `templates/product.json`, `assets/dev3.css`, plan, both registry copies.
+- **Validation (local only):** Theme Check = **11** = baseline (no offenses from the new files). `node --check assets/sn-tabs.js` OK. Template checked against the schemas, no duplicate IDs; `main`, P05, P09 untouched. Schema ranges ≤ 101 steps, defaults on-step. CSS braces balanced, CRLF kept. Class and element name unique.
+- **Sync:** reaches the editor only after commit + push.
+- **Visual QA — PENDING USER REVIEW:**
+  - Desktop 1480 / mobile 390: pill sizes and gradient, panel card, dots on the right, wrapped mobile lines, three pills on one line at 390.
+  - Behavior: click / tap switches panels, arrow keys + Home / End, focus outline, screen reader announces tabs; editor: select a tab block opens it, add / reorder / rename tabs; two instances on one page; empty tabs hidden on the live store.
 
 ## F. QA & progress
 
@@ -2073,6 +2302,12 @@ One QA row per S-ID. `PASS (local)` and Theme Check results describe **historica
 | S13 | Done (both Figma nodes reported) | Local checks reported in S13 implementation details; compare with actual branch | PENDING USER REVIEW | PENDING USER REVIEW | PENDING USER REVIEW | Merchant supplies 4 icons | PENDING USER REVIEW (`CLASS_PLUS_SETTINGS`) | Mobile order and centred subheading are merchant decisions |
 | S14 | PASS (2026-11-12, both nodes read with screenshots) | PASS (local only: Theme Check = 9 baseline, template checked against schemas, CSS braces) | PENDING USER REVIEW | PENDING USER REVIEW | PENDING USER REVIEW | Optional icon image picker on the accordion; render PENDING USER REVIEW | PENDING USER REVIEW (two-state test) | Checklist: E › S14 › Visual QA |
 | S15 | PASS (get_design_context, 2026-11-11) | PASS: Theme Check = baseline 9, footer-group JSON and 4 schemas parse, no duplicate IDs | PENDING USER REVIEW | PENDING USER REVIEW | PENDING USER REVIEW | PENDING USER REVIEW (logo via image picker) | PENDING USER REVIEW (expected `CLASS_PLUS_SETTINGS: footer/utilities padding, copyright settings`) | Fix rounds 1–2 (2026-11-11): menu typography, single copyright line in Figma order (`dir` rtl + `bdi`) with its own desktop/mobile typography; merchant: pick the logo, set the logo link; test newsletter submit; check the settings change the text at both breakpoints |
+
+| PDP-01 (PDP) | Reported Figma inspection of `190:10461` / `190:11173` (2026-11-15) | Historical Dev2 report: Theme Check 11 before/after and JSON parsed; initial Shopify sync rejected invalid bottom padding, with later fix documented in E/H — current sync NOT VERIFIED | PENDING USER REVIEW | PENDING USER REVIEW | PENDING USER REVIEW | Merchant uploads comparison logo / toothbrush | PENDING USER REVIEW | Confirm latest `product.json` synced, section visible, table alignment and image position. |
+| P05 (PDP) | PASS (2026-11-15, both nodes read with screenshots) | PASS (local only: Theme Check = 11 post-merge baseline, template checked against schemas, CSS braces) | PENDING USER REVIEW | PENDING USER REVIEW | PENDING USER REVIEW | Video + poster pickers in the editor; render PENDING USER REVIEW | PENDING USER REVIEW (two-state test) | Checklist: E › P05 › Visual QA |
+| P06 (PDP) | PASS (2026-11-15, both nodes read with screenshots) | PASS (local only: Theme Check = 11 baseline, template checked against schemas, schema ranges, CSS braces) | PENDING USER REVIEW | PENDING USER REVIEW | PENDING USER REVIEW | Product media from Shopify (no pickers) | PENDING USER REVIEW (two-state test; S05/S07 unchanged) | Checklist: E › P06 › Visual QA |
+| P09 (PDP) | PASS (2026-11-15, both nodes read with screenshots) | PASS (local only: Theme Check = 11 baseline, template checked against schemas, schema ranges, CSS braces) | PENDING USER REVIEW | PENDING USER REVIEW | PENDING USER REVIEW | Note icon: native `star` fallback; Figma sparkle via image upload (optional) | PENDING USER REVIEW (two-state test) | Checklist: E › P09 › Visual QA |
+| P10 (PDP) | PASS (2026-11-15, both nodes read with screenshots) | PASS (local only: Theme Check = 11 baseline, `node --check sn-tabs.js`, template checked against schemas, schema ranges, CSS braces) | PENDING USER REVIEW | PENDING USER REVIEW | PENDING USER REVIEW | No media | PENDING USER REVIEW (tabs + keyboard + editor behavior) | Checklist: E › P10 › Visual QA |
 
 **QA provenance:** Any historic agent-operated S04 preview observations predate the no-preview policy; they do not constitute current user approval.
 
@@ -2186,7 +2421,22 @@ One QA row per S-ID. `PASS (local)` and Theme Check results describe **historica
 | 2026-11-15 | P01 round 9: round-8 work uncommitted (not in store); group-gap rule overrode Paragraph spacing → removed (2 settings); custom Add icon shown as image; Plus default | trace of settings → CSS | product-recommendations, product-information, dev1.css, product.json | Runtime NOT VERIFIED |
 | 2026-11-15 | P02 Product Long Description: one native section, 7 native groups, lean feature rows, native gradient overlay, opt-in mobile image + image fit on the image block | Figma 190:10527 / 190:11237 | product.json, blocks/image.liquid, dev1.css | Visual QA pending; merchant uploads images |
 | 2026-11-16 | P03 Product Reviews: native section + heading + native review summary (opt-in score / count text / empty state); cards = Judge.me Cards Carousel app block (Current product), no fake data | Figma 190:10390 / 190:11101 | product.json, blocks/review.liquid, dev1.css | Merchant adds the app block; card CSS + progress pending widget markup |
+| 2026-11-15 | PDP workstream added (`P##` IDs). P05 How To Use Video implemented by Dev3 on `templates/product.json` (user choice) with the native `section` + `text` + `video` (`section_snHowToVideo`). Opt-in `video` extensions: `media_fit`, `max_width`/`max_width_mobile`, poster overlay (+ mobile toggle), `play_button_size_mobile`, `play_button_shadow_color`, `border_radius_mobile`. Theme Check baseline is now 11 after the dev1/dev2 merge (`group` 44 and `section` 46 settings) | User request + Figma `190:10510` / `190:11221` | P05; shared opt-in: `video` (S09 unchanged) | Merchant uploads video + poster; commit + push; visual QA by the user |
+| 2026-11-15 | P09 How To Use steps implemented by Dev3 on `templates/product.json` (`section_snHowToSteps`, after P05): native `section` + `text` + `group` + `icon`, plus new reusable theme block `numbered-list` (auto-numbered `text` children via CSS counter, shared badge settings). Opt-in `group` extensions: custom mobile padding and box shadow (44 → 51 settings, Theme Check still 11) | User request + Figma `190:10750` / `190:11464` | P09; shared opt-in: `group` | Commit + push; optional sparkle image upload; visual QA by the user |
+| 2026-11-15 | P10 Storage & Care tabs implemented by Dev3 on `templates/product.json` (`section_snStorageCare`, after P09): native `section` + `text`, new reusable `tabs` + private `_tab` theme blocks with `assets/sn-tabs.js` (ARIA tablist built from tab labels, RTL-aware keys, editor-aware), and opt-in dot markers on `numbered-list`. Tabs 2–3 left empty for the merchant (hidden on the live store until filled) | User request + Figma `190:10753` / `190:11511` | P10; shared opt-in: `numbered-list` (P09 unchanged) | Commit + push; merchant content for tabs 2–3; visual QA by the user |
+| 2026-11-15 | P06 Related products implemented by Dev3 on `templates/product.json` (`product_recommendations_snRelated`, after P05): native `product-recommendations` (intent `related`, current product) + S05 card tree and classes (`sn-home-bestsellers sn-product-related`). Opt-in section extensions: empty fallback (catalog / collection / hide), desktop card width, scroll progress, custom arrows, `custom_class` (17 → 30 settings) | User request + Figma `190:10816` / `190:11593` | P06; shared opt-in: `product-recommendations`, `scroll-progress` reused | Commit + push; check recommendations per product (Search & Discovery optional); visual QA by the user |
+| 2026-11-15 | P06 follow-up: `extra_products` on `product-recommendations` (merchant-picked additions, deduped), correct `slide_count`; P06b "قد يعجبك أيضًا" added after P06 (complementary intent, fallback collection `الأكثر-مبيعًا`) | User request (screenshots) | P06, P06b | Commit + push; visual QA by the user |
 
+| 2026-11-15 | PDP-01 comparison table on `templates/product.json` as native composition (user choice over a custom section): `section` + row groups + text blocks with mobile text; `text` font size options 14.5/15/15.5/17px | Native-first; user chose C knowing the strip/table look stays as scoped CSS (section/group at the settings cap) | `product.json`, `blocks/text.liquid`, `dev2.css` | Logo + toothbrush uploads; visual QA by the user |
+| 2026-11-15 | PDP-01 fix: product.json rejected by Shopify sync (section bottom padding 140 > max 100) | Out-of-range value invalidates the whole template; 40px moved to scoped CSS | `product.json`, `dev2.css` | Push dev2, then confirm in the editor |
+| 2026-11-15 | PDP-01b comparison refinement: style block (40 settings) for table geometry/colours/toothbrush; upright brush, mobile brush behind the table; true heading→table gap 73; section bottom range 0–200 | User chose a style block over growing group (44) / image | `blocks/sn-comparison-style.liquid`, `sections/section.liquid`, `product.json`, `dev2.css` | Visual QA by the user (rule 13) |
+| 2026-11-15 | PDP-01c: mobile manual cells right-aligned per Figma (native mobile alignment), desktop toothbrush bottom-anchored + centred + behind the table, CSS floor shadow, image controls in new "Comparison image position" block | Shadow is a plain blurred ellipse in Figma → CSS with settings instead of a media picker | `blocks/sn-comparison-image.liquid`, `blocks/sn-comparison-style.liquid`, `product.json`, `dev2.css` | Visual QA by the user (rule 13) |
+| 2026-11-15 | PDP-01d: desktop brush 40% / centre 99% / bottom 36 / in front + shadow recentred; section full-width so the mobile table is 350 like Figma | Measured from the Figma render and the PNG alpha bounds instead of the rotated frame | `product.json`, `dev2.css`, `blocks/sn-comparison-image.liquid` | Visual QA by the user (rule 13) |
+| 2026-11-15 | PDP-01e: all manual-column cells + header right-aligned on mobile (native "Text alignment (mobile)" = Start), per user screenshot of Figma; PDP-01c had kept rows 5–6 + header centred | User-confirmed Figma look | `product.json` | Visual QA by the user |
+| 2026-11-15 | PDP-01f: table cells wrap Pretty → Normal (native text "Wrap"); text-wrap: pretty moved "3" down with "شهور" to avoid a one-word last line, Figma wraps greedily | Native setting | `product.json` | Visual QA by the user |
+
+| 2026-11-17 | Merge repair in `templates/product.json` (hand-resolved Dev3 merge, index still UU): the line merge moved Dev3's related-products card settings (36 keys: quick add, badge, card text padding 32/12/12, mobile spacing) into PDP-01 blocks — brush image got padding 32/12/12 (photo shrunk, base floated) and group keys; heading group + header row lost their settings; Related cards lost their padding. Restored `comparison_sn_product` from HEAD 2747584 and `product_recommendations_snRelated` from origin/dev3 82b12ce; whole template now validates (0 unknown / out-of-range keys) | User screenshots: brush floating, related cards flush to the edge | PDP-01, P06 | User: review, then `git add` the resolved files |
+| 2026-11-17 | PDP-01g: mobile brush width 23% → 26% (Figma brush is object-contain in 126×160 → 92×160 with the PNG ratio 0.572; base ends ~28px inside the card, behind it). P09 steps 1–8 + note wrap Pretty → Normal (Figma breaks greedily: "رأس" stays on line 1 of step 1) — Dev3 section, template value only, at the user's request | Figma 190:11177, 190:11464 | PDP-01, P09 | Visual QA by the user |
 ## Merge reconciliation note — 2026-11-12 (documentation only)
 
 - Consolidated the duplicate developer status tables into one ownership table, retaining historical contradictory initialization evidence explicitly as unverified.
@@ -2194,3 +2444,14 @@ One QA row per S-ID. `PASS (local)` and Theme Check results describe **historica
 - Consolidated QA to **15 unique S-IDs**; retained historic observations as historic evidence, not as live visual verification.
 - Preserved **all detailed S01–S15 section decisions and refinements in E** and **the complete chronological change log in H** without removing superseded history.
 - No Git merge status, template integrity, schema acceptance, remote Shopify state or current CSS initialization was validated by this document edit.
+
+## Merge repair note — 2026-11-17 (documentation only)
+
+- Restored the seven orphan `PDP-01` entries from after the 2026-11-12 reconciliation note to the H change-log table, preserving their text and order.
+- Added an index row for the already-documented `PDP-01` in D and a corresponding historical/pending QA row in F; no change to the detailed PDP-01 section in E.
+- Retained all previously recorded historical planning, superseded decisions, and developer statements. This edit does not verify Git merge state, Shopify synchronization, or visual QA.
+
+### Merge repair follow-up — 2026-11-17
+
+- Reattached the two later `2026-11-17` records (product.json conflict recovery and PDP-01g / P09 wrapping) to the H change-log table. Their content was preserved verbatim; no section status or implementation claim was changed.
+- This is a documentation-only structural merge; it does not establish current Git, Shopify sync, or visual QA status.

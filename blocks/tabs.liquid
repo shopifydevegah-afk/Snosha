@@ -1,0 +1,540 @@
+{%- doc -%}
+  Snosha P10 (Dev3): accessible tabs. Each child `_tab` block owns its label and content blocks.
+  `assets/sn-tabs.js` builds the tab buttons inside the tablist and switches panels
+  (click, arrow keys, Home/End, theme editor block selection). Appearance comes from settings.
+{%- enddoc -%}
+
+{%- liquid
+  assign s = block.settings
+  assign active_end = s.active_gradient_end | default: s.active_gradient_start
+-%}
+
+<script src="{{ 'sn-tabs.js' | asset_url }}" type="module"></script>
+
+<sn-tabs
+  class="sn-tabs sn-tabs--{{ block.id }}{% render 'custom-class', value: s.custom_class %}"
+  style="
+    --sn-tabs-align: {{ s.alignment }};
+    --sn-tabs-gap: {{ s.tab_gap }}px;
+    --sn-tabs-gap-mobile: {{ s.tab_gap_mobile }}px;
+    --sn-tabs-panel-gap: {{ s.panel_gap }}px;
+    --sn-tabs-panel-gap-mobile: {{ s.panel_gap_mobile }}px;
+    --sn-tab-padding-block: {{ s.tab_padding_block }}px;
+    --sn-tab-padding-block-mobile: {{ s.tab_padding_block_mobile }}px;
+    --sn-tab-padding-inline: {{ s.tab_padding_inline }}px;
+    --sn-tab-padding-inline-mobile: {{ s.tab_padding_inline_mobile }}px;
+    --sn-tab-font-size: {{ s.tab_font_size }}px;
+    --sn-tab-font-size-mobile: {{ s.tab_font_size_mobile }}px;
+    --sn-tab-font-weight: {{ s.tab_font_weight }};
+    --sn-tab-radius: {{ s.tab_radius }}px;
+    --sn-tab-border-width: {{ s.tab_border_width }}px;
+    --sn-tab-background: {{ s.tab_background | default: 'transparent' }};
+    --sn-tab-color: {{ s.tab_text_color | default: 'currentColor' }};
+    --sn-tab-border-color: {{ s.tab_border_color | default: 'transparent' }};
+    --sn-tab-hover-border-color: {{ s.tab_hover_border_color | default: s.tab_border_color | default: 'currentColor' }};
+    --sn-tab-active-background: linear-gradient(to right, {{ s.active_gradient_start | default: 'transparent' }}, {{ active_end | default: 'transparent' }});
+    --sn-tab-active-color: {{ s.active_text_color | default: 'currentColor' }};
+    --sn-tab-active-border-color: {{ s.active_border_color | default: 'transparent' }};
+    --sn-tab-active-shadow: {% if s.active_shadow_color != blank %}0 8px 18px {{ s.active_shadow_color }}{% else %}none{% endif %};
+    --sn-panel-background: {{ s.panel_background | default: 'transparent' }};
+    --sn-panel-border-width: {{ s.panel_border_width }}px;
+    --sn-panel-border-color: {{ s.panel_border_color | default: 'transparent' }};
+    --sn-panel-radius: {{ s.panel_radius }}px;
+    --sn-panel-shadow: {% if s.panel_shadow_color != blank %}0 8px 18px {{ s.panel_shadow_color }}{% else %}none{% endif %};
+    --sn-panel-padding-block-start: {{ s.panel_padding_top }}px;
+    --sn-panel-padding-block-end: {{ s.panel_padding_bottom }}px;
+    --sn-panel-padding-inline: {{ s.panel_padding_inline }}px;
+    --sn-panel-padding-inline-mobile: {{ s.panel_padding_inline_mobile }}px;
+  "
+  {{ block.shopify_attributes }}
+>
+  <div
+    class="sn-tabs__list"
+    role="tablist"
+    {% if s.accessible_label != blank %}
+      aria-label="{{ s.accessible_label | escape }}"
+    {% endif %}
+  ></div>
+  <div class="sn-tabs__panels">
+    {% content_for 'blocks' %}
+  </div>
+</sn-tabs>
+
+{% stylesheet %}
+  .sn-tabs {
+    display: flex;
+    flex-direction: column;
+    gap: var(--sn-tabs-panel-gap);
+    inline-size: 100%;
+    min-inline-size: 0;
+  }
+
+  .sn-tabs__list {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: var(--sn-tabs-align);
+    gap: var(--sn-tabs-gap);
+  }
+
+  /* Before the script builds the buttons (or with a single empty list) take no space. */
+  .sn-tabs__list:empty {
+    display: none;
+  }
+
+  .sn-tabs__tab {
+    appearance: none;
+    margin: 0;
+    padding: var(--sn-tab-padding-block) var(--sn-tab-padding-inline);
+    border: var(--sn-tab-border-width) solid var(--sn-tab-border-color);
+    border-radius: var(--sn-tab-radius);
+    background: var(--sn-tab-background);
+    color: var(--sn-tab-color);
+    font-family: inherit;
+    font-size: var(--sn-tab-font-size);
+    font-weight: var(--sn-tab-font-weight);
+    line-height: normal;
+    white-space: nowrap;
+    cursor: pointer;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease, color 0.2s ease;
+  }
+
+  .sn-tabs__tab:hover,
+  .sn-tabs__tab:focus-visible {
+    border-color: var(--sn-tab-hover-border-color);
+  }
+
+  .sn-tabs__tab:focus-visible {
+    outline: 2px solid var(--sn-tab-hover-border-color);
+    outline-offset: 2px;
+  }
+
+  .sn-tabs__tab[aria-selected='true'] {
+    border-color: var(--sn-tab-active-border-color);
+    background: var(--sn-tab-active-background);
+    color: var(--sn-tab-active-color);
+    box-shadow: var(--sn-tab-active-shadow);
+    cursor: default;
+  }
+
+  .sn-tabs__panel {
+    padding: var(--sn-panel-padding-block-start) var(--sn-panel-padding-inline) var(--sn-panel-padding-block-end);
+    border: var(--sn-panel-border-width) solid var(--sn-panel-border-color);
+    border-radius: var(--sn-panel-radius);
+    background: var(--sn-panel-background);
+    box-shadow: var(--sn-panel-shadow);
+    min-inline-size: 0;
+  }
+
+  .sn-tabs__panel[hidden] {
+    display: none;
+  }
+
+  /* Theme editor only: an empty tab keeps a visible drop area */
+  .sn-tabs__panel--empty {
+    min-block-size: 96px;
+    outline: 1px dashed var(--sn-panel-border-color);
+    outline-offset: -8px;
+  }
+
+  /* Until the script runs, show only the tab marked "Open by default", else the first one. */
+  sn-tabs:not(:defined) .sn-tabs__panels:not(:has(> [data-open])) > .sn-tabs__panel:first-child {
+    display: block;
+  }
+
+  @media screen and (max-width: 749px) {
+    .sn-tabs {
+      gap: var(--sn-tabs-panel-gap-mobile);
+    }
+
+    .sn-tabs__list {
+      gap: var(--sn-tabs-gap-mobile);
+    }
+
+    .sn-tabs__tab {
+      padding: var(--sn-tab-padding-block-mobile) var(--sn-tab-padding-inline-mobile);
+      font-size: var(--sn-tab-font-size-mobile);
+    }
+
+    .sn-tabs__panel {
+      padding-inline: var(--sn-panel-padding-inline-mobile);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .sn-tabs__tab {
+      transition: none;
+    }
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "Tabs",
+  "tag": null,
+  "blocks": [
+    {
+      "type": "_tab"
+    }
+  ],
+  "settings": [
+    {
+      "type": "paragraph",
+      "content": "Add one Tab block per tab. Each tab has its own label and content blocks; drag tabs to reorder them."
+    },
+    {
+      "type": "text",
+      "id": "accessible_label",
+      "label": "Tabs name for screen readers",
+      "info": "Optional, e.g. the section heading."
+    },
+    {
+      "type": "header",
+      "content": "Tab buttons"
+    },
+    {
+      "type": "select",
+      "id": "alignment",
+      "label": "Alignment",
+      "options": [
+        { "value": "flex-start", "label": "Start (right in Arabic)" },
+        { "value": "center", "label": "Center" },
+        { "value": "flex-end", "label": "End (left in Arabic)" }
+      ],
+      "default": "center"
+    },
+    {
+      "type": "range",
+      "id": "tab_gap",
+      "label": "Gap between tabs",
+      "info": "Tabs wrap onto a new line when they do not fit.",
+      "min": 0,
+      "max": 40,
+      "step": 1,
+      "unit": "px",
+      "default": 10
+    },
+    {
+      "type": "range",
+      "id": "tab_gap_mobile",
+      "label": "Mobile gap between tabs",
+      "min": 0,
+      "max": 40,
+      "step": 1,
+      "unit": "px",
+      "default": 6
+    },
+    {
+      "type": "range",
+      "id": "tab_padding_inline",
+      "label": "Side padding",
+      "min": 0,
+      "max": 60,
+      "step": 1,
+      "unit": "px",
+      "default": 24
+    },
+    {
+      "type": "range",
+      "id": "tab_padding_inline_mobile",
+      "label": "Mobile side padding",
+      "min": 0,
+      "max": 60,
+      "step": 1,
+      "unit": "px",
+      "default": 10
+    },
+    {
+      "type": "range",
+      "id": "tab_padding_block",
+      "label": "Top and bottom padding",
+      "min": 0,
+      "max": 40,
+      "step": 1,
+      "unit": "px",
+      "default": 10
+    },
+    {
+      "type": "range",
+      "id": "tab_padding_block_mobile",
+      "label": "Mobile top and bottom padding",
+      "min": 0,
+      "max": 40,
+      "step": 1,
+      "unit": "px",
+      "default": 6
+    },
+    {
+      "type": "range",
+      "id": "tab_font_size",
+      "label": "Text size",
+      "min": 10,
+      "max": 30,
+      "step": 0.5,
+      "unit": "px",
+      "default": 16
+    },
+    {
+      "type": "range",
+      "id": "tab_font_size_mobile",
+      "label": "Mobile text size",
+      "min": 8,
+      "max": 30,
+      "step": 0.5,
+      "unit": "px",
+      "default": 11.5
+    },
+    {
+      "type": "select",
+      "id": "tab_font_weight",
+      "label": "Text weight",
+      "options": [
+        { "value": "400", "label": "Regular" },
+        { "value": "500", "label": "Medium" },
+        { "value": "600", "label": "Semibold" },
+        { "value": "700", "label": "Bold" }
+      ],
+      "default": "600"
+    },
+    {
+      "type": "range",
+      "id": "tab_radius",
+      "label": "Corner radius",
+      "info": "Use the maximum for a pill.",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 100
+    },
+    {
+      "type": "range",
+      "id": "tab_border_width",
+      "label": "Border thickness",
+      "min": 0,
+      "max": 4,
+      "step": 1,
+      "unit": "px",
+      "default": 1
+    },
+    {
+      "type": "header",
+      "content": "Inactive tab"
+    },
+    {
+      "type": "color",
+      "id": "tab_background",
+      "label": "Background",
+      "alpha": true,
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "tab_text_color",
+      "label": "Text",
+      "default": "#176bb0"
+    },
+    {
+      "type": "color",
+      "id": "tab_border_color",
+      "label": "Border",
+      "alpha": true,
+      "default": "#dcf2fb"
+    },
+    {
+      "type": "color",
+      "id": "tab_hover_border_color",
+      "label": "Border on hover and keyboard focus",
+      "info": "Empty = same as border. Also used for the focus outline.",
+      "alpha": true,
+      "default": "#63cdff"
+    },
+    {
+      "type": "header",
+      "content": "Active tab"
+    },
+    {
+      "type": "color",
+      "id": "active_gradient_start",
+      "label": "Background (left)",
+      "alpha": true,
+      "default": "#63cdff"
+    },
+    {
+      "type": "color",
+      "id": "active_gradient_end",
+      "label": "Background (right)",
+      "info": "Empty = same as left (solid color).",
+      "alpha": true,
+      "default": "#0f64a8"
+    },
+    {
+      "type": "color",
+      "id": "active_text_color",
+      "label": "Text",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "active_border_color",
+      "label": "Border",
+      "info": "Empty = no visible border.",
+      "alpha": true
+    },
+    {
+      "type": "color",
+      "id": "active_shadow_color",
+      "label": "Shadow color",
+      "info": "Empty = no shadow. Lower the opacity for a soft shadow.",
+      "alpha": true,
+      "default": "#0f64a84d"
+    },
+    {
+      "type": "header",
+      "content": "Content panel"
+    },
+    {
+      "type": "range",
+      "id": "panel_gap",
+      "label": "Gap above panel",
+      "min": 0,
+      "max": 60,
+      "step": 1,
+      "unit": "px",
+      "default": 22
+    },
+    {
+      "type": "range",
+      "id": "panel_gap_mobile",
+      "label": "Mobile gap above panel",
+      "min": 0,
+      "max": 60,
+      "step": 1,
+      "unit": "px",
+      "default": 16
+    },
+    {
+      "type": "color",
+      "id": "panel_background",
+      "label": "Background",
+      "alpha": true,
+      "default": "#ffffff"
+    },
+    {
+      "type": "range",
+      "id": "panel_border_width",
+      "label": "Border thickness",
+      "min": 0,
+      "max": 4,
+      "step": 1,
+      "unit": "px",
+      "default": 1
+    },
+    {
+      "type": "color",
+      "id": "panel_border_color",
+      "label": "Border",
+      "alpha": true,
+      "default": "#dcf2fb"
+    },
+    {
+      "type": "range",
+      "id": "panel_radius",
+      "label": "Corner radius",
+      "min": 0,
+      "max": 60,
+      "step": 1,
+      "unit": "px",
+      "default": 16
+    },
+    {
+      "type": "color",
+      "id": "panel_shadow_color",
+      "label": "Shadow color",
+      "info": "Empty = no shadow.",
+      "alpha": true,
+      "default": "#0d40800f"
+    },
+    {
+      "type": "range",
+      "id": "panel_padding_top",
+      "label": "Top padding",
+      "min": 0,
+      "max": 80,
+      "step": 1,
+      "unit": "px",
+      "default": 24
+    },
+    {
+      "type": "range",
+      "id": "panel_padding_bottom",
+      "label": "Bottom padding",
+      "min": 0,
+      "max": 80,
+      "step": 1,
+      "unit": "px",
+      "default": 26
+    },
+    {
+      "type": "range",
+      "id": "panel_padding_inline",
+      "label": "Side padding",
+      "min": 0,
+      "max": 80,
+      "step": 1,
+      "unit": "px",
+      "default": 28
+    },
+    {
+      "type": "range",
+      "id": "panel_padding_inline_mobile",
+      "label": "Mobile side padding",
+      "min": 0,
+      "max": 80,
+      "step": 1,
+      "unit": "px",
+      "default": 14
+    },
+    {
+      "type": "header",
+      "content": "Advanced"
+    },
+    {
+      "type": "text",
+      "id": "custom_class",
+      "label": "Custom CSS class",
+      "info": "Lowercase letters, numbers and hyphens, starting with a letter. Separate multiple classes with spaces."
+    }
+  ],
+  "presets": [
+    {
+      "name": "Tabs",
+      "category": "t:categories.layout",
+      "blocks": {
+        "tab_1": {
+          "type": "_tab",
+          "settings": { "label": "Tab 1", "open_by_default": true },
+          "blocks": {
+            "text_1": {
+              "type": "text",
+              "settings": { "text": "<p>Tab content</p>", "width": "100%" }
+            }
+          },
+          "block_order": ["text_1"]
+        },
+        "tab_2": {
+          "type": "_tab",
+          "settings": { "label": "Tab 2" },
+          "blocks": {
+            "text_1": {
+              "type": "text",
+              "settings": { "text": "<p>Tab content</p>", "width": "100%" }
+            }
+          },
+          "block_order": ["text_1"]
+        }
+      },
+      "block_order": ["tab_1", "tab_2"]
+    }
+  ]
+}
+{% endschema %}
