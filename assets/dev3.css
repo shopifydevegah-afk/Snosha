@@ -557,3 +557,133 @@
     }
   }
 }
+
+/* ==========================================================================
+   sn-product-how-to-video — PDP "How To Use Video" (owner: Dev3). Native `section`
+   (Horizon "Video" preset structure) on templates/product.json.
+   Figma desktop 190:10510, mobile 190:11221.
+   Video size, ratio, radius, overlay and play button are video-block settings;
+   heading size, weight, color and mobile size/line height are text-block settings.
+   This file only adds mobile section spacing and applies the heading's exact
+   weight / line height (text-block "Weight" and "Line height (exact)").
+   ========================================================================== */
+.sn-product-how-to-video {
+  /* Figma mobile: 20px side padding */
+  &.section {
+    @media screen and (max-width: 749px) {
+      --page-margin: 20px;
+    }
+  }
+
+  /* Figma mobile: padding 40 / 40, heading line box 52, heading → video gap 14 (desktop values are section settings).
+     The text block's mobile line height stops at 50, so 1px goes above the heading and 1px into the gap:
+     heading text and video land on the Figma positions (66 / 106). */
+  @media screen and (max-width: 749px) {
+    .section-content-wrapper {
+      row-gap: 15px;
+      padding-block: calc(41px + var(--section-top-offset, 0px)) 40px;
+    }
+  }
+
+  /* Heading: exact weight and line height from the text block's settings */
+  .text-block.custom-typography {
+    &,
+    > * {
+      margin: 0;
+      font-weight: var(--sn-font-weight, var(--font-weight));
+    }
+
+    @media screen and (min-width: 750px) {
+      &,
+      > * {
+        line-height: var(--sn-line-height, var(--line-height));
+      }
+    }
+  }
+}
+
+/* ==========================================================================
+   sn-product-how-to-steps — PDP "كيفية الاستخدام" steps (owner: Dev3). Native `section`
+   on templates/product.json: heading `text` + card `group` → `numbered-list` (one `text`
+   per step, auto-numbered) + note `group` (`icon` + `text`).
+   Figma desktop 190:10750, mobile 190:11464.
+   Card, note, badge, colors and sizes are block settings. This file only applies the
+   section's Mobile padding / Mobile gap settings and the text blocks' exact weight and
+   desktop line height ("Weight" / "Exact line height").
+   Also used by sn-product-storage-care — PDP "شروط الاستخدام والتخزين" (P10, Figma desktop
+   190:10753, mobile 190:11511): heading `text` + `tabs` → `_tab` → `numbered-list` (dots).
+   Tab pills and panel card are `tabs` block settings; same section/text rules as above.
+   ========================================================================== */
+.sn-product-how-to-steps,
+.sn-product-storage-care {
+  /* Phones: section "Mobile top/bottom padding", "Mobile side padding" (added to the 16px page
+     margin → Figma 20px) and "Mobile gap". Heading line box is 52 in Figma but the text block's
+     mobile line height stops at 50, so top padding is 41 and gap 15 in the settings. */
+  @media screen and (max-width: 749px) {
+    .section-content-wrapper {
+      row-gap: var(--sn-gap-mobile, var(--gap));
+      padding-block: calc(var(--sn-padding-block-start-mobile, var(--padding-block-start)) + var(--section-top-offset, 0px))
+        var(--sn-padding-block-end-mobile, var(--padding-block-end));
+      padding-inline: var(--sn-padding-inline-mobile, var(--padding-inline-start));
+    }
+  }
+
+  /* Heading, steps and note: exact weight and line height from each text block's settings */
+  .text-block.custom-typography {
+    &,
+    > * {
+      margin: 0;
+      font-weight: var(--sn-font-weight, var(--font-weight));
+    }
+
+    @media screen and (min-width: 750px) {
+      &,
+      > * {
+        line-height: var(--sn-line-height, var(--line-height));
+      }
+    }
+  }
+}
+
+/* ==========================================================================
+   sn-product-related — PDP "منتجات ذات صلة" (P06, owner: Dev3). Native
+   `product-recommendations` (related intent) on templates/product.json, with the
+   classes "sn-home-bestsellers sn-product-related": cards, quick add, badges, rating,
+   price row, CTA and progress colors come from the S05 rules above (same `_product-card`
+   block tree). Figma desktop 190:10816, mobile 190:11593.
+   Card width, arrows, gaps and paddings are section settings; this modifier only sets
+   the Figma mobile section spacing and the heading text block.
+   ========================================================================== */
+.sn-home-bestsellers.sn-product-related {
+  /* Figma mobile: padding 40 / 40, gaps 22 (S05 adds the 11px carousel padding) */
+  --sn-bs-m-pad-top: 40px;
+  --sn-bs-m-pad-bottom: 40px;
+  --sn-bs-m-gap: 22px;
+
+  /* Heading: native text block. Size, color, alignment and mobile size/line height are
+     text-block settings; exact weight and desktop line height come from its settings too. */
+  .section-resource-list__content > .text-block.custom-typography {
+    &,
+    > * {
+      margin: 0;
+      font-weight: var(--sn-font-weight, var(--font-weight));
+    }
+
+    @media screen and (min-width: 750px) {
+      &,
+      > * {
+        line-height: var(--sn-line-height, var(--line-height));
+      }
+    }
+
+    /* Figma mobile title row: 44px (38px line + 3px above/below), Cairo Bold */
+    @media screen and (max-width: 749px) {
+      padding-block: 3px;
+
+      &,
+      > * {
+        font-weight: 700;
+      }
+    }
+  }
+}

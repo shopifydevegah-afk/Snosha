@@ -41,6 +41,18 @@
     endif
   endif
 
+  # Snosha P09 (Dev3): opt-in phone padding and box shadow. Off by default, so other groups are unchanged.
+  if block.settings.padding_mobile_custom
+    assign group_class = group_class | append: ' sn-group--pad-mobile'
+    assign sn_group_style = sn_group_style | append: ' --sn-group-pad-top-mobile: ' | append: block.settings['padding-block-start-mobile'] | append: 'px;'
+    assign sn_group_style = sn_group_style | append: ' --sn-group-pad-bottom-mobile: ' | append: block.settings['padding-block-end-mobile'] | append: 'px;'
+    assign sn_group_style = sn_group_style | append: ' --sn-group-pad-inline-mobile: ' | append: block.settings['padding-inline-mobile'] | append: 'px;'
+  endif
+  if block.settings.shadow_color != blank
+    assign group_class = group_class | append: ' sn-group--shadow'
+    assign sn_group_style = sn_group_style | append: ' --sn-group-shadow: 0 ' | append: block.settings.shadow_offset_y | append: 'px ' | append: block.settings.shadow_blur | append: 'px ' | append: block.settings.shadow_color | append: ';'
+  endif
+
   assign group_class = group_class | strip
 -%}
 
@@ -55,6 +67,19 @@
 %}
 
 {% stylesheet %}
+  /* Project extension (Snosha P09): optional box shadow and phone padding. The classes are only added
+     when the group's "Shadow color" or "Custom mobile padding" setting is used. */
+  .group-block.sn-group--shadow {
+    box-shadow: var(--sn-group-shadow);
+  }
+
+  @media screen and (max-width: 749px) {
+    .group-block.sn-group--pad-mobile {
+      padding-block: var(--sn-group-pad-top-mobile) var(--sn-group-pad-bottom-mobile);
+      padding-inline: var(--sn-group-pad-inline-mobile);
+    }
+  }
+
   /* Project extension (Snosha S03): optional mobile content position. Inline layout variables win over
      stylesheet variables, so the flex properties are set directly. Direct children only. */
   @media screen and (max-width: 749px) {
@@ -638,6 +663,83 @@
         { "value": "end", "label": "End (left in Arabic)" }
       ],
       "default": "same"
+    },
+    {
+      "type": "header",
+      "content": "Mobile padding"
+    },
+    {
+      "type": "checkbox",
+      "id": "padding_mobile_custom",
+      "label": "Custom mobile padding",
+      "info": "Phones only (≤749px). Off = the padding above, scaled down.",
+      "default": false
+    },
+    {
+      "type": "range",
+      "id": "padding-block-start-mobile",
+      "label": "Mobile top padding",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 0,
+      "visible_if": "{{ block.settings.padding_mobile_custom }}"
+    },
+    {
+      "type": "range",
+      "id": "padding-block-end-mobile",
+      "label": "Mobile bottom padding",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 0,
+      "visible_if": "{{ block.settings.padding_mobile_custom }}"
+    },
+    {
+      "type": "range",
+      "id": "padding-inline-mobile",
+      "label": "Mobile side padding",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 0,
+      "visible_if": "{{ block.settings.padding_mobile_custom }}"
+    },
+    {
+      "type": "header",
+      "content": "Shadow"
+    },
+    {
+      "type": "color",
+      "id": "shadow_color",
+      "label": "Shadow color",
+      "info": "Empty = no shadow. Lower the color's opacity for a soft shadow.",
+      "alpha": true
+    },
+    {
+      "type": "range",
+      "id": "shadow_blur",
+      "label": "Shadow blur",
+      "min": 0,
+      "max": 60,
+      "step": 1,
+      "unit": "px",
+      "default": 18,
+      "visible_if": "{{ block.settings.shadow_color != blank }}"
+    },
+    {
+      "type": "range",
+      "id": "shadow_offset_y",
+      "label": "Shadow vertical offset",
+      "min": -30,
+      "max": 30,
+      "step": 1,
+      "unit": "px",
+      "default": 8,
+      "visible_if": "{{ block.settings.shadow_color != blank }}"
     },
     {
       "type": "header",
