@@ -49,7 +49,7 @@ function setup(carousel) {
 
       const buttons = Array.from(arrows());
       const forward = buttons.indexOf(/** @type {HTMLElement} */ (arrow)) === buttons.length - 1;
-      const card = row.querySelector('.jdgm-media-card');
+      const card = row.querySelector('.jdgm-media-card:not([class*="jdgm-clone"], [data-clone-type])');
       const gap = parseFloat(getComputedStyle(row).columnGap) || 0;
       const step = card ? card.getBoundingClientRect().width + gap : wrapper.clientWidth;
       const sign = (forward ? 1 : -1) * (isRtl() ? -1 : 1);
@@ -58,6 +58,18 @@ function setup(carousel) {
     },
     true
   );
+
+  // Judge.me's own swipe handler (video_carousel.js, on .jdgm-content) calls preventDefault() on horizontal
+  // touchmove, which cancels native scrolling, and its focusin handler resets the row to scrollLeft = 0.
+  // Stop those events in the capture phase at the carousel so they never reach its handlers; no preventDefault
+  // here, so the browser still scrolls / focuses normally.
+  const content = carousel.querySelector('.jdgm-content');
+  const shield = (/** @type {Event} */ event) => {
+    if (content && event.target instanceof Node && content.contains(event.target)) event.stopPropagation();
+  };
+  for (const type of ['touchstart', 'touchmove', 'touchend', 'touchcancel', 'focusin', 'focusout']) {
+    carousel.addEventListener(type, shield, { capture: true, passive: true });
+  }
 
   wrapper.addEventListener('scroll', update, { passive: true });
   new ResizeObserver(update).observe(wrapper);

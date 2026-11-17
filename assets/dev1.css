@@ -4384,6 +4384,11 @@
       transition: none;
     }
 
+    /* Judge.me clones cards at both ends for its infinite loop; in a native scroller they would be duplicates */
+    .jdgm-media-card:is([class*="jdgm-clone"], [data-clone-type]) {
+      display: none;
+    }
+
     .jdgm-media-card {
       --clamp: 3;
       scroll-snap-align: start;
