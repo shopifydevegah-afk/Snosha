@@ -50,6 +50,9 @@
     if block_settings.score_color != blank
       echo '--sn-score-color: ' | append: block_settings.score_color | append: ';'
     endif
+    if block_settings.score_weight != blank
+      echo '--sn-score-weight: ' | append: block_settings.score_weight | append: ';'
+    endif
     if block_settings.count_color != blank
       echo '--sn-count-color: ' | append: block_settings.count_color | append: ';'
     endif
@@ -109,18 +112,27 @@
         </symbol>
       </defs>
     </svg>
-    {%- if block_settings.show_score -%}
-      {%- comment -%} Snosha (opt-in): average score from the same rating metafield, e.g. "4.8 / 5" (LTR digits). {%- endcomment -%}
-      <span class="rating-score {{ block_settings.type_preset }}" dir="ltr" aria-hidden="true">
-        {{- rating | round: 1 }} / {{ scale_max -}}
-      </span>
-    {%- endif -%}
+    {%- capture sn_score_markup -%}
+      {%- if block_settings.show_score -%}
+        {%- comment -%} Snosha (opt-in): average score from the same rating metafield, "4.8 / 5" or "4.8" (LTR digits). {%- endcomment -%}
+        <span class="rating-score {{ block_settings.type_preset }}" dir="ltr" aria-hidden="true">
+          {{- rating | round: 1 -}}
+          {%- unless block_settings.score_format == 'value' %} / {{ scale_max }}{% endunless -%}
+        </span>
+      {%- endif -%}
+    {%- endcapture -%}
+    {%- unless block_settings.score_position == 'after' -%}{{ sn_score_markup }}{%- endunless -%}
     <div
-      class="rating"
-      style="--star-size: calc(var(--font-{{ block_settings.type_preset }}--size) * 1.1);"
+      class="rating{% if block_settings.star_icons %} rating--sn-icons{% endif %}"
+      style="--star-size: calc(var(--font-{{ block_settings.type_preset }}--size) * 1.1);{% if block_settings.star_icons %} --sn-star-filled: url('{{ 'icon-star-filled.svg' | asset_url }}'); --sn-star-empty: url('{{ 'icon-star-empty.svg' | asset_url }}');{% endif %}"
       aria-label="{{ 'accessibility.rating' | t: rating: rating }}"
     >
-      {% if block_settings.stars_style == 'single' %}
+      {% if block_settings.star_icons %}
+        {%- comment -%} Snosha (opt-in "Filled / empty star icons"): whole stars; a half rating (.3–.7) counts as filled {%- endcomment -%}
+        {%- for star in (1..star_count_rating) -%}
+          <span class="stars sn-star sn-star--{% if star <= svg_filled_stars %}filled{% else %}empty{% endif %}" aria-hidden="true"></span>
+        {%- endfor -%}
+      {% elsif block_settings.stars_style == 'single' %}
         <svg
           class="stars {% if svg_filled_stars > 0 %}filled-star{% endif %}"
           viewBox="0 0 32 32"
@@ -145,6 +157,7 @@
         {%- endfor -%}
       {% endif %}
     </div>
+    {%- if block_settings.score_position == 'after' -%}{{ sn_score_markup }}{%- endif -%}
 
     {%- if block_settings.show_number or block_settings.stars_style == 'single' -%}
       <p class="rating-count {{ block_settings.type_preset }}">
@@ -168,6 +181,26 @@
     {%- endif -%}
     {%- if block_settings.label != blank -%}
       {%- comment -%} Opt-in label; only reachable when real rating data exists. {%- endcomment -%}
+      <span class="rating-label {{ block_settings.type_preset }}">{{ block_settings.label | escape }}</span>
+    {%- endif -%}
+  </div>
+{%- elsif block_settings.star_icons and block_settings.empty_stars -%}
+  {%- comment -%} Snosha (opt-in): no reviews yet → five empty stars (+ label), never fake filled stars {%- endcomment -%}
+  <div
+    class="rating-wrapper rating-wrapper--no-reviews rating-wrapper-{{ block.id }} justify-{{ block_settings.alignment }} size-style"
+    style="{% render 'size-style', settings: block_settings %}{{ sn_rating_vars }}"
+    {{ block.shopify_attributes }}
+  >
+    <div
+      class="rating rating--sn-icons"
+      style="--star-size: calc(var(--font-{{ block_settings.type_preset }}--size) * 1.1); --sn-star-empty: url('{{ 'icon-star-empty.svg' | asset_url }}');"
+      aria-label="{{ 'accessibility.rating' | t: rating: 0 }}"
+    >
+      {%- for star in (1..5) -%}
+        <span class="stars sn-star sn-star--empty" aria-hidden="true"></span>
+      {%- endfor -%}
+    </div>
+    {%- if block_settings.label != blank -%}
       <span class="rating-label {{ block_settings.type_preset }}">{{ block_settings.label | escape }}</span>
     {%- endif -%}
   </div>
@@ -229,6 +262,19 @@
     fill: var(--star-fill-color);
   }
 
+  /* Snosha (opt-in "Filled / empty star icons"): SVG icons as masks, coloured with the stars colour */
+  .rating-wrapper .sn-star {
+    display: block;
+    flex: none;
+    aspect-ratio: 1;
+    background-color: var(--star-fill-color);
+    mask: var(--sn-star-filled) center / contain no-repeat;
+  }
+
+  .rating-wrapper .sn-star--empty {
+    mask-image: var(--sn-star-empty);
+  }
+
   /* Snosha (opt-in "Rating summary" settings). Every fallback is the native value. */
   .rating-wrapper .stars {
     height: var(--sn-star-size, var(--star-size));
@@ -244,6 +290,10 @@
     unicode-bidi: isolate;
     color: var(--sn-score-color, var(--color));
     font-size: var(--sn-score-size, var(--font-size, inherit));
+  }
+
+  .rating-wrapper[style*='--sn-score-weight'] .rating-score {
+    font-weight: var(--sn-score-weight);
   }
 
   @media screen and (max-width: 749px) {
@@ -289,6 +339,21 @@
         }
       ],
       "default": "shaded"
+    },
+    {
+      "type": "checkbox",
+      "id": "star_icons",
+      "label": "Filled / empty star icons",
+      "info": "Whole filled and empty star icons in the text colour (a half rating counts as filled), instead of the default stars.",
+      "default": false
+    },
+    {
+      "type": "checkbox",
+      "id": "empty_stars",
+      "label": "Show empty stars when there are no reviews",
+      "info": "Five empty stars (and the label) when the product has no rating yet. Otherwise nothing is shown.",
+      "default": false,
+      "visible_if": "{{ block.settings.star_icons }}"
     },
     {
       "type": "checkbox",
@@ -373,6 +438,70 @@
       "id": "score_color",
       "label": "Score color",
       "placeholder": "t:settings.default",
+      "visible_if": "{{ block.settings.show_score }}"
+    },
+    {
+      "type": "select",
+      "id": "score_format",
+      "label": "Score format",
+      "options": [
+        {
+          "value": "with_max",
+          "label": "4.8 / 5"
+        },
+        {
+          "value": "value",
+          "label": "4.8"
+        }
+      ],
+      "default": "with_max",
+      "visible_if": "{{ block.settings.show_score }}"
+    },
+    {
+      "type": "select",
+      "id": "score_position",
+      "label": "Score position",
+      "info": "Before = first in reading order (right in Arabic); After = after the stars (left in Arabic).",
+      "options": [
+        {
+          "value": "before",
+          "label": "Before the stars"
+        },
+        {
+          "value": "after",
+          "label": "After the stars"
+        }
+      ],
+      "default": "before",
+      "visible_if": "{{ block.settings.show_score }}"
+    },
+    {
+      "type": "select",
+      "id": "score_weight",
+      "label": "Score weight",
+      "options": [
+        {
+          "value": "",
+          "label": "Default"
+        },
+        {
+          "value": "400",
+          "label": "400"
+        },
+        {
+          "value": "500",
+          "label": "500"
+        },
+        {
+          "value": "600",
+          "label": "600"
+        },
+        {
+          "value": "700",
+          "label": "700"
+        }
+      ],
+      "default": "",
       "visible_if": "{{ block.settings.show_score }}"
     },
     {

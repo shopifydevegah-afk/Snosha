@@ -12,7 +12,7 @@
     {% if block_settings.sticky_details_desktop %} sticky-content--desktop{% endif %}
     {% if block_settings.height == 'fill' -%} full-height--desktop{% endif -%}
   "
-  style="--details-position: {{ block_settings.details_position }};"
+  style="--details-position: {{ block_settings.details_position }};{% if block_settings.padding_block_start_mobile > 0 %} --sn-details-space-mobile: {{ block_settings.padding_block_start_mobile }}px;{% endif %}"
   data-testid="product-information-details"
   {% if settings.transition_to_main_product %}
     data-view-transition-type="product-details"
@@ -43,6 +43,13 @@
   @media screen and (max-width: 749px) {
     .product-information.section--page-width .product-details > .group-block {
       padding-inline: 0;
+    }
+  }
+
+  /* Snosha (opt-in "Space above details — Mobile"): gap under the gallery on phones; unset = native */
+  @media screen and (max-width: 749px) {
+    .product-details {
+      padding-block-start: var(--sn-details-space-mobile, 0px);
     }
   }
 
@@ -440,6 +447,17 @@
       "label": "t:settings.right",
       "min": 0,
       "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "padding_block_start_mobile",
+      "label": "Space above details — Mobile",
+      "info": "Phones (below 750px): space between the product images and the details. 0 = native (no space).",
+      "min": 0,
+      "max": 60,
       "step": 1,
       "unit": "px",
       "default": 0
