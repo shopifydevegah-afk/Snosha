@@ -1,11 +1,107 @@
+{%- comment -%}
+  Project extension (Snosha product page, opt-in):
+  1. Product badge over the gallery stage, e.g. «الأكثر مبيعًا». Same source logic and setting IDs as the product
+     card gallery's badge: a product metafield (default custom.product_badge, so it appears only on products that
+     have it) or a fixed text. Source "None" (default) outputs nothing. It is rendered first inside the gallery
+     (snippet param `overlay`), so it stays on the stage when the gallery is sticky.
+  2. "Styled stage" settings, passed as CSS custom properties on the gallery (snippet param `extra_style`) and read
+     by the page's scoped CSS. Off (default) outputs nothing = native gallery.
+{%- endcomment -%}
+{%- liquid
+  assign bs = block.settings
+  assign sn_badge_text = ''
+  assign sn_badge_product = closest.product
+  if sn_badge_product != blank and bs.custom_badge_source != blank and bs.custom_badge_source != 'none'
+    if bs.custom_badge_source == 'metafield'
+      assign sn_badge_parts = bs.custom_badge_metafield | strip | split: '.'
+      if sn_badge_parts.size == 2
+        assign sn_badge_namespace = sn_badge_parts.first
+        assign sn_badge_key = sn_badge_parts.last
+        assign sn_badge_text = sn_badge_product.metafields[sn_badge_namespace][sn_badge_key].value | append: ''
+      endif
+    else
+      assign sn_badge_text = bs.custom_badge_text
+    endif
+    assign sn_badge_text = sn_badge_text | strip_html | strip
+  endif
+
+  assign sn_overlay = ''
+  if sn_badge_text != blank
+    capture sn_overlay
+      echo '<span class="product-media-gallery__badge">'
+      echo sn_badge_text | escape
+      echo '</span>'
+    endcapture
+  endif
+
+  assign sn_style = ''
+  if bs.stage_style
+    capture sn_style
+      echo ' --sn-stage-ratio: ' | append: bs.stage_ratio | append: ';'
+      echo ' --sn-stage-ratio-mobile: ' | append: bs.stage_ratio_mobile | append: ';'
+      if bs.stage_background != blank
+        echo ' --sn-stage-bg: ' | append: bs.stage_background | append: ';'
+      endif
+      echo ' --sn-stage-border-width: ' | append: bs.stage_border_width | append: 'px;'
+      if bs.stage_border_color != blank
+        echo ' --sn-stage-border-color: ' | append: bs.stage_border_color | append: ';'
+      endif
+      echo ' --sn-stage-inset-mobile: ' | append: bs.stage_inset_mobile | append: 'px;'
+      echo ' --sn-image-fit: ' | append: bs.image_fit | append: ';'
+      assign sn_scale = bs.image_scale | divided_by: 100.0
+      echo ' --sn-image-scale: ' | append: sn_scale | append: ';'
+      echo ' --sn-image-x: ' | append: bs.image_position_x | append: '%;'
+      echo ' --sn-image-y: ' | append: bs.image_position_y | append: '%;'
+      if bs.image_blend
+        echo ' --sn-image-blend: multiply;'
+      endif
+      if bs.badge_background != blank
+        echo ' --sn-badge-bg: ' | append: bs.badge_background | append: ';'
+      endif
+      if bs.badge_text_color != blank
+        echo ' --sn-badge-color: ' | append: bs.badge_text_color | append: ';'
+      endif
+      echo ' --sn-badge-top: ' | append: bs.badge_offset_top | append: 'px;'
+      echo ' --sn-badge-side: ' | append: bs.badge_offset_side | append: 'px;'
+      echo ' --sn-badge-top-mobile: ' | append: bs.badge_offset_top_mobile | append: 'px;'
+      echo ' --sn-badge-side-mobile: ' | append: bs.badge_offset_side_mobile | append: 'px;'
+      echo ' --sn-zoom-size: ' | append: bs.zoom_button_size | append: 'px;'
+      echo ' --sn-zoom-icon-size: ' | append: bs.zoom_icon_size | append: 'px;'
+      echo ' --sn-arrow-size: ' | append: bs.arrow_size | append: 'px;'
+      echo ' --sn-thumb-size: ' | append: bs.thumb_size | append: 'px;'
+      echo ' --sn-thumb-size-mobile: ' | append: bs.thumb_size_mobile | append: 'px;'
+      echo ' --sn-thumb-gap: ' | append: bs.thumb_gap | append: 'px;'
+      echo ' --sn-thumb-gap-mobile: ' | append: bs.thumb_gap_mobile | append: 'px;'
+    endcapture
+  endif
+
+  # Styled stage + zoom: a real, focusable zoom button on every carousel slide (Figma 44 circle, 18 search icon).
+  # It calls the same native zoom dialog as a click on the slide. [index] / [number] are filled in per slide.
+  assign sn_zoom_button = ''
+  if bs.stage_style and bs.zoom
+    assign sn_zoom_label = 'actions.zoom_media' | t: index: '[number]' | escape
+    capture sn_zoom_button
+      echo '<button type="button" class="button button-unstyled product-media-gallery__zoom" aria-label="'
+      echo sn_zoom_label
+      echo '" on:click="#zoom-dialog-' | append: block.id | append: '/open/[index]" on:pointerenter="/preloadImage/[index]">'
+      echo '<svg aria-hidden="true" focusable="false" width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">'
+      echo '<path d="M14 7.5C14 11.09 11.09 14 7.5 14S1 11.09 1 7.5 3.91 1 7.5 1 14 3.91 14 7.5Z" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>'
+      echo '<path d="M16.5 16.5 12.2 12.2" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>'
+      echo '</svg></button>'
+    endcapture
+  endif
+-%}
 
 {% render 'product-media-gallery-content',
-  media_presentation: block.settings.media_presentation,
-  block_settings: block.settings,
+  media_presentation: bs.media_presentation,
+  block_settings: bs,
   block_id: block.id,
   block_shopify_attributes: block.shopify_attributes,
   block: block,
-  section: section
+  section: section,
+  extra_style: sn_style,
+  overlay: sn_overlay,
+  zoom_button: sn_zoom_button
 %}
 
 {% schema %}
@@ -275,6 +371,308 @@
       "id": "hide_variants",
       "default": false,
       "label": "t:settings.hide_unselected_variant_media"
+    },
+    {
+      "type": "header",
+      "content": "Product badge"
+    },
+    {
+      "type": "select",
+      "id": "custom_badge_source",
+      "label": "Badge source",
+      "options": [
+        {
+          "value": "none",
+          "label": "None"
+        },
+        {
+          "value": "metafield",
+          "label": "Product metafield"
+        },
+        {
+          "value": "text",
+          "label": "Fixed text"
+        }
+      ],
+      "default": "none",
+      "info": "Metafield: shown only on products that have a value. Fixed text: shown on every product using this template."
+    },
+    {
+      "type": "text",
+      "id": "custom_badge_metafield",
+      "label": "Metafield (namespace.key)",
+      "default": "custom.product_badge",
+      "visible_if": "{{ block.settings.custom_badge_source == 'metafield' }}"
+    },
+    {
+      "type": "text",
+      "id": "custom_badge_text",
+      "label": "Badge text",
+      "visible_if": "{{ block.settings.custom_badge_source == 'text' }}"
+    },
+    {
+      "type": "header",
+      "content": "Styled stage"
+    },
+    {
+      "type": "checkbox",
+      "id": "stage_style",
+      "label": "Use styled stage",
+      "info": "Applies in sections with a custom CSS class. Off = native gallery.",
+      "default": false
+    },
+    {
+      "type": "range",
+      "id": "stage_ratio",
+      "label": "Stage height, desktop (% of width)",
+      "min": 50,
+      "max": 150,
+      "step": 1,
+      "unit": "%",
+      "default": 93,
+      "visible_if": "{{ block.settings.stage_style }}"
+    },
+    {
+      "type": "range",
+      "id": "stage_ratio_mobile",
+      "label": "Stage height, mobile (% of width)",
+      "min": 50,
+      "max": 150,
+      "step": 1,
+      "unit": "%",
+      "default": 103,
+      "visible_if": "{{ block.settings.stage_style }}"
+    },
+    {
+      "type": "color",
+      "id": "stage_background",
+      "label": "Stage background",
+      "default": "#EEF0F1",
+      "visible_if": "{{ block.settings.stage_style }}"
+    },
+    {
+      "type": "range",
+      "id": "stage_border_width",
+      "label": "Stage border width",
+      "min": 0,
+      "max": 4,
+      "step": 1,
+      "unit": "px",
+      "default": 1,
+      "visible_if": "{{ block.settings.stage_style }}"
+    },
+    {
+      "type": "color",
+      "id": "stage_border_color",
+      "label": "Stage border color",
+      "default": "#DCF2FB",
+      "visible_if": "{{ block.settings.stage_style and block.settings.stage_border_width > 0 }}"
+    },
+    {
+      "type": "range",
+      "id": "stage_inset_mobile",
+      "label": "Stage side margin, mobile",
+      "min": 0,
+      "max": 40,
+      "step": 1,
+      "unit": "px",
+      "default": 19,
+      "visible_if": "{{ block.settings.stage_style }}"
+    },
+    {
+      "type": "select",
+      "id": "image_fit",
+      "label": "Image fit",
+      "options": [
+        {
+          "value": "contain",
+          "label": "Contain (whole image)"
+        },
+        {
+          "value": "cover",
+          "label": "Cover (fill the stage)"
+        }
+      ],
+      "default": "contain",
+      "visible_if": "{{ block.settings.stage_style }}"
+    },
+    {
+      "type": "range",
+      "id": "image_scale",
+      "label": "Image scale",
+      "min": 50,
+      "max": 150,
+      "step": 1,
+      "unit": "%",
+      "default": 100,
+      "visible_if": "{{ block.settings.stage_style }}"
+    },
+    {
+      "type": "range",
+      "id": "image_position_x",
+      "label": "Image horizontal position",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "%",
+      "default": 50,
+      "visible_if": "{{ block.settings.stage_style }}"
+    },
+    {
+      "type": "range",
+      "id": "image_position_y",
+      "label": "Image vertical position",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "%",
+      "default": 50,
+      "visible_if": "{{ block.settings.stage_style }}"
+    },
+    {
+      "type": "checkbox",
+      "id": "image_blend",
+      "label": "Blend white image background into the stage",
+      "info": "For photos with a white background. Transparent PNG/WebP images don't need it.",
+      "default": false,
+      "visible_if": "{{ block.settings.stage_style }}"
+    },
+    {
+      "type": "color",
+      "id": "badge_background",
+      "label": "Badge background",
+      "default": "#176BB0",
+      "visible_if": "{{ block.settings.stage_style and block.settings.custom_badge_source != 'none' }}"
+    },
+    {
+      "type": "color",
+      "id": "badge_text_color",
+      "label": "Badge text",
+      "default": "#FFFFFF",
+      "visible_if": "{{ block.settings.stage_style and block.settings.custom_badge_source != 'none' }}"
+    },
+    {
+      "type": "range",
+      "id": "badge_offset_top",
+      "label": "Badge offset from top, desktop",
+      "min": 0,
+      "max": 60,
+      "step": 1,
+      "unit": "px",
+      "default": 19,
+      "visible_if": "{{ block.settings.stage_style and block.settings.custom_badge_source != 'none' }}"
+    },
+    {
+      "type": "range",
+      "id": "badge_offset_side",
+      "label": "Badge offset from start edge, desktop",
+      "info": "Start edge = right in Arabic.",
+      "min": 0,
+      "max": 60,
+      "step": 1,
+      "unit": "px",
+      "default": 19,
+      "visible_if": "{{ block.settings.stage_style and block.settings.custom_badge_source != 'none' }}"
+    },
+    {
+      "type": "range",
+      "id": "badge_offset_top_mobile",
+      "label": "Badge offset from top, mobile",
+      "min": 0,
+      "max": 60,
+      "step": 1,
+      "unit": "px",
+      "default": 20,
+      "visible_if": "{{ block.settings.stage_style and block.settings.custom_badge_source != 'none' }}"
+    },
+    {
+      "type": "range",
+      "id": "badge_offset_side_mobile",
+      "label": "Badge offset from start edge, mobile",
+      "min": 0,
+      "max": 60,
+      "step": 1,
+      "unit": "px",
+      "default": 20,
+      "visible_if": "{{ block.settings.stage_style and block.settings.custom_badge_source != 'none' }}"
+    },
+    {
+      "type": "range",
+      "id": "zoom_button_size",
+      "label": "Zoom button size",
+      "min": 32,
+      "max": 64,
+      "step": 1,
+      "unit": "px",
+      "default": 44,
+      "visible_if": "{{ block.settings.stage_style and block.settings.zoom }}"
+    },
+    {
+      "type": "range",
+      "id": "zoom_icon_size",
+      "label": "Zoom icon size",
+      "min": 12,
+      "max": 32,
+      "step": 1,
+      "unit": "px",
+      "default": 18,
+      "visible_if": "{{ block.settings.stage_style and block.settings.zoom }}"
+    },
+    {
+      "type": "range",
+      "id": "arrow_size",
+      "label": "Arrow button size",
+      "info": "Desktop arrows appear when the pointer is over the gallery or an arrow has keyboard focus.",
+      "min": 32,
+      "max": 64,
+      "step": 1,
+      "unit": "px",
+      "default": 44,
+      "visible_if": "{{ block.settings.stage_style and block.settings.media_presentation == 'carousel' }}"
+    },
+    {
+      "type": "range",
+      "id": "thumb_size",
+      "label": "Thumbnail size, desktop",
+      "min": 40,
+      "max": 140,
+      "step": 2,
+      "unit": "px",
+      "default": 104,
+      "visible_if": "{{ block.settings.stage_style }}"
+    },
+    {
+      "type": "range",
+      "id": "thumb_size_mobile",
+      "label": "Thumbnail size, mobile",
+      "min": 40,
+      "max": 100,
+      "step": 2,
+      "unit": "px",
+      "default": 66,
+      "visible_if": "{{ block.settings.stage_style }}"
+    },
+    {
+      "type": "range",
+      "id": "thumb_gap",
+      "label": "Thumbnail gap, desktop",
+      "min": 0,
+      "max": 24,
+      "step": 1,
+      "unit": "px",
+      "default": 12,
+      "visible_if": "{{ block.settings.stage_style }}"
+    },
+    {
+      "type": "range",
+      "id": "thumb_gap_mobile",
+      "label": "Thumbnail gap, mobile",
+      "min": 0,
+      "max": 24,
+      "step": 1,
+      "unit": "px",
+      "default": 8,
+      "visible_if": "{{ block.settings.stage_style }}"
     },
     {
       "type": "header",

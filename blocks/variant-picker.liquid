@@ -7,14 +7,172 @@
   endif
 -%}
 
+{%- comment -%}
+  Project extension (Snosha, opt-in): linked colour buttons. "Colour" child blocks (colour name, colour / image,
+  destination product). As soon as at least one Colour item has a destination product, the picker shows the
+  Colour items as round buttons (same look as the swatches), each opening its own product page, in place of the
+  colour option (option names from "Option names to relabel"), or on their own when the product has no colour
+  option. Selected button (blue ring) = only the item whose destination product is the one being viewed; no
+  such item = no ring (never a default colour). The native colour inputs stay in the form, hidden, so
+  variant state and Add to cart are untouched. No Colour item with a product = native picker only.
+{%- endcomment -%}
+{%- comment -%}
+  Colour items compare their destination product with the page product (global `product`); they cannot use
+  closest.product, which inside each item resolves to the item's own "product" setting.
+{%- endcomment -%}
+{%- capture sn_linked_entries -%}
+  {% content_for 'blocks' %}
+{%- endcapture -%}
+{%- liquid
+  assign sn_linked_html = ''
+  assign sn_linked_option = ''
+  assign sn_linked_active = false
+  assign sn_current_name = ''
+
+  if product_resource != blank and sn_linked_entries contains 'linked-colors__entry'
+    # Colour option of this product (by name)
+    assign sn_match_names = block.settings.option_label_match | downcase | split: ','
+    for sn_option in product_resource.options_with_values
+      assign sn_option_key = sn_option.name | downcase | strip
+      for sn_match in sn_match_names
+        assign sn_match_key = sn_match | strip
+        if sn_match_key == sn_option_key and sn_linked_option == blank
+          assign sn_linked_option = sn_option.name
+          assign sn_colour_option = sn_option
+        endif
+      endfor
+    endfor
+
+    # Active as soon as one Colour item has a destination product (rendered as a link); in the editor also
+    # while items are still being set up
+    if sn_linked_entries contains 'linked-colors__item'
+      assign sn_linked_active = true
+    elsif request.design_mode
+      assign sn_linked_active = true
+    endif
+
+    # Selected ring = ONLY the Colour item whose destination product is the product being viewed (marked
+    # aria-current by the item itself). No item for this product = no ring, no default colour.
+    # If several items point at this same product, one ring: the item whose "Colour name" is the selected
+    # variant's colour (when the product has colour variants), otherwise the first of those items.
+    assign sn_current_parts = sn_linked_entries | split: 'aria-current="true"'
+    assign sn_current_count = sn_current_parts.size | minus: 1
+    if sn_current_count > 1
+      assign sn_selected_key = ''
+      if sn_linked_option != blank
+        assign sn_selected_key = sn_colour_option.selected_value | downcase | strip | escape
+      endif
+      assign sn_current_attr = 'data-current-color="' | append: sn_selected_key | append: '"'
+      if sn_selected_key != blank and sn_linked_entries contains sn_current_attr
+        assign sn_linked_entries = sn_linked_entries | remove: 'aria-current="true"'
+        assign sn_current_with = sn_current_attr | append: ' aria-current="true"'
+        assign sn_linked_entries = sn_linked_entries | replace: sn_current_attr, sn_current_with
+        assign sn_current_name = sn_colour_option.selected_value | escape
+      else
+        # keep the first selected item only
+        assign sn_rebuilt = sn_current_parts.first | append: 'aria-current="true"'
+        for sn_part in sn_current_parts offset: 1
+          assign sn_rebuilt = sn_rebuilt | append: sn_part
+        endfor
+        assign sn_linked_entries = sn_rebuilt
+        assign sn_first_current = sn_linked_entries | split: '<!--sn-current:'
+        assign sn_current_name = sn_first_current[1] | split: ':sn-->' | first
+      endif
+    elsif sn_current_count == 1
+      if sn_linked_entries contains '<!--sn-current:'
+        assign sn_current_name = sn_linked_entries | split: '<!--sn-current:' | last | split: ':sn-->' | first
+      endif
+    endif
+  endif
+
+  if sn_linked_active
+
+    assign sn_linked_label = block.settings.option_label
+    if sn_linked_label == blank
+      assign sn_linked_label = sn_linked_option
+    endif
+
+    capture sn_linked_html
+      echo '<div class="linked-colors linked-colors--picker" role="group" aria-labelledby="LinkedColors-' | append: block.id | append: '">'
+      echo '<p class="linked-colors__legend" id="LinkedColors-' | append: block.id | append: '">'
+      echo sn_linked_label | escape
+      if sn_current_name != blank
+        echo '<span class="linked-colors__value">' | append: sn_current_name | append: '</span>'
+      endif
+      echo '</p><ul class="linked-colors__list list-unstyled">'
+      echo sn_linked_entries
+      echo '</ul>'
+      # Theme Editor only: which product this page is and which Colour item matched it (diagnostic)
+      if request.design_mode
+        echo '<p class="linked-colors__debug" style="flex-basis:100%;margin:0;font-size:11px;line-height:16px;color:#5a5a59;">'
+        echo 'Page product: ' | append: product_resource.handle | append: ' — matched colour: '
+        if sn_current_name != blank
+          echo sn_current_name
+        else
+          echo 'none'
+        endif
+        echo ' (' | append: sn_current_count | append: ')</p>'
+      endif
+      echo '</div>'
+    endcapture
+  endif
+-%}
+
 {% unless product_resource == blank %}
-  {% render 'variant-main-picker', product_resource: product_resource, section: section, product: product %}
+  {%- comment -%} Product without a colour option (e.g. one product per colour): colours shown on their own {%- endcomment -%}
+  {%- if sn_linked_html != blank and sn_linked_option == blank -%}
+    <div
+      class="linked-colors-wrapper spacing-style"
+      style="{% render 'spacing-style', settings: block.settings %}"
+    >
+      {{ sn_linked_html }}
+    </div>
+  {%- endif -%}
+  {% render 'variant-main-picker',
+    product_resource: product_resource,
+    section: section,
+    product: product,
+    linked_colors: sn_linked_html,
+    linked_option: sn_linked_option
+  %}
 {% endunless %}
+
+{% stylesheet %}
+  /* Project extension (Snosha, opt-in "Show names under swatches"): name below the swatch; the selected ring
+     moves from the label to the swatch so it does not surround the name. Absent names = native rules only. */
+  .variant-option__button-label--has-swatch:has(> .variant-option__swatch-name) {
+    display: inline-flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--gap-2xs, 4px);
+
+    &:hover,
+    &:has(:checked) {
+      outline: none;
+    }
+
+    &:has(:checked) .swatch {
+      outline: var(--focus-outline-width) solid var(--color-selected-variant-border);
+      outline-offset: var(--focus-outline-offset);
+    }
+  }
+
+  .variant-option__swatch-name {
+    font-size: var(--font-size--xs, 0.75rem);
+    line-height: 1.6;
+    text-align: center;
+  }
+{% endstylesheet %}
 
 {% schema %}
 {
   "name": "t:names.product_variant_picker",
   "tag": null,
+  "blocks": [
+    {
+      "type": "_linked-color"
+    }
+  ],
   "settings": [
     {
       "type": "header",
@@ -41,6 +199,27 @@
       "id": "show_swatches",
       "label": "t:settings.swatches",
       "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_swatch_names",
+      "label": "Show names under swatches",
+      "info": "Each colour's name from its product option value.",
+      "default": false,
+      "visible_if": "{{ block.settings.show_swatches }}"
+    },
+    {
+      "type": "text",
+      "id": "option_label",
+      "label": "Option label on the storefront",
+      "info": "Replaces the label of the options listed below, e.g. اللون. Leave empty to show the option name from Product Admin. Translate it for other languages in Translate & Adapt (Theme)."
+    },
+    {
+      "type": "text",
+      "id": "option_label_match",
+      "label": "Option names to relabel",
+      "info": "Product Admin option names, separated by commas. Other options keep their own name.",
+      "default": "Color, Colour, اللون, لون"
     },
     {
       "type": "header",

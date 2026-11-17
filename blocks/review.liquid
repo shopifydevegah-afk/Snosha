@@ -101,7 +101,7 @@
       <defs>
         <linearGradient id="half" x1="0" x2="100%" y1="0" y2="0">
           <stop offset="50%" stop-color="var(--star-fill-color)"></stop>
-          <stop offset="50%" stop-color="{% if block_settings.stars_style == "outline" %}transparent{% else %}rgb(var(--star-fill-color-rgb) / var(--opacity-20){% endif %}"></stop>
+          <stop offset="50%" stop-color="{% if block_settings.stars_style == "outline" %}transparent{% else %}rgb(var(--star-fill-color-rgb) / var(--opacity-20)){% endif %}"></stop>
         </linearGradient>
 
         <symbol xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" id="star">
@@ -156,7 +156,7 @@
         {%- endif -%}
         {%- if block_settings.show_number -%}
           {%- if block_settings.count_text != blank -%}
-            {%- comment -%} Snosha (opt-in): merchant wording; [count] = the same rating_count metafield. {%- endcomment -%}
+            {%- comment -%} Snosha: replace [count] with the current product's real review count. {%- endcomment -%}
             {%- assign sn_count = rating_count.value | default: rating_count | append: '' -%}
             {{- block_settings.count_text | escape | replace: '[count]', sn_count -}}
           {%- else -%}
@@ -170,6 +170,15 @@
       {%- comment -%} Opt-in label; only reachable when real rating data exists. {%- endcomment -%}
       <span class="rating-label {{ block_settings.type_preset }}">{{ block_settings.label | escape }}</span>
     {%- endif -%}
+  </div>
+{%- elsif block_settings.empty_text != blank -%}
+  {%- comment -%} Snosha (opt-in): honest empty state when the product has no rating yet (no stars, no score) {%- endcomment -%}
+  <div
+    class="rating-wrapper rating-wrapper--empty rating-wrapper-{{ block.id }} justify-{{ block_settings.alignment }} size-style"
+    style="{% render 'size-style', settings: block_settings %}"
+    {{ block.shopify_attributes }}
+  >
+    <p class="rating-empty {{ block_settings.type_preset }}">{{ block_settings.empty_text | escape }}</p>
   </div>
 {%- endif -%}
 
@@ -294,6 +303,26 @@
       "info": "Shown next to the stars only when the product has rating data. Leave blank to hide."
     },
     {
+      "type": "checkbox",
+      "id": "show_score",
+      "label": "Show average score",
+      "info": "Shows the real average, e.g. 4.8 / 5, before the stars.",
+      "default": false
+    },
+    {
+      "type": "text",
+      "id": "count_text",
+      "label": "Review count text",
+      "info": "[count] = the real number of reviews, e.g. بناءً على ([count] تقييم). Leave blank for the default wording.",
+      "visible_if": "{{ block.settings.show_number }}"
+    },
+    {
+      "type": "text",
+      "id": "empty_text",
+      "label": "Text when there are no reviews",
+      "info": "Shown instead of the stars when the product has no reviews yet. Leave blank to show nothing."
+    },
+    {
       "type": "range",
       "id": "font_size_mobile",
       "label": "Mobile text size",
@@ -314,19 +343,6 @@
       "type": "header",
       "content": "Rating summary",
       "info": "Optional. Score, stars and count all come from the product's rating metafields (review app). Nothing shows when the product has no rating."
-    },
-    {
-      "type": "checkbox",
-      "id": "show_score",
-      "label": "Show average score",
-      "info": "Shows the average as \"4.8 / 5\" before the stars.",
-      "default": false
-    },
-    {
-      "type": "text",
-      "id": "count_text",
-      "label": "Review count text",
-      "info": "[count] is replaced with the number of reviews, e.g. بناءً على ([count] تقييم). Blank = default wording."
     },
     {
       "type": "range",

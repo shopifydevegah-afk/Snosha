@@ -1,0 +1,281 @@
+{%- comment -%}
+  Project block (Snosha product page): colours sold as SEPARATE products ("linked colour products").
+  Source "Theme Editor colours" (default): one "Colour" child block per colour (destination product picker, colour
+  name, colour or image), added / reordered / removed in the editor. Shown on a product only when that product is
+  one of the destinations (it becomes the selected swatch), unless "Show only on products in this list" is off.
+  Source "Product metafield": a "Product (list)" metafield on each product (default custom.color_products) with
+  every colour of the family; names custom.color_name, fill custom.color_swatch (or the product image).
+  Navigation links only: price, availability and the cart always come from the product page that opens.
+  Products whose colours are VARIANTS keep the native Variant picker; this block renders nothing for them unless
+  the merchant lists them here.
+{%- endcomment -%}
+{%- liquid
+  assign bs = block.settings
+  assign current = closest.product
+  assign source = bs.source | default: 'blocks'
+  assign render_list = false
+  assign current_name = ''
+  assign entries = ''
+
+  if source == 'blocks'
+    capture entries
+      content_for 'blocks'
+    endcapture
+    if entries contains '<!--sn-current:'
+      assign current_name = entries | split: '<!--sn-current:' | last | split: ':sn-->' | first
+    endif
+    if entries contains 'linked-colors__item'
+      if current_name != blank or bs.only_in_list == false
+        assign render_list = true
+      endif
+    endif
+    if request.design_mode and entries contains 'linked-colors__entry'
+      assign render_list = true
+    endif
+  else
+    assign family = null
+    assign parts = bs.list_metafield | strip | split: '.'
+    if current != blank and parts.size == 2
+      assign family = current.metafields[parts.first][parts.last].value
+    endif
+    if family != blank and family.size > 1
+      assign render_list = true
+    endif
+  endif
+-%}
+
+{%- if render_list -%}
+  <div
+    class="linked-colors{% unless bs.show_names %} linked-colors--no-names{% endunless %}"
+    role="group"
+    aria-labelledby="LinkedColors-{{ block.id }}"
+    {{ block.shopify_attributes }}
+  >
+    {%- if source == 'blocks' -%}
+      <p
+        class="linked-colors__legend"
+        id="LinkedColors-{{ block.id }}"
+      >
+        {{- bs.label | escape -}}
+        {%- if current_name != blank -%}
+          <span class="linked-colors__value">{{ current_name }}</span>
+        {%- endif -%}
+      </p>
+      <ul class="linked-colors__list list-unstyled">
+        {{- entries -}}
+      </ul>
+    {%- else -%}
+      {%- liquid
+        assign name_parts = bs.name_metafield | strip | split: '.'
+        assign fill_parts = bs.swatch_metafield | strip | split: '.'
+        assign meta_current_name = ''
+        for item in family
+          if item.id == current.id
+            if name_parts.size == 2
+              assign meta_current_name = item.metafields[name_parts.first][name_parts.last].value | append: ''
+            endif
+            if meta_current_name == blank
+              assign meta_current_name = item.title
+            endif
+          endif
+        endfor
+      -%}
+      <p
+        class="linked-colors__legend"
+        id="LinkedColors-{{ block.id }}"
+      >
+        {{- bs.label | escape -}}
+        {%- if meta_current_name != blank -%}
+          <span class="linked-colors__value">{{ meta_current_name | escape }}</span>
+        {%- endif -%}
+      </p>
+      <ul class="linked-colors__list list-unstyled">
+        {%- for item in family -%}
+          {%- liquid
+            assign item_name = ''
+            if name_parts.size == 2
+              assign item_name = item.metafields[name_parts.first][name_parts.last].value | append: ''
+            endif
+            if item_name == blank
+              assign item_name = item.title
+            endif
+            assign item_fill = ''
+            if fill_parts.size == 2
+              assign item_fill = item.metafields[fill_parts.first][fill_parts.last].value | append: ''
+            endif
+          -%}
+          <li class="linked-colors__entry">
+            <a
+              class="linked-colors__item{% unless item.available %} linked-colors__item--unavailable{% endunless %}"
+              href="{{ item.url }}"
+              {% if item.id == current.id %}
+                aria-current="true"
+              {% endif %}
+              aria-label="{{ item_name | escape }}{% unless item.available %} - {{ 'products.product.sold_out' | t }}{% endunless %}"
+            >
+              <span
+                class="linked-colors__swatch"
+                {% if item_fill != blank %}
+                  style="--linked-color-fill: {{ item_fill | escape }};"
+                {% elsif item.featured_image != blank %}
+                  style="--linked-color-image: url('{{ item.featured_image | image_url: width: 96 }}');"
+                {% endif %}
+              ></span>
+              <span
+                class="linked-colors__name"
+                aria-hidden="true"
+              >
+                {{- item_name | escape -}}
+              </span>
+            </a>
+          </li>
+        {%- endfor -%}
+      </ul>
+    {%- endif -%}
+  </div>
+{%- endif -%}
+
+{% stylesheet %}
+  .linked-colors {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-start;
+    gap: var(--gap-xs, 8px);
+  }
+
+  .linked-colors__legend {
+    margin: 0;
+  }
+
+  .linked-colors__value {
+    padding-inline-start: var(--padding-xs, 4px);
+  }
+
+  .linked-colors__list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--gap-xs, 8px);
+    margin: 0;
+  }
+
+  .linked-colors__item,
+  .linked-colors__entry--empty {
+    display: inline-flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--gap-2xs, 4px);
+    color: inherit;
+    text-decoration: none;
+  }
+
+  .linked-colors__swatch {
+    display: block;
+    inline-size: 28px;
+    block-size: 28px;
+    border-radius: 50%;
+    border: 1px solid rgb(var(--color-foreground-rgb) / 0.15);
+    background: var(--linked-color-fill, var(--linked-color-image, none) center / cover no-repeat);
+  }
+
+  .linked-colors__item[aria-current='true'] .linked-colors__swatch {
+    outline: var(--focus-outline-width, 1px) solid currentcolor;
+    outline-offset: 2px;
+  }
+
+  .linked-colors__item--unavailable .linked-colors__swatch,
+  .linked-colors__entry--empty {
+    opacity: 0.5;
+  }
+
+  .linked-colors__name {
+    font-size: var(--font-size--xs, 0.75rem);
+    line-height: 1.6;
+  }
+
+  .linked-colors--no-names .linked-colors__name {
+    display: none;
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "Linked colour products",
+  "tag": null,
+  "blocks": [
+    {
+      "type": "_linked-color"
+    }
+  ],
+  "settings": [
+    {
+      "type": "paragraph",
+      "content": "For colours sold as separate products: each swatch opens its own product. Colours that are variants of one product use the Variant picker instead."
+    },
+    {
+      "type": "text",
+      "id": "label",
+      "label": "Label",
+      "default": "اللون"
+    },
+    {
+      "type": "select",
+      "id": "source",
+      "label": "Colours from",
+      "options": [
+        {
+          "value": "blocks",
+          "label": "Theme Editor colours"
+        },
+        {
+          "value": "metafield",
+          "label": "Product metafield"
+        }
+      ],
+      "default": "blocks"
+    },
+    {
+      "type": "checkbox",
+      "id": "only_in_list",
+      "label": "Show only on products in this list",
+      "info": "Keeps the colours off products of another family that use the same template.",
+      "default": true,
+      "visible_if": "{{ block.settings.source == 'blocks' }}"
+    },
+    {
+      "type": "text",
+      "id": "list_metafield",
+      "label": "Colour products metafield (namespace.key)",
+      "info": "Product metafield of type Product (list). Add every colour of the family, this product included.",
+      "default": "custom.color_products",
+      "visible_if": "{{ block.settings.source == 'metafield' }}"
+    },
+    {
+      "type": "text",
+      "id": "name_metafield",
+      "label": "Colour name metafield (namespace.key)",
+      "info": "Single line text on each product. Empty = product title.",
+      "default": "custom.color_name",
+      "visible_if": "{{ block.settings.source == 'metafield' }}"
+    },
+    {
+      "type": "text",
+      "id": "swatch_metafield",
+      "label": "Colour fill metafield (namespace.key)",
+      "info": "Color metafield on each product. Empty = product image.",
+      "default": "custom.color_swatch",
+      "visible_if": "{{ block.settings.source == 'metafield' }}"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_names",
+      "label": "Show names under swatches",
+      "default": true
+    }
+  ],
+  "presets": [
+    {
+      "name": "Linked colour products"
+    }
+  ]
+}
+{% endschema %}

@@ -36,8 +36,27 @@
     assign initial_quantity = current_variant.quantity_rule.min | default: 1
   %}
 
+  {%- liquid
+    # Project extension (Snosha, opt-in "Sticky bar style: Full-width bar"): full-width bar with a quantity control
+    # that drives the main form's own quantity selector, own label and icon toggle. Floating card = native.
+    assign sn_sticky_bar = false
+    if section.settings.sn_sticky_style == 'bar'
+      assign sn_sticky_bar = true
+    endif
+    assign sn_sticky_icon = true
+    if sn_sticky_bar and section.settings.sn_sticky_show_icon == false
+      assign sn_sticky_icon = false
+    endif
+    assign sn_sticky_quantity = false
+    if sn_sticky_bar and section.settings.sn_sticky_show_quantity
+      assign sn_sticky_quantity = true
+    endif
+  -%}
   <sticky-add-to-cart
-    class="sticky-add-to-cart"
+    class="sticky-add-to-cart{% if sn_sticky_bar %} sn-sticky-bar{% unless section.settings.sn_sticky_show_image %} sn-sticky-bar--no-image{% endunless %}{% unless section.settings.sn_sticky_show_compare %} sn-sticky-bar--no-compare{% endunless %}{% if section.settings.sn_sticky_quantity_mobile %} sn-sticky-bar--quantity-mobile{% endif %}{% endif %}"
+    {% if sn_sticky_bar %}
+      style="--sn-sticky-bg: {{ section.settings.sn_sticky_background }}; --sn-sticky-width: {{ section.settings.sn_sticky_width }}px; --sn-sticky-padding: {{ section.settings.sn_sticky_padding }}px; --sn-sticky-padding-mobile: {{ section.settings.sn_sticky_padding_mobile }}px; --sn-sticky-image: {{ section.settings.sn_sticky_image_size }}px; --sn-sticky-button-width: {{ section.settings.sn_sticky_button_width }}px; --sn-sticky-button-height: {{ section.settings.sn_sticky_button_height }}px; --sn-sticky-button-height-mobile: {{ section.settings.sn_sticky_button_height_mobile }}px; --sn-sticky-image-mobile: {{ section.settings.sn_sticky_image_size_mobile }}px; --sn-sticky-plus-bg: {{ section.settings.sn_sticky_plus_bg }};{% if section.settings.sn_sticky_plus_color != blank %} --sn-sticky-plus-color: {{ section.settings.sn_sticky_plus_color }};{% endif %} --sn-sticky-qty-button: {{ section.settings.sn_sticky_qty_button }}px; --sn-sticky-qty-button-mobile: {{ section.settings.sn_sticky_qty_button_mobile }}px; --sn-sticky-qty-padding: {{ section.settings.sn_sticky_qty_padding }}px; --sn-sticky-qty-gap: {{ section.settings.sn_sticky_qty_gap }}px;{% unless section.settings.sn_sticky_shadow %} --sn-sticky-shadow: none;{% endunless %}"
+    {% endif %}
     data-variant-available="{{ current_variant.available }}"
     data-product-id="{{ product.id }}"
     data-current-variant-id="{{ current_variant.id }}"
@@ -121,6 +140,44 @@
         {% render 'price', product_resource: product, show_sale_price_first: true %}
       </div>
 
+      {%- if sn_sticky_quantity and current_variant.available -%}
+        {%- comment -%}
+          Quantity control of the full-width bar: its buttons call the MAIN product form's quantity selector
+          (same min / max / step rules); the number is the bar's own quantityNumber ref, kept in sync by
+          sticky-add-to-cart.js. The sticky button then submits the main form, so quantity and variant match.
+          Visual order "− 1 +" left to right, as the reference.
+        {%- endcomment -%}
+        {%- capture sn_main_quantity -%}#shopify-section-{{ section.id }} .product-details quantity-selector-component{%- endcapture -%}
+        <div
+          class="sticky-add-to-cart__quantity"
+          dir="ltr"
+        >
+          <button
+            type="button"
+            class="sticky-add-to-cart__quantity-button"
+            aria-label="{{ 'accessibility.decrease_quantity' | t }}"
+            on:click="{{ sn_main_quantity }}/decreaseQuantity"
+          >
+            <span class="svg-wrapper">{{- 'icon-minus.svg' | inline_asset_content -}}</span>
+          </button>
+          <span
+            class="sticky-add-to-cart__quantity-value"
+            ref="quantityNumber"
+            aria-live="polite"
+          >
+            {{- initial_quantity -}}
+          </span>
+          <button
+            type="button"
+            class="sticky-add-to-cart__quantity-button sticky-add-to-cart__quantity-button--plus"
+            aria-label="{{ 'accessibility.increase_quantity' | t }}"
+            on:click="{{ sn_main_quantity }}/increaseQuantity"
+          >
+            <span class="svg-wrapper">{{- 'icon-plus.svg' | inline_asset_content -}}</span>
+          </button>
+        </div>
+      {%- endif -%}
+
       <button
         type="button"
         class="sticky-add-to-cart__button add-to-cart-button button"
@@ -133,14 +190,16 @@
         <span
           class="add-to-cart-text"
         >
-          {% if current_variant.available %}
+          {% if current_variant.available and sn_sticky_icon %}
             <span class="svg-wrapper">
               {{- 'icon-add-to-cart.svg' | inline_asset_content -}}
             </span>
           {% endif %}
           <span class="add-to-cart-text__content">
             <span>
-              {%- if current_variant.available -%}
+              {%- if current_variant.available and sn_sticky_bar and section.settings.sn_sticky_label != blank -%}
+                {{- section.settings.sn_sticky_label | escape -}}
+              {%- elsif current_variant.available -%}
                 {{- 'products.product.add_to_cart' | t -}}
               {%- elsif current_variant == blank -%}
                 {{- 'products.product.unavailable' | t -}}
@@ -156,9 +215,11 @@
                 style="display: none;"
               {% endif %}
             >
-              {{- ' (' -}}
-              <span ref="quantityNumber">{{- initial_quantity -}}</span>
-              {{- ')' -}}
+              {%- unless sn_sticky_quantity and current_variant.available -%}
+                {{- ' (' -}}
+                <span ref="quantityNumber">{{- initial_quantity -}}</span>
+                {{- ')' -}}
+              {%- endunless -%}
             </span>
           </span>
         </span>
@@ -173,6 +234,79 @@
 
   {% render 'add-to-cart-button-styles' %}
 {% endif %}
+
+{%- comment -%}
+  Project extension (Snosha product page): "Snosha layout" settings as CSS custom properties, read by the scoped
+  CSS of the custom class (assets/dev1.css). Output only when a custom class is set; blank = native section.
+{%- endcomment -%}
+{%- if section.settings.custom_class != blank -%}
+  {%- assign s = section.settings -%}
+  {% style %}
+    #shopify-section-{{ section.id }} {
+      --sn-gallery-width: {{ s.sn_gallery_width }}%;
+      --sn-columns-gap: {{ s.sn_columns_gap }}px;
+      --sn-benefit-tile: {{ s.sn_benefit_tile }}px;
+      --sn-benefit-tile-mobile: {{ s.sn_benefit_tile_mobile }}px;
+      --sn-swatch-size: {{ s.sn_swatch_size }}px;
+      --sn-swatch-dot: {{ s.sn_swatch_dot }}px;
+      --sn-swatch-gap: {{ s.sn_swatch_gap }}px;
+      --sn-swatch-label-gap: {{ s.sn_swatch_label_gap }}px;
+      --sn-button-height: {{ s.sn_button_height }}px;
+      --sn-button-height-mobile: {{ s.sn_button_height_mobile }}px;
+      --sn-purchase-gap: {{ s.sn_purchase_gap }}px;
+      --sn-purchase-gap-mobile: {{ s.sn_purchase_gap_mobile }}px;
+      --sn-trust-pad-start: {{ s.sn_trust_pad_start }}px;
+      --sn-trust-pad-start-mobile: {{ s.sn_trust_pad_start_mobile }}px;
+      --sn-trust-pad-end: {{ s.sn_trust_pad_end }}px;
+      --sn-trust-pad-end-mobile: {{ s.sn_trust_pad_end_mobile }}px;
+      --sn-trust-pad-block: {{ s.sn_trust_pad_block }}px;
+      --sn-trust-pad-block-mobile: {{ s.sn_trust_pad_block_mobile }}px;
+      --sn-trust-tile: {{ s.sn_trust_tile }}px;
+      --sn-swatch-legend-gap: {{ s.sn_swatch_legend_gap }}px;
+      --sn-trust-text: {{ s.sn_trust_text }}px;
+      --sn-trust-text-mobile: {{ s.sn_trust_text_mobile }}px;
+      --sn-xsell-thumb: {{ s.sn_xsell_thumb }}px;
+      --sn-xsell-pad-block: {{ s.sn_xsell_pad_block }}px;
+      --sn-xsell-pad-start: {{ s.sn_xsell_pad_start }}px;
+      --sn-xsell-pad-end: {{ s.sn_xsell_pad_end }}px;
+      --sn-xsell-add: {{ s.sn_xsell_add }}px;
+      --sn-acc-tile: {{ s.sn_acc_tile }}px;
+      --sn-acc-heading-mobile: {{ s.sn_acc_heading_mobile }}px;
+      --sn-acc-title-line: {{ s.sn_acc_title_line }}px;
+      --sn-acc-paragraph-gap: {{ s.sn_acc_paragraph_gap }}px;
+      --sn-trust-height: {{ s.sn_trust_height }}px;
+      --sn-trust-height-mobile: {{ s.sn_trust_height_mobile }}px;
+      --sn-acc-body: {{ s.sn_acc_body }}px;
+      --sn-acc-body-mobile: {{ s.sn_acc_body_mobile }}px;
+      --sn-acc-body-line: {{ s.sn_acc_body_line }}px;
+      --sn-acc-body-line-mobile: {{ s.sn_acc_body_line_mobile }}px;
+      --sn-acc-body-weight: {{ s.sn_acc_body_weight }};
+      --sn-acc-body-weight-mobile: {{ s.sn_acc_body_weight_mobile }};
+      --sn-acc-bold-weight: {{ s.sn_acc_bold_weight }};
+      --sn-acc-body-color: {{ s.sn_acc_body_color }};
+      --sn-acc-bold-size: {{ s.sn_acc_bold_size }}px;
+      --sn-acc-bold-size-mobile: {{ s.sn_acc_bold_size_mobile }}px;
+      --sn-acc-bold-color: {{ s.sn_acc_bold_color }};
+      --sn-acc-bold-gap: {{ s.sn_acc_bold_gap }}px;
+      --sn-acc-bold-gap-mobile: {{ s.sn_acc_bold_gap_mobile }}px;
+      --sn-acc-paragraph-gap-mobile: {{ s.sn_acc_paragraph_gap_mobile }}px;
+    }
+    {%- comment -%} Trust icon size (0 = each icon block's own Width): uploaded icons carry an inline width, hence !important {%- endcomment -%}
+    {%- if s.sn_trust_icon > 0 %}
+    #shopify-section-{{ section.id }} .sn-product-trust .icon-block__media {
+      width: {{ s.sn_trust_icon }}px !important;
+      height: auto;
+    }
+    {%- endif %}
+    {%- if s.sn_trust_icon_mobile > 0 %}
+    @media screen and (max-width: 749px) {
+      #shopify-section-{{ section.id }} .sn-product-trust .icon-block__media {
+        width: {{ s.sn_trust_icon_mobile }}px !important;
+      }
+    }
+    {%- endif %}
+  {% endstyle %}
+{%- endif -%}
 
 {% render 'product-information-content',
   product: closest.product,
@@ -453,10 +587,797 @@
       "default": true
     },
     {
+      "type": "select",
+      "id": "sn_sticky_style",
+      "label": "Sticky bar style",
+      "options": [
+        {
+          "value": "floating",
+          "label": "Floating card"
+        },
+        {
+          "value": "bar",
+          "label": "Full-width bar"
+        }
+      ],
+      "default": "floating",
+      "visible_if": "{{ section.settings.enable_sticky_add_to_cart }}"
+    },
+    {
+      "type": "text",
+      "id": "sn_sticky_label",
+      "label": "Sticky button label",
+      "info": "Shown while the product can be added. Empty = theme translation.",
+      "visible_if": "{{ section.settings.enable_sticky_add_to_cart and section.settings.sn_sticky_style == 'bar' }}"
+    },
+    {
+      "type": "checkbox",
+      "id": "sn_sticky_show_icon",
+      "label": "Show cart icon on the sticky button",
+      "default": true,
+      "visible_if": "{{ section.settings.enable_sticky_add_to_cart and section.settings.sn_sticky_style == 'bar' }}"
+    },
+    {
+      "type": "checkbox",
+      "id": "sn_sticky_show_quantity",
+      "label": "Show quantity",
+      "info": "Changes the quantity of the main product form.",
+      "default": true,
+      "visible_if": "{{ section.settings.enable_sticky_add_to_cart and section.settings.sn_sticky_style == 'bar' }}"
+    },
+    {
+      "type": "checkbox",
+      "id": "sn_sticky_quantity_mobile",
+      "label": "Show quantity on mobile",
+      "default": false,
+      "visible_if": "{{ section.settings.enable_sticky_add_to_cart and section.settings.sn_sticky_style == 'bar' }}"
+    },
+    {
+      "type": "checkbox",
+      "id": "sn_sticky_show_image",
+      "label": "Show product image",
+      "default": true,
+      "visible_if": "{{ section.settings.enable_sticky_add_to_cart and section.settings.sn_sticky_style == 'bar' }}"
+    },
+    {
+      "type": "checkbox",
+      "id": "sn_sticky_show_compare",
+      "label": "Show compare-at price",
+      "default": true,
+      "visible_if": "{{ section.settings.enable_sticky_add_to_cart and section.settings.sn_sticky_style == 'bar' }}"
+    },
+    {
+      "type": "color",
+      "id": "sn_sticky_background",
+      "label": "Sticky bar background",
+      "default": "#FFFFFF",
+      "visible_if": "{{ section.settings.enable_sticky_add_to_cart and section.settings.sn_sticky_style == 'bar' }}"
+    },
+    {
+      "type": "checkbox",
+      "id": "sn_sticky_shadow",
+      "label": "Top border and shadow",
+      "default": true,
+      "visible_if": "{{ section.settings.enable_sticky_add_to_cart and section.settings.sn_sticky_style == 'bar' }}"
+    },
+    {
+      "type": "range",
+      "id": "sn_sticky_width",
+      "label": "Sticky bar content width",
+      "min": 600,
+      "max": 2000,
+      "step": 20,
+      "unit": "px",
+      "default": 1340,
+      "visible_if": "{{ section.settings.enable_sticky_add_to_cart and section.settings.sn_sticky_style == 'bar' }}"
+    },
+    {
+      "type": "range",
+      "id": "sn_sticky_padding",
+      "label": "Sticky bar top/bottom padding, desktop",
+      "min": 0,
+      "max": 40,
+      "step": 1,
+      "unit": "px",
+      "default": 10,
+      "visible_if": "{{ section.settings.enable_sticky_add_to_cart and section.settings.sn_sticky_style == 'bar' }}"
+    },
+    {
+      "type": "range",
+      "id": "sn_sticky_padding_mobile",
+      "label": "Sticky bar top/bottom padding, mobile",
+      "min": 0,
+      "max": 40,
+      "step": 1,
+      "unit": "px",
+      "default": 8,
+      "visible_if": "{{ section.settings.enable_sticky_add_to_cart and section.settings.sn_sticky_style == 'bar' }}"
+    },
+    {
+      "type": "range",
+      "id": "sn_sticky_image_size",
+      "label": "Sticky bar image size, desktop",
+      "min": 32,
+      "max": 96,
+      "step": 1,
+      "unit": "px",
+      "default": 52,
+      "visible_if": "{{ section.settings.enable_sticky_add_to_cart and section.settings.sn_sticky_style == 'bar' }}"
+    },
+    {
+      "type": "range",
+      "id": "sn_sticky_button_width",
+      "label": "Sticky button width, desktop",
+      "min": 100,
+      "max": 320,
+      "step": 4,
+      "unit": "px",
+      "default": 176,
+      "visible_if": "{{ section.settings.enable_sticky_add_to_cart and section.settings.sn_sticky_style == 'bar' }}"
+    },
+    {
+      "type": "range",
+      "id": "sn_sticky_button_height",
+      "label": "Sticky button and quantity height, desktop",
+      "min": 36,
+      "max": 72,
+      "step": 1,
+      "unit": "px",
+      "default": 52,
+      "visible_if": "{{ section.settings.enable_sticky_add_to_cart and section.settings.sn_sticky_style == 'bar' }}"
+    },
+    {
+      "type": "range",
+      "id": "sn_sticky_button_height_mobile",
+      "label": "Sticky button height, mobile",
+      "min": 32,
+      "max": 64,
+      "step": 1,
+      "unit": "px",
+      "default": 44,
+      "visible_if": "{{ section.settings.enable_sticky_add_to_cart and section.settings.sn_sticky_style == 'bar' }}"
+    },
+    {
+      "type": "range",
+      "id": "sn_sticky_image_size_mobile",
+      "label": "Sticky bar image size, mobile",
+      "min": 32,
+      "max": 72,
+      "step": 1,
+      "unit": "px",
+      "default": 44,
+      "visible_if": "{{ section.settings.enable_sticky_add_to_cart and section.settings.sn_sticky_style == 'bar' }}"
+    },
+    {
+      "type": "color",
+      "id": "sn_sticky_plus_bg",
+      "label": "Quantity + button background",
+      "default": "#EAF3FB",
+      "visible_if": "{{ section.settings.enable_sticky_add_to_cart and section.settings.sn_sticky_style == 'bar' }}"
+    },
+    {
+      "type": "color",
+      "id": "sn_sticky_plus_color",
+      "label": "Quantity + icon colour",
+      "info": "Empty = theme button colour.",
+      "visible_if": "{{ section.settings.enable_sticky_add_to_cart and section.settings.sn_sticky_style == 'bar' }}"
+    },
+    {
+      "type": "range",
+      "id": "sn_sticky_qty_button",
+      "label": "Quantity button size, desktop",
+      "min": 24,
+      "max": 48,
+      "step": 1,
+      "unit": "px",
+      "default": 38,
+      "visible_if": "{{ section.settings.enable_sticky_add_to_cart and section.settings.sn_sticky_style == 'bar' }}"
+    },
+    {
+      "type": "range",
+      "id": "sn_sticky_qty_button_mobile",
+      "label": "Quantity button size, mobile",
+      "min": 24,
+      "max": 48,
+      "step": 1,
+      "unit": "px",
+      "default": 32,
+      "visible_if": "{{ section.settings.enable_sticky_add_to_cart and section.settings.sn_sticky_style == 'bar' }}"
+    },
+    {
+      "type": "range",
+      "id": "sn_sticky_qty_padding",
+      "label": "Quantity selector padding",
+      "min": 0,
+      "max": 16,
+      "step": 1,
+      "unit": "px",
+      "default": 6,
+      "visible_if": "{{ section.settings.enable_sticky_add_to_cart and section.settings.sn_sticky_style == 'bar' }}"
+    },
+    {
+      "type": "range",
+      "id": "sn_sticky_qty_gap",
+      "label": "Quantity selector gap",
+      "min": 0,
+      "max": 16,
+      "step": 1,
+      "unit": "px",
+      "default": 4,
+      "visible_if": "{{ section.settings.enable_sticky_add_to_cart and section.settings.sn_sticky_style == 'bar' }}"
+    },
+    {
       "type": "color",
       "id": "background_color",
       "label": "t:settings.background_color",
       "placeholder": "t:settings.default"
+    },
+    {
+      "type": "text",
+      "id": "custom_class",
+      "label": "Custom CSS class",
+      "info": "Lowercase letters, numbers and hyphens, starting with a letter. Separate multiple classes with spaces."
+    },
+    {
+      "type": "header",
+      "content": "Snosha layout"
+    },
+    {
+      "type": "paragraph",
+      "content": "Used when a custom CSS class is set (sn-product-hero). Desktop = 750px and wider."
+    },
+    {
+      "type": "range",
+      "id": "sn_gallery_width",
+      "label": "Gallery column width, desktop",
+      "min": 35,
+      "max": 70,
+      "step": 1,
+      "unit": "%",
+      "default": 53
+    },
+    {
+      "type": "range",
+      "id": "sn_columns_gap",
+      "label": "Column gap, desktop",
+      "min": 0,
+      "max": 120,
+      "step": 2,
+      "unit": "px",
+      "default": 64
+    },
+    {
+      "type": "range",
+      "id": "sn_benefit_tile",
+      "label": "Benefit icon tile, desktop",
+      "min": 0,
+      "max": 40,
+      "step": 1,
+      "unit": "px",
+      "default": 22,
+      "info": "0 = icon without tile"
+    },
+    {
+      "type": "range",
+      "id": "sn_benefit_tile_mobile",
+      "label": "Benefit icon tile, mobile",
+      "min": 0,
+      "max": 40,
+      "step": 1,
+      "unit": "px",
+      "default": 20
+    },
+    {
+      "type": "range",
+      "id": "sn_swatch_size",
+      "label": "Colour swatch size",
+      "min": 24,
+      "max": 56,
+      "step": 1,
+      "unit": "px",
+      "default": 34
+    },
+    {
+      "type": "range",
+      "id": "sn_swatch_dot",
+      "label": "Colour fill size",
+      "min": 12,
+      "max": 48,
+      "step": 1,
+      "unit": "px",
+      "default": 24
+    },
+    {
+      "type": "range",
+      "id": "sn_swatch_gap",
+      "label": "Gap between swatches",
+      "min": 0,
+      "max": 24,
+      "step": 1,
+      "unit": "px",
+      "default": 8
+    },
+    {
+      "type": "range",
+      "id": "sn_swatch_label_gap",
+      "label": "Gap between swatch and its name",
+      "min": 0,
+      "max": 16,
+      "step": 1,
+      "unit": "px",
+      "default": 5
+    },
+    {
+      "type": "range",
+      "id": "sn_swatch_legend_gap",
+      "label": "Gap between colour label and swatches",
+      "min": 0,
+      "max": 24,
+      "step": 1,
+      "unit": "px",
+      "default": 4
+    },
+    {
+      "type": "range",
+      "id": "sn_button_height",
+      "label": "Add to cart height, desktop",
+      "min": 40,
+      "max": 72,
+      "step": 1,
+      "unit": "px",
+      "default": 58
+    },
+    {
+      "type": "range",
+      "id": "sn_button_height_mobile",
+      "label": "Add to cart height, mobile",
+      "min": 40,
+      "max": 72,
+      "step": 1,
+      "unit": "px",
+      "default": 58
+    },
+    {
+      "type": "range",
+      "id": "sn_purchase_gap",
+      "label": "Quantity to button gap, desktop",
+      "min": 0,
+      "max": 24,
+      "step": 1,
+      "unit": "px",
+      "default": 12
+    },
+    {
+      "type": "range",
+      "id": "sn_purchase_gap_mobile",
+      "label": "Quantity to button gap, mobile",
+      "min": 0,
+      "max": 24,
+      "step": 1,
+      "unit": "px",
+      "default": 10
+    },
+    {
+      "type": "range",
+      "id": "sn_trust_pad_start",
+      "label": "Trust pill right padding (icon side), desktop",
+      "min": 0,
+      "max": 30,
+      "step": 1,
+      "unit": "px",
+      "default": 12,
+      "info": "Applies to every trust pill. Right / left as seen on the Arabic store; English mirrors them."
+    },
+    {
+      "type": "range",
+      "id": "sn_trust_pad_start_mobile",
+      "label": "Trust pill right padding (icon side), mobile",
+      "min": 0,
+      "max": 30,
+      "step": 1,
+      "unit": "px",
+      "default": 5
+    },
+    {
+      "type": "range",
+      "id": "sn_trust_pad_end",
+      "label": "Trust pill left padding (text side), desktop",
+      "min": 0,
+      "max": 30,
+      "step": 1,
+      "unit": "px",
+      "default": 12
+    },
+    {
+      "type": "range",
+      "id": "sn_trust_pad_end_mobile",
+      "label": "Trust pill left padding (text side), mobile",
+      "min": 0,
+      "max": 30,
+      "step": 1,
+      "unit": "px",
+      "default": 8
+    },
+    {
+      "type": "range",
+      "id": "sn_trust_pad_block",
+      "label": "Trust pill top/bottom padding, desktop",
+      "min": 0,
+      "max": 20,
+      "step": 1,
+      "unit": "px",
+      "default": 10
+    },
+    {
+      "type": "range",
+      "id": "sn_trust_pad_block_mobile",
+      "label": "Trust pill top/bottom padding, mobile",
+      "min": 0,
+      "max": 20,
+      "step": 1,
+      "unit": "px",
+      "default": 5
+    },
+    {
+      "type": "range",
+      "id": "sn_trust_height",
+      "label": "Trust pill height, desktop",
+      "min": 0,
+      "max": 64,
+      "step": 1,
+      "unit": "px",
+      "default": 48,
+      "info": "0 = height from padding and icon tile."
+    },
+    {
+      "type": "range",
+      "id": "sn_trust_height_mobile",
+      "label": "Trust pill height, mobile",
+      "min": 0,
+      "max": 64,
+      "step": 1,
+      "unit": "px",
+      "default": 38
+    },
+    {
+      "type": "range",
+      "id": "sn_trust_tile",
+      "label": "Trust icon tile size",
+      "min": 20,
+      "max": 48,
+      "step": 1,
+      "unit": "px",
+      "default": 28
+    },
+    {
+      "type": "range",
+      "id": "sn_trust_icon",
+      "label": "Trust icon size, desktop",
+      "min": 0,
+      "max": 32,
+      "step": 1,
+      "unit": "px",
+      "default": 18,
+      "info": "0 = each icon block's own Width."
+    },
+    {
+      "type": "range",
+      "id": "sn_trust_icon_mobile",
+      "label": "Trust icon size, mobile",
+      "min": 0,
+      "max": 32,
+      "step": 1,
+      "unit": "px",
+      "default": 16
+    },
+    {
+      "type": "range",
+      "id": "sn_trust_text",
+      "label": "Trust text size, desktop",
+      "min": 9,
+      "max": 18,
+      "step": 0.5,
+      "unit": "px",
+      "default": 12
+    },
+    {
+      "type": "range",
+      "id": "sn_trust_text_mobile",
+      "label": "Trust text size, mobile",
+      "min": 9,
+      "max": 18,
+      "step": 0.5,
+      "unit": "px",
+      "default": 10.5
+    },
+    {
+      "type": "range",
+      "id": "sn_xsell_thumb",
+      "label": "Complementary image size",
+      "min": 40,
+      "max": 96,
+      "step": 1,
+      "unit": "px",
+      "default": 56
+    },
+    {
+      "type": "range",
+      "id": "sn_xsell_pad_block",
+      "label": "Complementary card top/bottom padding",
+      "min": 0,
+      "max": 24,
+      "step": 1,
+      "unit": "px",
+      "default": 10
+    },
+    {
+      "type": "range",
+      "id": "sn_xsell_pad_start",
+      "label": "Complementary card padding at image side",
+      "min": 0,
+      "max": 30,
+      "step": 1,
+      "unit": "px",
+      "default": 14
+    },
+    {
+      "type": "range",
+      "id": "sn_xsell_pad_end",
+      "label": "Complementary card padding at button side",
+      "min": 0,
+      "max": 30,
+      "step": 1,
+      "unit": "px",
+      "default": 10
+    },
+    {
+      "type": "range",
+      "id": "sn_xsell_add",
+      "label": "Complementary add button size",
+      "min": 28,
+      "max": 56,
+      "step": 1,
+      "unit": "px",
+      "default": 38
+    },
+    {
+      "type": "range",
+      "id": "sn_acc_tile",
+      "label": "Accordion icon tile size",
+      "min": 20,
+      "max": 48,
+      "step": 1,
+      "unit": "px",
+      "default": 32
+    },
+    {
+      "type": "range",
+      "id": "sn_acc_heading_mobile",
+      "label": "Accordion heading size, mobile",
+      "min": 12,
+      "max": 24,
+      "step": 1,
+      "unit": "px",
+      "default": 16
+    },
+    {
+      "type": "header",
+      "content": "Accordion text"
+    },
+    {
+      "type": "paragraph",
+      "content": "Body text of every accordion row whose text block uses a preset typography. A text block set to Custom typography keeps its own values."
+    },
+    {
+      "type": "range",
+      "id": "sn_acc_body",
+      "label": "Body size, desktop",
+      "min": 10,
+      "max": 24,
+      "step": 1,
+      "unit": "px",
+      "default": 14
+    },
+    {
+      "type": "range",
+      "id": "sn_acc_body_mobile",
+      "label": "Body size, mobile",
+      "min": 10,
+      "max": 24,
+      "step": 1,
+      "unit": "px",
+      "default": 14
+    },
+    {
+      "type": "range",
+      "id": "sn_acc_body_line",
+      "label": "Body line height, desktop",
+      "min": 14,
+      "max": 48,
+      "step": 1,
+      "unit": "px",
+      "default": 28
+    },
+    {
+      "type": "range",
+      "id": "sn_acc_body_line_mobile",
+      "label": "Body line height, mobile",
+      "min": 14,
+      "max": 48,
+      "step": 1,
+      "unit": "px",
+      "default": 28
+    },
+    {
+      "type": "select",
+      "id": "sn_acc_body_weight",
+      "label": "Body weight, desktop",
+      "options": [
+        {
+          "value": "300",
+          "label": "Light"
+        },
+        {
+          "value": "400",
+          "label": "Regular"
+        },
+        {
+          "value": "500",
+          "label": "Medium"
+        },
+        {
+          "value": "600",
+          "label": "SemiBold"
+        },
+        {
+          "value": "700",
+          "label": "Bold"
+        }
+      ],
+      "default": "400"
+    },
+    {
+      "type": "select",
+      "id": "sn_acc_body_weight_mobile",
+      "label": "Body weight, mobile",
+      "options": [
+        {
+          "value": "300",
+          "label": "Light"
+        },
+        {
+          "value": "400",
+          "label": "Regular"
+        },
+        {
+          "value": "500",
+          "label": "Medium"
+        },
+        {
+          "value": "600",
+          "label": "SemiBold"
+        },
+        {
+          "value": "700",
+          "label": "Bold"
+        }
+      ],
+      "default": "400"
+    },
+    {
+      "type": "select",
+      "id": "sn_acc_bold_weight",
+      "label": "Bold text and sub-heading weight",
+      "options": [
+        {
+          "value": "300",
+          "label": "Light"
+        },
+        {
+          "value": "400",
+          "label": "Regular"
+        },
+        {
+          "value": "500",
+          "label": "Medium"
+        },
+        {
+          "value": "600",
+          "label": "SemiBold"
+        },
+        {
+          "value": "700",
+          "label": "Bold"
+        }
+      ],
+      "default": "700",
+      "info": "Keeps bold text and headings in the description bold, whatever the body weight."
+    },
+    {
+      "type": "color",
+      "id": "sn_acc_body_color",
+      "label": "Body text colour",
+      "default": "#5A5A59",
+      "info": "A row text block with its own Text colour keeps it."
+    },
+    {
+      "type": "range",
+      "id": "sn_acc_bold_size",
+      "label": "Bold title size, desktop",
+      "min": 10,
+      "max": 28,
+      "step": 1,
+      "unit": "px",
+      "default": 14,
+      "info": "Bold titles that start a paragraph and headings in the text. Bold words inside a sentence keep the body size."
+    },
+    {
+      "type": "range",
+      "id": "sn_acc_bold_size_mobile",
+      "label": "Bold title size, mobile",
+      "min": 10,
+      "max": 28,
+      "step": 1,
+      "unit": "px",
+      "default": 14
+    },
+    {
+      "type": "color",
+      "id": "sn_acc_bold_color",
+      "label": "Bold text colour",
+      "default": "#131311"
+    },
+    {
+      "type": "range",
+      "id": "sn_acc_bold_gap",
+      "label": "Bold heading to paragraph gap — Desktop",
+      "min": 0,
+      "max": 24,
+      "step": 1,
+      "unit": "px",
+      "default": 0,
+      "info": "Space under a bold title line (a paragraph that starts with bold text followed by a line break, a bold-only paragraph, or a heading). Bold words inside a sentence are not affected. Figma: 0."
+    },
+    {
+      "type": "range",
+      "id": "sn_acc_bold_gap_mobile",
+      "label": "Bold heading to paragraph gap — Mobile",
+      "min": 0,
+      "max": 24,
+      "step": 1,
+      "unit": "px",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "sn_acc_title_line",
+      "label": "Sub-heading line height (bold titles in the text)",
+      "min": 16,
+      "max": 48,
+      "step": 1,
+      "unit": "px",
+      "default": 40
+    },
+    {
+      "type": "range",
+      "id": "sn_acc_paragraph_gap",
+      "label": "Paragraph spacing — Desktop",
+      "min": 0,
+      "max": 24,
+      "step": 1,
+      "unit": "px",
+      "default": 0,
+      "info": "Gap between consecutive paragraphs, e.g. between the two description groups (each group = bold title + line break + text). A blank line typed in the text adds nothing. Figma: 0."
+    },
+    {
+      "type": "range",
+      "id": "sn_acc_paragraph_gap_mobile",
+      "label": "Paragraph spacing — Mobile",
+      "min": 0,
+      "max": 24,
+      "step": 1,
+      "unit": "px",
+      "default": 0
     },
     {
       "type": "header",

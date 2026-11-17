@@ -5,6 +5,8 @@
   @param {object} [block] - The block object
   @param {object} section - The section object.
   @param {object} product - The current product object (used to determine selected variant state).
+  @param {string} [linked_colors] - Project extension (Snosha): linked colour products markup shown in place of the option named `linked_option`. Blank = native output
+  @param {string} [linked_option] - Project extension (Snosha): name of the option replaced by `linked_colors`; its native inputs stay in the form, hidden
 {%- enddoc -%}
 
 {% assign block_settings = block.settings %}
@@ -71,14 +73,39 @@
             assign option_id_attribute = 'data-option-id="' | append: fieldset_id | append: '"'
             assign longest_value = 0
           endif
+
+          # Project extension (Snosha, opt-in): storefront label for options whose Admin name is in the
+          # "Option names to relabel" list (e.g. Color → اللون). Visible label only; option data is untouched.
+          assign option_label = product_option.name
+          if block_settings.option_label != blank
+            assign option_name_key = product_option.name | downcase | strip
+            assign relabel_names = block_settings.option_label_match | downcase | split: ','
+            for relabel_name in relabel_names
+              assign relabel_key = relabel_name | strip
+              if relabel_key == option_name_key
+                assign option_label = block_settings.option_label
+              endif
+            endfor
+          endif
+
+          # Project extension (Snosha): linked colour products replace this option visually
+          assign hide_native_option = false
+          if linked_colors != blank and linked_option != blank and product_option.name == linked_option
+            assign hide_native_option = true
+          endif
         -%}
+
+        {%- if hide_native_option -%}
+          {{ linked_colors }}
+          <div class="variant-option-linked-native" hidden>
+        {%- endif -%}
 
         {%- if product_option.values.size == 1 and variant_style != 'swatch' -%}
           <div
             class="variant-option"
             data-testid="variant-option-single"
           >
-            {{- product_option.name | escape -}}
+            {{- option_label | escape -}}
             <span
               class="variant-option__swatch-value"
               data-testid="variant-option-single-value"
@@ -94,7 +121,7 @@
             {{ option_id_attribute }}
           >
             <legend>
-              {{ product_option.name | escape -}}
+              {{ option_label | escape -}}
               {%- if variant_style == 'swatch' -%}
                 <span class="variant-option__swatch-value">{{ product_option.selected_value }}</span>
               {%- endif %}
@@ -148,6 +175,12 @@
                     variant_image: featured_media,
                     mode: 'unscaled'
                   %}
+                  {%- comment -%} Project extension (Snosha, opt-in): visible value name under the swatch {%- endcomment -%}
+                  {%- if block_settings.show_swatch_names -%}
+                    <span class="variant-option__swatch-name" aria-hidden="true">
+                      {{- product_option_value.name | escape -}}
+                    </span>
+                  {%- endif -%}
                 {% else %}
                   {% if product_option_value.available == true %}
                     <span
@@ -190,7 +223,7 @@
           %}
 
           <div class="variant-option variant-option--dropdowns">
-            <label for="Option-{{ block.id }}-{{ forloop.index0 }}">{{ product_option.name | escape }}</label>
+            <label for="Option-{{ block.id }}-{{ forloop.index0 }}">{{ option_label | escape }}</label>
             <div
               class="variant-option__select-wrapper"
               style="
@@ -233,6 +266,9 @@
                 {%- render 'icon', icon: 'caret' -%}
               </svg>
             </div>
+          </div>
+        {%- endif -%}
+        {%- if hide_native_option -%}
           </div>
         {%- endif -%}
       {%- endfor -%}

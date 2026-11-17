@@ -37,12 +37,28 @@
   endif
 -%}
 
+{%- comment -%}
+  Snosha (Dev1, opt-in, sections with a custom class): optional mobile image (below 750px, falls back to the image)
+  and image fit (contain / cover). Unset = native output.
+{%- endcomment -%}
+{%- liquid
+  assign sn_mobile_image = blank
+  if sn_opt_in and block_settings.image_mobile != blank
+    assign sn_mobile_image = block_settings.image_mobile
+  endif
+  assign sn_fit = ''
+  if sn_opt_in and block_settings.image_fit != blank and block_settings.image_fit != 'native'
+    assign sn_fit = block_settings.image_fit
+  endif
+-%}
+
 {% capture class %}
-  image-block image-block--{{ block.id }} image-block--height-{{ block_settings.height }} spacing-style size-style{% if sn_fixed %} image-block--sn-fixed{% endif %}
+  image-block image-block--{{ block.id }} image-block--height-{{ block_settings.height }} spacing-style size-style{% if sn_fixed %} image-block--sn-fixed{% endif %}{% if sn_fit != blank %} image-block--sn-fit{% endif %}
 {% endcapture %}
 
 {% capture style %}
   {%- if sn_fixed %}--sn-image-width: {{ block_settings.fixed_width }}px; --sn-image-width-mobile: {{ sn_fixed_mobile }}px;{% endif %}
+  {%- if sn_fit != blank %} --sn-image-fit: {{ sn_fit }};{% endif %}
   --ratio: {{ ratio }};
   {% render 'size-style', settings: block_settings %}
   {% render 'spacing-style', settings: block_settings %}
@@ -62,6 +78,16 @@
 
 {% capture image %}
   {%- if block_settings.image -%}
+    {%- if sn_mobile_image != blank -%}
+      <picture class="image-block__picture">
+        <source
+          media="(max-width: 749px)"
+          srcset="{{ sn_mobile_image | image_url: width: 750 }} 750w, {{ sn_mobile_image | image_url: width: 1100 }} 1100w, {{ sn_mobile_image | image_url: width: 1500 }} 1500w"
+          sizes="100vw"
+          width="{{ sn_mobile_image.width }}"
+          height="{{ sn_mobile_image.height }}"
+        >
+    {%- endif -%}
     {{
       block_settings.image
       | image_url: width: 3840
@@ -73,6 +99,9 @@
         style: image_border_style,
         sizes: sizes
     }}
+    {%- if sn_mobile_image != blank -%}
+      </picture>
+    {%- endif -%}
   {%- else -%}
     <div class="placeholder-image border-style size-style" style="{{ image_border_style }}">
       {{ 'detailed-apparel-1' | placeholder_svg_tag: 'image-block__placeholder' }}
@@ -132,6 +161,15 @@
     object-fit: cover;
     aspect-ratio: var(--ratio);
   }
+
+  /* Snosha opt-in "Image fit" and mobile image (sections with a custom class) */
+  .image-block--sn-fit .image-block__image {
+    object-fit: var(--sn-image-fit, cover);
+  }
+
+  .image-block__picture {
+    display: contents;
+  }
 {% endstylesheet %}
 
 {% schema %}
@@ -143,6 +181,33 @@
       "type": "image_picker",
       "id": "image",
       "label": "t:settings.image"
+    },
+    {
+      "type": "image_picker",
+      "id": "image_mobile",
+      "label": "Mobile image",
+      "info": "Optional. Shown below 750px in sections with a custom class; empty = the image above."
+    },
+    {
+      "type": "select",
+      "id": "image_fit",
+      "label": "Image fit",
+      "options": [
+        {
+          "value": "native",
+          "label": "Theme default"
+        },
+        {
+          "value": "contain",
+          "label": "Contain (whole image)"
+        },
+        {
+          "value": "cover",
+          "label": "Cover (fill the frame)"
+        }
+      ],
+      "default": "native",
+      "info": "In sections with a custom class."
     },
     {
       "type": "url",

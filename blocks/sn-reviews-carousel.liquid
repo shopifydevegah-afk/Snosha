@@ -1,0 +1,26 @@
+{%- comment -%}
+  Snosha (Dev1, P03): loads assets/sn-reviews-carousel.js, which makes the Judge.me "Cards Carousel" in a
+  section with the class `sn-product-reviews` swipeable, makes its arrows scroll one card (RTL aware) and drives
+  the mobile progress bar. Outputs nothing visible. Delete the block to return to Judge.me's own slider.
+{%- endcomment -%}
+<div hidden {{ block.shopify_attributes }}>
+  <script src="{{ 'sn-reviews-carousel.js' | asset_url }}" type="module"></script>
+</div>
+
+{% schema %}
+{
+  "name": "Reviews carousel controls",
+  "tag": null,
+  "settings": [
+    {
+      "type": "paragraph",
+      "content": "Makes the Judge.me Cards Carousel in this section swipeable on all screens, with arrows that move one card and a progress bar on mobile. Works when the section's custom class is sn-product-reviews."
+    }
+  ],
+  "presets": [
+    {
+      "name": "Reviews carousel controls"
+    }
+  ]
+}
+{% endschema %}

@@ -18,6 +18,23 @@
       assign video_class = video_class | append: ' video-block--play-image'
     endif
   endif
+
+  # Opt-in frame controls: max width (desktop/mobile), mobile radius, fit, poster overlay
+  if block_settings.max_width > 0 or block_settings.max_width_mobile > 0
+    assign video_class = video_class | append: ' video-block--max-width'
+  endif
+  if block_settings.border_radius_mobile > 0
+    assign video_class = video_class | append: ' video-block--radius-mobile'
+  endif
+  if block_settings.media_fit == 'contain'
+    assign video_class = video_class | append: ' video-block--fit-contain'
+  endif
+  if block_settings.poster_overlay_color != blank
+    assign video_class = video_class | append: ' video-block--overlay'
+    unless block_settings.poster_overlay_mobile
+      assign video_class = video_class | append: ' video-block--overlay-desktop-only'
+    endunless
+  endif
 -%}
 
 {% capture video_style %}
@@ -34,7 +51,17 @@
     {%- if block_settings.play_button_icon_image != blank %}
       --play-button-image: url('{{ block_settings.play_button_icon_image | image_url: width: 160 }}');
     {%- endif %}
+    {%- if block_settings.play_button_size_mobile > 0 %}
+      --play-button-size-mobile: {{ block_settings.play_button_size_mobile }}px;
+    {%- endif %}
+    {%- if block_settings.play_button_shadow_color != blank %}
+      --play-button-shadow: 0 14px 34px {{ block_settings.play_button_shadow_color }};
+    {%- endif %}
   {%- endif %}
+  {%- if block_settings.max_width > 0 %} --video-max-width: {{ block_settings.max_width }}px;{% endif %}
+  {%- if block_settings.max_width_mobile > 0 %} --video-max-width-mobile: {{ block_settings.max_width_mobile }}px;{% endif %}
+  {%- if block_settings.border_radius_mobile > 0 %} --video-radius-mobile: {{ block_settings.border_radius_mobile }}px;{% endif %}
+  {%- if block_settings.poster_overlay_color != blank %} --video-poster-overlay: {{ block_settings.poster_overlay_color }};{% endif %}
 {% endcapture %}
 
 {% if block_settings.source == 'uploaded' %}
@@ -87,6 +114,58 @@
 
     svg:hover {
       color: inherit;
+    }
+  }
+
+  .video-block--play-custom :is(.deferred-media__poster-icon, .video-placeholder-wrapper__poster-icon) {
+    box-shadow: var(--play-button-shadow, none);
+
+    @media screen and (max-width: 749px) {
+      inline-size: var(--play-button-size-mobile, var(--play-button-size));
+      block-size: var(--play-button-size-mobile, var(--play-button-size));
+    }
+  }
+
+  /* Opt-in max width (desktop / mobile); the parent's alignment positions the frame */
+  .video-block--max-width {
+    max-inline-size: var(--video-max-width, none);
+
+    @media screen and (max-width: 749px) {
+      max-inline-size: var(--video-max-width-mobile, var(--video-max-width, none));
+    }
+  }
+
+  /* Opt-in mobile corner radius (overrides the inline border radius below 750px) */
+  @media screen and (max-width: 749px) {
+    .video-block--radius-mobile.border-style {
+      border-radius: var(--video-radius-mobile);
+    }
+  }
+
+  /* Opt-in fit: show the whole poster and video inside the frame instead of cropping */
+  deferred-media[class].video-block--fit-contain
+    :is(.deferred-media__poster-button img, .deferred-media__poster-button ~ video) {
+    object-fit: contain;
+  }
+
+  /* Opt-in poster overlay: part of the poster button, so it fades out with it when the video plays */
+  .video-block--overlay :is(.deferred-media__poster-icon, .video-placeholder-wrapper__poster-icon) {
+    z-index: 1;
+  }
+
+  .video-block--overlay > .deferred-media__poster-button::after,
+  .video-block--overlay.video-placeholder-wrapper::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: var(--video-poster-overlay);
+    pointer-events: none;
+  }
+
+  @media screen and (max-width: 749px) {
+    .video-block--overlay-desktop-only > .deferred-media__poster-button::after,
+    .video-block--overlay-desktop-only.video-placeholder-wrapper::after {
+      content: none;
     }
   }
 
@@ -179,6 +258,23 @@
       "visible_if": "{{ block.settings.source == 'uploaded' }}"
     },
     {
+      "type": "select",
+      "id": "media_fit",
+      "label": "Fit",
+      "options": [
+        {
+          "value": "cover",
+          "label": "Fill frame (crop)"
+        },
+        {
+          "value": "contain",
+          "label": "Show whole video"
+        }
+      ],
+      "default": "cover",
+      "info": "Applies to the poster and the uploaded video. The poster crop follows the image's focal point."
+    },
+    {
       "type": "video_url",
       "id": "video_url",
       "label": "t:settings.video_external_url",
@@ -237,6 +333,28 @@
       "default": 100
     },
     {
+      "type": "range",
+      "id": "max_width",
+      "label": "Maximum width",
+      "info": "0 = no limit.",
+      "min": 0,
+      "max": 1000,
+      "step": 10,
+      "unit": "px",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "max_width_mobile",
+      "label": "Maximum width on mobile",
+      "info": "0 = same as desktop.",
+      "min": 0,
+      "max": 750,
+      "step": 10,
+      "unit": "px",
+      "default": 0
+    },
+    {
       "type": "select",
       "id": "aspect_ratio",
       "label": "t:settings.aspect_ratio",
@@ -260,6 +378,23 @@
         }
       ],
       "default": "auto"
+    },
+    {
+      "type": "header",
+      "content": "Poster overlay"
+    },
+    {
+      "type": "color",
+      "id": "poster_overlay_color",
+      "label": "t:settings.color",
+      "alpha": true,
+      "info": "Tints the poster until the video plays. Leave empty for no overlay."
+    },
+    {
+      "type": "checkbox",
+      "id": "poster_overlay_mobile",
+      "label": "Show overlay on mobile",
+      "default": true
     },
     {
       "type": "header",
@@ -290,6 +425,18 @@
       "step": 1,
       "unit": "px",
       "default": 52,
+      "visible_if": "{{ block.settings.play_button_style == 'custom' }}"
+    },
+    {
+      "type": "range",
+      "id": "play_button_size_mobile",
+      "label": "Button size on mobile",
+      "info": "0 = same as desktop.",
+      "min": 0,
+      "max": 96,
+      "step": 1,
+      "unit": "px",
+      "default": 0,
       "visible_if": "{{ block.settings.play_button_style == 'custom' }}"
     },
     {
@@ -327,6 +474,14 @@
       "id": "play_button_icon_color",
       "label": "Icon color",
       "default": "{{ settings.color_palette.background }}",
+      "visible_if": "{{ block.settings.play_button_style == 'custom' }}"
+    },
+    {
+      "type": "color",
+      "id": "play_button_shadow_color",
+      "label": "Shadow color",
+      "alpha": true,
+      "info": "Soft shadow under the button; transparency sets its strength. Leave empty for no shadow.",
       "visible_if": "{{ block.settings.play_button_style == 'custom' }}"
     },
     {
@@ -389,6 +544,17 @@
       "type": "range",
       "id": "border_radius",
       "label": "t:settings.border_radius",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "border_radius_mobile",
+      "label": "Corner radius on mobile",
+      "info": "0 = same as desktop.",
       "min": 0,
       "max": 100,
       "step": 1,

@@ -1,0 +1,73 @@
+{%- comment -%}
+  Snosha Dev2 (PDP-01c): "Comparison image position". Place it inside the comparison table group (class
+  "sn-pc-table") next to the decorative image block (the toothbrush). It renders nothing visible; it only sets
+  the CSS variables assets/dev2.css reads for that image and its floor shadow. The image's width stays the
+  image block's own width setting (% of the table). Delete the block to fall back to the Figma defaults.
+{%- endcomment -%}
+{%- liquid
+  assign s = block.settings
+  assign uid = 'SnPcImage-' | append: block.id
+-%}
+{% style %}
+  .shopify-section:has(#{{ uid }}) {
+    --pc-brush-x-d: {{ s.image_x }}%;
+    --pc-brush-x-m: {{ s.image_x_mobile }}%;
+    --pc-brush-below-d: {{ s.image_below }}px;
+    --pc-brush-y-m: {{ s.image_y_mobile }}px;
+    --pc-brush-rot-d: {{ s.image_rotation }}deg;
+    --pc-brush-rot-m: {{ s.image_rotation_mobile }}deg;
+    --pc-brush-z-d: {% if s.image_layer == 'front' %}4{% else %}0{% endif %};
+    --pc-brush-z-m: {% if s.image_layer_mobile == 'front' %}4{% else %}0{% endif %};
+    --pc-brush-display-d: {% if s.image_show == 'mobile' %}none{% else %}flex{% endif %};
+    --pc-brush-display-m: {% if s.image_show == 'desktop' %}none{% else %}flex{% endif %};
+    --pc-shadow-w: {{ s.shadow_width }}%;
+    --pc-shadow-opacity: {{ s.shadow_opacity | divided_by: 100.0 }};
+    --pc-shadow-x: {{ s.shadow_x }}px;
+    --pc-shadow-y: {{ s.shadow_y }}px;
+    --pc-shadow-display-d: {% if s.shadow_show == 'all' or s.shadow_show == 'desktop' %}block{% else %}none{% endif %};
+    --pc-shadow-display-m: {% if s.shadow_show == 'all' or s.shadow_show == 'mobile' %}block{% else %}none{% endif %};
+  }
+{% endstyle %}
+<div id="{{ uid }}" class="sn-pc-style" hidden {{ block.shopify_attributes }}></div>
+
+{% schema %}
+{
+  "name": "Comparison image position",
+  "settings": [
+    {
+      "type": "paragraph",
+      "content": "Position of the decorative image block in this comparison table (the toothbrush) and its floor shadow. The image width is the image block's own width setting."
+    },
+    {
+      "type": "select", "id": "image_show", "label": "Show image on", "default": "all",
+      "options": [{ "value": "all", "label": "Desktop and mobile" }, { "value": "desktop", "label": "Desktop only" }, { "value": "mobile", "label": "Mobile only" }]
+    },
+    { "type": "header", "content": "Desktop" },
+    { "type": "range", "id": "image_x", "label": "Image centre from table left", "info": "100% = the table's right edge; above 100% the image sits past the table.", "min": 20, "max": 120, "step": 1, "unit": "%", "default": 99 },
+    { "type": "range", "id": "image_below", "label": "Image bottom below table bottom", "info": "The image box, including the transparent space under the base. Negative values lift the image.", "min": -150, "max": 150, "step": 3, "unit": "px", "default": 36 },
+    { "type": "range", "id": "image_rotation", "label": "Rotation", "min": -30, "max": 30, "step": 1, "unit": "°", "default": 0 },
+    {
+      "type": "select", "id": "image_layer", "label": "Layer", "default": "front",
+      "options": [{ "value": "behind", "label": "Behind the table" }, { "value": "front", "label": "In front of the table" }]
+    },
+    { "type": "header", "content": "Mobile" },
+    { "type": "range", "id": "image_x_mobile", "label": "Image centre from table left", "min": 20, "max": 120, "step": 1, "unit": "%", "default": 89 },
+    { "type": "range", "id": "image_y_mobile", "label": "Image top from table top", "min": -201, "max": 99, "step": 3, "unit": "px", "default": -126 },
+    { "type": "range", "id": "image_rotation_mobile", "label": "Rotation", "min": -30, "max": 30, "step": 1, "unit": "°", "default": 0 },
+    {
+      "type": "select", "id": "image_layer_mobile", "label": "Layer", "default": "behind",
+      "options": [{ "value": "behind", "label": "Behind the table" }, { "value": "front", "label": "In front of the table" }]
+    },
+    { "type": "header", "content": "Floor shadow" },
+    {
+      "type": "select", "id": "shadow_show", "label": "Show shadow on", "default": "desktop",
+      "options": [{ "value": "all", "label": "Desktop and mobile" }, { "value": "desktop", "label": "Desktop only" }, { "value": "mobile", "label": "Mobile only" }, { "value": "none", "label": "Hidden" }]
+    },
+    { "type": "range", "id": "shadow_width", "label": "Width", "info": "% of the image width.", "min": 10, "max": 110, "step": 1, "unit": "%", "default": 54 },
+    { "type": "range", "id": "shadow_opacity", "label": "Opacity", "min": 0, "max": 100, "step": 1, "unit": "%", "default": 50 },
+    { "type": "range", "id": "shadow_x", "label": "Horizontal offset", "info": "From the image centre; negative = left.", "min": -100, "max": 100, "step": 2, "unit": "px", "default": 0 },
+    { "type": "range", "id": "shadow_y", "label": "Height above image bottom", "min": -50, "max": 50, "step": 1, "unit": "px", "default": 24 }
+  ],
+  "presets": [{ "name": "Comparison image position" }]
+}
+{% endschema %}

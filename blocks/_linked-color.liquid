@@ -1,0 +1,144 @@
+{%- comment -%}
+  Project block (Snosha): one colour of "Linked colour products" (Theme Editor source).
+  Destination product = product picker; name = "Colour name" or the product title; fill = "Colour", else "Image",
+  else the product's featured image. The item for the product being viewed is the selected one (aria-current).
+  Outputs a marker comment with the selected name, read by the parent block for its «اللون: …» label, and
+  data-color-key (the "Colour name", lower case) so the parent can also select it from a variant's colour value.
+{%- endcomment -%}
+{%- liquid
+  assign item = block.settings.product
+  # Product being viewed = the PAGE product (global `product`). Not closest.product: inside this block,
+  # closest.product resolves to the block's OWN "product" setting, so every item matched itself and all
+  # colours came out selected.
+  assign current = product
+  assign item_name = block.settings.color_name | strip
+  if item_name == blank and item != blank
+    assign item_name = item.title
+  endif
+  # Key used to match this item to a colour option value of a variant product (explicit "Colour name" only)
+  assign color_key = block.settings.color_name | downcase | strip | escape
+  # Current colour = this item's product is the product being viewed: same product id, or (independent check)
+  # the page address is this product's page (/products/<handle>, with or without a language prefix)
+  assign is_current = false
+  if item != blank
+    if current != blank and item.id == current.id
+      assign is_current = true
+    elsif request.page_type == 'product'
+      assign item_path = '/products/' | append: item.handle
+      assign page_path = request.path | url_decode
+      assign page_tail = page_path | split: '/products/' | last | prepend: '/products/'
+      if page_tail == item_path
+        assign is_current = true
+      endif
+    endif
+  endif
+
+  # Link: the destination product; when that product has a variant whose colour value equals "Colour name"
+  # (e.g. one product with وردي / أزرق / … variants), link to that variant so the page opens with this colour
+  # selected (its images, price, availability) and this button gets the selected ring.
+  assign item_url = item.url
+  if item != blank and color_key != blank
+    for item_variant in item.variants
+      for item_value in item_variant.options
+        assign item_value_key = item_value | downcase | strip | escape
+        if item_value_key == color_key and item_url == item.url
+          assign item_url = item_variant.url
+        endif
+      endfor
+    endfor
+  endif
+
+  assign fill_style = ''
+  if block.settings.color != blank
+    assign fill_style = '--linked-color-fill: ' | append: block.settings.color | append: ';'
+  elsif block.settings.image != blank
+    assign fill_url = block.settings.image | image_url: width: 96
+    assign fill_style = "--linked-color-image: url('" | append: fill_url | append: "');"
+  elsif item.featured_image != blank
+    assign fill_url = item.featured_image | image_url: width: 96
+    assign fill_style = "--linked-color-image: url('" | append: fill_url | append: "');"
+  endif
+-%}
+
+{%- if item != blank -%}
+  <li
+    class="linked-colors__entry"
+    {{ block.shopify_attributes }}
+  >
+    <a
+      class="linked-colors__item{% unless item.available %} linked-colors__item--unavailable{% endunless %}"
+      href="{{ item_url }}"
+      data-color-key="{{ color_key }}"
+      {% if is_current %}
+        data-current-color="{{ color_key }}"
+        aria-current="true"
+      {% endif %}
+      aria-label="{{ item_name | escape }}{% unless item.available %} - {{ 'products.product.sold_out' | t }}{% endunless %}"
+    >
+      <span
+        class="linked-colors__swatch"
+        {% if fill_style != blank %}
+          style="{{ fill_style | escape }}"
+        {% endif %}
+      ></span>
+      <span
+        class="linked-colors__name"
+        aria-hidden="true"
+      >
+        {{- item_name | escape -}}
+      </span>
+    </a>
+    {%- if is_current -%}
+      <!--sn-current:{{ item_name | escape }}:sn-->
+    {%- endif -%}
+  </li>
+{%- elsif request.design_mode -%}
+  <li
+    class="linked-colors__entry linked-colors__entry--empty"
+    {{ block.shopify_attributes }}
+  >
+    <span
+      class="linked-colors__swatch"
+      {% if fill_style != blank %}
+        style="{{ fill_style | escape }}"
+      {% endif %}
+    ></span>
+    <span class="linked-colors__name">{{ block.settings.color_name | default: '—' | escape }}</span>
+  </li>
+{%- endif -%}
+
+{% schema %}
+{
+  "name": "Colour",
+  "tag": null,
+  "settings": [
+    {
+      "type": "product",
+      "id": "product",
+      "label": "Destination product"
+    },
+    {
+      "type": "text",
+      "id": "color_name",
+      "label": "Colour name",
+      "info": "Write it exactly like the colour in Product Admin (e.g. وردي) so a product with colour variants links this swatch too. Empty = product title."
+    },
+    {
+      "type": "color",
+      "id": "color",
+      "label": "Colour"
+    },
+    {
+      "type": "image_picker",
+      "id": "image",
+      "label": "Image (when no colour is set)",
+      "info": "Empty = the product's featured image."
+    }
+  ],
+  "presets": [
+    {
+      "name": "Colour"
+    }
+  ]
+}
+{% endschema %}

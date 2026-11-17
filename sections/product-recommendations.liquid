@@ -5,6 +5,18 @@
   fetchpriority="low"
 ></script>
 
+{%- if section.settings.scroll_progress != blank and section.settings.scroll_progress != 'none' -%}
+  {%- comment -%}
+    Snosha P06: the progress bar arrives with the recommendations (morphSection), and scripts inside
+    morphed HTML do not run, so the element's script is loaded here with the section itself.
+  {%- endcomment -%}
+  <script
+    src="{{ 'scroll-progress.js' | asset_url }}"
+    type="module"
+    fetchpriority="low"
+  ></script>
+{%- endif -%}
+
 {% liquid
   case section.settings.layout_type
     when 'grid'
@@ -23,6 +35,35 @@
     echo '--column-count: ' | append: section.settings.columns | append: ';'
     echo '--column-count-mobile: ' | append: section.settings.mobile_columns | append: ';'
   endcapture
+
+  # Snosha P06 (Dev3): opt-in desktop card width and custom arrow appearance. Unset = native output.
+  assign sn_reco_class = ''
+  assign sn_arrow_background = section.settings.arrow_background | default: 'transparent'
+  assign sn_arrow_color = section.settings.arrow_icon_color | default: 'currentColor'
+  assign sn_arrow_border = section.settings.arrow_border_color | default: 'transparent'
+  capture sn_reco_styles
+    if section.settings.card_width > 0
+      echo '--sn-reco-card-width: ' | append: section.settings.card_width | append: 'px;'
+    endif
+    if section.settings.arrows_custom
+      echo '--sn-reco-arrow-size: ' | append: section.settings.arrow_size | append: 'px;'
+      echo '--sn-reco-arrow-icon-size: ' | append: section.settings.arrow_icon_size | append: 'px;'
+      echo '--sn-reco-arrow-radius: ' | append: section.settings.arrow_radius | append: '%;'
+      echo '--sn-reco-arrow-inset: ' | append: section.settings.arrow_inset | append: 'px;'
+      echo '--sn-reco-arrow-background: ' | append: sn_arrow_background | append: ';'
+      echo '--sn-reco-arrow-color: ' | append: sn_arrow_color | append: ';'
+      echo '--sn-reco-arrow-border: ' | append: sn_arrow_border | append: ';'
+      if section.settings.arrow_shadow_color != blank
+        echo '--sn-reco-arrow-shadow: 0 2px 6px color-mix(in srgb, ' | append: section.settings.arrow_shadow_color | append: ' 40%, transparent), 0 10px 26px ' | append: section.settings.arrow_shadow_color | append: ';'
+      endif
+    endif
+  endcapture
+  if section.settings.card_width > 0
+    assign sn_reco_class = sn_reco_class | append: ' sn-reco--card-width'
+  endif
+  if section.settings.arrows_custom
+    assign sn_reco_class = sn_reco_class | append: ' sn-reco--arrows'
+  endif
 %}
 
 {% render 'quick-add-styles' %}
@@ -62,11 +103,14 @@
       section-resource-list
       spacing-style
       gap-style
+      {{- sn_reco_class -}}
+      {%- render 'custom-class', value: section.settings.custom_class %}
     "
     style="
       {%  render 'spacing-style', settings: section.settings %}
       {%  render 'gap-style', value: section.settings.gap %}
       {{ styles }}
+      {{ sn_reco_styles }}
     "
   >
     <div class="section-resource-list__content">
@@ -84,7 +128,17 @@
           endfor
         elsif recommendations.performed and recommendations.products_count == 0
           # No recommendations found, pull from catalog
-          if section.settings.recommendation_type == 'related'
+          # Snosha P06: optional "When there are no recommendations" choice; unset = native catalog fallback.
+          if section.settings.empty_fallback == 'none'
+            # Empty list → data-has-recommendations="false" → native CSS hides the section
+            assign products = null
+          elsif section.settings.empty_fallback == 'collection'
+            if section.settings.fallback_collection != blank
+              assign products = section.settings.fallback_collection.products | reject: 'id', section.settings.product.id
+            else
+              assign products = null
+            endif
+          elsif section.settings.recommendation_type == 'related'
             assign products = collections.all.products | reject: 'id', section.settings.product.id
           elsif section.settings.recommendation_type == 'complementary'
             # Do not recommend the All collection as complementary products
@@ -94,9 +148,27 @@
         else
           assign products = recommendations.products
         endif
+
+        # Snosha P06: optional "Extra products" added after the recommendations (or the fallback).
+        # The current product and products already in the list are skipped. Unset = native output.
+        assign item_limit = section.settings.max_products
+        if section.settings.product != blank and section.settings.extra_products != blank
+          assign extra_products = section.settings.extra_products | reject: 'id', section.settings.product.id
+          for listed_product in products limit: section.settings.max_products
+            assign extra_products = extra_products | reject: 'id', listed_product.id
+          endfor
+          if extra_products.size > 0
+            if products == blank or products.size == 0
+              assign products = extra_products
+            else
+              assign products = products | slice: 0, section.settings.max_products | concat: extra_products
+            endif
+            assign item_limit = item_limit | plus: extra_products.size
+          endif
+        endif
       %}
       {% capture list_items %}
-        {% for product in products limit: section.settings.max_products %}
+        {% for product in products limit: item_limit %}
           <div class="resource-list__item">
             {% content_for 'block',
               type: '_product-card',
@@ -146,7 +218,7 @@
             {% render 'resource-list-carousel',
               ref: 'resourceListCarousel',
               slides: slides,
-              slide_count: recommendations.products.size,
+              slide_count: slides.size,
               settings: section.settings
             %}
         {% endcase %}
@@ -170,11 +242,35 @@
           {% render 'resource-list-carousel',
             ref: 'resourceListCarouselMobile',
             slides: slides,
-            slide_count: recommendations.products.size,
+            slide_count: slides.size,
             settings: section.settings
           %}
         </div>
       {% endif %}
+
+      {%- liquid
+        # Snosha P06: opt-in progress bar (shared scroll-progress component, same wiring as product-list).
+        # Rendered in the loaded branch so it binds to the carousel that arrives with the recommendations.
+        assign show_scroll_progress = false
+        assign scroll_progress_class = ''
+        if has_recommendations == 'true' and section.settings.scroll_progress != blank and section.settings.scroll_progress != 'none'
+          if section.settings.layout_type == 'carousel'
+            assign show_scroll_progress = true
+            if section.settings.scroll_progress == 'mobile'
+              assign scroll_progress_class = 'hidden--desktop'
+            endif
+          elsif section.settings.carousel_on_mobile
+            assign show_scroll_progress = true
+            assign scroll_progress_class = 'hidden--desktop'
+          endif
+        endif
+      -%}
+      {%- if show_scroll_progress -%}
+        {% render 'scroll-progress',
+          target: '.resource-list__carousel > slideshow-container > slideshow-slides',
+          class: scroll_progress_class
+        %}
+      {%- endif -%}
     {%- else -%}
       <div
         class="resource-list resource-list--grid"
@@ -189,6 +285,56 @@
     {%- endif -%}
   </div>
 </product-recommendations>
+
+{% stylesheet %}
+  /* Snosha P06 (Dev3) opt-in extensions. The classes are only output when the settings are used. */
+
+  /* Fixed desktop card width for the carousel ("Card width", 0 = by columns) */
+  @media screen and (min-width: 750px) {
+    .sn-reco--card-width .resource-list__carousel .resource-list__slide {
+      --slide-width: var(--sn-reco-card-width);
+    }
+  }
+
+  /* Custom arrows ("Custom arrow style"): always visible on desktop, native disabled state kept */
+  .sn-reco--arrows .resource-list__carousel slideshow-arrows {
+    padding-inline: var(--sn-reco-arrow-inset);
+    mix-blend-mode: normal;
+  }
+
+  .sn-reco--arrows .resource-list__carousel slideshow-arrows .slideshow-control.slideshow-control {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    inline-size: var(--sn-reco-arrow-size);
+    block-size: var(--sn-reco-arrow-size);
+    min-inline-size: var(--sn-reco-arrow-size);
+    min-block-size: var(--sn-reco-arrow-size);
+    padding: 0;
+    border: 1px solid var(--sn-reco-arrow-border);
+    border-radius: var(--sn-reco-arrow-radius);
+    background: var(--sn-reco-arrow-background);
+    color: var(--sn-reco-arrow-color);
+    box-shadow: var(--sn-reco-arrow-shadow, none);
+    opacity: 1;
+    animation: none;
+
+    :is(.svg-wrapper, svg) {
+      inline-size: var(--sn-reco-arrow-icon-size);
+      block-size: var(--sn-reco-arrow-icon-size);
+    }
+
+    &[disabled] {
+      display: none;
+    }
+  }
+
+  @media screen and (max-width: 749px) {
+    .sn-reco--arrows .resource-list__carousel slideshow-arrows {
+      display: none;
+    }
+  }
+{% endstylesheet %}
 
 {% schema %}
 {
@@ -255,6 +401,24 @@
       "content": "t:content.complementary_products"
     },
     {
+      "type": "select",
+      "id": "empty_fallback",
+      "label": "When there are no recommendations",
+      "info": "Shopify returns no recommendations for some products (e.g. new products). Recommendations always come first.",
+      "options": [
+        { "value": "catalog", "label": "Show other products from the catalog (default)" },
+        { "value": "collection", "label": "Show products from a collection" },
+        { "value": "none", "label": "Hide the section" }
+      ],
+      "default": "catalog"
+    },
+    {
+      "type": "collection",
+      "id": "fallback_collection",
+      "label": "Fallback collection",
+      "info": "Used only when the option above is \"Show products from a collection\". The current product is left out. Empty = hide the section."
+    },
+    {
       "type": "header",
       "content": "t:content.cards_layout"
     },
@@ -289,6 +453,13 @@
       "max": 10,
       "step": 1,
       "default": 4
+    },
+    {
+      "type": "product_list",
+      "id": "extra_products",
+      "label": "Extra products",
+      "info": "Added after the recommendations (up to 12). The current product and repeats are skipped. Shows even when there are no recommendations.",
+      "limit": 12
     },
     {
       "type": "range",
@@ -394,6 +565,117 @@
       "visible_if": "{{ section.settings.icons_style != 'none' and section.settings.layout_type == 'carousel' or section.settings.carousel_on_mobile == true }}"
     },
     {
+      "type": "range",
+      "id": "card_width",
+      "label": "Card width (desktop carousel)",
+      "info": "0 = set by Columns. Fixed widths let the next cards peek in at the edges.",
+      "min": 0,
+      "max": 400,
+      "step": 4,
+      "unit": "px",
+      "default": 0,
+      "visible_if": "{{ section.settings.layout_type == 'carousel' }}"
+    },
+    {
+      "type": "select",
+      "id": "scroll_progress",
+      "label": "Scroll progress bar",
+      "info": "A bar under the carousel that follows the scroll position. Hidden when nothing scrolls.",
+      "options": [
+        { "value": "none", "label": "Off" },
+        { "value": "mobile", "label": "Mobile only" },
+        { "value": "always", "label": "Mobile and desktop" }
+      ],
+      "default": "none",
+      "visible_if": "{{ section.settings.layout_type == 'carousel' or section.settings.carousel_on_mobile == true }}"
+    },
+    {
+      "type": "checkbox",
+      "id": "arrows_custom",
+      "label": "Custom arrow style",
+      "info": "Desktop only: arrows stay visible and use the settings below. Phones swipe.",
+      "default": false,
+      "visible_if": "{{ section.settings.icons_style != 'none' and section.settings.layout_type == 'carousel' }}"
+    },
+    {
+      "type": "range",
+      "id": "arrow_size",
+      "label": "Arrow button size",
+      "min": 24,
+      "max": 80,
+      "step": 1,
+      "unit": "px",
+      "default": 52,
+      "visible_if": "{{ section.settings.arrows_custom and section.settings.layout_type == 'carousel' }}"
+    },
+    {
+      "type": "range",
+      "id": "arrow_icon_size",
+      "label": "Arrow icon size",
+      "min": 8,
+      "max": 40,
+      "step": 1,
+      "unit": "px",
+      "default": 26,
+      "visible_if": "{{ section.settings.arrows_custom and section.settings.layout_type == 'carousel' }}"
+    },
+    {
+      "type": "range",
+      "id": "arrow_radius",
+      "label": "Arrow corner radius",
+      "info": "50% = circle.",
+      "min": 0,
+      "max": 50,
+      "step": 1,
+      "unit": "%",
+      "default": 50,
+      "visible_if": "{{ section.settings.arrows_custom and section.settings.layout_type == 'carousel' }}"
+    },
+    {
+      "type": "range",
+      "id": "arrow_inset",
+      "label": "Arrow distance from the edge",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 46,
+      "visible_if": "{{ section.settings.arrows_custom and section.settings.layout_type == 'carousel' }}"
+    },
+    {
+      "type": "color",
+      "id": "arrow_background",
+      "label": "Arrow background",
+      "alpha": true,
+      "default": "#fffffff7",
+      "visible_if": "{{ section.settings.arrows_custom and section.settings.layout_type == 'carousel' }}"
+    },
+    {
+      "type": "color",
+      "id": "arrow_icon_color",
+      "label": "Arrow icon color",
+      "default": "#176bb0",
+      "visible_if": "{{ section.settings.arrows_custom and section.settings.layout_type == 'carousel' }}"
+    },
+    {
+      "type": "color",
+      "id": "arrow_border_color",
+      "label": "Arrow border",
+      "info": "Empty = no border.",
+      "alpha": true,
+      "default": "#dcf2fb",
+      "visible_if": "{{ section.settings.arrows_custom and section.settings.layout_type == 'carousel' }}"
+    },
+    {
+      "type": "color",
+      "id": "arrow_shadow_color",
+      "label": "Arrow shadow color",
+      "info": "Empty = no shadow.",
+      "alpha": true,
+      "default": "#082e664d",
+      "visible_if": "{{ section.settings.arrows_custom and section.settings.layout_type == 'carousel' }}"
+    },
+    {
       "type": "header",
       "content": "t:content.section_layout"
     },
@@ -452,6 +734,16 @@
       "step": 1,
       "unit": "px",
       "default": 0
+    },
+    {
+      "type": "header",
+      "content": "Advanced"
+    },
+    {
+      "type": "text",
+      "id": "custom_class",
+      "label": "Custom CSS class",
+      "info": "Lowercase letters, numbers and hyphens, starting with a letter. Separate multiple classes with spaces."
     }
   ],
   "presets": [

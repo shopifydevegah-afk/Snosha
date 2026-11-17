@@ -2215,3 +2215,2379 @@
 :where(.sn-home-blog .blog-post-card__content-text) {
   color: var(--color, #5a5a59);
 }
+
+/* ==========================================================================
+   Product page — Product Hero + Buy Box | owner: Dev1
+   Figma desktop 190:10204 (1480; columns 1336 = gallery 712 + 64 + buy box 560),
+   mobile 190:10914 (390; stage 352×364, buy box 350).
+   Native composition: section `product-information` (class sn-product-hero) → static `_product-media-gallery`
+   (carousel + thumbnails, zoom, "Styled stage" + badge) and `_product-details` → review, group (title + price),
+   group .sn-product-promo, group .sn-product-benefits (rows = group › icon + text), variant-picker (+ names under
+   swatches), linked-color-swatches, buy-buttons, group .sn-product-trust (pills = group › icon + text),
+   product-recommendations (complementary), text, accordion (row cards). Breadcrumbs: native `section`
+   (class sn-product-breadcrumbs) above, block `breadcrumbs`.
+   Merchant-editable values arrive as CSS custom properties:
+     --sn-* on #shopify-section-… = Product information section › "Snosha layout" settings
+     --sn-stage-*, --sn-image-*, --sn-badge-*, --sn-zoom-*, --sn-arrow-size, --sn-thumb-* on the gallery
+       = Product media block › "Styled stage" settings
+   Each var() fallback is the Figma value, so the page still matches Figma when a setting is missing.
+   Typography rules for text blocks apply only to non-Custom text presets (:not(.custom-typography)), so a
+   text block switched to "Custom" typography in the editor keeps the merchant's values.
+   ========================================================================== */
+.sn-product-breadcrumbs {
+  --page-content-width: 1336px;
+  --page-width: calc(var(--page-content-width) + var(--page-margin) * 2);
+
+  @media screen and (max-width: 749px) {
+    --page-margin: 20px;
+
+    &.spacing-style {
+      padding-block: calc(10px + var(--section-top-offset, 0px)) 0;
+    }
+  }
+
+  .breadcrumbs {
+    font-family: var(--font-body--family);
+    font-size: 14px;
+    font-weight: 400;
+    line-height: 24px;
+    color: #5a5a59;
+  }
+
+  .breadcrumbs__item::before {
+    color: #5a5a59;
+  }
+
+  .breadcrumbs__item--current {
+    color: #131311;
+  }
+}
+
+.sn-product-hero {
+  --page-content-width: 1336px;
+  --page-width: calc(var(--page-content-width) + var(--page-margin) * 2);
+
+  @media screen and (max-width: 749px) {
+    /* Figma mobile: buy box 350 wide (20px gutters); 16 below the breadcrumb, 24 at the bottom */
+    --page-margin: 20px;
+
+    &.spacing-style {
+      padding-block: calc(16px + var(--section-top-offset, 0px)) 24px;
+    }
+  }
+
+  /* --- Columns ---------------------------------------------------------------------------------------
+     RTL: "Media position: Right" puts the gallery in the second column = physical left, as in Figma.
+     The native Gap is split as padding (half on each column); "Column gap, desktop" replaces it here
+     because the native Gap stops at 48. "Gallery column width" = width of the gallery itself. */
+  @media screen and (min-width: 750px) {
+    &.product-information .product-information__grid.product-information--media-right {
+      --gap: var(--sn-columns-gap, 64px);
+
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    }
+  }
+
+  @media screen and (min-width: 990px) {
+    &.product-information .product-information__grid.product-information--media-right {
+      grid-template-columns: minmax(0, 1fr) minmax(0, calc(var(--sn-gallery-width, 53%) + var(--gap) / 2));
+    }
+  }
+
+  /* --- Gallery stage ----------------------------------------------------------------------------------
+     Figma: stage 712×660 (mobile 352×364), soft grey, 1px #dcf2fb, radius 28; the product photo fills the
+     stage (a transparent cut-out at ~105% of the stage width). Only the carousel slides are styled
+     (slideshow-slide), never the zoom dialog's images. */
+  .product-information__media {
+    position: relative;
+  }
+
+  .media-gallery--carousel slideshow-slide.product-media-container {
+    --gallery-aspect-ratio: calc(100 / var(--sn-stage-ratio, 93));
+
+    background-color: var(--sn-stage-bg, rgb(235 237 238 / 0.85));
+    border: var(--sn-stage-border-width, 1px) solid var(--sn-stage-border-color, #dcf2fb);
+    border-radius: var(--media-radius, 28px);
+    overflow: hidden;
+
+    @media screen and (max-width: 749px) {
+      --gallery-aspect-ratio: calc(100 / var(--sn-stage-ratio-mobile, 103));
+    }
+
+    /* The image fills the stage; fit / scale / position come from the gallery's "Styled stage" settings.
+       Horizon paints the theme background behind "contain" images (for its arrow blend mode), which showed
+       as a white frame inside the grey stage: transparent here. A grey or white background that is part of
+       the uploaded file itself cannot be removed by CSS ("Blend white image background" only helps white). */
+    :is(img, .deferred-media__poster-image) {
+      inline-size: 100%;
+      block-size: 100%;
+      padding: 0;
+      border: 0;
+      border-radius: 0;
+      background-color: transparent;
+      object-fit: var(--sn-image-fit, contain);
+      object-position: var(--sn-image-x, 50%) var(--sn-image-y, 50%);
+      scale: var(--sn-image-scale, 1);
+      transform-origin: var(--sn-image-x, 50%) var(--sn-image-y, 50%);
+      mix-blend-mode: var(--sn-image-blend, normal);
+    }
+  }
+
+  @media screen and (max-width: 749px) {
+    /* Figma mobile stage 352 wide, 19px from the screen edges ("Stage side margin, mobile") */
+    media-gallery.media-gallery--carousel {
+      padding-inline: var(--sn-stage-inset-mobile, 19px);
+    }
+  }
+
+  /* Zoom button (Figma 190:10217: 44 circle, white 92%, soft shadow, 18 search icon stroke 1.6; bottom 27 /
+     right 25, mobile 24 / 16). A real <button> on every slide ("Styled stage" + Zoom), opening the native zoom
+     dialog like a click on the slide. Its own SVG follows the Figma geometry: the theme's icon-search.svg draws
+     the glyph in ~58% of its box (and its stroke variable is lost as a mask), which is why it looked too small.
+     Sizes = "Zoom button size" / "Zoom icon size". Only this gallery's button; other search icons unchanged. */
+  .media-gallery--carousel slideshow-slide.product-media-container {
+    position: relative;
+  }
+
+  .product-media-gallery__zoom {
+    --sn-zoom-bottom: 27px;
+    --sn-zoom-start: 25px;
+
+    position: absolute;
+    z-index: 2;
+    inset-block-end: var(--sn-zoom-bottom);
+    inset-inline-start: var(--sn-zoom-start);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    inline-size: var(--sn-zoom-size, 44px);
+    block-size: var(--sn-zoom-size, 44px);
+    padding: 0;
+    border-radius: 50%;
+    background-color: rgb(255 255 255 / 0.92);
+    box-shadow: 0 12px 16px rgb(15 100 168 / 0.1);
+    color: var(--color-primary-button-background, #176bb0);
+    cursor: zoom-in;
+
+    @media screen and (max-width: 749px) {
+      --sn-zoom-bottom: 24px;
+      --sn-zoom-start: 16px;
+    }
+
+    svg {
+      flex: 0 0 auto;
+      inline-size: var(--sn-zoom-icon-size, 18px);
+      block-size: var(--sn-zoom-icon-size, 18px);
+    }
+
+    &:focus-visible {
+      outline: var(--focus-outline-width, 2px) solid var(--color-primary-button-background, #176bb0);
+      outline-offset: 2px;
+    }
+  }
+
+  /* 3D models open their own viewer, not the zoom dialog */
+  .product-media-container--model .product-media-gallery__zoom {
+    display: none;
+  }
+
+  /* Arrows (desktop; Horizon hides them on mobile, where swipe and thumbnails navigate). Grey round buttons;
+     the theme's primary button colour on hover / keyboard focus. With a mouse they appear only while the
+     pointer is over the gallery or an arrow has keyboard focus; on touch screens they stay visible. */
+  .media-gallery--carousel slideshow-arrows {
+    mix-blend-mode: normal;
+    padding-inline: 16px;
+  }
+
+  .media-gallery--carousel slideshow-arrows .slideshow-control {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    inline-size: var(--sn-arrow-size, 44px);
+    block-size: var(--sn-arrow-size, 44px);
+    min-inline-size: var(--sn-arrow-size, 44px);
+    min-block-size: var(--sn-arrow-size, 44px);
+    padding: 0;
+    border-radius: 50%;
+    background-color: rgb(19 19 17 / 0.12);
+    color: #131311;
+    cursor: pointer;
+    transition:
+      opacity var(--animation-speed, 0.2s) ease,
+      background-color var(--animation-speed, 0.2s) ease,
+      color var(--animation-speed, 0.2s) ease;
+
+    &:is(:hover, :focus-visible) {
+      background-color: var(--color-primary-button-background, #176bb0);
+      color: var(--color-primary-button-text, #fff);
+    }
+
+    &:is(:disabled, [aria-disabled='true']) {
+      cursor: default;
+      opacity: 0.4;
+    }
+  }
+
+  @media (hover: hover) and (pointer: fine) {
+    .media-gallery--carousel slideshow-arrows .slideshow-control {
+      opacity: 0;
+    }
+
+    .media-gallery--carousel slideshow-component:is(:hover, :focus-within) slideshow-arrows .slideshow-control:not(:disabled),
+    .media-gallery--carousel slideshow-arrows .slideshow-control:focus-visible {
+      opacity: 1;
+    }
+  }
+
+  /* Thumbnails: Figma 104 (mobile 66) squares, 12 (mobile 8) apart, 23 (mobile 16) below the stage;
+     selected = 2px theme blue. Sizes / gaps = "Styled stage" settings (the native width stops at 72). */
+  .media-gallery--carousel .slideshow-controls__thumbnails {
+    gap: var(--sn-thumb-gap, 12px);
+    margin-inline: 0;
+    padding-inline: 0;
+    padding-block: 23px 0;
+
+    @media screen and (max-width: 749px) {
+      gap: var(--sn-thumb-gap-mobile, 8px);
+      padding-block: 16px 0;
+    }
+
+    .slideshow-control {
+      --aspect-ratio: 1;
+
+      inline-size: var(--sn-thumb-size, 104px);
+      aspect-ratio: 1;
+      border: 1px solid var(--sn-stage-border-color, #dcf2fb);
+      border-radius: var(--thumbnail-radius, 14px);
+      background-color: #fff;
+      overflow: hidden;
+
+      @media screen and (max-width: 749px) {
+        inline-size: var(--sn-thumb-size-mobile, 66px);
+      }
+
+      img {
+        object-fit: contain;
+        border-radius: 0;
+        background-color: transparent;
+      }
+
+      &[aria-selected='true'] {
+        outline: none;
+        border: 2px solid var(--color-primary-button-background, #176bb0);
+      }
+    }
+  }
+
+  /* Product badge, first element inside the gallery: placed from the stage's top / start (right in Arabic)
+     corner. Offsets, colours = "Styled stage" settings; Figma 19 / 19 (mobile 20 / 20 inside the stage). */
+  .product-media-gallery__badge {
+    position: absolute;
+    z-index: 3;
+    inset-block-start: calc(var(--padding-block-start, 0px) + var(--sn-badge-top, 19px));
+    inset-inline-start: calc(var(--padding-inline-start, 0px) + var(--sn-badge-side, 19px));
+    padding: 4px 12px;
+    border-radius: 8px;
+    background-color: var(--sn-badge-bg, #176bb0);
+    color: var(--sn-badge-color, #fff);
+    font-size: 12px;
+    font-weight: 600;
+    line-height: 18px;
+    pointer-events: none;
+
+    @media screen and (max-width: 749px) {
+      inset-block-start: var(--sn-badge-top-mobile, 20px);
+      inset-inline-start: calc(var(--sn-stage-inset-mobile, 19px) + var(--sn-badge-side-mobile, 20px));
+    }
+  }
+
+  /* --- Buy box --------------------------------------------------------------------------------------- */
+  /* Title (H1 of the title text block): Figma 38/64 Bold #176bb0; mobile 24/40 (Figma line box 64, 40 keeps
+     a wrapped title readable). Switch the title block to Custom typography to set your own. */
+  .product-details .text-block:not(.custom-typography) h1 {
+    margin: 0;
+    font-family: var(--font-heading--family);
+    font-size: 38px;
+    font-weight: 700;
+    line-height: 64px;
+    color: #176bb0;
+
+    @media screen and (max-width: 749px) {
+      font-size: 24px;
+      line-height: 40px;
+    }
+  }
+
+  /* Price: current 32/52 SemiBold (mobile = the price block's "Price size — Mobile", 26 while it is 0),
+     compare-at 14/22 */
+  .product-details product-price {
+    .price {
+      font-size: 32px;
+      font-weight: 600;
+      line-height: 52px;
+      color: #131311;
+    }
+
+    .compare-at-price {
+      font-size: 14px;
+      font-weight: 400;
+      line-height: 22px;
+      color: #5a5a59;
+    }
+
+    .price-discount-badge {
+      padding: 4px 12px;
+      font-weight: 600;
+      line-height: 18px;
+    }
+  }
+
+  @media screen and (max-width: 749px) {
+    .product-details product-price .price {
+      font-size: var(--price-font-size-mobile, 26px);
+    }
+  }
+
+  /* Promotional capsule: native group background / radius / padding; Figma dashed 1.2px border */
+  .sn-product-promo {
+    border: 1.2px dashed rgb(23 107 176 / 0.55);
+
+    .text-block:not(.custom-typography),
+    .text-block:not(.custom-typography) > * {
+      margin: 0;
+      font-size: 12px;
+      font-weight: 600;
+      line-height: 20px;
+      color: #176bb0;
+    }
+  }
+
+  /* Benefits: each row = group (icon block + text block). Icon, icon size (Icon › Width / Mobile width) and the
+     icon→text gap (row group › Gap) are native settings; the tile behind the icon = section setting "Benefit
+     icon tile" (Figma 22 / mobile 20, #f0fafe, radius 10; 0 = no tile). An icon block left on "None" without
+     an image shows the theme check mark. Remove or hide the icon block for a row without icon. */
+  .sn-product-benefits > .group-block-content > .group-block > .group-block-content {
+    flex-wrap: nowrap;
+    align-items: center;
+  }
+
+  .sn-product-benefits .icon-block {
+    flex: 0 0 auto;
+    align-items: center;
+    justify-content: center;
+    min-inline-size: var(--sn-benefit-tile, 22px);
+    min-block-size: var(--sn-benefit-tile, 22px);
+    border-radius: 10px;
+    background-color: #f0fafe;
+    color: var(--color-primary-button-background, #176bb0);
+
+    @media screen and (max-width: 749px) {
+      min-inline-size: var(--sn-benefit-tile-mobile, 20px);
+      min-block-size: var(--sn-benefit-tile-mobile, 20px);
+    }
+
+    &:not(:has(.icon-block__media))::before {
+      content: '';
+      inline-size: 10px;
+      block-size: 10px;
+      background-color: currentcolor;
+      mask: url('icon-checkmark.svg') center / contain no-repeat;
+    }
+  }
+
+  .sn-product-benefits .text-block {
+    flex: 1 1 0;
+    min-inline-size: 0;
+  }
+
+  .sn-product-benefits .text-block:not(.custom-typography) > * {
+    margin: 0;
+    font-size: 14px;
+    font-weight: 400;
+    line-height: 24px;
+    color: #131311;
+
+    @media screen and (max-width: 749px) {
+      font-size: 13.5px;
+    }
+  }
+
+  /* Colour: legend «اللون: …» beside the swatches (Figma 16/27 SemiBold #12568d); the colour name comes from
+     the product option (translate the option name in Admin, see the plan). Swatch: Figma ring 34 (selected 2px
+     theme blue, unselected 1px #dcf2fb), fill 24, names 12/20 under each swatch (selected SemiBold #131311).
+     Sizes / gaps = section settings. */
+  .variant-option--swatches {
+    --variant-picker-swatch-width: var(--sn-swatch-dot, 24px);
+    --variant-picker-swatch-height: var(--sn-swatch-dot, 24px);
+    --sn-swatch-ring: calc((var(--sn-swatch-size, 34px) - var(--sn-swatch-dot, 24px)) / 2);
+
+    gap: var(--sn-swatch-gap, 8px);
+
+    legend {
+      float: inline-start;
+      margin-inline-end: var(--sn-swatch-legend-gap, 4px);
+      font-size: 16px;
+      font-weight: 600;
+      line-height: 27px;
+      color: #12568d;
+    }
+
+    .variant-option__swatch-value {
+      padding-inline-start: 0;
+      color: inherit;
+
+      &::before {
+        content: ': ';
+        white-space: pre;
+      }
+    }
+
+    .variant-option__button-label--has-swatch {
+      display: inline-flex;
+      flex-direction: column;
+      align-items: center;
+      gap: var(--sn-swatch-label-gap, 5px);
+      outline: none;
+
+      &:hover,
+      &:has(:checked) {
+        outline: none;
+      }
+    }
+
+    .swatch {
+      margin: var(--sn-swatch-ring);
+      border: 0;
+      border-radius: 50%;
+      outline: none;
+      /* Not selected: no border at all (only the selected colour has the blue ring) */
+      box-shadow: none;
+      transition: box-shadow var(--animation-speed, 0.2s) ease;
+    }
+
+    .variant-option__button-label--has-swatch:has(:checked) .swatch {
+      outline: none;
+      box-shadow:
+        0 0 0 calc(var(--sn-swatch-ring) - 2px) var(--color-background, #fff),
+        0 0 0 var(--sn-swatch-ring) var(--color-primary-button-background, #176bb0);
+    }
+
+    .variant-option__button-label--has-swatch:has(:focus-visible) .swatch {
+      outline: var(--focus-outline-width, 2px) solid var(--color-primary-button-background, #176bb0);
+      outline-offset: calc(var(--sn-swatch-ring) + 2px);
+    }
+
+    .variant-option__swatch-name {
+      max-inline-size: 72px;
+      font-size: 12px;
+      font-weight: 400;
+      line-height: 20px;
+      color: #5a5a59;
+      text-align: center;
+      overflow-wrap: anywhere;
+    }
+
+    .variant-option__button-label--has-swatch:has(:checked) .variant-option__swatch-name {
+      font-weight: 600;
+      color: #131311;
+    }
+  }
+
+  /* Linked colour products (separate products): same look as the variant swatches */
+  .linked-colors {
+    --sn-swatch-ring: calc((var(--sn-swatch-size, 34px) - var(--sn-swatch-dot, 24px)) / 2);
+
+    gap: 4px var(--sn-swatch-legend-gap, 4px);
+  }
+
+  .linked-colors__legend {
+    font-size: 16px;
+    font-weight: 600;
+    line-height: 27px;
+    color: #12568d;
+  }
+
+  .linked-colors__value {
+    padding-inline-start: 0;
+
+    &::before {
+      content: ': ';
+      white-space: pre;
+    }
+  }
+
+  .linked-colors__list {
+    gap: var(--sn-swatch-gap, 8px);
+  }
+
+  .linked-colors__item {
+    gap: var(--sn-swatch-label-gap, 5px);
+  }
+
+  .linked-colors__swatch {
+    inline-size: var(--sn-swatch-dot, 24px);
+    block-size: var(--sn-swatch-dot, 24px);
+    margin: var(--sn-swatch-ring);
+    border: 0;
+    /* Not selected: no border at all (only the selected colour has the blue ring) */
+    box-shadow: none;
+  }
+
+  /* Click feedback (only while the button is pressed, not on focus): the button being clicked takes the ring at once (the other loses it) while its product page
+     loads; on the new page the ring comes from aria-current (the product being viewed) */
+  .linked-colors__list:has(.linked-colors__item:active:not([aria-current='true']))
+    .linked-colors__item[aria-current='true']
+    .linked-colors__swatch {
+    box-shadow: none;
+  }
+
+  .linked-colors__list .linked-colors__item:active .linked-colors__swatch {
+    box-shadow:
+      0 0 0 calc(var(--sn-swatch-ring) - 2px) var(--color-background, #fff),
+      0 0 0 var(--sn-swatch-ring) var(--color-primary-button-background, #176bb0);
+  }
+
+  /* Selected (the product being viewed): blue ring */
+  .linked-colors__item[aria-current='true'] .linked-colors__swatch {
+    outline: none;
+    box-shadow:
+      0 0 0 calc(var(--sn-swatch-ring) - 2px) var(--color-background, #fff),
+      0 0 0 var(--sn-swatch-ring) var(--color-primary-button-background, #176bb0);
+  }
+
+  .linked-colors__item:focus-visible {
+    outline: none;
+
+    .linked-colors__swatch {
+      outline: var(--focus-outline-width, 2px) solid var(--color-primary-button-background, #176bb0);
+      outline-offset: calc(var(--sn-swatch-ring) + 2px);
+    }
+  }
+
+  .linked-colors__name {
+    max-inline-size: 72px;
+    font-size: 12px;
+    line-height: 20px;
+    color: #5a5a59;
+    text-align: center;
+  }
+
+  .linked-colors__item[aria-current='true'] .linked-colors__name {
+    font-weight: 600;
+    color: #131311;
+  }
+
+  /* Purchase row: Add to cart (Figma 58 high, radius 12, theme blue, label only) + quantity pill (121×50,
+     mobile 105×46). Height / gap = section settings. Quantity: Figma order "−  1  +" from left to right; the
+     control is laid out left-to-right (direction only, the buttons keep their own actions). */
+  .product-form-buttons:not(.product-form-buttons--stacked) {
+    gap: var(--sn-purchase-gap, 12px);
+    align-items: center;
+
+    @media screen and (max-width: 749px) {
+      gap: var(--sn-purchase-gap-mobile, 10px);
+    }
+  }
+
+  .product-form-buttons .add-to-cart-button {
+    justify-content: center;
+    min-block-size: var(--sn-button-height, 58px);
+    padding-inline: 28px;
+    border-radius: 12px;
+    font-size: 16px;
+    font-weight: 600;
+    line-height: 26px;
+
+    @media screen and (max-width: 749px) {
+      min-block-size: var(--sn-button-height-mobile, 58px);
+    }
+  }
+
+  .product-form-buttons .quantity-selector {
+    direction: ltr;
+    flex: 0 0 auto;
+    block-size: 50px;
+    min-inline-size: 121px;
+    padding-inline: 6px;
+    border: 1.5px solid #dcf2fb;
+    border-radius: 999px;
+    background-color: #fff;
+    box-shadow: 0 6px 14px rgb(13 64 128 / 0.07);
+    color: #176bb0;
+
+    :is(.quantity-minus, .quantity-plus) {
+      inline-size: 34px;
+      block-size: 34px;
+      border-radius: 17px;
+      color: #176bb0;
+    }
+
+    input {
+      font-size: 17px;
+      font-weight: 700;
+      color: #12568d;
+    }
+
+    @media screen and (max-width: 749px) {
+      block-size: 46px;
+      min-inline-size: 105px;
+      padding-inline: 6px;
+
+      :is(.quantity-minus, .quantity-plus) {
+        inline-size: 30px;
+        block-size: 30px;
+      }
+
+      input {
+        font-size: 15px;
+        color: #131311;
+      }
+    }
+  }
+
+  /* Trust pills: grid of 2 (Trust group › Columns / Mobile columns), spacing between pills = Trust group ›
+     Gap / Mobile gap, icon→text gap = each pill's Gap. Pill padding and icon tile = section settings
+     (icon side = inline-start = right in Arabic; Figma 12 / mobile 5, text side 12 / mobile 8, top/bottom
+     10 / 5, tile 28). Text 12/20 (mobile 10.5) SemiBold = section settings "Trust text size". */
+  .sn-product-trust > .group-block-content {
+    display: grid;
+    grid-template-columns: repeat(var(--sn-cols, 2), minmax(0, 1fr));
+    gap: var(--gap, 8px);
+
+    @media screen and (max-width: 749px) {
+      grid-template-columns: repeat(var(--sn-cols-mobile, 2), minmax(0, 1fr));
+      gap: var(--sn-gap-mobile, 10px);
+    }
+
+    > .group-block {
+      min-inline-size: 0;
+      padding-block: var(--sn-trust-pad-block, 10px);
+      padding-inline: var(--sn-trust-pad-start, 12px) var(--sn-trust-pad-end, 12px);
+      border: 1px solid #dcf2fb;
+      border-radius: 999px;
+      background-color: #fff;
+      filter: drop-shadow(0 6px 6px rgb(15 100 168 / 0.06));
+
+      min-block-size: var(--sn-trust-height, 0px);
+
+      @media screen and (max-width: 749px) {
+        min-block-size: var(--sn-trust-height-mobile, 0px);
+        padding-block: var(--sn-trust-pad-block-mobile, 5px);
+        padding-inline: var(--sn-trust-pad-start-mobile, 5px) var(--sn-trust-pad-end-mobile, 8px);
+      }
+
+      > .group-block-content {
+        flex-wrap: nowrap;
+        align-items: center;
+
+        @media screen and (max-width: 749px) {
+          gap: var(--sn-gap-mobile, var(--gap));
+        }
+      }
+    }
+
+    .icon-block {
+      flex: 0 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      inline-size: var(--sn-trust-tile, 28px);
+      block-size: var(--sn-trust-tile, 28px);
+      border-radius: 50%;
+      background-image: linear-gradient(to bottom, #dcf2fb, #f0fafe);
+    }
+
+    .text-block {
+      flex: 1 1 0;
+      min-inline-size: 0;
+    }
+
+    .text-block:not(.custom-typography) > * {
+      margin: 0;
+      font-size: var(--sn-trust-text, 12px);
+      font-weight: 600;
+      line-height: 20px;
+      color: #131311;
+
+      @media screen and (max-width: 749px) {
+        font-size: var(--sn-trust-text-mobile, 10.5px);
+      }
+    }
+  }
+
+  /* --- Complementary products («كمّل روتينك», native recommendations, intent=complementary) ---------
+     Heading gap = block Gap, space between cards = block Row gap, number = block "Product count";
+     card image / padding / add button = section settings. */
+  .product-recommendations {
+    > .block-resource-list > .section-resource-list__content .text-block:not(.custom-typography) > * {
+      margin: 0;
+      font-size: 16px;
+      font-weight: 600;
+      line-height: 27px;
+      color: #12568d;
+    }
+
+    .resource-list {
+      grid-template-columns: minmax(0, 1fr);
+    }
+
+    /* Theme Editor only: when Search & Discovery returns no complementary products, the native CSS hides the
+       block (correct on the store). In the editor it stays visible with this note, so an empty response is not
+       mistaken for a rendering bug. */
+    .shopify-design-mode &:has([data-has-recommendations='false']) {
+      display: block;
+
+      .section-resource-list__content {
+        display: none;
+      }
+
+      [data-has-recommendations='false']::before {
+        content: 'Search & Discovery returned no complementary products for this product (shown in the editor only).';
+        display: block;
+        padding: 12px 14px;
+        border: 1px dashed #dcf2fb;
+        border-radius: 18px;
+        font-size: 12px;
+        line-height: 20px;
+        color: #5a5a59;
+      }
+    }
+
+    /* Theme Editor only: "Manual selection" with no products picked yet */
+    .product-recommendations__editor-note {
+      margin: 0;
+      padding: 12px 14px;
+      border: 1px dashed #dcf2fb;
+      border-radius: 18px;
+      font-size: 12px;
+      line-height: 20px;
+      color: #5a5a59;
+    }
+
+    .product-recommendations__skeleton-item {
+      aspect-ratio: auto;
+      min-block-size: calc(var(--sn-xsell-thumb, 56px) + 2 * var(--sn-xsell-pad-block, 10px) + 2px);
+      border-radius: 18px;
+    }
+  }
+
+  /* Card row — Figma 190:10320 / 190:11031: 560 (mobile 350) × 76, border 1 #dcf2fb, radius 18, gradient #f0fafe
+     (physical left) → white; padding 10, 14 on the image side / 10 on the button side; gap 12. RTL right → left:
+     image 56 (white, 1px #dcf2fb, radius 14) · name 16/27 SemiBold #131311 (mobile 14) + line 12/20 #5a5a59
+     (mobile 10) · price 16/27 Bold blue · round add 38 (blue, shadow 0 8 8 rgb(15 100 168 / .3), plus 16).
+     Areas are placed by CLASS: the image block also outputs an inline <style> and a hidden zoom-out <h3>, so
+     position-based (nth-child) placement put the name, line and price in the wrong cells. Sizes / padding =
+     Product information › Snosha layout ("Complementary …"); count, row gap, heading gap = block settings. */
+  .product-recommendations .product-card__content {
+    position: relative;
+    display: grid;
+    grid-template-columns: var(--sn-xsell-thumb, 56px) minmax(0, 1fr) auto var(--sn-xsell-add, 38px);
+    grid-template-rows: auto auto;
+    grid-template-areas:
+      'thumb title price add'
+      'thumb sub price add';
+    align-items: center;
+    align-content: center;
+    column-gap: 12px;
+    row-gap: 1px;
+    min-block-size: calc(var(--sn-xsell-thumb, 56px) + 2 * var(--sn-xsell-pad-block, 10px) + 2px);
+    padding-block: var(--sn-xsell-pad-block, 10px);
+    padding-inline: var(--sn-xsell-pad-start, 14px) var(--sn-xsell-pad-end, 10px);
+    border: 1px solid #dcf2fb;
+    border-radius: 18px;
+    background-color: #fff;
+    background-image: linear-gradient(to right, #f0fafe, #fff); /* Figma: tinted on the physical left */
+
+    > .card-gallery {
+      grid-area: thumb;
+    }
+
+    /* Product title block: <a class="contents"> › text block (the link box is display: contents) */
+    > a > .text-block,
+    > .text-block:has([role='heading']) {
+      grid-area: title;
+      align-self: end;
+      min-inline-size: 0;
+    }
+
+    > .text-block:not(product-price, :has([role='heading'])) {
+      grid-area: sub;
+      align-self: start;
+      min-inline-size: 0;
+      overflow: hidden;
+    }
+
+    > product-price {
+      grid-area: price;
+      align-self: center;
+    }
+
+    > :is(style, .product-grid-view-zoom-out--details) {
+      display: none;
+    }
+
+    @media screen and (max-width: 749px) {
+      column-gap: 10px;
+    }
+  }
+
+  .product-recommendations .card-gallery {
+    position: static; /* the quick add is placed on the whole row, not on the image */
+    overflow: visible;
+    inline-size: var(--sn-xsell-thumb, 56px);
+    block-size: var(--sn-xsell-thumb, 56px);
+    padding: 0;
+    border: 1px solid #dcf2fb;
+    border-radius: 14px;
+    background-color: #fff;
+
+    img {
+      border-radius: 13px;
+      object-fit: contain;
+    }
+
+    /* Sale / sold-out badges don't fit a 56px image (the price shows the sale) */
+    .product-badges {
+      display: none;
+    }
+  }
+
+  .product-recommendations .product-card__content .text-block > * {
+    margin: 0;
+  }
+
+  .product-recommendations .product-card__content [role='heading'] {
+    overflow: hidden;
+    font-size: 16px;
+    font-weight: 600;
+    line-height: 27px;
+    color: #131311;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+
+    @media screen and (max-width: 749px) {
+      font-size: 14px;
+    }
+  }
+
+  /* Supporting line (product description by default; connect a metafield in the editor), one line */
+  .product-recommendations .product-card__content > .text-block:not(product-price, :has([role='heading'])) > * {
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 1;
+    line-clamp: 1;
+    overflow: hidden;
+    font-size: 12px;
+    font-weight: 400;
+    line-height: 20px;
+    color: #5a5a59;
+
+    @media screen and (max-width: 749px) {
+      font-size: 10px;
+    }
+  }
+
+  .product-recommendations .product-card__content > product-price {
+    .price {
+      font-size: 16px;
+      font-weight: 700;
+      line-height: 27px;
+      color: var(--color-primary-button-background, #176bb0);
+      white-space: nowrap;
+    }
+
+    /* One price in the row, as Figma */
+    :is(.compare-at-price, .price-discount-badge, .tax-note, .installments) {
+      display: none;
+    }
+  }
+
+  /* Native quick add as the round button (Add = straight to cart; Choose = native options window).
+     Position: absolute on the whole card row (centred, button side = physical left in Arabic); the quick-add wrapper
+     and the image cell are static, so the row (.product-card__content, relative) is the positioning box.
+     Hover jump — root cause: the theme setting "Card hover effect: Subtle zoom" (snippets/card-hover-effect-styles)
+     gives `.product-card:hover .card-gallery` a `transform: scale(1.015)`. A transformed element becomes the
+     positioning box of its absolute descendants, and the button lives inside .card-gallery, so on hover it was
+     placed against the 56px image (right side). The Lift / Scale effects transform the whole card the same way.
+     Here the hover effect is switched off for these rows (the transform itself, not countered), so the box never
+     changes; native hover `scale: 1.03` / width expansion are neutralised too: hover only darkens the colour.
+     Icon / size / colours = the card image block's quick-add settings ("Button icon": Plus / Shopping cart /
+     Custom image / Default, "Icon size", "Button background", "Button text and icon"); defaults theme blue / white. */
+  .product-recommendations .product-card:is(:hover, :focus-within),
+  .product-recommendations .product-card:is(:hover, :focus-within) :is(.card-gallery, .product-card__image) {
+    transform: none;
+  }
+
+  .product-recommendations .card-gallery .quick-add {
+    position: static;
+  }
+
+  .product-recommendations button.quick-add__button {
+    --sn-xsell-add-bg: var(--sn-quick-add-bg, var(--color-primary-button-background, #176bb0));
+
+    position: absolute;
+    z-index: 2;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 1;
+    inset-block: 50% auto;
+    inset-inline: auto var(--sn-xsell-pad-end, 10px);
+    translate: 0 -50%;
+    scale: 1;
+    inline-size: var(--sn-xsell-add, 38px);
+    block-size: var(--sn-xsell-add, 38px);
+    min-inline-size: 0;
+    max-inline-size: none;
+    padding: 0;
+    border: 0;
+    border-radius: 50%;
+    background: var(--sn-xsell-add-bg);
+    color: var(--sn-quick-add-fg, var(--color-primary-button-text, #fff));
+    font-size: 0; /* the button text stays the accessible name ("Add" / "Choose") */
+    filter: drop-shadow(0 8px 8px rgb(15 100 168 / 0.3));
+    backdrop-filter: none;
+    transition: background-color var(--animation-speed, 0.2s) ease;
+
+    &:is(:hover, :focus-visible, :active, [data-added='true']) {
+      inset-block: 50% auto;
+      inset-inline: auto var(--sn-xsell-pad-end, 10px);
+      translate: 0 -50%;
+      scale: 1;
+      inline-size: var(--sn-xsell-add, 38px);
+      padding: 0;
+    }
+
+    &:is(:hover, :focus-visible) {
+      background: color-mix(in srgb, var(--sn-xsell-add-bg) 85%, #000);
+    }
+
+    > .add-to-cart-icon {
+      display: block;
+      flex: 0 0 auto;
+      inline-size: var(--sn-quick-add-icon-size, 16px);
+      block-size: var(--sn-quick-add-icon-size, 16px);
+
+      svg {
+        inline-size: 100%;
+        block-size: 100%;
+      }
+    }
+
+    .add-to-cart__added {
+      font-size: 1rem;
+    }
+  }
+
+  /* Add button icon from the Complementary Products block ("Add button icon", "Custom add button icon",
+     "Add icon size", "Add icon colour"): drawn as a mask on the button's own icon span (no second icon); the
+     button text stays its accessible name and its action is native. Output only when an icon is chosen
+     (class .sn-add-icon); "Theme default" keeps the card image block's quick-add icon settings / native icon. */
+  .product-recommendations.sn-add-icon button.quick-add__button {
+    color: var(--sn-add-icon-color, var(--sn-quick-add-fg, var(--color-primary-button-text, #fff)));
+
+    > .add-to-cart-icon {
+      inline-size: var(--sn-add-icon-size, 16px);
+      block-size: var(--sn-add-icon-size, 16px);
+      background-color: currentcolor;
+      -webkit-mask: var(--sn-add-icon) center / contain no-repeat;
+      mask: var(--sn-add-icon) center / contain no-repeat;
+
+      > svg {
+        visibility: hidden;
+      }
+    }
+  }
+
+  /* "Custom image": the uploaded image itself (its own colours), not a single-colour silhouette */
+  .product-recommendations.sn-add-icon--image button.quick-add__button > .add-to-cart-icon {
+    background: var(--sn-add-icon) center / contain no-repeat;
+    -webkit-mask: none;
+    mask: none;
+  }
+
+  /* --- Description & policies ----------------------------------------------------------------------
+     Figma 190:10342 / 190:11053: row title 16/27 SemiBold #131311; inner titles 14 Bold #131311 (box 29); body
+     14/28 Regular #5a5a59; no paragraph gaps; content right under the header; rows 14 / 16 (mobile 20) padding,
+     10 apart.
+     Row title = native Accordion typography (Custom: size / weight / line height) + mobile size (section).
+     Inner padding / space under the row title / row gap = native Accordion settings (row padding, content gap).
+     Text = Product information › Snosha layout › Accordion text: body size / line height / weight desktop+mobile,
+     body colour, bold weight + colour, bold title size desktop+mobile, title line height, gap below titles,
+     paragraph gap desktop+mobile. A row text block switched to Custom typography keeps its own values. */
+  .accordion--cards {
+    .details__header {
+      color: #131311;
+
+      @media screen and (max-width: 749px) {
+        --summary-font-size: var(--sn-acc-heading-mobile, 16px);
+      }
+    }
+
+    /* Tile around the row icon (the icon keeps its own size: row › Width / Accordion › Icon size) */
+    .details__icon {
+      box-sizing: content-box;
+      padding: calc((var(--sn-acc-tile, 32px) - var(--accordion-icon-size, 18px)) / 2);
+      border-radius: 10px;
+      background-color: #f0fafe;
+      color: var(--color-primary-button-background, #176bb0);
+      object-fit: contain;
+    }
+
+    .details-content {
+      color: var(--sn-acc-body-color, #5a5a59);
+      text-align: start;
+
+      /* BODY (text block on a preset): Snosha layout › Accordion text — size, line height, weight desktop/mobile,
+         body colour (Figma 14 / 28 / Regular / #5a5a59). Applied to the text block and its paragraphs / list
+         items only, never to headings or bold runs. */
+      .text-block:not(.custom-typography) {
+        font-family: var(--font-body--family);
+        font-size: var(--sn-acc-body, 14px);
+        font-weight: var(--sn-acc-body-weight, 400);
+        line-height: var(--sn-acc-body-line, 28px);
+        color: var(--sn-acc-body-color, #5a5a59);
+
+        @media screen and (max-width: 749px) {
+          font-size: var(--sn-acc-body-mobile, 14px);
+          font-weight: var(--sn-acc-body-weight-mobile, 400);
+          line-height: var(--sn-acc-body-line-mobile, 28px);
+        }
+
+        :is(p, li, ul, ol) {
+          font-family: inherit;
+          font-size: inherit;
+          font-weight: inherit;
+          line-height: inherit;
+          color: inherit;
+        }
+      }
+
+      /* Text block on Custom typography: its own Weight and Line height (vars from blocks/text.liquid); Size and
+         the mobile size / line height are applied natively */
+      .text-block.custom-typography {
+        font-weight: var(--sn-font-weight, 400);
+
+        :is(p, li) {
+          font-weight: inherit;
+        }
+      }
+
+      .text-block.custom-typography:not(.text-block--m-lh) {
+        &,
+        :is(p, li) {
+          line-height: var(--sn-line-height, 2);
+        }
+      }
+
+      @media screen and (min-width: 750px) {
+        .text-block.custom-typography.text-block--m-lh {
+          &,
+          :is(p, li) {
+            line-height: var(--sn-line-height, 2);
+          }
+        }
+      }
+
+      /* SPACING: no browser / rich-text margins. "Paragraph spacing" (desktop / mobile, Figma 0) is the gap between
+         consecutive paragraphs, lists and headings — in the description this is the gap between the two groups
+         (each group is one paragraph: bold title + line break + text). A blank line typed between groups is an
+         empty <p></p> that the theme hides (base.css p:empty); the next paragraph still gets this same gap, so the
+         blank line neither adds space nor changes the setting. */
+      :is(p, ul, ol, h1, h2, h3, h4, h5, h6) {
+        margin: 0;
+      }
+
+      :is(p, ul, ol, h1, h2, h3, h4, h5, h6) + :is(p, ul, ol, h1, h2, h3, h4, h5, h6) {
+        margin-block-start: var(--sn-acc-paragraph-gap, 0px);
+
+        @media screen and (max-width: 749px) {
+          margin-block-start: var(--sn-acc-paragraph-gap-mobile, 0px);
+        }
+      }
+
+      :is(ul, ol) {
+        padding-inline-start: 1.25em;
+      }
+
+      /* BOLD: every <strong>/<b> keeps "Bold text and sub-heading weight" + "Bold text colour" (Figma Bold
+         #131311), whatever the body weight — the body weight is never applied to bold runs. */
+      :is(strong, b) {
+        font-weight: var(--sn-acc-bold-weight, 700);
+        color: var(--sn-acc-bold-color, #131311);
+      }
+
+      /* TITLES: headings in the text and bold runs used as titles get "Bold title size" desktop / mobile, the
+         sub-heading line height (Figma 14 Bold, box 29) and "Gap below bold titles". Bold words inside a sentence
+         keep the body size. Title forms in Shopify rich text:
+         a) <h2>…<h6>;  b) <p><strong>title</strong></p>;  c) <p><strong>title</strong><br>text;
+         d) <p><strong>title<br></strong>text (line break inside the bold). */
+      :is(h1, h2, h3, h4, h5, h6),
+      p:has(> :is(strong, b):only-child) > :is(strong, b),
+      p > :is(strong, b):first-child:has(+ br),
+      p > :is(strong, b):first-child:has(> br:last-child) {
+        font-size: var(--sn-acc-bold-size, 14px);
+        font-weight: var(--sn-acc-bold-weight, 700);
+        line-height: var(--sn-acc-title-line, 29px);
+        color: var(--sn-acc-bold-color, #131311);
+
+        @media screen and (max-width: 749px) {
+          font-size: var(--sn-acc-bold-size-mobile, 14px);
+        }
+      }
+
+      :is(h1, h2, h3, h4, h5, h6),
+      p:has(> :is(strong, b):only-child) {
+        margin-block-end: var(--sn-acc-bold-gap, 0px);
+
+        @media screen and (max-width: 749px) {
+          margin-block-end: var(--sn-acc-bold-gap-mobile, 0px);
+        }
+      }
+
+      /* c) bold title then a line break outside it: own line box */
+      p > :is(strong, b):first-child:has(+ br) {
+        display: inline-block;
+        margin-block-end: var(--sn-acc-bold-gap, 0px);
+
+        @media screen and (max-width: 749px) {
+          margin-block-end: var(--sn-acc-bold-gap-mobile, 0px);
+        }
+      }
+
+      /* d) line break INSIDE the bold: as an inline-block the break would end inside the box and the text would
+         continue on the same line, so the title is its own block line */
+      p > :is(strong, b):first-child:has(> br:last-child) {
+        display: block;
+        margin-block-end: var(--sn-acc-bold-gap, 0px);
+
+        @media screen and (max-width: 749px) {
+          margin-block-end: var(--sn-acc-bold-gap-mobile, 0px);
+        }
+      }
+
+      /* b) a paragraph that is only a bold title uses the title line height */
+      p:has(> :is(strong, b):only-child) {
+        line-height: var(--sn-acc-title-line, 29px);
+      }
+
+      /* Editor artefact: after a title-only paragraph, a bold run that is just a line break at the start of the
+         next paragraph (<p><strong><br></strong>text) made a blank line under the title. Only that pattern is
+         removed; text, bold and ordinary line breaks are kept. */
+      p:has(> :is(strong, b):only-child) + p > :is(strong, b):first-child:has(> br:only-child):not(:has(+ br)) {
+        display: none;
+      }
+
+      a {
+        color: var(--color-primary-button-background, #176bb0);
+        text-decoration: underline;
+      }
+    }
+  }
+}
+
+/* Headings «كمّل روتينك» / «الوصف والسياسات» are plain text blocks; Figma 16/27 SemiBold */
+.sn-product-hero .product-details .text-block:has(> p:only-child) > p {
+  margin: 0;
+}
+
+.sn-product-hero .sn-product-label:not(.custom-typography) > * {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 600;
+  line-height: 27px;
+  color: #131311;
+}
+
+/* ==========================================================================
+   Product page — Sticky add to cart, "Full-width bar" | owner: Dev1
+   Native Horizon sticky-add-to-cart (sections/product-information.liquid), opt-in class .sn-sticky-bar
+   (Product information › Sticky add to cart › "Sticky bar style: Full-width bar"). Reference: merchant
+   screenshot (full-width white bar at the bottom; RTL right → left: image · title + price … quantity · button).
+   Visibility stays native (shown after the main buy buttons scroll away, hidden near the footer); the button
+   submits the main product form; the quantity buttons drive the main form's quantity selector.
+   Height = top/bottom padding + the tallest item (image / button / quantity, all from settings); the title +
+   price stack (26 + 22) fits a 52px row. Desktop and mobile have their own padding, image and button height.
+   ========================================================================== */
+.sn-sticky-bar .sticky-add-to-cart__bar {
+  --sn-sticky-gutter: max(var(--page-margin, 20px), calc((100vw - var(--sn-sticky-width, 1340px)) / 2));
+  --sn-sticky-control: var(--sn-sticky-button-height, 52px);
+
+  inset-inline: 0;
+  inset-block-end: 0;
+  inline-size: 100%;
+  max-inline-size: none;
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto auto;
+  grid-template-rows: auto auto;
+  grid-template-areas:
+    'image info quantity button'
+    'image price quantity button';
+  align-items: center;
+  align-content: center;
+  column-gap: 16px;
+  row-gap: 0;
+  padding-block: var(--sn-sticky-padding, 10px) calc(var(--sn-sticky-padding, 10px) + var(--safe-area-inset-bottom, 0px));
+  padding-inline: var(--sn-sticky-gutter);
+  border-radius: 0;
+  border-block-start: 1px solid #eef2f5;
+  background-color: var(--sn-sticky-bg, #fff);
+  box-shadow: var(--sn-sticky-shadow, 0 -6px 18px rgb(13 64 128 / 0.06));
+  transform: translateY(calc(100% + 8px));
+
+  /* the native floating card draws its glass border with ::before */
+  &::before {
+    display: none;
+  }
+
+  &[data-stuck='true'] {
+    transform: none;
+  }
+}
+
+.sn-sticky-bar[style*='--sn-sticky-shadow: none'] .sticky-add-to-cart__bar {
+  border-block-start: 0;
+}
+
+.sn-sticky-bar:not([data-variant-available='true']) .sticky-add-to-cart__bar {
+  transform: translateY(calc(100% + 8px));
+}
+
+.sn-sticky-bar .sticky-add-to-cart__image {
+  grid-area: image;
+  inline-size: var(--sn-sticky-image, 52px);
+  block-size: var(--sn-sticky-image, 52px);
+  height: var(--sn-sticky-image, 52px);
+  border: 1px solid #dcf2fb;
+  border-radius: 12px;
+  background-color: #fff;
+
+  img {
+    object-fit: contain;
+  }
+}
+
+.sn-sticky-bar--no-image .sticky-add-to-cart__image {
+  display: none;
+}
+
+.sn-sticky-bar .sticky-add-to-cart__info {
+  grid-area: info;
+  align-self: end;
+  padding-inline-start: 0;
+}
+
+.sn-sticky-bar .sticky-add-to-cart__title {
+  font-size: 18px;
+  font-weight: 700;
+  line-height: 26px;
+  color: var(--color-primary-button-background, #176bb0);
+}
+
+/* Reference: title + price only (the title of a colour product already names the colour) */
+.sn-sticky-bar .sticky-add-to-cart__variant {
+  display: none;
+}
+
+.sn-sticky-bar .sticky-add-to-cart__price {
+  grid-area: price;
+  align-self: start;
+  font-size: 16px;
+  font-weight: 600;
+  line-height: 22px;
+  color: #131311;
+
+  * {
+    margin: 0;
+    line-height: inherit;
+  }
+
+  .compare-at-price {
+    font-size: 14px;
+    font-weight: 400;
+    color: #5a5a59;
+  }
+
+  :is(.tax-note, .installments, .unit-price) {
+    display: none;
+  }
+}
+
+.sn-sticky-bar--no-compare .sticky-add-to-cart__price .compare-at-price {
+  display: none;
+}
+
+/* Quantity pill "− 1 +" (left to right); + on its own pale-blue circle (settings: + background / icon colour,
+   button size, pill padding, gap). Same height as the button. */
+.sn-sticky-bar .sticky-add-to-cart__quantity {
+  grid-area: quantity;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--sn-sticky-qty-gap, 4px);
+  block-size: var(--sn-sticky-control);
+  padding-inline: var(--sn-sticky-qty-padding, 6px);
+  border: 1.5px solid #dcf2fb;
+  border-radius: 999px;
+  background-color: #fff;
+}
+
+.sn-sticky-bar .sticky-add-to-cart__quantity-button {
+  display: flex;
+  flex: 0 0 auto;
+  align-items: center;
+  justify-content: center;
+  inline-size: var(--sn-sticky-qty-button, 38px);
+  block-size: var(--sn-sticky-qty-button, 38px);
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: transparent;
+  color: var(--color-primary-button-background, #176bb0);
+  cursor: pointer;
+
+  .svg-wrapper,
+  svg {
+    inline-size: 16px;
+    block-size: 16px;
+  }
+
+  &:focus-visible {
+    outline: var(--focus-outline-width, 2px) solid var(--color-primary-button-background, #176bb0);
+    outline-offset: 2px;
+  }
+}
+
+.sn-sticky-bar .sticky-add-to-cart__quantity-button--plus {
+  background-color: var(--sn-sticky-plus-bg, #eaf3fb);
+  color: var(--sn-sticky-plus-color, var(--color-primary-button-background, #176bb0));
+}
+
+.sn-sticky-bar .sticky-add-to-cart__quantity-value {
+  min-inline-size: 32px;
+  font-size: 17px;
+  font-weight: 700;
+  line-height: 1;
+  text-align: center;
+  color: #131311;
+}
+
+.sn-sticky-bar .sticky-add-to-cart__button {
+  grid-area: button;
+  justify-content: center;
+  inline-size: var(--sn-sticky-button-width, 176px);
+  height: var(--sn-sticky-control);
+  padding-inline: 20px;
+  border-radius: 12px;
+  font-size: 16px;
+  font-weight: 600;
+  line-height: 26px;
+}
+
+@media screen and (max-width: 749px) {
+  .sn-sticky-bar .sticky-add-to-cart__bar {
+    --sn-sticky-gutter: var(--page-margin, 20px);
+    --sn-sticky-control: var(--sn-sticky-button-height-mobile, 44px);
+
+    grid-template-columns: auto minmax(0, 1fr) auto;
+    grid-template-areas:
+      'image info button'
+      'image price button';
+    column-gap: 10px;
+    padding-block: var(--sn-sticky-padding-mobile, 8px)
+      calc(var(--sn-sticky-padding-mobile, 8px) + var(--safe-area-inset-bottom, 0px));
+  }
+
+  .sn-sticky-bar--quantity-mobile .sticky-add-to-cart__bar {
+    grid-template-columns: auto minmax(0, 1fr) auto auto;
+    grid-template-areas:
+      'image info quantity button'
+      'image price quantity button';
+  }
+
+  .sn-sticky-bar:not(.sn-sticky-bar--quantity-mobile) .sticky-add-to-cart__quantity {
+    display: none;
+  }
+
+  .sn-sticky-bar .sticky-add-to-cart__image {
+    inline-size: var(--sn-sticky-image-mobile, 44px);
+    block-size: var(--sn-sticky-image-mobile, 44px);
+    height: var(--sn-sticky-image-mobile, 44px);
+  }
+
+  .sn-sticky-bar .sticky-add-to-cart__title {
+    display: block;
+    font-size: 14px;
+    line-height: 22px;
+  }
+
+  .sn-sticky-bar .sticky-add-to-cart__price {
+    font-size: 14px;
+    line-height: 20px;
+
+    .compare-at-price {
+      font-size: 12px;
+    }
+  }
+
+  .sn-sticky-bar .sticky-add-to-cart__quantity-button {
+    inline-size: var(--sn-sticky-qty-button-mobile, 32px);
+    block-size: var(--sn-sticky-qty-button-mobile, 32px);
+  }
+
+  /* Mobile keeps the text label (the native mobile card shows only the icon) */
+  .sn-sticky-bar .sticky-add-to-cart__button {
+    inline-size: auto;
+    padding: 0 16px;
+    font-size: 14px;
+  }
+
+  .sn-sticky-bar .sticky-add-to-cart__bar .add-to-cart-text__content {
+    display: initial;
+  }
+}
+
+/* ==========================================================================
+   Product page — Long Description | owner: Dev1
+   Figma desktop 190:10527 (1480; container 1376 incl. 20 padding → 1336), mobile 190:11237 (390; content 350).
+   ONE native `section` (custom class sn-ld; background white + native gradient overlay #dcf2fb "to top", gap 60 /
+   mobile 48, padding 60/60, mobile 40/24) holding seven native `group` content groups (reorder / hide in the
+   editor). Each content group: copy group (.sn-ld-copy) + image block + list group (.sn-ld-list) of feature rows.
+   Feature row = group (.sn-ld-item) › icon + title text + body text (CSS grid: icon tile beside stacked text).
+   LED row: a small group (.sn-ld-led) whose native Background colour is the indicator colour.
+   Editor settings that stay in control: section padding / gap; copy, list and row Gap (desktop + mobile); icon
+   Width / Mobile width (tile grows with the icon); image block Width / Border radius / Image fit / Mobile image;
+   text blocks switched to Custom typography. Figma geometry is applied as maximum widths and offsets only.
+   The uploaded images are Figma exports that already contain their tilt, shadow and dashed frame — no CSS
+   transforms, shadows or borders are added on top of them.
+   ========================================================================== */
+.sn-ld {
+  --page-content-width: 1336px;
+  --page-width: calc(var(--page-content-width) + var(--page-margin) * 2);
+  --sn-ld-heading: #12568d;
+  --sn-ld-text: #4c85b3;
+  --sn-ld-tile-pad: 15px;
+
+  overflow-x: clip; /* images that extend past their column never create page scroll */
+
+  @media screen and (max-width: 749px) {
+    --page-margin: 20px;
+    --sn-ld-tile-pad: 11px;
+
+    /* Mobile spacing from the editor's "Mobile" settings: the section's Mobile gap / padding and every
+       group's Mobile gap (the variables are written by section.liquid / group.liquid; nothing read them here,
+       so phones used the desktop gaps). Grid layouts below still set their own row / column gaps. */
+    > .custom-section-content > .section-content-wrapper {
+      gap: var(--sn-gap-mobile, var(--gap));
+      padding-block: calc(var(--sn-padding-block-start-mobile, var(--padding-block-start)) + var(--section-top-offset, 0px))
+        var(--sn-padding-block-end-mobile, var(--padding-block-end));
+    }
+
+    .group-block-content {
+      gap: var(--sn-gap-mobile, var(--gap));
+    }
+  }
+
+  /* --- Typography (Figma desktop / mobile; text blocks on a preset) ---------------------------------- */
+  .text-block:not(.custom-typography) > * {
+    margin: 0;
+  }
+
+  .sn-ld-title:not(.custom-typography) > * {
+    font-family: var(--font-heading--family);
+    font-size: 32px;
+    font-weight: 700;
+    line-height: 52px;
+    color: var(--sn-ld-heading);
+
+    @media screen and (max-width: 749px) {
+      font-size: 21px;
+    }
+  }
+
+  .sn-ld-intro .sn-ld-title:not(.custom-typography) > * {
+    @media screen and (max-width: 749px) {
+      font-size: 22px;
+    }
+  }
+
+  .sn-ld-body:not(.custom-typography) > * {
+    font-size: 16px;
+    font-weight: 400;
+    line-height: 28px;
+    color: var(--sn-ld-text);
+
+    @media screen and (max-width: 749px) {
+      font-size: 13.5px;
+    }
+  }
+
+  .sn-ld-body-lead:not(.custom-typography) > * {
+    font-size: 18px;
+    line-height: 32px;
+
+    @media screen and (max-width: 749px) {
+      font-size: 12px;
+      line-height: 24px;
+    }
+  }
+
+  .sn-ld-subtitle:not(.custom-typography) > * {
+    font-size: 24px;
+    font-weight: 600;
+    line-height: 40px;
+    color: var(--sn-ld-heading);
+
+    @media screen and (max-width: 749px) {
+      font-size: 16px;
+      font-weight: 500;
+      line-height: 38px;
+    }
+  }
+
+  :is(.sn-ld-note, .sn-ld-list-label):not(.custom-typography) > * {
+    font-size: 14px;
+    font-weight: 600;
+    line-height: 24px;
+    color: var(--sn-ld-heading);
+
+    @media screen and (max-width: 749px) {
+      font-size: 12px;
+    }
+  }
+
+  .sn-ld-item-title:not(.custom-typography) > * {
+    font-size: 16px;
+    font-weight: 700;
+    line-height: 27px;
+    color: var(--sn-ld-heading);
+
+    @media screen and (max-width: 749px) {
+      font-size: 14.5px;
+    }
+  }
+
+  .sn-ld-item-body:not(.custom-typography) > * {
+    font-size: 14px;
+    font-weight: 400;
+    line-height: 24px;
+    color: var(--sn-ld-text);
+
+    @media screen and (max-width: 749px) {
+      font-size: 12px;
+    }
+  }
+
+  /* Box contents rows: Figma body #0f64a8 */
+  .sn-ld-box .sn-ld-item-body:not(.custom-typography) > * {
+    color: #0f64a8;
+  }
+
+  /* --- Feature row: icon tile beside title + body; gap = the row group's Gap / Mobile gap ------------- */
+  .sn-ld-item > .group-block-content {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr);
+    grid-template-areas:
+      'icon title'
+      'icon body';
+    grid-template-rows: auto 1fr;
+    align-items: start;
+    column-gap: var(--gap);
+    row-gap: 1px;
+
+    > .icon-block,
+    > .sn-ld-led {
+      grid-area: icon;
+    }
+
+    > .sn-ld-item-title {
+      grid-area: title;
+      padding-block-start: 4px;
+    }
+
+    > .sn-ld-item-body {
+      grid-area: body;
+    }
+
+    /* Figma mobile rows: tile and text centred on each other */
+    @media screen and (max-width: 749px) {
+      column-gap: var(--sn-gap-mobile, var(--gap));
+      grid-template-rows: auto auto;
+      align-content: center;
+
+      > .icon-block,
+      > .sn-ld-led {
+        align-self: center;
+      }
+
+      > .sn-ld-item-title {
+        padding-block-start: 0;
+        align-self: end;
+      }
+
+      > .sn-ld-item-body {
+        align-self: start;
+      }
+    }
+  }
+
+  /* A row without a body line: title centred on the tile (Figma Box item: title 11px down a 48px tile) */
+  .sn-ld-item:not(:has(.sn-ld-item-body)) > .group-block-content > .sn-ld-item-title {
+    grid-row: 1 / span 2;
+    align-self: center;
+    padding-block-start: 0;
+  }
+
+  /* Icon tile around the native icon / uploaded icon (size = the icon block's Width / Mobile width) */
+  .sn-ld-item > .group-block-content > .icon-block {
+    align-items: center;
+    justify-content: center;
+    padding: var(--sn-ld-tile-pad);
+    border: 1px solid #dcf2fb;
+    border-radius: 50%;
+    background-color: #fff;
+    box-shadow: 0 8px 16px rgb(13 64 128 / 0.08);
+
+    > .icon-block__media {
+      display: block;
+      block-size: auto;
+    }
+  }
+
+  /* LED indicator: 52px tile, 15px dot in the group's Background colour (+ halo; optional blink class) */
+  .sn-ld-item-led > .group-block-content {
+    align-items: center;
+
+    > .sn-ld-item-title {
+      padding-block-start: 0;
+    }
+  }
+
+  /* Figma 190:10643: 52 white tile (1px #dcf2fb, shadow 0 6 14), 15 dot centred (17.5 inset) with a soft glow
+     in its own colour; the blinking one adds a 27 dashed ring. The group's empty media wrapper and content
+     are hidden so the dot is the tile's only grid item (otherwise the grid splits and the dot sits high). */
+  .sn-ld-led.sn-ld-led {
+    display: grid;
+    grid-template: 1fr / 1fr;
+    place-items: center;
+    flex: 0 0 auto;
+    inline-size: 52px;
+    block-size: 52px;
+    padding: 0;
+    border: 1px solid #dcf2fb;
+    border-radius: 50%;
+    background: #fff;
+    box-shadow: 0 6px 14px rgb(13 64 128 / 0.08);
+
+    &::before,
+    &::after {
+      grid-area: 1 / 1;
+      border-radius: 50%;
+    }
+
+    &::before {
+      content: '';
+      inline-size: 15px;
+      block-size: 15px;
+      background-color: var(--color-background, #ef4444);
+      box-shadow: 0 0 9px 1px rgb(var(--color-background-rgb, 239 68 68) / 0.45);
+    }
+
+    > .group-block__media-wrapper,
+    > .group-block-content {
+      display: none;
+    }
+  }
+
+  .sn-ld-led-blink.sn-ld-led-blink::after {
+    content: '';
+    inline-size: 27px;
+    block-size: 27px;
+    border: 1.5px dashed rgb(var(--color-background-rgb, 239 68 68) / 0.55);
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .sn-ld-led-blink::before {
+      animation: sn-ld-blink 1.2s ease-in-out infinite;
+    }
+  }
+
+  /* --- Images: the image block's own Width applies; Figma sizes below are maximums ------------------- */
+  .sn-ld-group .image-block {
+    min-inline-size: 0;
+  }
+
+  .sn-ld-group .image-block__image {
+    inline-size: 100%;
+    block-size: auto;
+  }
+
+  /* --- Intro ---------------------------------------------------------------------------------------- */
+  .sn-ld-intro .sn-ld-body {
+    max-inline-size: 957px;
+  }
+
+  @media screen and (min-width: 990px) {
+    .sn-ld-intro {
+      padding-block-start: 52px;
+    }
+  }
+
+  /* --- Content groups: copy / image / list placed by grid areas ---------------------------------------
+     The shared single-column base is wrapped in :where() (specificity 0,2,0) so every per-group layout below
+     (.sn-ld-sonic > .group-block-content … = 0,3,0) overrides its columns and areas. Without it the base rule
+     (0,4,0 with :not()) won and every group rendered as one stacked column with full-width images. */
+  :where(.sn-ld-group:not(.sn-ld-intro)) > .group-block-content {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-areas:
+      'copy'
+      'image'
+      'list';
+    row-gap: 10px;
+
+    > .sn-ld-copy {
+      grid-area: copy;
+    }
+
+    > .image-block {
+      grid-area: image;
+    }
+
+    > .sn-ld-list {
+      grid-area: list;
+    }
+  }
+
+  /* --- Mobile / tablet (Figma 390): heading + body first, then media and rows ------------------------- */
+  @media screen and (max-width: 989px) {
+    .sn-ld-battery > .group-block-content {
+      row-gap: 14px;
+    }
+
+    /* Box contents: image (160) on the right, list beside it */
+    .sn-ld-box > .group-block-content {
+      --sn-ld-tile-pad: 9px;
+
+      grid-template-columns: minmax(0, 160px) minmax(0, 1fr);
+      grid-template-areas:
+        'copy copy'
+        'image list';
+      column-gap: 12px;
+      align-items: center;
+
+      .sn-ld-item-title:not(.custom-typography) > * {
+        font-size: 12.5px;
+      }
+
+      .sn-ld-item-body:not(.custom-typography) > * {
+        font-size: 10.5px;
+      }
+    }
+
+    /* Cleaning modes / Water: the product image sits behind the rows, on the left (Figma 190:11303 / 190:11405) */
+    :is(.sn-ld-modes, .sn-ld-water) > .group-block-content {
+      grid-template-areas:
+        'copy'
+        'stack';
+
+      > .image-block,
+      > .sn-ld-list {
+        grid-area: stack;
+      }
+
+      > .image-block {
+        z-index: 0;
+        justify-self: end;
+        align-self: center;
+        max-inline-size: 55%;
+      }
+
+      > .sn-ld-list {
+        z-index: 1;
+        position: relative;
+      }
+    }
+
+    /* Tall toothbrush (Figma 190:11346): brush ≈ 60 × 277 starting level with the first row, on the left,
+       behind the rows; kept within the rows' height instead of lengthening the group */
+    .sn-ld-modes > .group-block-content > .image-block {
+      max-inline-size: 52%;
+      align-self: start;
+      margin-block-start: 0;
+
+      .image-block__image {
+        inline-size: auto;
+        max-inline-size: 100%;
+        max-block-size: 380px;
+      }
+    }
+
+    /* Figma mobile modes: title (21, 21 tall) → subtitle 31 apart, subtitle → body 36 apart */
+    @media screen and (max-width: 749px) {
+      .sn-ld-modes .sn-ld-title:not(.custom-typography) > * {
+        line-height: 32px;
+      }
+
+      .sn-ld-modes .sn-ld-subtitle:not(.custom-typography) {
+        margin-block-start: -10px;
+
+        > * {
+          line-height: 30px;
+        }
+      }
+    }
+
+    .sn-ld-brush > .group-block-content > .image-block {
+      justify-self: center;
+      max-inline-size: 246px;
+    }
+
+    /* Battery: Figma mobile shows a 350 × 185 crop of the battery image (unless a Mobile image is picked) */
+    .sn-ld-battery > .group-block-content > .image-block:not(:has(picture)) .image-block__image {
+      aspect-ratio: 350 / 185;
+      object-fit: cover;
+      object-position: 50% 45%;
+      border-radius: 24px;
+    }
+  }
+
+  /* --- Desktop (Figma 1480): RTL grid, first column = right ------------------------------------------- */
+  @media screen and (min-width: 990px) {
+    --sn-ld-tile-pad: 15px;
+
+    :is(.sn-ld-box, .sn-ld-brush, .sn-ld-water) {
+      --sn-ld-tile-pad: 12px;
+    }
+
+    .sn-ld-copy .sn-ld-body {
+      max-inline-size: 400px;
+    }
+
+    /* Sonic: copy 420 (top 72) · image 412 · rows (362, top 61, 18 from the left edge) */
+    .sn-ld-sonic > .group-block-content {
+      grid-template-columns: minmax(0, 420px) minmax(0, 412px) minmax(0, 1fr);
+      grid-template-areas: 'copy image list';
+      column-gap: 17px;
+      align-items: start;
+
+      > .sn-ld-copy {
+        padding-block-start: 72px;
+      }
+
+      > .sn-ld-list {
+        justify-self: end;
+        inline-size: 100%;
+        max-inline-size: 362px;
+        margin-inline-end: 18px;
+        padding-block-start: 61px;
+      }
+    }
+
+    /* Box: copy 420 (top 8) with the list under it · image 805 on a 920 stage, 44 from its left, 18 above */
+    .sn-ld-box > .group-block-content {
+      grid-template-columns: minmax(0, 420px) minmax(0, 1fr);
+      grid-template-areas:
+        'copy image'
+        'list image';
+      grid-template-rows: auto 1fr;
+      align-items: start;
+
+      > .sn-ld-copy {
+        padding-block-start: 8px;
+      }
+
+      > .sn-ld-list {
+        inline-size: 100%;
+        max-inline-size: 392px;
+      }
+
+      > .image-block {
+        justify-self: end;
+        max-inline-size: 805px;
+        margin-block-start: -18px;
+        margin-inline-end: 44px;
+      }
+    }
+
+    /* Cleaning modes: copy 411 (top 130) · tall image 241 (52 above the group) · rows (362, top 20) */
+    .sn-ld-modes > .group-block-content {
+      grid-template-columns: minmax(0, 411px) minmax(0, 377px) minmax(0, 1fr);
+      grid-template-areas: 'copy image list';
+      align-items: start;
+
+      > .sn-ld-copy {
+        padding-block-start: 130px;
+      }
+
+      /* Figma brush 208 × 638 (stage 377). The uploaded export carries its shadow / floor margin around the
+         brush (brush ≈ half the file's width), so the image box is wider than 241 to give the same brush size;
+         it may overflow its column (section clips horizontally) and its lower margin does not lengthen the group. */
+      > .image-block {
+        justify-self: center;
+        inline-size: 340px;
+        max-inline-size: none;
+        margin-block: -52px -40px;
+      }
+
+      > .sn-ld-list {
+        justify-self: end;
+        inline-size: 100%;
+        max-inline-size: 362px;
+        margin-inline-end: 18px;
+        padding-block-start: 20px;
+      }
+
+      /* Figma: title → subtitle 14, subtitle → body 18 (copy Gap) */
+      .sn-ld-subtitle {
+        max-inline-size: 380px;
+        margin-block-start: -4px;
+      }
+
+      .sn-ld-body {
+        max-inline-size: 360px;
+      }
+    }
+
+    /* Brush heads / Water: copy 454 with the rows (392) under it · image on the left */
+    :is(.sn-ld-brush, .sn-ld-water) > .group-block-content {
+      grid-template-columns: minmax(0, 454px) minmax(0, 1fr);
+      grid-template-areas:
+        'copy image'
+        'list image';
+      grid-template-rows: auto 1fr;
+      row-gap: 26px;
+      align-items: start;
+
+      > .sn-ld-list {
+        inline-size: 100%;
+        max-inline-size: 392px;
+      }
+
+      .sn-ld-body {
+        max-inline-size: 392px;
+      }
+    }
+
+    .sn-ld-brush > .group-block-content {
+      > .sn-ld-copy {
+        padding-block-start: 22px;
+      }
+
+      > .image-block {
+        justify-self: end;
+        max-inline-size: 638px;
+        margin-block-start: 47px;
+        margin-inline-end: 30px;
+      }
+    }
+
+    .sn-ld-water > .group-block-content {
+      > .image-block {
+        justify-self: end;
+        max-inline-size: 540px;
+        margin-block-start: -68px;
+        margin-inline-end: 101px;
+      }
+
+      .sn-ld-body {
+        max-inline-size: 400px;
+      }
+    }
+
+    /* Battery: copy 404 · image 400 · indicators 404, 64 apart, vertically centred */
+    .sn-ld-battery > .group-block-content {
+      grid-template-columns: minmax(0, 404px) minmax(0, 400px) minmax(0, 1fr);
+      grid-template-areas: 'copy image list';
+      column-gap: 64px;
+      align-items: center;
+
+      > .sn-ld-list {
+        max-inline-size: 404px;
+      }
+
+      .sn-ld-body {
+        max-inline-size: none;
+      }
+    }
+  }
+
+  /* Optional floor shadow under the Cleaning modes image (custom class sn-ld-floor on the group) */
+  .sn-ld-floor > .group-block-content > .image-block {
+    position: relative;
+    isolation: isolate;
+
+    &::after {
+      content: '';
+      position: absolute;
+      inset-block-end: -30px;
+      inset-inline-start: 50%;
+      translate: 50% 0;
+      inline-size: min(260px, 90%);
+      block-size: 42px;
+      border-radius: 50%;
+      background: radial-gradient(closest-side, rgb(13 64 128 / 0.22), transparent);
+      filter: blur(6px);
+      z-index: -1;
+      pointer-events: none;
+    }
+  }
+}
+
+@keyframes sn-ld-blink {
+  0%,
+  100% {
+    opacity: 1;
+  }
+
+  50% {
+    opacity: 0.35;
+  }
+}
+
+/* ==========================================================================
+   Product page — Reviews (P03) | owner: Dev1
+   Figma desktop 190:10390 (1480; container 1376 → 1336), mobile 190:11101 (390).
+   ONE native `section` (custom class sn-product-reviews) holding: heading `text` (sn-rv-title), the native
+   `review` block (real average + count from the review app's reviews.rating / reviews.rating_count metafields,
+   SVG stars; opt-in "Show average score" / "Review count text" / empty-state text) and the Judge.me
+   "Cards Carousel" app block (added by the merchant in the Theme Editor; Reviews selection = Current product).
+   Review cards are rendered by Judge.me; their Figma styling is at the end of this block (markup read from the
+   extension's public carousels.css / media_carousel.js, judgeme-860, 2026-11-16 — re-check after Judge.me updates).
+   ========================================================================== */
+.sn-product-reviews {
+  --sn-rv-heading: #12568d;
+  --sn-rv-star: #176bb0;
+  --sn-rv-text: #131311;
+  --sn-rv-muted: #5a5a59;
+
+  /* Mobile spacing from the section's Mobile gap / padding settings (vars written by section.liquid) */
+  @media screen and (max-width: 749px) {
+    > .custom-section-content > .section-content-wrapper {
+      gap: var(--sn-gap-mobile, var(--gap));
+      padding-block: calc(var(--sn-padding-block-start-mobile, var(--padding-block-start)) + var(--section-top-offset, 0px))
+        var(--sn-padding-block-end-mobile, var(--padding-block-end));
+    }
+  }
+
+  /* Heading: Cairo SemiBold 32/52 (mobile 22/52), centred */
+  .sn-rv-title:not(.custom-typography) > * {
+    margin: 0;
+    font-family: var(--font-heading--family);
+    font-size: 32px;
+    font-weight: 600;
+    line-height: 52px;
+    color: var(--sn-rv-heading);
+    text-align: center;
+
+    @media screen and (max-width: 749px) {
+      font-size: 22px;
+    }
+  }
+
+  /* Rating summary (Figma 190:10394): score 24/40 SemiBold · 5 stars 22 (gap 4) · count 14/24, items 14 apart.
+     DOM order score → stars → count = right → left in RTL. */
+  .rating-wrapper {
+    --star-fill-color: var(--sn-rv-star);
+    --star-fill-color-rgb: 23 107 176;
+
+    gap: 14px;
+    min-block-size: 40px;
+  }
+
+  .rating {
+    gap: 4px;
+  }
+
+  .rating .stars {
+    inline-size: 22px;
+    block-size: 22px;
+  }
+
+  .rating-score {
+    margin: 0;
+    font-size: 24px;
+    font-weight: 600;
+    line-height: 40px;
+    color: var(--sn-rv-text);
+    white-space: nowrap;
+    direction: ltr; /* keeps "4.8 / 5" in reading order inside the RTL row */
+
+    @media screen and (max-width: 749px) {
+      font-size: 19px;
+    }
+  }
+
+  .rating-wrapper .rating-count,
+  .rating-empty {
+    margin: 0;
+    font-size: 14px;
+    font-weight: 400;
+    line-height: 24px;
+    color: var(--sn-rv-muted);
+
+    @media screen and (max-width: 749px) {
+      font-size: 11px;
+    }
+  }
+
+  /* Judge.me app block: full carousel width (Figma viewport 1336) */
+  .shopify-app-block {
+    inline-size: 100%;
+    max-inline-size: 1336px;
+  }
+
+  /* ---- Judge.me Cards Carousel → Figma cards ----------------------------------------------------
+     Markup = Judge.me theme app extension "cards_carousel" (judgeme-860: carousels.css / media_carousel.js):
+     .jdgm-cards-carousel > .jdgm-header + .jdgm-content > [.jdgm-arrow, .jdgm-cards-wrapper > .jdgm-videos-container
+     > .jdgm-media-card (img, .jdgm-text, .jdgm-rating-section > .jdgm-stars, .jdgm-reviewer-info, .jdgm-product-name), .jdgm-arrow].
+     Card width / gap / visible count are the widget's own CSS variables (its JS slides by offsetLeft, so it follows them). */
+  .jdgm-cards-carousel {
+    --sn-rv-card-border: #dcf2fb;
+    --sn-rv-image-ratio: 0.79; /* Figma photo 250 / card 316 */
+    --stars-color: var(--sn-rv-star);
+    padding: 0;
+    font-family: var(--font-body--family);
+    text-align: start;
+
+    /* Heading + real summary come from the section's own blocks */
+    .jdgm-header {
+      display: none;
+    }
+
+    .jdgm-content {
+      margin: 0;
+    }
+
+    /* Native scroll-snap row on every screen size (Judge.me's slider has no swipe and its translateX(-offsetLeft)
+       moves the wrong way in RTL). Arrows + progress: assets/sn-reviews-carousel.js (block "Reviews carousel
+       controls"). Padding keeps the card shadow inside the clipping scroller. */
+    .jdgm-cards-wrapper {
+      max-width: none;
+      padding-block: 6px 40px;
+      margin-block: -6px -40px;
+      overflow-x: auto;
+      overscroll-behavior-x: contain;
+      scroll-snap-type: x mandatory;
+      scroll-behavior: smooth;
+      scrollbar-width: none;
+
+      &::-webkit-scrollbar {
+        display: none;
+      }
+    }
+
+    /* !important: the widget writes an inline translateX (arrows + autoplay); native scrolling replaces it, so both
+       must not move the row at the same time. */
+    .jdgm-cards-wrapper .jdgm-videos-container {
+      transform: none !important;
+      transition: none;
+    }
+
+    /* Judge.me clones cards at both ends for its infinite loop; in a native scroller they would be duplicates */
+    .jdgm-media-card:is([class*="jdgm-clone"], [data-clone-type]) {
+      display: none;
+    }
+
+    .jdgm-media-card {
+      --clamp: 3;
+      scroll-snap-align: start;
+      border: 1px solid var(--sn-rv-card-border);
+      border-radius: 20px;
+      background: #fff;
+      box-shadow: 0 18px 38px -6px rgb(13 56 115 / 0.12), 0 2px 8px rgb(13 56 115 / 0.06);
+      cursor: pointer;
+
+      > img {
+        display: block;
+        height: calc(var(--card-width) * var(--sn-rv-image-ratio));
+      }
+
+      .jdgm-video-controls {
+        height: calc(var(--card-width) * var(--sn-rv-image-ratio));
+      }
+
+      .jdgm-text {
+        position: relative;
+        display: block;
+        min-height: 0;
+        max-height: none;
+        padding: 18px 20px 0;
+        padding-inline-end: 52px;
+        font-size: 16px;
+        line-height: 28px;
+        color: var(--sn-rv-text);
+        text-align: start;
+
+        p {
+          max-width: none;
+          line-height: inherit;
+          text-align: start;
+        }
+
+        /* Figma quote mark (decorative: empty alt text) */
+        &::after {
+          content: "\201D";
+          content: "\201D" / "";
+          position: absolute;
+          inset-block-start: 10px;
+          inset-inline-end: 18px;
+          font-size: 52px;
+          font-weight: 700;
+          line-height: 1;
+          color: rgb(99 205 255 / 0.3);
+        }
+      }
+
+      .jdgm-rating-section {
+        align-items: flex-start;
+        gap: 10px;
+        padding: 10px 20px 20px;
+      }
+
+      .jdgm-rating-section .jdgm-stars {
+        gap: 3px;
+      }
+
+      .jdgm-rating-section .jdgm-star {
+        font-size: 16px;
+        color: var(--sn-rv-star);
+      }
+
+      .jdgm-rating-section .jdgm-reviewer-info {
+        justify-content: flex-start;
+      }
+
+      .jdgm-rating-section .jdgm-reviewer-name {
+        font-size: 16px;
+        font-weight: 700;
+        line-height: 27px;
+        color: var(--sn-rv-text);
+      }
+
+      .jdgm-rating-section :is(.jdgm-product-name a, .jdgm-product-name--unlinked, .jdgm-store-review-label) {
+        font-size: 12px;
+        line-height: 20px;
+        color: rgb(90 90 89 / 0.75);
+        text-align: start;
+      }
+    }
+
+    /* Arrows: Figma 52px white circles, 16px outside the cards (display / opacity stay with the widget) */
+    .jdgm-arrow {
+      position: absolute;
+      inset-block-start: 50%;
+      z-index: 3;
+      inline-size: 52px;
+      block-size: 52px;
+      border: 1px solid var(--sn-rv-card-border);
+      border-radius: 50%;
+      background: rgb(255 255 255 / 0.97);
+      box-shadow: 0 6px 14px rgb(13 64 128 / 0.08);
+      color: var(--sn-rv-star);
+      transform: translateY(-50%);
+
+      &:first-child {
+        inset-inline-start: -16px;
+      }
+
+      &:last-child {
+        inset-inline-end: -16px;
+      }
+
+      svg {
+        inline-size: 14px;
+        block-size: 22px;
+      }
+
+      &:focus-visible {
+        outline: 2px solid var(--sn-rv-star);
+        outline-offset: 2px;
+      }
+
+      /* At the start / end of the row (set by sn-reviews-carousel.js) */
+      &:disabled {
+        opacity: 0.4;
+        cursor: default;
+      }
+    }
+
+    /* RTL: the first (previous) arrow sits on the right → point it outwards like Figma */
+    &:dir(rtl) .jdgm-arrow svg {
+      transform: scaleX(-1);
+    }
+
+    /* Desktop: Figma 4 × 316 + 3 × 24 = 1336; cards shrink evenly below that width */
+    @media screen and (min-width: 990px) {
+      --jm-card-gap: 24px;
+      --visible-cards: var(--slides-count, 4);
+      --card-width: min(
+        316px,
+        calc((100cqi - (var(--slides-count, 4) - 1) * 24px) / var(--slides-count, 4))
+      );
+    }
+
+    /* Mobile (Figma 190:11101): 160px cards, 12px gap, next card peeking, native swipe + progress */
+    @media screen and (max-width: 749px) {
+      --jm-card-gap: 12px;
+      --card-width: 160px;
+      --sn-rv-image-ratio: 0.8125; /* 130 / 160 */
+      .jdgm-media-card {
+        --clamp: 4;
+        border-radius: 14px;
+        scroll-snap-align: start;
+
+        .jdgm-text {
+          padding: 12px 10px 0;
+          padding-inline-end: 30px;
+          font-size: 11px;
+          line-height: 22px;
+
+          &::after {
+            inset-block-start: 8px;
+            inset-inline-end: 8px;
+            font-size: 35px;
+          }
+        }
+
+        .jdgm-rating-section {
+          gap: 6px;
+          padding: 8px 10px 14px;
+        }
+
+        .jdgm-rating-section .jdgm-star {
+          font-size: 12px;
+        }
+
+        .jdgm-rating-section .jdgm-reviewer-name {
+          font-size: 11px;
+          line-height: 20px;
+        }
+
+        .jdgm-rating-section :is(.jdgm-product-name a, .jdgm-product-name--unlinked, .jdgm-store-review-label) {
+          font-size: 9.5px;
+          line-height: 16px;
+        }
+      }
+
+      /* Progress bar (Figma 350×4, #dcf2fb, fill #63cdff → #0f64a8, filling from the inline start).
+         --sn-rv-progress = visible share → 1, written from the row's real scroll position by sn-reviews-carousel.js;
+         shown only when the row can scroll. */
+      &[data-sn-rv-scrollable]::after {
+        content: "";
+        display: block;
+        inline-size: 100%;
+        block-size: 4px;
+        margin-block-start: 24px;
+        border-radius: 4px;
+        background:
+          linear-gradient(to right, #63cdff, #0f64a8) no-repeat left / calc(var(--sn-rv-progress, 0) * 100%) 100%,
+          #dcf2fb;
+      }
+
+      &[data-sn-rv-scrollable]:dir(rtl)::after {
+        background-position: right;
+      }
+    }
+  }
+}

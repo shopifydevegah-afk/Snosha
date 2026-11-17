@@ -1,0 +1,137 @@
+{%- comment -%}
+  Snosha project block (Dev1, product page). Horizon 4.4 has no breadcrumb component.
+  Home / [collection] / current page, all from Shopify data:
+  - Collection crumb only when the visitor came through a collection URL (/collections/x/products/y),
+    i.e. the `collection` object Shopify provides for that request. No collection is guessed from the
+    product's collection list, so the trail is never wrong; without context it is Home / product.
+  - Current page = product title (product pages) or collection title (collection pages), not a link.
+{%- endcomment -%}
+{%- liquid
+  assign bc_product = closest.product
+  if bc_product == blank
+    assign bc_product = product
+  endif
+
+  assign bc_home_label = block.settings.home_label | strip
+  if bc_home_label == blank
+    assign bc_home_label = shop.name
+  endif
+
+  assign bc_current = ''
+  assign bc_show_collection = false
+  if bc_product != blank
+    assign bc_current = bc_product.title
+    if block.settings.show_collection and collection != blank and collection.handle != blank
+      assign bc_show_collection = true
+    endif
+  elsif collection != blank
+    assign bc_current = collection.title
+  elsif page != blank
+    assign bc_current = page.title
+  endif
+-%}
+
+{%- if bc_current != blank -%}
+  <nav
+    class="breadcrumbs"
+    aria-label="{{ block.settings.aria_label | default: 'Breadcrumb' | escape }}"
+    {{ block.shopify_attributes }}
+  >
+    <ol class="breadcrumbs__list list-unstyled">
+      <li class="breadcrumbs__item">
+        <a class="breadcrumbs__link" href="{{ routes.root_url }}">{{ bc_home_label | escape }}</a>
+      </li>
+      {%- if bc_show_collection -%}
+        <li class="breadcrumbs__item">
+          <a class="breadcrumbs__link" href="{{ collection.url }}">{{ collection.title | escape }}</a>
+        </li>
+      {%- endif -%}
+      <li class="breadcrumbs__item breadcrumbs__item--current">
+        <span aria-current="page">{{ bc_current | escape }}</span>
+      </li>
+    </ol>
+  </nav>
+{%- endif -%}
+
+{% stylesheet %}
+  .breadcrumbs {
+    inline-size: 100%;
+    min-inline-size: 0;
+  }
+
+  .breadcrumbs__list {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0 8px;
+    margin: 0;
+    padding: 0;
+  }
+
+  .breadcrumbs__item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    min-inline-size: 0;
+
+    & + &::before {
+      content: '/';
+      flex: 0 0 auto;
+      color: rgb(var(--color-foreground-rgb) / var(--opacity-subdued-text, 0.7));
+    }
+  }
+
+  .breadcrumbs__link {
+    color: inherit;
+    text-decoration: none;
+
+    &:hover {
+      text-decoration: underline;
+    }
+  }
+
+  /* Long product names shorten with an ellipsis instead of wrapping onto several lines */
+  .breadcrumbs__item--current {
+    flex: 0 1 auto;
+
+    > span {
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "Breadcrumbs",
+  "tag": null,
+  "settings": [
+    {
+      "type": "text",
+      "id": "home_label",
+      "label": "Home label",
+      "default": "الرئيسية",
+      "info": "Leave empty to show the store name."
+    },
+    {
+      "type": "checkbox",
+      "id": "show_collection",
+      "label": "Show collection",
+      "info": "Only when the product was opened from a collection.",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "aria_label",
+      "label": "Accessibility label",
+      "default": "مسار التنقل"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Breadcrumbs"
+    }
+  ]
+}
+{% endschema %}

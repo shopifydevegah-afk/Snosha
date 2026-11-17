@@ -9,6 +9,9 @@
   @param {string} block_shopify_attributes - Block shopify attributes
   @param {block} block - The current block object
   @param {section} section - The current section object
+  @param {string} [extra_style] - Project extension (Snosha): CSS custom properties appended to the gallery style. Blank = native output
+  @param {string} [overlay] - Project extension (Snosha): HTML placed first inside the gallery, e.g. a badge over the stage. Blank = native output
+  @param {string} [zoom_button] - Project extension (Snosha): carousel zoom button markup added to every slide; [index] / [number] are replaced by the slide index (0-based / 1-based). Blank = native output
 
   @example
   {% render 'product-media-gallery-content',
@@ -412,10 +415,11 @@
         media-gallery--constrain-with-thumbnails
       {% endif %}
     "
-    style="{% render 'spacing-style', settings: block_settings %} --thumbnail-width: {{ block_settings.thumbnail_width }}px; --media-radius: {{ block_settings.media_radius }}px;{% if icons_style contains 'large' %} --slideshow-icon-padding: 0px;{% endif %}--image-gap: {{ block_settings.image_gap }}px;{% unless block_settings.aspect_ratio == 'adapt' %} --gallery-aspect-ratio: {{ block_settings.aspect_ratio }};{% endunless %}{% if constrained_gallery_extra_height != blank %} --constrained-gallery-extra-height: calc({{ constrained_gallery_extra_height }});{% endif %}"
+    style="{% render 'spacing-style', settings: block_settings %} --thumbnail-width: {{ block_settings.thumbnail_width }}px; --media-radius: {{ block_settings.media_radius }}px;{% if icons_style contains 'large' %} --slideshow-icon-padding: 0px;{% endif %}--image-gap: {{ block_settings.image_gap }}px;{% unless block_settings.aspect_ratio == 'adapt' %} --gallery-aspect-ratio: {{ block_settings.aspect_ratio }};{% endunless %}{% if constrained_gallery_extra_height != blank %} --constrained-gallery-extra-height: calc({{ constrained_gallery_extra_height }});{% endif %}{{ extra_style }}"
     data-presentation="{{ media_presentation }}"
     {{ block_shopify_attributes }}
   >
+    {{- overlay -}}
     {% capture slides %}
       {% for media in sorted_media %}
         {% capture children %}
@@ -434,6 +438,7 @@
           {% else %}
             {%- render 'product-media', media: media, sizes: media_sizes, is_main_product_media: forloop.first -%}
           {% endif %}
+          {{- zoom_button | replace: '[index]', forloop.index0 | replace: '[number]', forloop.index -}}
         {% endcapture %}
         {% capture class %}
           {{ product_media_container_class }} product-media-container--{{ media.media_type }}{% if block_settings.zoom %} product-media-container--zoomable{% endif %}{% if forloop.index0 == lowest_aspect_ratio_index and block_settings.aspect_ratio == 'adapt' %} product-media-container--tallest{% endif %}

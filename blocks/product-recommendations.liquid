@@ -24,6 +24,21 @@
   if block_settings.background_color != blank
     render 'contrast-override', background_color: block_settings.background_color, section_id: block.id
   endif
+
+  # Project extension (Snosha, opt-in "Add button icon"): icon of the cards' quick-add button, drawn as a mask on
+  # the button's own icon (no extra element; the button text stays its accessible name). "Theme default" = native.
+  assign sn_add_icon_url = ''
+  case block_settings.add_icon
+    when 'plus'
+      # Fixed 2px stroke: the theme icon-plus.svg uses a CSS stroke variable that a mask image cannot read
+      assign sn_add_icon_url = 'data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 16 16%22%3E%3Cpath d=%22M8 2.5v11M2.5 8h11%22 fill=%22none%22 stroke=%22black%22 stroke-width=%222%22 stroke-linecap=%22round%22/%3E%3C/svg%3E'
+    when 'cart'
+      assign sn_add_icon_url = 'icon-cart-trolley.svg' | asset_url
+    when 'custom'
+      if block_settings.add_icon_image != blank
+        assign sn_add_icon_url = block_settings.add_icon_image | image_url: width: 96
+      endif
+  endcase
 %}
 
 {% comment %}
@@ -40,12 +55,15 @@
 {% render 'product-recommendations-styles' %}
 <product-recommendations
   id="product-recommendations-{{ block.id }}"
-  class="product-recommendations"
+  class="product-recommendations{% if sn_add_icon_url != blank %} sn-add-icon{% if block_settings.add_icon == 'custom' %} sn-add-icon--image{% endif %}{% endif %}"
+  {% if sn_add_icon_url != blank %}
+    style="--sn-add-icon: url('{{ sn_add_icon_url }}'); --sn-add-icon-size: {{ block_settings.add_icon_size }}px;{% if block_settings.add_icon_color != blank %} --sn-add-icon-color: {{ block_settings.add_icon_color }};{% endif %}"
+  {% endif %}
   data-url="{{ routes.product_recommendations_url }}?limit={{ block_settings.max_products }}"
   data-section-id="{{ section.id }}"
   data-product-id="{{ closest.product.id }}"
   data-intent="{{ block_settings.recommendation_type }}"
-  data-recommendations-performed="{{ recommendations.performed }}"
+  data-recommendations-performed="{% if block_settings.product_source == 'manual' %}true{% else %}{{ recommendations.performed }}{% endif %}"
   data-hydration-key="product-recommendations-{{ block.id }}"
   {% if request.visual_preview_mode %}
     data-shopify-editor-preview
@@ -73,11 +91,18 @@
       {% content_for 'blocks' %}
     </div>
 
-    {%- if recommendations.performed or closest.product == blank -%}
+    {%- comment -%}
+      Project extension (Snosha, opt-in "Products from: Manual selection"): the merchant's picked products are
+      rendered on the page itself (no recommendations request; data-recommendations-performed is true). Default
+      "Shopify recommendations" = native behaviour below. The two sources are never mixed.
+    {%- endcomment -%}
+    {%- if block_settings.product_source == 'manual' or recommendations.performed or closest.product == blank -%}
       {% liquid
         assign products = recommendations.products
 
-        if closest.product == blank
+        if block_settings.product_source == 'manual'
+          assign products = block_settings.manual_products
+        elsif closest.product == blank
           # Onboarding mode: Show placeholder products
           for i in (1..block_settings.max_products)
             assign products = products | append: ', '
@@ -121,8 +146,15 @@
           assign has_recommendations = 'true'
         else
           assign has_recommendations = 'false'
+          # Editor only: keep an empty manual list visible with a note instead of hiding the block
+          if block_settings.product_source == 'manual' and request.design_mode
+            assign has_recommendations = 'editor-empty'
+          endif
         endif
       %}
+      {%- if has_recommendations == 'editor-empty' -%}
+        <p class="product-recommendations__editor-note">Select products in "Manual products".</p>
+      {%- endif -%}
 
       <div
         class="
@@ -240,6 +272,84 @@
     {
       "type": "paragraph",
       "content": "t:content.complementary_products"
+    },
+    {
+      "type": "select",
+      "id": "product_source",
+      "label": "Products from",
+      "options": [
+        {
+          "value": "recommendations",
+          "label": "Shopify recommendations (Search & Discovery)"
+        },
+        {
+          "value": "manual",
+          "label": "Manual selection"
+        }
+      ],
+      "default": "recommendations",
+      "info": "Manual selection shows the same products on every product using this template. An empty source hides the block on the store."
+    },
+    {
+      "type": "product_list",
+      "id": "manual_products",
+      "label": "Manual products",
+      "info": "Used only when \"Products from\" is Manual selection.",
+      "limit": 10
+    },
+    {
+      "type": "header",
+      "content": "Add button"
+    },
+    {
+      "type": "select",
+      "id": "add_icon",
+      "label": "Add button icon",
+      "options": [
+        {
+          "value": "default",
+          "label": "Theme default"
+        },
+        {
+          "value": "plus",
+          "label": "Plus"
+        },
+        {
+          "value": "cart",
+          "label": "Shopping cart"
+        },
+        {
+          "value": "custom",
+          "label": "Custom image"
+        }
+      ],
+      "default": "plus",
+      "info": "Changes only the icon; the button still adds the product (or opens its options)."
+    },
+    {
+      "type": "image_picker",
+      "id": "add_icon_image",
+      "label": "Custom add button icon",
+      "info": "Shown as uploaded (its own colours), at the Add icon size.",
+      "visible_if": "{{ block.settings.add_icon == 'custom' }}"
+    },
+    {
+      "type": "range",
+      "id": "add_icon_size",
+      "label": "Add icon size",
+      "min": 10,
+      "max": 32,
+      "step": 1,
+      "unit": "px",
+      "default": 16,
+      "visible_if": "{{ block.settings.add_icon != 'default' }}"
+    },
+    {
+      "type": "color",
+      "id": "add_icon_color",
+      "label": "Add icon colour",
+      "info": "Plus and Shopping cart. Empty = the button text colour.",
+      "visible_if": "{{ block.settings.add_icon == 'plus' or block.settings.add_icon == 'cart' }}"
     },
     {
       "type": "header",
