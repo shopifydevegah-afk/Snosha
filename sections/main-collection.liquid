@@ -36,7 +36,7 @@
 ></div>
 <collection-component view-event-payload="{{ collection | standard_event_data: 'view' | escape }}">
   <results-list
-    class="section product-grid-container{% if section.settings.background_color != blank %} color-custom-{{ section.id }}{% endif %}"
+    class="section product-grid-container{% if section.settings.background_color != blank %} color-custom-{{ section.id }}{% endif %}{% render 'custom-class', value: section.settings.custom_class %}{% if section.settings.enable_infinite_scroll and section.settings.sn_load_more %} sn-load-more-mode{% endif %}"
     style="--padding-block-start: {{ section.settings.padding-block-start }}px; --padding-block-end: {{ section.settings.padding-block-end }}px;"
     section-id="{{ section.id }}"
     infinite-scroll="{{ section.settings.enable_infinite_scroll }}"
@@ -56,6 +56,9 @@
       {% assign products_per_page = 24 %}
 
       {% if section.settings.enable_infinite_scroll == false %}
+        {% assign products_per_page = section.settings.products_per_page %}
+      {% elsif section.settings.sn_load_more %}
+        {%- comment -%} Snosha (opt-in): Load more uses the same page size setting {%- endcomment -%}
         {% assign products_per_page = section.settings.products_per_page %}
       {% endif %}
 
@@ -86,10 +89,59 @@
           paginate: paginate,
           enable_infinite_scroll: section.settings.enable_infinite_scroll
         %}
+
+        {%- comment -%}
+          Snosha (opt-in "Load more button"): the native infinite-scroll sentinel stays hidden until the
+          button is clicked, so Horizon's own paginated-list loads the next page. Counter = cards shown / total.
+        {%- endcomment -%}
+        {%- if section.settings.enable_infinite_scroll and section.settings.sn_load_more and collection.products_count > 0 -%}
+          <sn-load-more
+            class="sn-load-more"
+            data-total="{{ collection.products_count }}"
+            data-count-text="{{ section.settings.sn_load_more_count | escape }}"
+          >
+            <p class="sn-load-more__count" aria-live="polite"></p>
+            <button
+              type="button"
+              class="button-secondary sn-load-more__button"
+              {% if paginate.pages <= 1 %}
+                hidden
+              {% endif %}
+            >
+              {{ section.settings.sn_load_more_label | default: 'تحميل المزيد' | escape }}
+            </button>
+          </sn-load-more>
+          <script src="{{ 'sn-load-more.js' | asset_url }}" type="module"></script>
+        {%- endif -%}
       {% endpaginate %}
     </div>
   </results-list>
 </collection-component>
+
+{% stylesheet %}
+  /* Snosha (opt-in "Load more button"): the infinite-scroll sentinel only exists while a click is pending */
+  .sn-load-more-mode:not(.sn-load-more-armed) [ref='viewMoreNext'] {
+    display: none;
+  }
+
+  .sn-load-more-mode.sn-load-more-armed [ref='viewMoreNext'] {
+    display: block;
+    block-size: 1px;
+  }
+
+  .sn-load-more {
+    grid-column: 1 / -1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--gap-md);
+    margin-block-start: var(--padding-2xl);
+  }
+
+  .sn-load-more__count {
+    margin: 0;
+  }
+{% endstylesheet %}
 
 {% schema %}
 {
@@ -169,7 +221,30 @@
       "max": 36,
       "step": 4,
       "default": 24,
-      "visible_if": "{{ section.settings.enable_infinite_scroll == false }}"
+      "visible_if": "{{ section.settings.enable_infinite_scroll == false or section.settings.sn_load_more }}"
+    },
+    {
+      "type": "checkbox",
+      "id": "sn_load_more",
+      "label": "Load more button",
+      "info": "With Auto-load products on: products load when the button is clicked instead of while scrolling, with a \"shown / total\" counter. Uses Products per page.",
+      "default": false,
+      "visible_if": "{{ section.settings.enable_infinite_scroll }}"
+    },
+    {
+      "type": "text",
+      "id": "sn_load_more_label",
+      "label": "Load more label",
+      "default": "تحميل المزيد",
+      "visible_if": "{{ section.settings.enable_infinite_scroll and section.settings.sn_load_more }}"
+    },
+    {
+      "type": "text",
+      "id": "sn_load_more_count",
+      "label": "Counter text",
+      "info": "[shown] and [total] are replaced with the numbers. Blank hides the counter.",
+      "default": "عرض [shown]/[total]",
+      "visible_if": "{{ section.settings.enable_infinite_scroll and section.settings.sn_load_more }}"
     },
     {
       "type": "header",
@@ -267,6 +342,16 @@
       "step": 1,
       "unit": "px",
       "default": 8
+    },
+    {
+      "type": "header",
+      "content": "Advanced"
+    },
+    {
+      "type": "text",
+      "id": "custom_class",
+      "label": "Custom CSS class",
+      "info": "Lowercase letters, numbers and hyphens, starting with a letter. Separate multiple classes with spaces."
     }
   ],
   "presets": []

@@ -110,6 +110,8 @@
                 class="cart-drawer__content"
                 aria-label="{{ 'accessibility.cart' | t }}"
               >
+                {%- comment -%} Snosha (opt-in, Theme settings › Cart): free shipping progress {%- endcomment -%}
+                {% render 'sn-cart-free-shipping' %}
                 <scroll-hint class="cart-drawer__items">
                   {% render 'cart-products', context: 'drawer' %}
                 </scroll-hint>

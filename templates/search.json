@@ -6,7 +6,8 @@
  * or related systems. Please exercise caution as any changes
  * made to this file may be overwritten.
  * ------------------------------------------------------------
- */{
+ */
+{
   "sections": {
     "search": {
       "type": "search-header",
@@ -17,13 +18,16 @@
           "settings": {
             "type_preset": "h2",
             "font": "var(--font-body--family)",
+            "font_size": "1rem",
             "line_height": "normal",
             "letter_spacing": "normal",
             "case": "none",
             "wrap": "pretty",
+            "text": "",
             "read_only": true,
-            "alignment": "left",
+            "alignment": "center",
             "show_alignment": true,
+            "text_color": "#12568D",
             "padding-block-start": 0,
             "padding-block-end": 0,
             "padding-inline-start": 0,
@@ -36,13 +40,19 @@
           "static": true,
           "settings": {
             "width": "custom",
-            "custom_width": 50
+            "custom_width": 50,
+            "input_style": "custom",
+            "input_background_color": "{{ settings.color_palette.background }}",
+            "input_text_color": "#12568D",
+            "input_border_color": "#12568D",
+            "border_width": 1,
+            "border_radius": 12
           },
           "blocks": {}
         }
       },
       "settings": {
-        "alignment": "flex-start",
+        "alignment": "center",
         "background_color": "{{ settings.color_palette.background }}",
         "padding-block-start": 40,
         "padding-block-end": 0
@@ -53,6 +63,7 @@
       "blocks": {
         "filters": {
           "type": "filters",
+          "disabled": true,
           "static": true,
           "settings": {
             "enable_filtering": true,
@@ -63,6 +74,8 @@
             "show_filter_label": false,
             "enable_sorting": true,
             "enable_grid_density": true,
+            "background_color": "",
+            "text_color": "",
             "padding-block-start": 8,
             "padding-block-end": 8,
             "padding-inline-start": 0,
@@ -77,10 +90,17 @@
           "static": true,
           "settings": {
             "product_card_gap": 4,
+            "background_color": "",
             "border": "none",
             "border_width": 1,
             "border_opacity": 100,
+            "border_color": "",
             "border_radius": 0,
+            "badge_font_size": 13,
+            "border_radius_mobile_custom": false,
+            "border_radius_mobile": 0,
+            "product_card_gap_mobile": 12,
+            "badge_font_size_mobile": 13,
             "padding-block-start": 0,
             "padding-block-end": 0,
             "padding-inline-start": 0,
@@ -91,15 +111,45 @@
               "type": "_product-card-gallery",
               "name": "t:names.product_card_media",
               "settings": {
-                "image_ratio": "adapt",
+                "image_ratio": "square",
+                "image_fit": "cover",
+                "image_position_y": 50,
                 "border": "none",
                 "border_width": 1,
                 "border_opacity": 100,
-                "border_radius": 0,
+                "border_color": "",
+                "border_radius": 12,
+                "border_radius_corners": "all",
+                "media_mobile_custom": false,
+                "image_ratio_mobile": "inherit",
+                "image_position_y_mobile": 50,
+                "border_radius_mobile": 0,
                 "padding-block-start": 0,
                 "padding-block-end": 0,
                 "padding-inline-start": 0,
-                "padding-inline-end": 0
+                "padding-inline-end": 0,
+                "quick_add_mobile": false,
+                "quick_add_label": "",
+                "quick_add_style": "native",
+                "quick_add_icon": "native",
+                "quick_add_icon_position": "start",
+                "quick_add_icon_size": 18,
+                "quick_add_radius": 12,
+                "quick_add_background": "",
+                "quick_add_text_color": "",
+                "quick_add_mobile_position": "native",
+                "quick_add_mobile_size": 32,
+                "quick_add_mobile_icon_size": 16,
+                "quick_add_mobile_offset": 7,
+                "custom_badge_source": "none",
+                "custom_badge_metafield": "custom.product_badge",
+                "custom_badge_text": "",
+                "custom_badge_position": "top-start",
+                "custom_badge_position_mobile": "same",
+                "custom_badge_offset": 12,
+                "custom_badge_offset_mobile": 8,
+                "custom_badge_background": "",
+                "custom_badge_text_color": ""
               },
               "blocks": {}
             },
@@ -117,6 +167,9 @@
                 "letter_spacing": "normal",
                 "case": "none",
                 "wrap": "pretty",
+                "font_size_mobile": 0,
+                "line_height_mobile": 0,
+                "text_color": "#12568D",
                 "background": false,
                 "background_color": "#00000026",
                 "corner_radius": 0,
@@ -134,6 +187,17 @@
                 "show_sale_price_first": true,
                 "show_installments": false,
                 "show_tax_info": false,
+                "show_discount_badge": false,
+                "discount_badge_label": "-[percent]%",
+                "discount_badge_background": "",
+                "discount_badge_text_color": "",
+                "discount_badge_border_color": "",
+                "discount_badge_radius": 8,
+                "discount_badge_font_size": 12,
+                "discount_badge_font_size_mobile": 12,
+                "price_font_size_mobile": 0,
+                "price_row_gap": 10,
+                "price_row_gap_mobile": 6,
                 "type_preset": "h6",
                 "width": "100%",
                 "alignment": "left",
@@ -142,6 +206,7 @@
                 "line_height": "normal",
                 "letter_spacing": "normal",
                 "case": "none",
+                "text_color": "#12568D",
                 "padding-block-start": 0,
                 "padding-block-end": 0,
                 "padding-inline-start": 0,
@@ -160,7 +225,9 @@
       "settings": {
         "layout_type": "grid",
         "product_card_size": "medium",
-        "mobile_product_card_size": "small",
+        "mobile_product_card_size": "large",
+        "enable_infinite_scroll": false,
+        "products_per_page": 24,
         "product_grid_width": "centered",
         "full_width_on_mobile": true,
         "columns_gap_horizontal": 16,

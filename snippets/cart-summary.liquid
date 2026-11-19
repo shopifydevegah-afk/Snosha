@@ -246,6 +246,8 @@
         {% endform %}
       </span>
     {% endif %}
+    {%- comment -%} Snosha (opt-in, Theme settings › Cart): original total + amount saved {%- endcomment -%}
+    {% render 'sn-cart-savings' %}
     <div class="cart-totals__item cart-totals__tax-note cart-primary-typography">
       {% render 'tax-info', has_discounts_enabled: settings.show_add_discount_code %}
     </div>

@@ -1090,3 +1090,455 @@
     }
   }
 }
+
+/* ==========================================================================
+   C01 Collection page | owner: Main | reference: user screenshots (live snosha.com), 2026-11-19
+   Native: section (title, class sn-collection-head) → section (breadcrumbs, sn-collection-breadcrumbs)
+   → main-collection (sn-home-bestsellers = Dev3's S05 card look, shared; sn-collection-main = this page).
+   ========================================================================== */
+.sn-collection-head {
+  /* Title / description: weight + exact line height from the text blocks (custom style) */
+  .text-block.custom-typography,
+  .text-block.custom-typography > * {
+    font-weight: var(--sn-font-weight, var(--font-weight));
+  }
+
+  .text-block.custom-typography > * {
+    margin-block: 0;
+  }
+
+  @media screen and (min-width: 750px) {
+    .text-block.custom-typography,
+    .text-block.custom-typography > * {
+      line-height: var(--sn-line-height, var(--line-height));
+    }
+  }
+
+  /* Phone padding / gap from the section's Mobile settings */
+  @media screen and (max-width: 749px) {
+    > .custom-section-content > .section-content-wrapper {
+      gap: var(--sn-gap-mobile, var(--gap));
+      padding-block:
+        calc(var(--sn-padding-block-start-mobile, var(--padding-block-start)) + var(--section-top-offset, 0px))
+        var(--sn-padding-block-end-mobile, var(--padding-block-end));
+    }
+  }
+}
+
+.sn-collection-breadcrumbs {
+  @media screen and (max-width: 749px) {
+    > .custom-section-content > .section-content-wrapper {
+      padding-block:
+        calc(var(--sn-padding-block-start-mobile, var(--padding-block-start)) + var(--section-top-offset, 0px))
+        var(--sn-padding-block-end-mobile, var(--padding-block-end));
+    }
+  }
+
+  .breadcrumbs__list {
+    justify-content: center;
+    font-size: 16px; /* reference 16/24 */
+    line-height: 24px;
+    color: #3c3c3c;
+
+    @media screen and (max-width: 749px) {
+      font-size: 14px;
+    }
+  }
+
+  /* ">" between crumbs, drawn left-to-right so it is not mirrored in Arabic */
+  .breadcrumbs__item + .breadcrumbs__item::before {
+    content: '>';
+    direction: ltr;
+    unicode-bidi: isolate;
+    color: inherit;
+  }
+}
+
+.sn-collection-main {
+  --sn-col-border: #ececec; /* reference toolbar / pill stroke */
+  --sn-col-text: #3c3c3c;
+  --sn-col-ink: #12568d;
+
+  /* Mobile: S05's section padding (56 / 56) is for the homepage; the grid sits right under the toolbar here */
+  &.sn-home-bestsellers.section {
+    @media screen and (max-width: 749px) {
+      padding-block: calc(16px + var(--section-top-offset, 0px)) 40px;
+    }
+  }
+
+  /* ---------- Toolbar (desktop): one rounded bar; filters as pills ---------- */
+  .facets--horizontal .facets__form {
+    align-items: center;
+    gap: var(--gap-md);
+    padding: 12px 24px;
+    border: 1px solid var(--sn-col-border);
+    border-radius: 24px;
+    background-color: #ffffff;
+  }
+
+  .facets--horizontal .facets__summary {
+    padding: 10px 20px;
+    border: 1px solid var(--sn-col-border);
+    border-radius: 999px;
+    color: var(--sn-col-text);
+    font-size: 18px;
+    transition: border-color var(--animation-speed) var(--animation-easing);
+  }
+
+  .facets--horizontal details[open] > .facets__summary,
+  .facets--horizontal .facets__summary:hover {
+    border-color: var(--sn-col-text);
+  }
+
+  .facets--horizontal .facets__panel-content {
+    border-radius: 12px;
+    box-shadow: 0 12px 24px rgb(15 100 168 / 0.12);
+  }
+
+  .products-count-wrapper {
+    color: var(--sn-col-text);
+    font-size: 16px;
+  }
+
+  .sorting-filter__select,
+  .sorting-filter__label {
+    font-size: 16px;
+    color: var(--sn-col-text);
+  }
+
+  .sorting-filter__select {
+    border: 1px solid var(--sn-col-border);
+    border-radius: 12px;
+    padding: 8px 16px;
+    color: var(--sn-col-ink);
+  }
+
+  /* ---------- Toolbar (phones): "filter and sort" + count in one rounded bar ---------- */
+  @media screen and (max-width: 749px) {
+    .facets-toggle {
+      align-items: center;
+      padding: 12px 20px;
+      border: 1px solid var(--sn-col-border);
+      border-radius: 20px;
+      background-color: #ffffff;
+      color: var(--sn-col-text);
+    }
+
+    .facets-toggle__button {
+      color: var(--sn-col-text);
+    }
+  }
+
+  /* ---------- Load more (main-collection "Load more button") ---------- */
+  .sn-load-more__count {
+    color: var(--sn-col-text);
+    font-size: 16px;
+  }
+
+  .sn-load-more__button {
+    min-inline-size: 136px;
+    padding: 12px 36px;
+    border: 1.5px solid #222222;
+    border-radius: 999px;
+    background-color: transparent;
+    color: #222222;
+    font-size: 16px;
+    font-weight: 600;
+    box-shadow: none;
+
+    &:hover {
+      background-color: #222222;
+      color: #ffffff;
+    }
+
+    &[aria-busy='true'] {
+      opacity: 0.6;
+      cursor: progress;
+    }
+  }
+}
+
+/* ==========================================================================
+   C02 Cart drawer | owner: Main | reference: user screenshot (live snosha.com), 2026-11-19
+   Global drawer (layout); scoped to the SNOSHA header class, so removing sn-header-main turns it off.
+   Free shipping bar / savings line = opt-in theme settings (snippets/sn-cart-free-shipping, sn-cart-savings).
+   ========================================================================== */
+html:has(#header-component.sn-header-main) #cart-drawer {
+  --sn-cart-blue: #176bb0; /* brand / primary button */
+  --sn-cart-ink: #12568d;
+  --sn-cart-text: #3c3c3c;
+  --sn-cart-line: #ececec;
+
+  .theme-drawer__header {
+    border-block-end: 1px solid var(--sn-cart-line);
+  }
+
+  .theme-drawer__title {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 30px;
+    font-weight: 600;
+    color: var(--sn-cart-text);
+  }
+
+  .theme-drawer__badge {
+    display: inline-grid;
+    place-items: center;
+    min-inline-size: 30px;
+    block-size: 30px;
+    padding-inline: 6px;
+    border-radius: 999px;
+    background-color: var(--sn-cart-blue);
+    color: #ffffff;
+    font-size: 16px;
+    line-height: 1;
+  }
+
+  .theme-drawer__close-button {
+    inline-size: 50px;
+    block-size: 50px;
+    border-radius: 50%;
+    background-color: var(--sn-cart-blue);
+    color: #ffffff;
+    opacity: 1;
+
+    svg {
+      inline-size: 22px;
+      block-size: 22px;
+    }
+
+    &:hover:not(:active) {
+      background-color: var(--sn-cart-ink);
+      color: #ffffff;
+    }
+  }
+
+  /* Free shipping strip */
+  .sn-cart-shipping {
+    background-color: #f5f6f7;
+    color: var(--sn-cart-text);
+    font-size: 16px;
+  }
+
+  .sn-cart-shipping__bar {
+    background-color: #dcdcdc;
+
+    > span {
+      background-color: var(--sn-cart-text);
+    }
+  }
+
+  /* Line items */
+  .cart-items__title {
+    color: var(--sn-cart-blue);
+    font-size: 17px;
+    line-height: 1.6;
+    text-decoration: none;
+  }
+
+  .cart-items__variant {
+    color: #5a5a59;
+  }
+
+  .cart-items__media-container {
+    border-radius: 8px;
+    overflow: hidden;
+  }
+
+  .cart-items__price {
+    color: var(--sn-cart-blue);
+    font-weight: 700;
+  }
+
+  .cart-items__price .compare-at-price {
+    color: #8a8a8a;
+    font-weight: 400;
+  }
+
+  .quantity-selector {
+    border: 1px solid #dcf2fb;
+    border-radius: 999px;
+    color: var(--sn-cart-blue);
+    box-shadow: 0 4px 10px rgb(15 100 168 / 0.08);
+  }
+
+  .cart-items__remove {
+    color: var(--sn-cart-text);
+  }
+
+  /* Note + discount side by side, like two tabs */
+  .cart-actions {
+    display: flex;
+    align-items: flex-start;
+    border-block: 1px solid var(--sn-cart-line);
+
+    > :not(.cart-actions__divider) {
+      flex: 1 1 0;
+      min-inline-size: 0;
+    }
+  }
+
+  .cart-actions__divider {
+    align-self: stretch;
+    inline-size: 1px;
+    block-size: auto;
+    background-color: var(--sn-cart-line);
+  }
+
+  :is(.cart-note__summary, .cart-discount__summary) {
+    justify-content: center;
+    color: var(--sn-cart-text);
+  }
+
+  /* Totals */
+  .cart-totals__total-label {
+    font-size: 26px;
+    font-weight: 600;
+    color: var(--sn-cart-text);
+  }
+
+  .cart-totals__total-value {
+    font-size: 26px;
+    font-weight: 700;
+    color: var(--sn-cart-blue);
+  }
+
+  .sn-cart-savings__text {
+    color: var(--sn-cart-blue);
+    font-size: 18px;
+  }
+
+  .sn-cart-savings__original {
+    color: #8a8a8a;
+    font-size: 18px;
+  }
+
+  .cart__checkout-button {
+    min-block-size: 58px;
+    border-radius: 999px;
+    font-size: 18px;
+    font-weight: 600;
+  }
+
+  @media screen and (max-width: 749px) {
+    .theme-drawer__title {
+      font-size: 22px;
+    }
+
+    .theme-drawer__close-button {
+      inline-size: 44px;
+      block-size: 44px;
+    }
+
+    .cart-totals__total-label,
+    .cart-totals__total-value {
+      font-size: 20px;
+    }
+
+    .sn-cart-savings__text,
+    .sn-cart-savings__original {
+      font-size: 15px;
+    }
+  }
+}
+
+/* ==========================================================================
+   C03 Search | owner: Main | reference: user screenshot (live snosha.com), 2026-11-19
+   Native predictive search modal; full-width top panel, underlined field, round blue close button.
+   Scoped to the SNOSHA header class.
+   ========================================================================== */
+html:has(#header-component.sn-header-main) .search-modal {
+  .search-modal__content::backdrop {
+    background-color: rgb(0 0 0 / 0.15);
+  }
+
+  @media screen and (min-width: 750px) {
+    .dialog-modal.search-modal__content {
+      inline-size: 100%;
+      max-inline-size: none;
+      margin: 0;
+      inset-block-start: 0;
+      border: 0;
+      border-radius: 0;
+      box-shadow: 0 1px 0 #ececec;
+    }
+
+    /* Opening only; Horizon's closing animation (dialog-closing) stays native */
+    .dialog-modal[open].search-modal__content:not(.dialog-closing) {
+      animation-name: sn-search-panel-in;
+    }
+
+    .predictive-search-form__header {
+      max-inline-size: 1240px;
+      margin-inline: auto;
+      padding: 72px 24px 56px;
+    }
+  }
+
+  .predictive-search-form__header-inner {
+    border: 0;
+    border-block-end: 1px solid #dcdcdc;
+    border-radius: 0;
+    background-color: transparent;
+  }
+
+  .predictive-search-form__header-inner:focus-within {
+    outline: none;
+    border-block-end-color: #176bb0;
+  }
+
+  .predictive-search__icon {
+    display: none;
+  }
+
+  input.search-input {
+    padding-inline: 0;
+    font-size: 16px;
+  }
+
+  input.search-input::placeholder {
+    color: #8a8a8a;
+  }
+
+  .predictive-search__close-modal-button {
+    position: absolute;
+    inset-block-start: 10px;
+    inset-inline-end: 10px;
+    inline-size: 50px;
+    block-size: 50px;
+    min-inline-size: 50px;
+    padding: 0;
+    border-radius: 50%;
+    background-color: #176bb0;
+    color: #ffffff;
+
+    svg {
+      inline-size: 22px;
+      block-size: 22px;
+    }
+
+    &::before {
+      content: none;
+    }
+
+    @media screen and (max-width: 749px) {
+      position: static;
+      inline-size: 44px;
+      block-size: 44px;
+      min-inline-size: 44px;
+    }
+  }
+}
+
+@keyframes sn-search-panel-in {
+  from {
+    opacity: 0;
+    transform: translateY(-16px);
+  }
+
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}

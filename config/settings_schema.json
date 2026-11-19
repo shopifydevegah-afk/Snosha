@@ -1549,6 +1549,54 @@
         "default": true
       },
       {
+        "type": "header",
+        "content": "Free shipping & savings"
+      },
+      {
+        "type": "checkbox",
+        "id": "sn_free_shipping",
+        "label": "Show free shipping progress",
+        "info": "Cart drawer: how much is left until free shipping, with a progress bar. Only shows the message; set the free shipping rate itself in Settings › Shipping.",
+        "default": false
+      },
+      {
+        "type": "number",
+        "id": "sn_free_shipping_threshold",
+        "label": "Free shipping from (store currency)",
+        "default": 2000,
+        "visible_if": "{{ settings.sn_free_shipping }}"
+      },
+      {
+        "type": "text",
+        "id": "sn_free_shipping_text",
+        "label": "Message below the amount",
+        "info": "[amount] = what is left to spend.",
+        "default": "أضف [amount] للحصول على الشحن المجاني",
+        "visible_if": "{{ settings.sn_free_shipping }}"
+      },
+      {
+        "type": "text",
+        "id": "sn_free_shipping_success",
+        "label": "Message when reached",
+        "default": "تهانينا! أنت مؤهل للشحن المجاني!",
+        "visible_if": "{{ settings.sn_free_shipping }}"
+      },
+      {
+        "type": "checkbox",
+        "id": "sn_cart_savings",
+        "label": "Show savings",
+        "info": "Under the total: the original (compare-at) total struck through and how much the customer saves. Only when there is a saving.",
+        "default": false
+      },
+      {
+        "type": "text",
+        "id": "sn_cart_savings_text",
+        "label": "Savings text",
+        "info": "[amount] = total saved.",
+        "default": "لقد وفرت [amount]!",
+        "visible_if": "{{ settings.sn_cart_savings }}"
+      },
+      {
         "type": "checkbox",
         "id": "show_installments",
         "label": "t:settings.shop_pay_payment_options",

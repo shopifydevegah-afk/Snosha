@@ -1,0 +1,47 @@
+{%- doc -%}
+  Snosha (opt-in, Theme settings › Cart › "Show savings"): original total (compare-at prices, or the price
+  when there is none) struck through, and the amount saved against the cart total (after discounts).
+  Renders nothing when there is no saving.
+
+  @example
+  {% render 'sn-cart-savings' %}
+{%- enddoc -%}
+
+{%- if settings.sn_cart_savings and cart.item_count > 0 -%}
+  {%- liquid
+    assign sn_original_total = 0
+    for item in cart.items
+      assign sn_unit = item.original_price
+      if item.variant.compare_at_price > item.original_price
+        assign sn_unit = item.variant.compare_at_price
+      endif
+      assign sn_line = sn_unit | times: item.quantity
+      assign sn_original_total = sn_original_total | plus: sn_line
+    endfor
+    assign sn_saved = sn_original_total | minus: cart.total_price
+  -%}
+  {%- if sn_saved > 0 -%}
+    {%- assign sn_saved_money = sn_saved | money -%}
+    <div class="sn-cart-savings">
+      <span class="sn-cart-savings__text">
+        {{- settings.sn_cart_savings_text | escape | replace: '[amount]', sn_saved_money -}}
+      </span>
+      <s class="sn-cart-savings__original"><bdi>{{ sn_original_total | money }}</bdi></s>
+    </div>
+  {%- endif -%}
+{%- endif -%}
+
+{% stylesheet %}
+  .sn-cart-savings {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: var(--gap-2xs) var(--gap-md);
+    margin-block-start: var(--gap-2xs);
+  }
+
+  .sn-cart-savings__original {
+    opacity: var(--opacity-subdued-text, 0.7);
+  }
+{% endstylesheet %}

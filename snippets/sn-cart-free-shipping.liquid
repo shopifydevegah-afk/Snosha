@@ -1,0 +1,85 @@
+{%- doc -%}
+  Snosha (opt-in, Theme settings › Cart › "Show free shipping progress"): message + progress bar towards
+  the free-shipping amount, from the cart total (after discounts). Text only: the free-shipping rate itself
+  is configured in Shopify › Settings › Shipping.
+
+  @example
+  {% render 'sn-cart-free-shipping' %}
+{%- enddoc -%}
+
+{%- if settings.sn_free_shipping and settings.sn_free_shipping_threshold > 0 and cart.item_count > 0 -%}
+  {%- liquid
+    assign sn_goal = settings.sn_free_shipping_threshold | times: 100
+    assign sn_left = sn_goal | minus: cart.total_price
+    if sn_left < 0
+      assign sn_left = 0
+    endif
+    assign sn_percent = cart.total_price | times: 100 | divided_by: sn_goal
+    if sn_percent > 100
+      assign sn_percent = 100
+    endif
+    if sn_left == 0
+      assign sn_message = settings.sn_free_shipping_success | escape
+    else
+      assign sn_left_money = sn_left | money
+      assign sn_message = settings.sn_free_shipping_text | escape | replace: '[amount]', sn_left_money
+    endif
+  -%}
+  <div class="sn-cart-shipping{% if sn_left == 0 %} sn-cart-shipping--done{% endif %}" role="status">
+    <p class="sn-cart-shipping__text">
+      <span class="sn-cart-shipping__icon" aria-hidden="true">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M3 6.5h10.5v9H3zM13.5 9.5h4l3 3.2v2.8h-7" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/>
+          <circle cx="7" cy="17" r="1.8" stroke="currentColor" stroke-width="1.5"/>
+          <circle cx="17" cy="17" r="1.8" stroke="currentColor" stroke-width="1.5"/>
+        </svg>
+      </span>
+      <span>{{ sn_message }}</span>
+    </p>
+    <div
+      class="sn-cart-shipping__bar"
+      role="progressbar"
+      aria-valuemin="0"
+      aria-valuemax="100"
+      aria-valuenow="{{ sn_percent }}"
+    >
+      <span style="inline-size: {{ sn_percent }}%;"></span>
+    </div>
+  </div>
+{%- endif -%}
+
+{% stylesheet %}
+  .sn-cart-shipping {
+    display: flex;
+    flex-direction: column;
+    gap: var(--gap-sm);
+    padding: var(--padding-lg) var(--cart-drawer-padding, var(--padding-xl));
+  }
+
+  .sn-cart-shipping__text {
+    display: flex;
+    align-items: center;
+    gap: var(--gap-xs);
+    margin: 0;
+  }
+
+  .sn-cart-shipping__icon {
+    display: inline-flex;
+    flex: none;
+  }
+
+  .sn-cart-shipping__bar {
+    block-size: 4px;
+    border-radius: 4px;
+    background-color: rgb(var(--color-foreground-rgb) / var(--opacity-10, 0.1));
+    overflow: hidden;
+
+    > span {
+      display: block;
+      block-size: 100%;
+      background-color: currentColor;
+      border-radius: inherit;
+      transition: inline-size var(--animation-speed, 0.3s) var(--animation-easing, ease);
+    }
+  }
+{% endstylesheet %}
