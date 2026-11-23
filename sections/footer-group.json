@@ -358,12 +358,34 @@
                 "padding-inline-end": 0
               },
               "blocks": {}
+            },
+            "social_links_Ep3XC8": {
+              "type": "social-links",
+              "name": "t:names.social_media_links",
+              "settings": {
+                "icon_color": "",
+                "facebook_url": "https://www.facebook.com/snoshacom/",
+                "instagram_url": "https://www.instagram.com/snosha_com/",
+                "youtube_url": "https://www.youtube.com/channel/UC9BTeFPaOZqh7XaaTMpubtQ",
+                "tiktok_url": "https://www.tiktok.com/@snosha_com",
+                "twitter_url": "",
+                "threads_url": "",
+                "linkedin_url": "",
+                "bluesky_url": "",
+                "snapchat_url": "",
+                "pinterest_url": "",
+                "tumblr_url": "",
+                "vimeo_url": "",
+                "custom_url": ""
+              },
+              "blocks": {}
             }
           },
           "block_order": [
             "footer_newsletter_title",
             "footer_newsletter_text",
-            "footer_newsletter_form"
+            "footer_newsletter_form",
+            "social_links_Ep3XC8"
           ]
         }
       },
