@@ -107,15 +107,16 @@
                 hidden
               {% endif %}
             ></p>
-            <button
-              type="button"
+            <a
               class="button-secondary sn-load-more__button"
-              {% if paginate.pages <= 1 %}
+              {% if paginate.next %}
+                href="{{ paginate.next.url }}"
+              {% else %}
                 hidden
               {% endif %}
             >
               {{ section.settings.sn_load_more_label | default: 'تحميل المزيد' | escape }}
-            </button>
+            </a>
           </sn-load-more>
           <script src="{{ 'sn-load-more.js' | asset_url }}" type="module"></script>
         {%- endif -%}
