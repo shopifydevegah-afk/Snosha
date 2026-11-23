@@ -36,6 +36,18 @@
 {{ 'dev2.css' | asset_url | stylesheet_tag }}
 {{ 'dev3.css' | asset_url | stylesheet_tag }}
 
+{%- comment -%} Snosha SEO: JSON-LD by page type {%- endcomment -%}
+{%- render 'schema-organization' -%}
+{%- render 'schema-breadcrumb', product: product, collection: collection -%}
+{%- if template.name == 'product' -%}
+  {%- render 'schema-product', product: product -%}
+{%- elsif template.name == 'article' -%}
+  {%- render 'schema-article', article: article -%}
+{%- elsif template.name == 'page' and request.locale.iso_code == 'ar' -%}
+  {%- if page.handle == 'faq' or page.handle == 'faqs' or template.suffix == 'faq' -%}
+    {%- render 'schema-faq' -%}
+  {%- endif -%}
+{%- endif -%}
   </head>
 
   <body class="page-width-{{ settings.page_width }} card-hover-effect-{{ settings.card_hover_effect }}">

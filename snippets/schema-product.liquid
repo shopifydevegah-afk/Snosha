@@ -1,0 +1,48 @@
+{%- comment -%} Snosha SEO: Product JSON-LD. Accepts: product {%- endcomment -%}
+{%- if product -%}
+  {%- assign schema_variant = product.selected_or_first_available_variant -%}
+  {%- assign schema_sku = schema_variant.sku | default: product.id | append: '' -%}
+  {%- assign schema_rating = product.metafields.reviews.rating.value.rating -%}
+  {%- assign schema_rating_count = product.metafields.reviews.rating_count.value | default: 0 -%}
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Product",
+  "inLanguage": {{ request.locale.iso_code | json }},
+  "name": {{ product.title | json }},
+  "description": {{ product.description | strip_html | strip_newlines | truncate: 300 | json }},
+  "brand": {
+    "@type": "Brand",
+    "name": "Snosha"
+  },
+  "image": [
+    {%- for image in product.images limit: 5 -%}
+      {{ image | image_url: width: 1200, height: 1200 | prepend: 'https:' | json }}{% unless forloop.last %},{% endunless %}
+    {%- endfor -%}
+  ],
+  "sku": {{ schema_sku | json }},
+  "mpn": {{ schema_sku | json }},
+  "offers": {
+    "@type": "Offer",
+    "url": {{ request.origin | append: product.url | json }},
+    "priceCurrency": {{ cart.currency.iso_code | json }},
+    "price": "{{ schema_variant.price | divided_by: 100.0 }}",
+    "availability": "{% if schema_variant.available %}https://schema.org/InStock{% else %}https://schema.org/OutOfStock{% endif %}",
+    "itemCondition": "https://schema.org/NewCondition",
+    "seller": {
+      "@type": "Organization",
+      "name": "Snosha"
+    }
+  }
+  {%- if schema_rating and schema_rating_count > 0 -%},
+  "aggregateRating": {
+    "@type": "AggregateRating",
+    "ratingValue": "{{ schema_rating }}",
+    "reviewCount": "{{ schema_rating_count }}",
+    "bestRating": "5",
+    "worstRating": "1"
+  }
+  {%- endif %}
+}
+</script>
+{%- endif -%}
