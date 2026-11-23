@@ -1,0 +1,40 @@
+{% doc %}
+  Renders BreadcrumbList JSON-LD from the same values as the visible breadcrumb.
+
+  @param {string} home_label - Visible home label
+  @param {string} current_title - Current product or collection title
+  @param {string} current_url - Relative, localized URL of the current page
+  @param {string} [parent_title] - Collection title, only when the visible trail shows it
+  @param {string} [parent_url] - Relative, localized collection URL
+{% enddoc %}
+{%- if home_label != blank and current_title != blank and current_url != blank -%}
+  {%- assign schema_home_url = request.origin | append: routes.root_url -%}
+  <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        {
+          "@type": "ListItem",
+          "position": 1,
+          "name": {{ home_label | json }},
+          "item": {{ schema_home_url | json }}
+        },
+        {%- if parent_title != blank and parent_url != blank -%}
+          {
+            "@type": "ListItem",
+            "position": 2,
+            "name": {{ parent_title | json }},
+            "item": {{ request.origin | append: parent_url | json }}
+          },
+        {%- endif -%}
+        {
+          "@type": "ListItem",
+          "position": {% if parent_title != blank and parent_url != blank %}3{% else %}2{% endif %},
+          "name": {{ current_title | json }},
+          "item": {{ request.origin | append: current_url | json }}
+        }
+      ]
+    }
+  </script>
+{%- endif -%}

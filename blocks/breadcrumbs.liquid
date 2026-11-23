@@ -53,6 +53,32 @@
       </li>
     </ol>
   </nav>
+
+  {%- comment -%} Snosha SEO: JSON-LD uses this visible trail, on product and collection pages only {%- endcomment -%}
+  {%- liquid
+    assign bc_schema_url = ''
+    if request.page_type == 'product' and bc_product != blank
+      assign bc_schema_url = bc_product.url
+    elsif request.page_type == 'collection' and bc_product == blank and collection.handle != blank
+      assign bc_schema_url = collection.url
+    endif
+
+    assign bc_schema_parent_title = ''
+    assign bc_schema_parent_url = ''
+    if bc_show_collection
+      assign bc_schema_parent_title = collection.title
+      assign bc_schema_parent_url = collection.url
+    endif
+  -%}
+  {%- if bc_schema_url != blank -%}
+    {% render 'schema-breadcrumb',
+      home_label: bc_home_label,
+      current_title: bc_current,
+      current_url: bc_schema_url,
+      parent_title: bc_schema_parent_title,
+      parent_url: bc_schema_parent_url
+    %}
+  {%- endif -%}
 {%- endif -%}
 
 {% stylesheet %}
