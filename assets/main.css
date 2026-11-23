@@ -1652,25 +1652,58 @@
     font-size: 16px;
   }
 
+  .sn-load-more {
+    gap: 12px;
+  }
+
   .sn-load-more__button {
-    min-inline-size: 136px;
-    padding: 12px 36px;
-    border: 1.5px solid #222222;
+    min-inline-size: 154px; /* user screenshot 2026-11-23, read at 125% display scale */
+    min-block-size: 48px;
+    padding: 0 24px;
+    border: 1.5px solid #979897;
     border-radius: 999px;
     background-color: transparent;
     color: #222222;
     font-size: 16px;
-    font-weight: 600;
+    font-weight: 400;
     box-shadow: none;
 
+    /* Hover: only the border darkens */
     &:hover {
-      background-color: #222222;
-      color: #ffffff;
+      border-color: #222222;
+      background-color: transparent;
+      color: #222222;
     }
 
     &[aria-busy='true'] {
       opacity: 0.6;
       cursor: progress;
+    }
+  }
+}
+
+/* Card text on phones, S06 care cards (user screenshot 2026-11-23). Dev1's section keeps its layout;
+   only the type grows to match the other product cards. */
+@media screen and (max-width: 749px) {
+  .sn-home-choose-care.sn-home-choose-care {
+    a[ref='productTitleLink'] :is(.text-block, p) {
+      font-size: 14px;
+      line-height: 19px;
+    }
+
+    .sn-home-care-price product-price .price {
+      font-size: 13.5px;
+      line-height: 20px;
+    }
+
+    .sn-home-care-price product-price .compare-at-price {
+      font-size: 10.5px;
+      line-height: 16px;
+    }
+
+    .sn-home-care-discount {
+      font-size: 10px;
+      line-height: 14px;
     }
   }
 }

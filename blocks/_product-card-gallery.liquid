@@ -10,7 +10,7 @@
 
   # Product badge: product data (metafield) first, optional text fallback.
   assign custom_badge_text = ''
-  if product != blank and product.available and bs.custom_badge_source != 'none'
+  if product != blank and bs.custom_badge_source != 'none'
     if bs.custom_badge_source == 'metafield'
       assign badge_key_parts = bs.custom_badge_metafield | strip | split: '.'
       if badge_key_parts.size == 2
@@ -199,6 +199,7 @@
 
 {% capture children %}
   {% unless product == blank %}
+    {%- if custom_badge_text == blank -%}
     {%- if product.available == false or product.compare_at_price > product.price -%}
       <div
         class="product-badges product-badges--{{ settings.badge_position }}"
@@ -221,8 +222,9 @@
         </div>
       </div>
     {%- endif -%}
+    {%- endif -%}
     {%- if custom_badge_text != blank -%}
-      {%- comment -%} Opt-in product badge. Hidden for sold-out products, so the native Sold out badge keeps priority. {%- endcomment -%}
+      {%- comment -%} Opt-in product badge. On sold-out products the Sold out badge sits beside it, in the same row. {%- endcomment -%}
       <div
         class="product-badges product-badges--custom"
         data-position="{{ bs.custom_badge_position }}"
@@ -239,6 +241,14 @@
         <span class="product-badges__badge product-badges__badge--rectangle product-badges__badge--custom">
           {{- custom_badge_text | escape -}}
         </span>
+        {%- if product.available == false -%}
+          <span
+            class="product-badges__badge product-badges__badge--rectangle product-badges__badge--custom color-custom-badge-sold-out"
+            style="--custom-badge-background: var(--color-background); --custom-badge-color: var(--color-foreground);"
+          >
+            {{- 'content.product_badge_sold_out' | t -}}
+          </span>
+        {%- endif -%}
       </div>
     {%- endif -%}
     {% if product.available and settings.quick_add or settings.mobile_quick_add %}
@@ -268,6 +278,9 @@
 
     inset-block-start: var(--custom-badge-offset);
     inset-inline: var(--custom-badge-offset) auto;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px 6px;
     max-inline-size: calc(100% - var(--custom-badge-offset) * 2);
     pointer-events: none;
 

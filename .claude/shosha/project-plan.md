@@ -2405,6 +2405,18 @@ Verified in code and docs on 2026-11-08 before deciding:
   - Desktop spacing: head 44 / 34, breadcrumb band 13 / 13, bar 16 above and 20 below, smaller toolbar icons, no grey box on the active view.
   - Phone: removed the native grid's 16 px inline padding so cards align with the bar; card gap 16; band 13 / 13; bar 55; 24 above and below the bar; card type from the live site (title 14/19, description 11/17, price 13.5, CTA 13.5/20, badges 10).
   - **PENDING USER REVIEW** against the live site at desktop and phone widths, including the open filter dropdowns (also scaled).
+- **Follow-up 5 (2026-11-23, user screenshot):**
+  - Product badge on the right (inline start in Arabic) on desktop and phone in all cards that use it (collection ×2, home ×2, product ×2); phone quick add on the left.
+  - `_product-card-gallery`: the product badge also shows on sold-out products, with Sold out beside it in one wrapping row (stacks on phones, as in the reference). Cards without a product badge keep the native badge, which is already on the right.
+  - **PENDING USER REVIEW:** badges with long text on 320 px, sold-out cards, all pages.
+- **Follow-up 6 (2026-11-23, user screenshot):**
+  - Phone card text enlarged everywhere: S05-style cards in collection ×2, home ×2, product ×2 (title 14/19, description 11/17, price 13.5, CTA 13.5/20, badges 10, rating label 10, arrow 14) and home care cards (text 11/17, CTA 13/19, badge 10, title / prices / pill via a class-scoped override in `main.css`).
+  - Note: the editor commit `4760822` had reset the collection card values from Follow-up 4 (back to 8.5 etc.), while its section spacing was kept as saved by the user. Template values must be pushed before the next Theme Editor save.
+  - **PENDING USER REVIEW:** phones at 390 / 360 / 320 on all card sections, especially care card height.
+- **Follow-up 7 (2026-11-23, user screenshot):**
+  - Load more: `templates/collection.json` had `enable_infinite_scroll: false` (from the editor commit), which turns the button off and shows native pagination. Set back to true (8 per page). Both collection templates now use the button.
+  - Button matched to the screenshot: 154 x 48 pill, 1.5 px `#979897` border, regular weight; counter 12 px above it.
+  - **PENDING USER REVIEW:** click through to the last page, button hides at 11/11, count with filters active.
 
 ## F. QA & progress
 
