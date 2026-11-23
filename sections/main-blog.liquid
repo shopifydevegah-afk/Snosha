@@ -23,6 +23,7 @@
       blog-posts
       spacing-style
       size-style
+      {%- render 'custom-class', value: section.settings.custom_class -%}
     "
     data-testid="blog-posts"
     style="{% render 'spacing-style', settings: section.settings %}"
@@ -105,6 +106,13 @@
               endif
           endcase
 
+          # Snosha (opt-in "Equal columns"): every post is the same card, three per row
+          if section.settings.sn_equal_columns
+            assign col_span = 2
+            assign scale = 1
+            assign is_horizontal = false
+          endif
+
           case col_span
             when 2
               assign image_sizes = compact_image_sizes
@@ -116,6 +124,10 @@
               # Safe fallback for a future span; add a matching sizes value with any new layout.
               assign image_sizes = '100vw'
           endcase
+
+          if section.settings.sn_equal_columns
+            assign image_sizes = '(min-width: 1440px) 430px, (min-width: 990px) calc(33.33vw - 43px), (min-width: 750px) calc(50vw - 52px), calc(100vw - 48px)'
+          endif
 
           assign image_loading = 'lazy'
           assign image_fetch_priority = 'auto'
@@ -279,6 +291,23 @@
       "step": 1,
       "unit": "px",
       "default": 0
+    },
+    {
+      "type": "header",
+      "content": "Snosha layout"
+    },
+    {
+      "type": "checkbox",
+      "id": "sn_equal_columns",
+      "label": "Equal columns",
+      "info": "Shows every post as the same card, three per row on desktop.",
+      "default": false
+    },
+    {
+      "type": "text",
+      "id": "custom_class",
+      "label": "Custom CSS class",
+      "info": "Lowercase letters, numbers and hyphens, starting with a letter. Separate multiple classes with spaces."
     }
   ]
 }

@@ -42,6 +42,20 @@
   {% endif %}
 
   <div class="blog-post-card__content">
+    {%- capture sn_post_details -%}
+      {% content_for 'block',
+        id: 'blog-post-details',
+        type: '_blog-post-info-text',
+        alignment: block_settings.alignment,
+        article: article
+      %}
+    {%- endcapture -%}
+    {%- assign sn_read_more = block_settings.sn_read_more_label | strip -%}
+
+    {%- if block_settings.sn_date_first -%}
+      {{- sn_post_details -}}
+    {%- endif -%}
+
     <a
       class="blog-post-card__title-link"
       href="{{ article.url }}"
@@ -50,14 +64,23 @@
       {%- content_for 'block', id: 'heading', type: '_heading', text: article.title -%}
     </a>
 
-    {% content_for 'block',
-      id: 'blog-post-details',
-      type: '_blog-post-info-text',
-      alignment: block_settings.alignment,
-      article: article
-    %}
+    {%- unless block_settings.sn_date_first -%}
+      {{- sn_post_details -}}
+    {%- endunless -%}
 
-    {% content_for 'block', id: 'content', type: '_blog-post-description', article: article, show_read_more: true %}
+    {%- if sn_read_more != blank -%}
+      {% content_for 'block', id: 'content', type: '_blog-post-description', article: article, show_read_more: false %}
+      <a
+        class="sn-blog-read-more"
+        href="{{ article.url }}"
+        aria-label="{{ sn_read_more | escape }}: {{ article.title | escape }}"
+      >
+        <span>{{ sn_read_more | escape }}</span>
+        <span class="svg-wrapper" aria-hidden="true">{{- 'icon-arrow.svg' | inline_asset_content -}}</span>
+      </a>
+    {%- else -%}
+      {% content_for 'block', id: 'content', type: '_blog-post-description', article: article, show_read_more: true %}
+    {%- endif -%}
   </div>
 </div>
 
@@ -144,6 +167,22 @@
       "id": "background_color",
       "label": "t:settings.background_color",
       "placeholder": "t:settings.default"
+    },
+    {
+      "type": "header",
+      "content": "Snosha layout"
+    },
+    {
+      "type": "checkbox",
+      "id": "sn_date_first",
+      "label": "Date above title",
+      "default": false
+    },
+    {
+      "type": "text",
+      "id": "sn_read_more_label",
+      "label": "Read more link",
+      "info": "Shows the link on its own line with an arrow. Leave empty for the default inline link."
     }
   ]
 }

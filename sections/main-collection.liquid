@@ -100,7 +100,13 @@
             data-total="{{ collection.products_count }}"
             data-count-text="{{ section.settings.sn_load_more_count | escape }}"
           >
-            <p class="sn-load-more__count" aria-live="polite"></p>
+            <p
+              class="sn-load-more__count"
+              aria-live="polite"
+              {% if paginate.pages <= 1 %}
+                hidden
+              {% endif %}
+            ></p>
             <button
               type="button"
               class="button-secondary sn-load-more__button"

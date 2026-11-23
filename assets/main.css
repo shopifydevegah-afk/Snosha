@@ -1656,6 +1656,11 @@
     gap: 12px;
   }
 
+  /* Counter and button both hidden: the row takes no space */
+  .sn-load-more:not(:has(> :not([hidden]))) {
+    display: none;
+  }
+
   .sn-load-more__button {
     min-inline-size: 154px; /* user screenshot 2026-11-23, read at 125% display scale */
     min-block-size: 48px;
@@ -1667,6 +1672,11 @@
     font-size: 16px;
     font-weight: 400;
     box-shadow: none;
+
+    /* All products shown: the button's own display must not override the hidden attribute */
+    &[hidden] {
+      display: none;
+    }
 
     /* Hover: only the border darkens */
     &:hover {
@@ -1704,6 +1714,149 @@
     .sn-home-care-discount {
       font-size: 10px;
       line-height: 14px;
+    }
+  }
+}
+
+/* ==========================================================================
+   B01 Blog page | owner: Main | reference: user screenshots (live site), 2026-11-23, read at 125% display scale
+   Native: section (title, sn-blog-head) → section (breadcrumbs, sn-blog-breadcrumbs)
+   → main-blog (sn-blog-main, "Equal columns"); card options "Date above title" and "Read more link".
+   ========================================================================== */
+.sn-blog-head.sn-blog-head,
+.sn-blog-breadcrumbs.sn-blog-breadcrumbs,
+.blog-posts.sn-blog-main {
+  --page-content-width: 83.5rem;
+  --page-width: calc(var(--page-content-width) + var(--page-margin) * 2);
+
+  @media screen and (max-width: 749px) {
+    --page-margin: 24px;
+  }
+}
+
+.sn-blog-head .text-block,
+.sn-blog-head .text-block > * {
+  text-align: start;
+}
+
+.sn-blog-breadcrumbs.sn-blog-breadcrumbs .breadcrumbs__list {
+  justify-content: flex-start;
+}
+
+.blog-posts.sn-blog-main {
+  --columns-gap: 24px;
+  --rows-gap: 40px;
+
+  @media screen and (max-width: 749px) {
+    padding-block: calc(32px + var(--section-top-offset, 0px)) 40px;
+  }
+
+  .blog-post-item {
+    display: flex;
+    padding: 0;
+    border: 0;
+
+    /* Tablet: two per row, so the cards stay readable */
+    @media screen and (min-width: 750px) and (max-width: 989px) {
+      --col-span: 3;
+    }
+  }
+
+  .blog-post-card {
+    flex: 1 1 auto;
+    min-inline-size: 0;
+  }
+
+  .blog-post-card__image-container a {
+    display: block;
+  }
+
+  .blog-post-card__image {
+    display: block;
+    height: 268px;
+  }
+
+  .blog-post-card__content {
+    flex: 1 1 auto;
+    gap: 8px;
+    padding: 16px 4px 0;
+  }
+
+  .blog-post-details {
+    justify-content: flex-start;
+    font-size: 12px;
+    font-weight: 600;
+    line-height: 18px;
+  }
+
+  .blog-post-card__content a.blog-post-card__title-link {
+    padding-block-start: 0;
+    color: #12568d;
+
+    @media screen and (min-width: 750px) {
+      min-block-size: 68px; /* two title lines, so the excerpts line up across a row */
+    }
+
+    :is(h1, h2, h3, h4, h5, h6, p, .text-block) {
+      margin: 0;
+      color: inherit;
+      font-family: var(--font-heading--family);
+      font-size: 20px;
+      font-weight: 500;
+      line-height: 34px;
+      text-align: start;
+    }
+
+    &:hover {
+      color: #176bb0;
+    }
+  }
+
+  .blog-post-card__content-text {
+    display: -webkit-box;
+    overflow: hidden;
+    color: #5a5a59;
+    font-size: 16px;
+    font-weight: 400;
+    line-height: 28px;
+    text-align: start;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+    line-clamp: 2;
+  }
+
+  .blog-post-card__content a.sn-blog-read-more {
+    display: inline-flex;
+    align-items: center;
+    align-self: flex-start;
+    gap: 12px;
+    margin-block-start: auto;
+    padding-block-start: 0;
+    color: #176bb0;
+    font-size: 16px;
+    font-weight: 400;
+    line-height: 26px;
+
+    &:hover {
+      color: #176bb0;
+      text-decoration: underline;
+      text-underline-offset: 4px;
+    }
+
+    .svg-wrapper {
+      display: inline-flex;
+      flex: 0 0 auto;
+      inline-size: 12px;
+      block-size: 12px;
+    }
+
+    svg {
+      inline-size: 100%;
+      block-size: 100%;
+    }
+
+    &:dir(rtl) svg {
+      scale: -1 1;
     }
   }
 }

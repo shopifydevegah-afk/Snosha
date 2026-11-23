@@ -4,7 +4,7 @@
   - Collection crumb only when the visitor came through a collection URL (/collections/x/products/y),
     i.e. the `collection` object Shopify provides for that request. No collection is guessed from the
     product's collection list, so the trail is never wrong; without context it is Home / product.
-  - Current page = product title (product pages) or collection title (collection pages), not a link.
+  - Current page = product, collection, page or blog title, not a link.
 {%- endcomment -%}
 {%- liquid
   assign bc_product = closest.product
@@ -28,6 +28,8 @@
     assign bc_current = collection.title
   elsif page != blank
     assign bc_current = page.title
+  elsif blog != blank
+    assign bc_current = blog.title
   endif
 -%}
 

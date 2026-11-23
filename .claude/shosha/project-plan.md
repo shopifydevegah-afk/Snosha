@@ -2417,6 +2417,12 @@ Verified in code and docs on 2026-11-08 before deciding:
   - Load more: `templates/collection.json` had `enable_infinite_scroll: false` (from the editor commit), which turns the button off and shows native pagination. Set back to true (8 per page). Both collection templates now use the button.
   - Button matched to the screenshot: 154 x 48 pill, 1.5 px `#979897` border, regular weight; counter 12 px above it.
   - **PENDING USER REVIEW:** click through to the last page, button hides at 11/11, count with filters active.
+- **B01 Blog page (2026-11-23, user screenshots):** native composition, class `sn-blog-head`, `sn-blog-breadcrumbs`, `sn-blog-main` (collision check: none).
+  - `templates/blog.json`: title section (static text "مدونة سنوشا"), breadcrumb band `#f2f2f2`, `main-blog` with three equal cards.
+  - Opt-in: `main-blog` `sn_equal_columns`, `custom_class`; `_blog-post-card` `sn_date_first`, `sn_read_more_label`; `breadcrumbs` shows the blog title on blog pages. Unset = stock output.
+  - Values: content 1336, gap 24 / 40, image height 268, radius 16, date 12, title 20/34, excerpt 16/28 (2 lines), read more 16/26; phone gutters 24.
+  - **PENDING USER REVIEW:** 1, 2, 3 and 6+ posts; post without image / excerpt; 1440 / 1024 / 768 / 390 / 360; breadcrumb uses the blog's name from Shopify admin.
+  - Text refinement from the user close-up: title weight 500, read more weight 400, arrow 12 px with a 12 px gap. Sizes and line heights measured and unchanged. Weights are estimated from stroke width in the screenshot.
 
 ## F. QA & progress
 

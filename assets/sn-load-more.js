@@ -21,16 +21,15 @@ class SnLoadMore extends HTMLElement {
     this.section = this.closest('.sn-load-more-mode');
     this.button = this.querySelector('.sn-load-more__button');
     this.counter = this.querySelector('.sn-load-more__count');
-    this.total = Number(this.dataset.total) || 0;
     if (!this.section || !this.button) return;
 
     this.button.addEventListener('click', this.#load);
 
+    // The total changes in place when filters are applied, so it is watched too
+    this.#observer = new MutationObserver(this.#update);
+    this.#observer.observe(this, { attributes: true, attributeFilter: ['data-total'] });
     const grid = this.section.querySelector('[ref="grid"]');
-    if (grid) {
-      this.#observer = new MutationObserver(this.#update);
-      this.#observer.observe(grid, { childList: true });
-    }
+    if (grid) this.#observer.observe(grid, { childList: true });
     this.#update();
   }
 
@@ -75,14 +74,17 @@ class SnLoadMore extends HTMLElement {
 
   #render() {
     const shown = this.#shown();
+    const total = Number(this.dataset.total) || 0;
     const text = this.dataset.countText || '';
+    // Everything visible: no counter and no button. Both return if a filter change leaves more to load.
+    const allShown = total > 0 && shown >= total;
     if (this.counter) {
       this.counter.textContent = text
-        ? text.replace('[shown]', String(Math.min(shown, this.total || shown))).replace('[total]', String(this.total))
+        ? text.replace('[shown]', String(Math.min(shown, total || shown))).replace('[total]', String(total))
         : '';
-      this.counter.hidden = !text;
+      this.counter.hidden = !text || allShown;
     }
-    if (this.button && this.total && shown >= this.total) this.button.hidden = true;
+    if (this.button) this.button.hidden = allShown;
   }
 }
 
