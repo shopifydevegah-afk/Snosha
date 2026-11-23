@@ -56,6 +56,13 @@
             "padding-inline-start": 0,
             "padding-inline-end": 0,
             "mobile_content_alignment": "same",
+            "padding_mobile_custom": false,
+            "padding-block-start-mobile": 0,
+            "padding-block-end-mobile": 0,
+            "padding-inline-mobile": 0,
+            "shadow_color": "",
+            "shadow_blur": 18,
+            "shadow_offset_y": 8,
             "custom_class": "",
             "float_position": "none",
             "float_position_mobile": "same"
@@ -65,6 +72,7 @@
               "type": "image",
               "settings": {
                 "image": "shopify://shop_images/SNOSHA.svg",
+                "image_fit": "native",
                 "link": "",
                 "image_ratio": "adapt",
                 "width": "fit-content",
@@ -171,6 +179,7 @@
         },
         "footer_menu_about": {
           "type": "menu",
+          "disabled": true,
           "settings": {
             "menu": "snosha",
             "heading": "عن SNOSHA",
@@ -231,6 +240,13 @@
             "padding-inline-start": 0,
             "padding-inline-end": 0,
             "mobile_content_alignment": "same",
+            "padding_mobile_custom": false,
+            "padding-block-start-mobile": 0,
+            "padding-block-end-mobile": 0,
+            "padding-inline-mobile": 0,
+            "shadow_color": "",
+            "shadow_blur": 18,
+            "shadow_offset_y": 8,
             "custom_class": "",
             "float_position": "none",
             "float_position_mobile": "same"
