@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 {% doc %}
   Renders BreadcrumbList JSON-LD from the same values as the visible breadcrumb.
 
@@ -38,42 +37,4 @@
       ]
     }
   </script>
-=======
-{%- comment -%} Snosha SEO: BreadcrumbList JSON-LD for product and collection pages. Accepts: product, collection {%- endcomment -%}
-{%- if template.name == 'product' or template.name == 'collection' -%}
-  {%- assign schema_position = 1 -%}
-<script type="application/ld+json">
-{
-  "@context": "https://schema.org",
-  "@type": "BreadcrumbList",
-  "inLanguage": {{ request.locale.iso_code | json }},
-  "itemListElement": [
-    {
-      "@type": "ListItem",
-      "position": 1,
-      "name": "{% if request.locale.iso_code == 'ar' %}الرئيسية{% else %}Home{% endif %}",
-      "item": {{ request.origin | append: routes.root_url | json }}
-    }
-    {%- if collection -%}
-      {%- assign schema_position = schema_position | plus: 1 -%},
-    {
-      "@type": "ListItem",
-      "position": {{ schema_position }},
-      "name": {{ collection.title | json }},
-      "item": {{ request.origin | append: collection.url | json }}
-    }
-    {%- endif -%}
-    {%- if template.name == 'product' and product -%}
-      {%- assign schema_position = schema_position | plus: 1 -%},
-    {
-      "@type": "ListItem",
-      "position": {{ schema_position }},
-      "name": {{ product.title | json }},
-      "item": {{ request.origin | append: product.url | json }}
-    }
-    {%- endif %}
-  ]
-}
-</script>
->>>>>>> b7a4e58f721778037edf6bd1480d620f6bd9736b
 {%- endif -%}
