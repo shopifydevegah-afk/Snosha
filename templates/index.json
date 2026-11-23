@@ -1987,11 +1987,13 @@
       "name": "t:names.collections_carousel",
       "settings": {
         "collection_list": [
-          "مجموعات-snosha",
+          "الأكثر-مبيعًا",
+          "الباندلز",
           "الأكسسوارات",
-          "منتجات-العناية-بالفم",
+          "الرؤوس-البديلة",
           "باندل",
-          "الرؤوس-البديلة"
+          "مجموعات-snosha",
+          "منتجات-العناية-بالفم"
         ],
         "layout_type": "carousel",
         "carousel_on_mobile": false,
