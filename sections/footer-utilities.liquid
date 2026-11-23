@@ -19,6 +19,17 @@
     data-testid="footer-utilities"
   >
     {% content_for 'blocks' %}
+    {%- comment -%} Snosha: Horizon's own language form, only with the SNOSHA footer class {%- endcomment -%}
+    {%- if section.settings.custom_class contains 'sn-footer-utilities' and localization.available_languages.size > 1 -%}
+      <div class="sn-footer-language">
+        {% render 'localization-form',
+          show_country: false,
+          show_language: true,
+          localization_style: 'footer',
+          form_id: section.id
+        %}
+      </div>
+    {%- endif -%}
   </div>
 </div>
 

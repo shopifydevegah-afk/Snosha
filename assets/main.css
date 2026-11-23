@@ -1922,6 +1922,99 @@
   }
 }
 
+/* Uploaded left arrows ("Product Display", "See all"): point right on left-to-right languages */
+[dir='ltr'] :is(.icon-block__media, .product-list-button__icon-media)[src*='arrow-left'] {
+  scale: -1 1;
+}
+
+/* Footer language dropdown: Horizon's own form and select, same design as the header, opens upward */
+.sn-footer-utilities .utilities:has(> .sn-footer-language) {
+  @media screen and (min-width: 750px) {
+    grid-template-columns: 1fr auto;
+
+    > .sn-footer-language {
+      justify-self: end;
+    }
+  }
+
+  @media screen and (max-width: 749px) {
+    gap: 8px;
+  }
+}
+
+.sn-footer-language .language-selector {
+  inline-size: auto;
+  padding: 0;
+}
+
+.sn-footer-language .localization-form__select,
+.sn-footer-language .language-selector .icon-caret {
+  background-color: transparent;
+  color: #5a5a59;
+}
+
+.sn-footer-language .localization-form__select {
+  padding-block: 0;
+  padding-inline: 0 22px;
+  font-size: 12px;
+  line-height: 20px;
+  text-align: start;
+}
+
+@supports (appearance: base-select) {
+  .sn-footer-language .localization-form__select {
+    appearance: base-select;
+    min-block-size: 0;
+    border: 0;
+  }
+
+  .sn-footer-language .localization-form__select::picker-icon {
+    display: none;
+  }
+
+  .sn-footer-language .localization-form__select::picker(select) {
+    appearance: base-select;
+    position-area: block-start span-inline-start;
+    min-inline-size: 126px;
+    margin-block-end: 8px;
+    padding: 6px;
+    border: 1px solid #ececec;
+    border-radius: 12px;
+    background-color: #ffffff;
+    box-shadow: 0 8px 24px rgb(15 100 168 / 0.12);
+  }
+
+  .sn-footer-language .localization-form__select option {
+    min-block-size: 38px;
+    padding: 7px 12px;
+    border-radius: 8px;
+    background-color: transparent;
+    color: #12568d;
+    font-size: 14px;
+    font-weight: 400;
+    line-height: 24px;
+    white-space: nowrap;
+    cursor: pointer;
+  }
+
+  .sn-footer-language .localization-form__select option::checkmark {
+    display: none;
+  }
+
+  .sn-footer-language .localization-form__select option:is(:hover, :focus-visible) {
+    background-color: #f2f2f2;
+  }
+
+  .sn-footer-language .localization-form__select option:checked {
+    background-color: #f2f2f2;
+    font-weight: 700;
+  }
+
+  .sn-footer-language .localization-form__select:open + .icon-caret svg {
+    rotate: 180deg;
+  }
+}
+
 /* ==========================================================================
    C02 Cart drawer | owner: Main | reference: user screenshot (live snosha.com), 2026-11-19
    Global drawer (layout); scoped to the SNOSHA header class, so removing sn-header-main turns it off.
