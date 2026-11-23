@@ -2055,6 +2055,57 @@ html:has(#header-component.sn-header-main) #cart-drawer {
     font-weight: 600;
   }
 
+  /* Text colours sampled from the user's screenshot (Horizon's 70% / subdued text was too faint) */
+  .theme-drawer__title,
+  .cart-totals__total-label,
+  .quantity-selector input {
+    color: #282928;
+  }
+
+  .sn-cart-shipping,
+  .cart-items__remove,
+  :is(.cart-note__summary, .cart-discount__summary),
+  :is(.cart-note__summary, .cart-discount__summary):hover,
+  :is(.cart-note__label, .cart-discount__label) {
+    color: #454645;
+  }
+
+  .cart-items__details :is(.cart-items__variants, .cart-items__properties, .cart-items__unit-price-wrapper),
+  .cart-items__details :is(.cart-items__variants, .cart-items__properties) :is(dt, dd),
+  .cart-totals__tax-note,
+  .cart-totals__tax-note a,
+  .cart-discount__input::placeholder,
+  .cart-note__instructions::placeholder {
+    color: #636463;
+  }
+
+  .cart-items__price .compare-at-price {
+    color: #515251;
+  }
+
+  .sn-cart-savings__original {
+    color: #4d4e4d;
+  }
+
+  /* Quantity + / -: solid brand blue in every state, including minus at the minimum quantity */
+  .quantity-selector :is(.quantity-minus, .quantity-plus),
+  .quantity-selector :is(.quantity-minus, .quantity-plus):is(:hover, :focus-visible, :disabled) {
+    --button-color: var(--sn-cart-blue);
+
+    color: var(--sn-cart-blue);
+    opacity: 1;
+
+    .svg-wrapper {
+      color: var(--sn-cart-blue);
+      opacity: 1;
+    }
+
+    svg path {
+      stroke: var(--sn-cart-blue);
+      stroke-width: 2;
+    }
+  }
+
   @media screen and (max-width: 749px) {
     .theme-drawer__title {
       font-size: 22px;
@@ -2123,6 +2174,12 @@ html:has(#header-component.sn-header-main) .search-modal {
   }
 
   .predictive-search__icon {
+    display: none;
+  }
+
+  /* No suggested products on open: the panel below the field appears only with real results for typed text */
+  .predictive-search-form:has(input.search-input:placeholder-shown) .predictive-search-form__content-wrapper,
+  .predictive-search-form__content-wrapper:not(:has([data-search-results])) {
     display: none;
   }
 
