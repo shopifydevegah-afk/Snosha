@@ -27,14 +27,15 @@
     "filters": "Filters",
     "filter_count": {
       "one": "{{ count }} filter applied",
-      "other": "{{ count }} filters applied"
+      "other": "{{ count }} filters applied",
+      "two": "{{ count }} filters applied",
+      "zero": "{{ count }} filters applied"
     },
     "home_logo_alt": "{{ store_name }} - Home",
     "increase_quantity": "Increase quantity",
     "inventory_status": "Inventory status",
     "localization_region_and_language": "Region and language selector",
     "menu": "Menu",
-    // This is the label for the header navigation menu when using screen readers, it will read "Primary navigation"
     "header_navigation_label": "Primary",
     "nested_product": "{{ product_title }} for {{ parent_title }}",
     "new_window": "Opens in a new window.",
@@ -68,53 +69,45 @@
     "price_filter_high": "High price"
   },
   "actions": {
-    // Quick add button on product cards, shortened version of add to cart
     "add": "Add",
     "add_to_cart": "Add to cart",
-    // Success message shown after adding item to cart
     "added": "Added",
-    // Button to apply discount code to cart
     "apply": "Apply",
     "back": "Back",
     "back_to": "Back to {{ title }}",
     "back_to_main_menu": "Back to main menu",
     "choose": "Choose",
-    // Button to reset current selection or input
     "clear": "Clear",
-    // Button to remove all applied product filters
     "clear_all": "Clear all",
     "close": "Close",
     "open": "Open",
-    // Continue shopping link on the cart page which takes the user back to a collection page
     "continue_shopping": "Continue shopping",
     "enter_password": "Enter password",
     "log_in_html": "Have an account? <a href=\"{{ link }}\">Log in</a> to check out faster.",
     "log_in": "Sign in",
     "log_out": "Log out",
     "open_image_in_full_screen": "Open image in full screen",
-    // Button to remove applied filters from search/collection results
     "remove": "Remove",
     "remove_discount": "Remove discount {{ code }}",
-    // Button to expand hidden product variant options
     "show_all_options": "Show all options",
     "see_items": {
       "one": "See {{ count }} item",
-      // Button to view filtered product results and close filter dialog
-      "other": "See {{ count }} items"
+      "other": "See {{ count }} items",
+      "few": "Display {{ count }} items",
+      "many": "Display {{ count }} items",
+      "two": "Display {{ count }} items",
+      "zero": "Display {{ count }} items"
     },
     "show_filters": "Filter",
     "show_less": "Show less",
     "show_more": "Show more",
     "sign_in_options": "Other sign in options",
-    // AR button to view 3D product model in physical space
     "view_in_your_space": "View in your space",
-    // Button to view complete collection/product list
     "view_all": "View all",
     "more": "More",
     "zoom": "Zoom",
     "zoom_media": "Zoom media {{ index }}",
     "close_dialog": "Close dialog",
-    // Button to clear search filter and restore default view
     "reset": "Reset",
     "enter_using_password": "Enter using password",
     "sign_up": "Sign up",
@@ -146,7 +139,11 @@
     "article": {
       "comments_heading": {
         "one": "{{ count }} comment",
-        "other": "{{ count }} comments"
+        "other": "{{ count }} comments",
+        "few": "{{ count }} comments",
+        "many": "{{ count }} comments",
+        "two": "{{ count }} comments",
+        "zero": "{{ count }} comments"
       },
       "comment_author_separator": "•"
     },
@@ -209,14 +206,22 @@
     },
     "inventory_low_stock_show_count": {
       "one": "{{ count }} left",
-      "other": "{{ count }} left"
+      "other": "{{ count }} left",
+      "few": "Remaining {{ count }}",
+      "many": "Remaining {{ count }}",
+      "two": "Remaining {{ count }}",
+      "zero": "Remaining {{ count }}"
     },
     "inventory_low_stock": "Low stock",
     "inventory_in_stock": "In stock",
     "inventory_out_of_stock": "Out of stock",
     "item_count": {
       "one": "{{ count }} item",
-      "other": "{{ count }} items"
+      "other": "{{ count }} items",
+      "few": "{{ count }} items",
+      "many": "{{ count }} items",
+      "two": "{{ count }} items",
+      "zero": "{{ count }} items"
     },
     "item_count_cutoff": "More than {{ count }} items",
     "language": "Language",
@@ -269,12 +274,15 @@
     "search_results_no_results_check_spelling": "No results found for \"{{ terms }}\". Check the spelling or use a different word or phrase.",
     "search_results_resource_articles": "Blog posts",
     "search_results_resource_collections": "Collections",
-    // Section heading for Shopify store pages in search results
     "search_results_resource_pages": "Pages",
     "search_results_resource_products": "Products",
     "search_results_resource_products_count": {
       "one": "{{ count }} product",
-      "other": "{{ count }} products"
+      "other": "{{ count }} products",
+      "few": "{{ count }} products",
+      "many": "{{ count }} products",
+      "two": "{{ count }} products",
+      "zero": "{{ count }} products"
     },
     "search_results_resource_queries": "Search suggestions",
     "total_items": "Total items",
@@ -284,12 +292,14 @@
     "your_cart": "Your cart",
     "items_added_to_cart": {
       "one": "1 item added to cart",
-      "other": "{{ count }} items added to cart"
+      "other": "{{ count }} items added to cart",
+      "few": "{{ count }} items have been added to the cart",
+      "many": "{{ count }} items have been added to the cart",
+      "two": "{{ count }} items have been added to the cart",
+      "zero": "{{ count }} items have been added to the cart"
     },
-    // Button to go from search preview to full search results page
     "search_results_view_all": "View all",
     "search_results_view_all_button": "View all",
-    // Label for customer's note to seller during checkout
     "seller_note": "Special instructions",
     "shipping_policy": "Shipping calculated at checkout.",
     "shipping_policy_html": "<a href=\"{{ link }}\">Shipping</a> calculated at checkout.",
@@ -311,7 +321,6 @@
     "taxes_included_shipping_at_checkout_without_policy_without_discounts": "Taxes included. Shipping is calculated at checkout.",
     "unavailable": "Unavailable",
     "use_fewer_filters_html": "Try using fewer filters, or <a class=\"{{ class }}\" href=\"{{ link }}\">clear all filters</a>.",
-    // Link or button to expand additional information
     "view_more_details": "View more details",
     "volume_pricing_available": "Volume pricing available",
     "volume_pricing": "Volume pricing",
@@ -324,7 +333,6 @@
     "product_count": "Product count",
     "errors": "Errors",
     "wrong_password": "Wrong password",
-    // Legend text for gift card delivery options
     "recipient_form_send_to": "Send to",
     "recipient_form_email_label": "Recipient’s email",
     "recipient_form_email_label_my_email": "My email",
@@ -340,7 +348,6 @@
     "product_custom_property_character_count": "{{ used_chars }}/{{ max_chars }} characters used"
   },
   "fields": {
-    // Separates min and max values in price range filter
     "separator": "to"
   },
   "gift_cards": {
@@ -384,6 +391,168 @@
       "in_cart": "in cart",
       "default_title": "Default Title",
       "sticky_add_to_cart": "Quick add to cart bar"
+    }
+  },
+  "shopify": {
+    "checkout": {
+      "thank_you": {
+        "thank_you_item_label": {
+          "few": "%{count} item",
+          "many": "%{count} item",
+          "two": "%{count} item",
+          "zero": "%{count} item"
+        },
+        "login_reorder_link_text": {
+          "few": "Customers also bought",
+          "many": "Customers also bought",
+          "two": "Customers also bought",
+          "zero": "Customers also bought"
+        },
+        "gift_card_confirmation_by_text_typ": {
+          "few": "You will receive a text message with your gift cards within a few minutes.",
+          "many": "You will receive a text message with your gift cards within a few minutes.",
+          "two": "You will receive a text message with your gift cards within a few minutes.",
+          "zero": "You will receive a text message with your gift cards within a few minutes."
+        },
+        "gift_card_confirmation_by_email_typ": {
+          "few": "You will receive an email with your gift cards within a few minutes.",
+          "many": "You will receive an email with your gift cards within a few minutes.",
+          "two": "You will receive an email with your gift cards within a few minutes.",
+          "zero": "You will receive an email with your gift cards within a few minutes."
+        },
+        "gift_card_email_title": {
+          "few": "Gift cards have been sent via email.",
+          "many": "Gift cards have been sent via email.",
+          "two": "Gift cards have been sent via email.",
+          "zero": "Gift cards have been sent via email."
+        },
+        "gift_card_text_title": {
+          "few": "The gift cards have been sent via text message.",
+          "many": "The gift cards have been sent via text message.",
+          "two": "The gift cards have been sent via text message.",
+          "zero": "The gift cards have been sent via text message."
+        },
+        "gift_card_resent_confirmation": {
+          "few": "The gift cards have been resent.",
+          "many": "The gift cards have been resent.",
+          "two": "The gift cards have been resent.",
+          "zero": "The gift cards have been resent."
+        },
+        "gift_card_resend_failure": {
+          "few": "An issue occurred while resending your gift cards. Please try again or contact us.",
+          "many": "An issue occurred while resending your gift cards. Please try again or contact us.",
+          "two": "An issue occurred while resending your gift cards. Please try again or contact us.",
+          "zero": "An issue occurred while resending your gift cards. Please try again or contact us."
+        }
+      },
+      "shipping": {
+        "subscription_delivery_description": {
+          "free_shipping_cycles": {
+            "few": "Free shipping for %{count} more deliveries",
+            "many": "Free shipping for %{count} more deliveries",
+            "two": "Free shipping for %{count} more deliveries",
+            "zero": "Free shipping for %{count} more deliveries"
+          },
+          "free_shipping_cycles_delivery_not_included": {
+            "few": "Free shipping for %{count} deliveries",
+            "many": "Free shipping for %{count} deliveries",
+            "two": "Free shipping for %{count} deliveries",
+            "zero": "Free shipping for %{count} deliveries"
+          },
+          "first_n_order_free_with_cycle": {
+            "few": "Free shipping for %{count} additional deliveries, then %{recurring_order_shipping_price}",
+            "many": "Free shipping for %{count} additional deliveries, then %{recurring_order_shipping_price}",
+            "two": "Free shipping for %{count} additional deliveries, then %{recurring_order_shipping_price}",
+            "zero": "Free shipping for %{count} additional deliveries, then %{recurring_order_shipping_price}"
+          },
+          "first_n_order_free_with_cycle_delivery_not_included": {
+            "few": "Free shipping for %{count} deliveries, then %{recurring_order_shipping_price}",
+            "many": "Free shipping for %{count} deliveries, then %{recurring_order_shipping_price}",
+            "two": "Free shipping for %{count} deliveries, then %{recurring_order_shipping_price}",
+            "zero": "Free shipping for %{count} deliveries, then %{recurring_order_shipping_price}"
+          },
+          "max_cycles_base_shipping": {
+            "few": "%{count} additional deliveries at %{shipping_price} each",
+            "many": "%{count} additional deliveries at %{shipping_price} each",
+            "two": "%{count} additional deliveries at %{shipping_price} each",
+            "zero": "%{count} additional deliveries at %{shipping_price} each"
+          },
+          "max_cycles_base_shipping_delivery_not_included": {
+            "few": "%{count} additional deliveries at %{shipping_price} each",
+            "many": "%{count} additional deliveries at %{shipping_price} each",
+            "two": "%{count} additional deliveries at %{shipping_price} each",
+            "zero": "%{count} additional deliveries at %{shipping_price} each"
+          },
+          "prepaid_free_shipping_with_cycles": {
+            "few": "Free shipping for the first %{cycle}, followed by %{recurring_order_shipping_price}",
+            "many": "Free shipping for the first %{cycle}, followed by %{recurring_order_shipping_price}",
+            "two": "Free shipping for the first %{cycle}, followed by %{recurring_order_shipping_price}",
+            "zero": "Free shipping for the first %{cycle}, followed by %{recurring_order_shipping_price}"
+          },
+          "prepaid_order_one_cycle": {
+            "few": "%{shipping_price} for %{count} additional deliveries (%{per_delivery_cost})",
+            "many": "%{shipping_price} for %{count} additional deliveries (%{per_delivery_cost})",
+            "two": "%{shipping_price} for %{count} additional deliveries (%{per_delivery_cost})",
+            "zero": "%{shipping_price} for %{count} additional deliveries (%{per_delivery_cost})"
+          },
+          "prepaid_order_one_cycle_delivery_not_included": {
+            "few": "%{shipping_price} for %{count} deliveries (%{per_delivery_cost})",
+            "many": "%{shipping_price} for %{count} deliveries (%{per_delivery_cost})",
+            "two": "%{shipping_price} for %{count} deliveries (%{per_delivery_cost})",
+            "zero": "%{shipping_price} for %{count} deliveries (%{per_delivery_cost})"
+          },
+          "prepaid_order_no_cycle": {
+            "few": "%{shipping_price} for %{count} additional deliveries (%{per_delivery_cost}), followed by %{recurring_order_shipping_price}",
+            "many": "%{shipping_price} for %{count} additional deliveries (%{per_delivery_cost}), followed by %{recurring_order_shipping_price}",
+            "two": "%{shipping_price} for %{count} additional deliveries (%{per_delivery_cost}), followed by %{recurring_order_shipping_price}",
+            "zero": "%{shipping_price} for %{count} additional deliveries (%{per_delivery_cost}), followed by %{recurring_order_shipping_price}"
+          },
+          "prepaid_order_no_cycle_delivery_not_included": {
+            "few": "%{shipping_price} for %{count} deliveries (%{per_delivery_cost}), followed by %{recurring_order_shipping_price}",
+            "many": "%{shipping_price} for %{count} deliveries (%{per_delivery_cost}), followed by %{recurring_order_shipping_price}",
+            "two": "%{shipping_price} for %{count} deliveries (%{per_delivery_cost}), followed by %{recurring_order_shipping_price}",
+            "zero": "%{shipping_price} for %{count} deliveries (%{per_delivery_cost}), followed by %{recurring_order_shipping_price}"
+          },
+          "prepaid_delivery_frequency": {
+            "few": "for %{count} deliveries",
+            "many": "for %{count} deliveries",
+            "two": "for %{count} deliveries",
+            "zero": "for %{count} deliveries"
+          },
+          "subscription_delivery_frequency": {
+            "day": {
+              "few": "Every %{count} days",
+              "many": "Every %{count} days",
+              "two": "Every %{count} days",
+              "zero": "Every %{count} days"
+            },
+            "week": {
+              "few": "Every %{count} weeks",
+              "many": "Every %{count} weeks",
+              "two": "Every %{count} weeks",
+              "zero": "Every %{count} weeks"
+            },
+            "month": {
+              "few": "Every %{count} months",
+              "many": "Every %{count} months",
+              "two": "Every %{count} months",
+              "zero": "Every %{count} months"
+            },
+            "year": {
+              "few": "Every %{count} years",
+              "many": "Every %{count} years",
+              "two": "Every %{count} years",
+              "zero": "Every %{count} years"
+            }
+          },
+          "first_n_order_free": {
+            "few": "First %{count} orders are free",
+            "many": "First %{count} orders are free",
+            "two": "First %{count} orders are free",
+            "zero": "First %{count} orders are free"
+          }
+        }
+      }
     }
   }
 }
