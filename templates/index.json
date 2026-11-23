@@ -1987,8 +1987,8 @@
         "link_text_color":"",
         "icon":"arrow",
         "icon_image":"shopify://shop_images/arrow-left.svg",
-        "icon_position":"start",
-        "icon_position_mobile":"start",
+        "icon_position":"end",
+        "icon_position_mobile":"end",
         "icon_size":18,
         "icon_gap":10,
         "icon_mirror_rtl":true,
@@ -2054,7 +2054,7 @@
         "quick_add_label":"أضف إلى السلة",
         "quick_add_style":"bar",
         "quick_add_icon":"cart",
-        "quick_add_icon_position":"start",
+        "quick_add_icon_position":"end",
         "quick_add_icon_size":18,
         "quick_add_radius":12,
         "quick_add_background":"#176bb0",
@@ -2331,8 +2331,8 @@
           }
          },
          "block_order":[
-          "icon_sn5arrow",
-          "text_sn5cta"
+          "text_sn5cta",
+          "icon_sn5arrow"
          ]
         }
        },
@@ -3606,8 +3606,8 @@
         "link_text_color":"",
         "icon":"arrow",
         "icon_image":"shopify://shop_images/arrow-left.svg",
-        "icon_position":"start",
-        "icon_position_mobile":"start",
+        "icon_position":"end",
+        "icon_position_mobile":"end",
         "icon_size":18,
         "icon_gap":10,
         "icon_mirror_rtl":true,
@@ -3673,7 +3673,7 @@
         "quick_add_label":"أضف إلى السلة",
         "quick_add_style":"bar",
         "quick_add_icon":"cart",
-        "quick_add_icon_position":"start",
+        "quick_add_icon_position":"end",
         "quick_add_icon_size":18,
         "quick_add_radius":12,
         "quick_add_background":"#176bb0",
@@ -3950,8 +3950,8 @@
           }
          },
          "block_order":[
-          "icon_sn5arrow_2fW6Ag",
-          "text_JqRMAx"
+          "text_JqRMAx",
+          "icon_sn5arrow_2fW6Ag"
          ]
         }
        },
@@ -7260,7 +7260,7 @@
             "quick_add_label":"",
             "quick_add_style":"native",
             "quick_add_icon":"native",
-            "quick_add_icon_position":"start",
+            "quick_add_icon_position":"end",
             "quick_add_icon_size":18,
             "quick_add_radius":12,
             "quick_add_background":"",
@@ -8065,7 +8065,7 @@
             "quick_add_label":"",
             "quick_add_style":"native",
             "quick_add_icon":"native",
-            "quick_add_icon_position":"start",
+            "quick_add_icon_position":"end",
             "quick_add_icon_size":18,
             "quick_add_radius":12,
             "quick_add_background":"",
@@ -9159,7 +9159,7 @@
             "quick_add_label":"",
             "quick_add_style":"native",
             "quick_add_icon":"native",
-            "quick_add_icon_position":"start",
+            "quick_add_icon_position":"end",
             "quick_add_icon_size":18,
             "quick_add_radius":12,
             "quick_add_background":"",
@@ -9964,7 +9964,7 @@
             "quick_add_label":"",
             "quick_add_style":"native",
             "quick_add_icon":"native",
-            "quick_add_icon_position":"start",
+            "quick_add_icon_position":"end",
             "quick_add_icon_size":18,
             "quick_add_radius":12,
             "quick_add_background":"",

@@ -108,8 +108,8 @@
   {%- endif -%}
   {%- if show_view_all -%}
     <a class="featured-blog-posts__view-all" href="{{ view_all_blog.url }}">
-      <span class="svg-wrapper" aria-hidden="true">{{- 'icon-arrow.svg' | inline_asset_content -}}</span>
       <span>{{ section.settings.view_all_label | escape }}</span>
+      <span class="svg-wrapper" aria-hidden="true">{{- 'icon-arrow.svg' | inline_asset_content -}}</span>
     </a>
   {%- endif -%}
 </div>

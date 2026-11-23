@@ -5,6 +5,8 @@
   @param {string} filter_style - The filter style, can be 'horizontal' or 'vertical'.
   @param {boolean} [should_render_clear] - Whether to render the clear button.
   @param {string} [id_prefix] - Unique prefix to avoid duplicate IDs when rendered multiple times.
+  @param {boolean} [sn_toolbar] - Snosha: filters block "Toolbar layout" is on
+  @param {string} [sn_reset_label] - Snosha: reset label
 
   @example
   {% render 'price-filter', filter: filter, filter_style: 'vertical', id_prefix: 'dialog' %}
@@ -80,6 +82,46 @@
         data-currency="{{ localization.country.currency.iso_code }}"
         on:change="/updatePriceFilterAndResults"
       >
+        {%- if sn_toolbar -%}
+          {%- comment -%} Snosha (opt-in): slider that drives the native price inputs below {%- endcomment -%}
+          {%- assign sn_range_top = filter.range_max | plus: 99 | divided_by: 100 | times: 100 -%}
+          <sn-price-range
+            class="sn-price-range"
+            data-low="{{ filter.min_value.value }}"
+            data-high="{{ filter.max_value.value }}"
+            data-max="{{ filter.range_max }}"
+            data-money-format="{{ shop.money_format | strip_html | escape }}"
+            data-currency="{{ localization.country.currency.iso_code }}"
+          >
+            <div class="sn-price-range__track">
+              <input
+                type="range"
+                data-range="low"
+                min="0"
+                max="{{ sn_range_top }}"
+                step="100"
+                value="{{ filter.min_value.value | default: 0 }}"
+                aria-label="{{ 'accessibility.price_filter_low' | t }}"
+                data-skip-node-update
+              >
+              <input
+                type="range"
+                data-range="high"
+                min="0"
+                max="{{ sn_range_top }}"
+                step="100"
+                value="{{ filter.max_value.value | default: sn_range_top }}"
+                aria-label="{{ 'accessibility.price_filter_high' | t }}"
+                data-skip-node-update
+              >
+            </div>
+            <div class="sn-price-range__values">
+              <bdi data-label="low">{{ filter.min_value.value | default: 0 | money | strip_html }}</bdi>
+              <bdi data-label="high">{{ filter.max_value.value | default: filter.range_max | money | strip_html }}</bdi>
+            </div>
+          </sn-price-range>
+          <script src="{{ 'sn-price-range.js' | asset_url }}" type="module"></script>
+        {%- endif -%}
         <div class="facets__inputs-wrapper facets__inputs-wrapper--row">
           <div
             class="price-facet__inputs-wrapper"
@@ -166,7 +208,7 @@
               class="facets__clear {% if has_active_values %}facets__clear--active{% endif %}"
               ref="clearButton"
             >
-              {{- 'actions.clear' | t -}}
+              {%- if sn_toolbar and sn_reset_label != blank -%}{{- sn_reset_label | escape -}}{%- else -%}{{- 'actions.clear' | t -}}{%- endif -%}
             </div>
           </facet-clear-component>
         {% endif %}

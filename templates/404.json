@@ -174,7 +174,7 @@
             "product_card_gallery_wxYqE3": {
               "type": "_product-card-gallery",
               "name": "t:names.product_card_media",
-              "settings": {
+              "settings": {"quick_add_icon_position":"end",
                 "image_ratio": "adapt",
                 "border": "none",
                 "border_width": 1,

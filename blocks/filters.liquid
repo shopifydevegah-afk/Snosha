@@ -105,6 +105,14 @@
   section_id: block.id
 %}
 
+{%- liquid
+  # Snosha (opt-in "Toolbar layout"): "11 منتجات" instead of the native item count
+  if products_count == 1
+    assign sn_count_text = block_settings.sn_toolbar_count_one | escape
+  else
+    assign sn_count_text = block_settings.sn_toolbar_count_text | escape | replace: '[count]', products_count
+  endif
+-%}
 {% if block_settings.enable_filtering or block_settings.enable_sorting or block_settings.enable_grid_density %}
   {% if block_settings.filter_style == 'vertical' %}
     {% # These elements are always rendered in the horizontal bar that's why we apply the .facets--horizontal class %}
@@ -154,6 +162,7 @@
       {% endif %}
       facets-block-wrapper
       facets-block-wrapper--{{ block_settings.filter_style }}
+      {%- if block_settings.sn_toolbar and block_settings.filter_style == 'horizontal' %} sn-filter-toolbar{% endif %}
       {%- if has_custom_color %} color-custom-{{ block.id }}{% endif %}
       {%- if block_settings.filter_width == 'full-width' %} facets-block-wrapper--full-width{% endif %}
     "
@@ -217,7 +226,7 @@
                           assign should_render_clear = false
                         endif
 
-                        render 'price-filter', filter: filter, filter_style: block_settings.filter_style, should_render_clear: should_render_clear, id_prefix: 'horizontal'
+                        render 'price-filter', filter: filter, filter_style: block_settings.filter_style, should_render_clear: should_render_clear, id_prefix: 'horizontal', sn_toolbar: block_settings.sn_toolbar, sn_selected_text: block_settings.sn_toolbar_selected_text, sn_reset_label: block_settings.sn_toolbar_reset_label
                       -%}
                     {% else %}
                       {% liquid
@@ -232,11 +241,23 @@
                         else
                           assign should_render_clear = false
                         endif
-                        render 'list-filter', filter: filter, filter_style: block_settings.filter_style, active_value_count: active_value_count, should_render_clear: should_render_clear, show_swatch_label: block_settings.show_swatch_label, sectionId: section.id
+                        render 'list-filter', filter: filter, filter_style: block_settings.filter_style, active_value_count: active_value_count, should_render_clear: should_render_clear, show_swatch_label: block_settings.show_swatch_label, sectionId: section.id, sn_toolbar: block_settings.sn_toolbar, sn_selected_text: block_settings.sn_toolbar_selected_text, sn_reset_label: block_settings.sn_toolbar_reset_label
                       %}
                   {% endcase %}
                 {%- endfor -%}
               {% endcapture %}
+
+              {%- comment -%} Snosha (opt-in "Toolbar layout"): show / hide the filter pills {%- endcomment -%}
+              {%- if block_settings.sn_toolbar and block_settings.filter_style == 'horizontal' -%}
+                <sn-filter-toggle class="sn-filter-toggle" data-active="{{ total_active_values }}" data-skip-node-update>
+                  <button type="button" class="button-unstyled sn-filter-toggle__button" aria-expanded="false">
+                    <span class="svg-wrapper">{{ 'icon-filter-sliders.svg' | inline_asset_content }}</span>
+                    <span class="sn-filter-toggle__show">{{ block_settings.sn_toolbar_show_label | escape }}</span>
+                    <span class="sn-filter-toggle__hide">{{ block_settings.sn_toolbar_hide_label | escape }}</span>
+                  </button>
+                </sn-filter-toggle>
+                <script src="{{ 'sn-filter-toolbar.js' | asset_url }}" type="module"></script>
+              {%- endif -%}
 
               <div class="facets__filters-wrapper">
                 {% if block_settings.filter_style == 'horizontal' %}
@@ -283,7 +304,9 @@
                 data-testid="products-count"
               >
                 <span role="status">
-                  {% if products_count > 25000 %}
+                  {% if block_settings.sn_toolbar %}
+                    {{- sn_count_text -}}
+                  {% elsif products_count > 25000 %}
                     {{- 'content.item_count_cutoff' | t: count: 25000 -}}
                   {% else %}
                     {{- 'content.item_count' | t: count: products_count -}}
@@ -292,6 +315,9 @@
               </div>
 
               {% if block_settings.enable_sorting %}
+                {%- if block_settings.sn_toolbar and block_settings.sn_toolbar_sort_label != blank -%}
+                  <span class="sn-toolbar-sort-label">{{ block_settings.sn_toolbar_sort_label | escape }}</span>
+                {%- endif -%}
                 {% render 'sorting',
                   results: results,
                   sort_by: sort_by,
@@ -304,7 +330,11 @@
               {% endif %}
 
               {% if block_settings.enable_grid_density %}
-                {% render 'grid-density-controls', viewport: 'desktop' %}
+                {%- if block_settings.sn_toolbar -%}
+                  {% render 'sn-grid-view-controls' %}
+                {%- else -%}
+                  {% render 'grid-density-controls', viewport: 'desktop' %}
+                {%- endif -%}
               {% endif %}
             {% endif %}
           {% endif %}
@@ -333,10 +363,18 @@
           aria-haspopup="dialog"
         >
           <span class="svg-wrapper">
-            {{ 'icon-filter.svg' | inline_asset_content }}
+            {%- if block_settings.sn_toolbar -%}
+              {{ 'icon-filter-sliders.svg' | inline_asset_content }}
+            {%- else -%}
+              {{ 'icon-filter.svg' | inline_asset_content }}
+            {%- endif -%}
           </span>
 
-          {{ 'actions.show_filters' | t }}
+          {%- if block_settings.sn_toolbar and block_settings.sn_toolbar_mobile_label != blank -%}
+            {{ block_settings.sn_toolbar_mobile_label | escape }}
+          {%- else -%}
+            {{ 'actions.show_filters' | t }}
+          {%- endif -%}
 
           {% if total_active_values > 0 %}
             <div
@@ -396,9 +434,11 @@
           </form>
         </facets-form-component>
       {% endif %}
-      {% if block_settings.enable_grid_density %}
+      {%- if block_settings.sn_toolbar -%}
+        <span class="sn-toolbar-mobile-count" role="status">{{- sn_count_text -}}</span>
+      {%- elsif block_settings.enable_grid_density -%}
         {% render 'grid-density-controls', viewport: 'mobile' %}
-      {% endif %}
+      {%- endif -%}
     </div>
   </div>
 {% else %}
@@ -1389,6 +1429,71 @@
       "id": "enable_grid_density",
       "label": "t:settings.enable_grid_density",
       "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "sn_toolbar",
+      "label": "Toolbar layout",
+      "info": "Horizontal filters: one bar with a show / hide filters button, product count, grid / list view and sort. Styled by the section's custom CSS class.",
+      "default": false
+    },
+    {
+      "type": "text",
+      "id": "sn_toolbar_show_label",
+      "label": "Show filters label",
+      "default": "إظهار الفلتر",
+      "visible_if": "{{ block.settings.sn_toolbar }}"
+    },
+    {
+      "type": "text",
+      "id": "sn_toolbar_hide_label",
+      "label": "Hide filters label",
+      "default": "إخفاء الفلتر",
+      "visible_if": "{{ block.settings.sn_toolbar }}"
+    },
+    {
+      "type": "text",
+      "id": "sn_toolbar_sort_label",
+      "label": "Sort label",
+      "default": "الترتيب حسب:",
+      "visible_if": "{{ block.settings.sn_toolbar }}"
+    },
+    {
+      "type": "text",
+      "id": "sn_toolbar_count_text",
+      "label": "Product count text",
+      "info": "[count] = number of products.",
+      "default": "[count] منتجات",
+      "visible_if": "{{ block.settings.sn_toolbar }}"
+    },
+    {
+      "type": "text",
+      "id": "sn_toolbar_count_one",
+      "label": "Product count text — one product",
+      "default": "منتج واحد",
+      "visible_if": "{{ block.settings.sn_toolbar }}"
+    },
+    {
+      "type": "text",
+      "id": "sn_toolbar_selected_text",
+      "label": "Selected filters text",
+      "info": "[count] = selected values in the dropdown.",
+      "default": "[count] محدد",
+      "visible_if": "{{ block.settings.sn_toolbar }}"
+    },
+    {
+      "type": "text",
+      "id": "sn_toolbar_reset_label",
+      "label": "Reset label",
+      "default": "إعادة تعيين",
+      "visible_if": "{{ block.settings.sn_toolbar }}"
+    },
+    {
+      "type": "text",
+      "id": "sn_toolbar_mobile_label",
+      "label": "Filter button label — Mobile",
+      "default": "تصفية وفرز",
+      "visible_if": "{{ block.settings.sn_toolbar }}"
     },
     {
       "type": "header",

@@ -124,13 +124,19 @@
     {%- unless block_settings.score_position == 'after' -%}{{ sn_score_markup }}{%- endunless -%}
     <div
       class="rating{% if block_settings.star_icons %} rating--sn-icons{% endif %}"
-      style="--star-size: calc(var(--font-{{ block_settings.type_preset }}--size) * 1.1);{% if block_settings.star_icons %} --sn-star-filled: url('{{ 'icon-star-filled.svg' | asset_url }}'); --sn-star-empty: url('{{ 'icon-star-empty.svg' | asset_url }}');{% endif %}"
+      style="--star-size: calc(var(--font-{{ block_settings.type_preset }}--size) * 1.1);"
       aria-label="{{ 'accessibility.rating' | t: rating: rating }}"
     >
       {% if block_settings.star_icons %}
         {%- comment -%} Snosha (opt-in "Filled / empty star icons"): whole stars; a half rating (.3–.7) counts as filled {%- endcomment -%}
         {%- for star in (1..star_count_rating) -%}
-          <span class="stars sn-star sn-star--{% if star <= svg_filled_stars %}filled{% else %}empty{% endif %}" aria-hidden="true"></span>
+          <span class="stars sn-star" aria-hidden="true">
+            {%- if star <= svg_filled_stars -%}
+              {{- 'icon-star-filled.svg' | inline_asset_content -}}
+            {%- else -%}
+              {{- 'icon-star-empty.svg' | inline_asset_content -}}
+            {%- endif -%}
+          </span>
         {%- endfor -%}
       {% elsif block_settings.stars_style == 'single' %}
         <svg
@@ -193,11 +199,11 @@
   >
     <div
       class="rating rating--sn-icons"
-      style="--star-size: calc(var(--font-{{ block_settings.type_preset }}--size) * 1.1); --sn-star-empty: url('{{ 'icon-star-empty.svg' | asset_url }}');"
+      style="--star-size: calc(var(--font-{{ block_settings.type_preset }}--size) * 1.1);"
       aria-label="{{ 'accessibility.rating' | t: rating: 0 }}"
     >
       {%- for star in (1..5) -%}
-        <span class="stars sn-star sn-star--empty" aria-hidden="true"></span>
+        <span class="stars sn-star" aria-hidden="true">{{- 'icon-star-empty.svg' | inline_asset_content -}}</span>
       {%- endfor -%}
     </div>
     {%- if block_settings.label != blank -%}
@@ -262,17 +268,24 @@
     fill: var(--star-fill-color);
   }
 
-  /* Snosha (opt-in "Filled / empty star icons"): SVG icons as masks, coloured with the stars colour */
+  /* Snosha (opt-in "Filled / empty star icons"): inline SVG icons in the stars colour */
   .rating-wrapper .sn-star {
     display: block;
     flex: none;
-    aspect-ratio: 1;
-    background-color: var(--star-fill-color);
-    mask: var(--sn-star-filled) center / contain no-repeat;
+    inline-size: var(--sn-star-size, var(--star-size));
+    color: var(--star-fill-color);
+
+    > svg {
+      display: block;
+      inline-size: 100%;
+      block-size: 100%;
+    }
   }
 
-  .rating-wrapper .sn-star--empty {
-    mask-image: var(--sn-star-empty);
+  @media screen and (max-width: 749px) {
+    .rating-wrapper .sn-star {
+      inline-size: var(--sn-star-size-mobile, var(--sn-star-size, var(--star-size)));
+    }
   }
 
   /* Snosha (opt-in "Rating summary" settings). Every fallback is the native value. */

@@ -215,7 +215,7 @@
                 "quick_add_label": "",
                 "quick_add_style": "native",
                 "quick_add_icon": "native",
-                "quick_add_icon_position": "start",
+                "quick_add_icon_position": "end",
                 "quick_add_icon_size": 18,
                 "quick_add_radius": 12,
                 "quick_add_background": "",

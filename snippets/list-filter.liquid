@@ -8,6 +8,9 @@
   @param {boolean} [should_render_clear] - Whether to render the clear button
   @param {boolean} [show_swatch_label] - Whether to show the swatch label
   @param {boolean} [in_drawer] - Whether the filter is in a drawer
+  @param {boolean} [sn_toolbar] - Snosha: filters block "Toolbar layout" is on
+  @param {string} [sn_selected_text] - Snosha: selected text with [count]
+  @param {string} [sn_reset_label] - Snosha: reset label
 {%- enddoc -%}
 
 {% render 'variant-picker-styles' %}
@@ -118,6 +121,9 @@
         on:change="/updateFilters"
         id="facet-inputs-component-{{ filter.param_name | escape | replace: '.', '-' }}"
       >
+        {%- if sn_toolbar -%}
+          <span class="sn-facet-head">{{ sn_selected_text | escape | replace: '[count]', active_value_count }}</span>
+        {%- endif -%}
         {% liquid
           assign has_active_values = false
           assign inital_visible_values = 10
@@ -417,7 +423,7 @@
                 on:keydown="/clearFilter"
                 class="clear-filter button button-unstyled"
               >
-                {{- 'actions.clear' | t -}}
+                {%- if sn_toolbar and sn_reset_label != blank -%}{{- sn_reset_label | escape -}}{%- else -%}{{- 'actions.clear' | t -}}{%- endif -%}
               </button>
             </div>
           </facet-clear-component>
