@@ -1824,40 +1824,40 @@
     -webkit-line-clamp: 2;
     line-clamp: 2;
   }
+}
 
-  .blog-post-card__content a.sn-blog-read-more {
-    display: inline-flex;
-    align-items: center;
-    align-self: flex-start;
-    gap: 12px;
-    margin-block-start: auto;
-    padding-block-start: 0;
+.blog-post-card__content a.sn-blog-read-more {
+  display: inline-flex;
+  align-items: center;
+  align-self: flex-start;
+  gap: 12px;
+  margin-block-start: auto;
+  padding-block-start: 0;
+  color: #176bb0;
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 26px;
+
+  &:hover {
     color: #176bb0;
-    font-size: 16px;
-    font-weight: 400;
-    line-height: 26px;
+    text-decoration: underline;
+    text-underline-offset: 4px;
+  }
 
-    &:hover {
-      color: #176bb0;
-      text-decoration: underline;
-      text-underline-offset: 4px;
-    }
+  .svg-wrapper {
+    display: inline-flex;
+    flex: 0 0 auto;
+    inline-size: 12px;
+    block-size: 12px;
+  }
 
-    .svg-wrapper {
-      display: inline-flex;
-      flex: 0 0 auto;
-      inline-size: 12px;
-      block-size: 12px;
-    }
+  svg {
+    inline-size: 100%;
+    block-size: 100%;
+  }
 
-    svg {
-      inline-size: 100%;
-      block-size: 100%;
-    }
-
-    &:dir(rtl) svg {
-      scale: -1 1;
-    }
+  &:dir(rtl) svg {
+    scale: -1 1;
   }
 }
 
@@ -1867,10 +1867,36 @@
    Free shipping bar / savings line = opt-in theme settings (snippets/sn-cart-free-shipping, sn-cart-savings).
    ========================================================================== */
 html:has(#header-component.sn-header-main) #cart-drawer {
+  --theme-drawer-width: 32rem;
   --sn-cart-blue: #176bb0; /* brand / primary button */
   --sn-cart-ink: #12568d;
   --sn-cart-text: #3c3c3c;
   --sn-cart-line: #ececec;
+
+  /* Floating panel (desktop) */
+  @media screen and (min-width: 750px) {
+    .theme-drawer__dialog {
+      --theme-drawer-padding: 36px;
+
+      top: 10px;
+      height: calc(100dvh - 20px);
+      border-radius: 16px;
+      overflow: hidden;
+    }
+
+    .theme-drawer__dialog[open] {
+      inset-inline-end: 10px;
+    }
+
+    .theme-drawer__header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      min-block-size: 56px;
+      padding-block: 8px;
+      padding-inline: 18px 8px;
+    }
+  }
 
   .theme-drawer__header {
     border-block-end: 1px solid var(--sn-cart-line);
@@ -1879,8 +1905,8 @@ html:has(#header-component.sn-header-main) #cart-drawer {
   .theme-drawer__title {
     display: flex;
     align-items: center;
-    gap: 8px;
-    font-size: 30px;
+    gap: 6px;
+    font-size: 24px;
     font-weight: 600;
     color: var(--sn-cart-text);
   }
@@ -1888,27 +1914,27 @@ html:has(#header-component.sn-header-main) #cart-drawer {
   .theme-drawer__badge {
     display: inline-grid;
     place-items: center;
-    min-inline-size: 30px;
-    block-size: 30px;
-    padding-inline: 6px;
+    min-inline-size: 24px;
+    block-size: 24px;
+    padding-inline: 5px;
     border-radius: 999px;
     background-color: var(--sn-cart-blue);
     color: #ffffff;
-    font-size: 16px;
+    font-size: 12.8px;
     line-height: 1;
   }
 
   .theme-drawer__close-button {
-    inline-size: 50px;
-    block-size: 50px;
+    inline-size: 40px;
+    block-size: 40px;
     border-radius: 50%;
     background-color: var(--sn-cart-blue);
     color: #ffffff;
     opacity: 1;
 
     svg {
-      inline-size: 22px;
-      block-size: 22px;
+      inline-size: 18px;
+      block-size: 18px;
     }
 
     &:hover:not(:active) {
@@ -1919,24 +1945,27 @@ html:has(#header-component.sn-header-main) #cart-drawer {
 
   /* Free shipping strip */
   .sn-cart-shipping {
-    background-color: #f5f6f7;
+    gap: 19px;
+    padding-block: 11px;
+    background-color: #eff0ee;
     color: var(--sn-cart-text);
-    font-size: 16px;
+    font-size: 14px;
   }
 
   .sn-cart-shipping__bar {
+    block-size: 2px;
     background-color: #dcdcdc;
 
     > span {
-      background-color: var(--sn-cart-text);
+      background-color: #606b57;
     }
   }
 
   /* Line items */
   .cart-items__title {
     color: var(--sn-cart-blue);
-    font-size: 17px;
-    line-height: 1.6;
+    font-size: 14px;
+    line-height: 26px;
     text-decoration: none;
   }
 
@@ -1944,8 +1973,12 @@ html:has(#header-component.sn-header-main) #cart-drawer {
     color: #5a5a59;
   }
 
+  .cart-items {
+    --cart-item-media-width-max: 6rem;
+  }
+
   .cart-items__media-container {
-    border-radius: 8px;
+    border-radius: 6px;
     overflow: hidden;
   }
 
@@ -1960,10 +1993,12 @@ html:has(#header-component.sn-header-main) #cart-drawer {
   }
 
   .quantity-selector {
+    min-inline-size: 104px;
+    block-size: 46px;
     border: 1px solid #dcf2fb;
     border-radius: 999px;
     color: var(--sn-cart-blue);
-    box-shadow: 0 4px 10px rgb(15 100 168 / 0.08);
+    box-shadow: 0 4px 8px rgb(15 100 168 / 0.08);
   }
 
   .cart-items__remove {
@@ -1996,31 +2031,31 @@ html:has(#header-component.sn-header-main) #cart-drawer {
 
   /* Totals */
   .cart-totals__total-label {
-    font-size: 26px;
+    font-size: 20.8px;
     font-weight: 600;
     color: var(--sn-cart-text);
   }
 
   .cart-totals__total-value {
-    font-size: 26px;
+    font-size: 20.8px;
     font-weight: 700;
     color: var(--sn-cart-blue);
   }
 
   .sn-cart-savings__text {
     color: var(--sn-cart-blue);
-    font-size: 18px;
+    font-size: 14.4px;
   }
 
   .sn-cart-savings__original {
     color: #8a8a8a;
-    font-size: 18px;
+    font-size: 14.4px;
   }
 
   .cart__checkout-button {
-    min-block-size: 58px;
+    min-block-size: 47px;
     border-radius: 999px;
-    font-size: 18px;
+    font-size: 14.4px;
     font-weight: 600;
   }
 
@@ -2073,15 +2108,15 @@ html:has(#header-component.sn-header-main) .search-modal {
     }
 
     .predictive-search-form__header {
-      max-inline-size: 1240px;
+      max-inline-size: 1040px; /* field 992 + 2 x 24 */
       margin-inline: auto;
-      padding: 72px 24px 56px;
+      padding: 68px 24px 64px;
     }
   }
 
   .predictive-search-form__header-inner {
     border: 0;
-    border-block-end: 1px solid #dcdcdc;
+    border-block-end: 1px solid #e1e3e1;
     border-radius: 0;
     background-color: transparent;
   }
@@ -2096,8 +2131,8 @@ html:has(#header-component.sn-header-main) .search-modal {
   }
 
   input.search-input {
-    padding-inline: 0;
-    font-size: 16px;
+    padding-inline: 12px;
+    font-size: 14px;
   }
 
   input.search-input::placeholder {
@@ -2106,19 +2141,19 @@ html:has(#header-component.sn-header-main) .search-modal {
 
   .predictive-search__close-modal-button {
     position: absolute;
-    inset-block-start: 10px;
-    inset-inline-end: 10px;
-    inline-size: 50px;
-    block-size: 50px;
-    min-inline-size: 50px;
+    inset-block-start: 8px;
+    inset-inline-end: 8px;
+    inline-size: 40px;
+    block-size: 40px;
+    min-inline-size: 40px;
     padding: 0;
     border-radius: 50%;
     background-color: #176bb0;
     color: #ffffff;
 
     svg {
-      inline-size: 22px;
-      block-size: 22px;
+      inline-size: 18px;
+      block-size: 18px;
     }
 
     &::before {

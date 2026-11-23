@@ -2423,6 +2423,8 @@ Verified in code and docs on 2026-11-08 before deciding:
   - Values: content 1336, gap 24 / 40, image height 268, radius 16, date 12, title 20/34, excerpt 16/28 (2 lines), read more 16/26; phone gutters 24.
   - **PENDING USER REVIEW:** 1, 2, 3 and 6+ posts; post without image / excerpt; 1440 / 1024 / 768 / 390 / 360; breadcrumb uses the blog's name from Shopify admin.
   - Text refinement from the user close-up: title weight 500, read more weight 400, arrow 12 px with a 12 px gap. Sizes and line heights measured and unchanged. Weights are estimated from stroke width in the screenshot.
+  - Follow-up: the editor sync had set `sn_equal_columns` false and cleared `custom_class`, which removed the page styles; both restored. Read more link colour and arrow no longer depend on the section class.
+- **C02 / C03 correction (2026-11-23, user screenshots):** cart drawer and search values had been read at 125% display scale; converted to CSS px. Cart: floating 512 panel (10 inset, radius 16), header 56, close 40, free shipping strip `#eff0ee` with `#606b57` bar, image 96, quantity 104 x 46, checkout 47. Search: field 992, line `#e1e3e1`, close 40. Phone overrides unchanged. **PENDING USER REVIEW:** cart with several items (scroll), empty cart, open / close animation, search with results, phones.
 
 ## F. QA & progress
 
