@@ -1858,6 +1858,71 @@
 }
 
 /* ==========================================================================
+   Language dropdown, design only | owner: Main | reference: user screenshots, 2026-11-23, 125% display scale
+   CSS on Horizon's own select: markup, form and language switching are untouched.
+   Browsers without customizable select keep their normal list, with the link colour.
+   ========================================================================== */
+#header-component.sn-header-main .dropdown-localization .localization-form__select,
+#header-component.sn-header-main .dropdown-localization .language-selector .icon-caret {
+  background-color: transparent;
+  color: #12568d;
+}
+
+@supports (appearance: base-select) {
+  #header-component.sn-header-main .dropdown-localization .localization-form__select {
+    appearance: base-select;
+    min-block-size: 0;
+    border: 0;
+  }
+
+  #header-component.sn-header-main .dropdown-localization .localization-form__select::picker-icon {
+    display: none;
+  }
+
+  #header-component.sn-header-main .dropdown-localization .localization-form__select::picker(select) {
+    appearance: base-select;
+    position-area: block-end span-inline-start;
+    min-inline-size: 126px;
+    margin-block-start: 12px;
+    padding: 6px;
+    border: 1px solid #ececec;
+    border-radius: 12px;
+    background-color: #ffffff;
+    box-shadow: 0 8px 24px rgb(15 100 168 / 0.12);
+  }
+
+  #header-component.sn-header-main .dropdown-localization .localization-form__select option {
+    min-block-size: 38px;
+    padding: 7px 12px;
+    border-radius: 8px;
+    background-color: transparent;
+    color: #12568d;
+    font-size: 14px;
+    font-weight: 400;
+    line-height: 24px;
+    white-space: nowrap;
+    cursor: pointer;
+  }
+
+  #header-component.sn-header-main .dropdown-localization .localization-form__select option::checkmark {
+    display: none;
+  }
+
+  #header-component.sn-header-main .dropdown-localization .localization-form__select option:is(:hover, :focus-visible) {
+    background-color: #f2f2f2;
+  }
+
+  #header-component.sn-header-main .dropdown-localization .localization-form__select option:checked {
+    background-color: #f2f2f2;
+    font-weight: 700;
+  }
+
+  #header-component.sn-header-main .dropdown-localization .localization-form__select:open + .icon-caret svg {
+    rotate: 180deg;
+  }
+}
+
+/* ==========================================================================
    C02 Cart drawer | owner: Main | reference: user screenshot (live snosha.com), 2026-11-19
    Global drawer (layout); scoped to the SNOSHA header class, so removing sn-header-main turns it off.
    Free shipping bar / savings line = opt-in theme settings (snippets/sn-cart-free-shipping, sn-cart-savings).
