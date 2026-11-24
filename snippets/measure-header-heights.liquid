@@ -17,9 +17,13 @@
 
 {% if only_when_first_section %}
   <script>
-    const section = document.currentScript.closest('.shopify-section');
-    if (section && section === section.closest('#MainContent')?.firstElementChild) {
-      window.measureHeaderHeights?.();
+    {
+      // Block scope: this snippet can render more than once per page (e.g. two hero sections),
+      // and classic scripts share one global scope, so a top-level `const` would be redeclared.
+      const section = document.currentScript.closest('.shopify-section');
+      if (section && section === section.closest('#MainContent')?.firstElementChild) {
+        window.measureHeaderHeights?.();
+      }
     }
   </script>
 {% elsif only_on_desktop %}
