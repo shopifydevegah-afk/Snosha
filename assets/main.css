@@ -478,6 +478,60 @@
     }
   }
 
+  /* Social icons (user reference 2026-11-24, measured from the second screenshot): 55px outlined circles, 23px grey glyphs, 10px gap,
+     visual order (RTL, right → left) Facebook, Instagram, TikTok, YouTube. Links stay native. */
+  .social-icons__wrapper {
+    gap: 10px;
+  }
+
+  .social-icons__icon-wrapper,
+  .social-icons__icon-wrapper:has(.social-icons__icon path) {
+    width: 55px;
+    height: 55px;
+  }
+
+  .social-icons__icon-wrapper:has(a[aria-label='Youtube']) {
+    order: 1;
+  }
+
+  .social-icons__icon-wrapper > a {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+    border: 1px solid #dbecf9; /* reference: very light blue ring */
+    border-radius: 50%;
+    color: var(--sn-footer-text);
+    transition: border-color 0.2s ease, color 0.2s ease;
+
+    &:hover,
+    &:focus-visible {
+      border-color: var(--sn-footer-heading);
+      color: var(--sn-footer-heading);
+    }
+  }
+
+  .social-icons__icon {
+    width: 23px;
+    height: 23px;
+  }
+
+  /* Facebook: the reference uses the plain "f" glyph; Horizon's icon is the circled logo. Footer-only
+     swap via a mask on the link (stock icon snippet untouched; colour still follows the link). */
+  .social-icons__icon-wrapper:has(a[aria-label='Facebook']) .social-icons__icon {
+    display: none;
+  }
+
+  a[aria-label='Facebook']::before {
+    content: '';
+    width: 23px;
+    height: 23px;
+    background-color: currentcolor;
+    mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20'%3E%3Cpath d='M11.2 18v-7.1h2.4l.36-2.8H11.2V6.33c0-.8.22-1.36 1.38-1.36H14V2.47a19.6 19.6 0 0 0-2.07-.11c-2.05 0-3.45 1.25-3.45 3.55V8.1H6.16v2.8h2.32V18h2.72Z'/%3E%3C/svg%3E")
+      center / contain no-repeat;
+  }
+
   /* Desktop: one row, visual order (RTL) brand | menus | newsletter, 48px gaps */
   @media screen and (min-width: 990px) {
     .footer-content {
@@ -647,6 +701,21 @@
 
   &.sn-home-before-after [data-orientation='horizontal'][data-text-position='start'] .comparison-slider__text {
     inset-block-start: 26px;
+  }
+
+  /* Desktop slider size (user reference 2026-11-24): a centred 548px-wide portrait 3:4 frame.
+     Set here, not in the block settings, so it applies on both product templates (product.json and
+     product.custom-snosha-product.json). Both layers share the frame, so the images stay aligned. */
+  @media screen and (min-width: 750px) {
+    .comparison-slider {
+      width: min(548px, 100%);
+      margin-inline: auto;
+    }
+
+    .comparison-slider,
+    .comparison-slider :is(.before-image, .after-image, .comparison-slider__placeholder) {
+      aspect-ratio: 3 / 4;
+    }
   }
 
   @media screen and (max-width: 749px) {
