@@ -136,12 +136,23 @@
           Two <img> when a mobile picture is set, so each keeps its own focal point (object-position),
           which the hotspot mapping above relies on. The hidden one is lazy and display:none.
         {%- endcomment -%}
+        {%- liquid
+          # Snosha: responsive candidates for the bundle picture. Frame width: from 750px at most
+          # media_width % of the viewport and of content_max_width (the column gap is not subtracted,
+          # so this is an upper bound); below 750px about the full viewport. Same class, alt and
+          # focal point as before, so object-fit and the hotspot mapping are unchanged.
+          assign pb_media_max = section.settings.content_max_width | times: section.settings.media_width | divided_by: 100
+          assign pb_sizes = '(min-width: 750px) min(' | append: section.settings.media_width | append: 'vw, ' | append: pb_media_max | append: 'px), 100vw'
+          assign pb_widths = '400, 550, 750, 1000, 1340, 1600, 2000'
+        -%}
         {%- if image_desktop != blank and image_mobile != blank -%}
-          {% render 'image', image: image_desktop, class: 'sn-pb__image sn-pb__image--desktop' %}
+          {%- assign pb_alt = image_desktop.alt | default: '' -%}
+          {{ image_desktop | image_url: width: 2000 | image_tag: class: 'sn-pb__image sn-pb__image--desktop', widths: pb_widths, sizes: pb_sizes, alt: pb_alt }}
           {{ image_mobile | image_url: width: 1100 | image_tag: loading: 'lazy', class: 'sn-pb__image sn-pb__image--mobile', sizes: '100vw', widths: '400, 750, 1100' }}
         {%- elsif image_desktop != blank or image_mobile != blank -%}
           {%- assign only_image = image_desktop | default: image_mobile -%}
-          {% render 'image', image: only_image, class: 'sn-pb__image' %}
+          {%- assign pb_alt = only_image.alt | default: '' -%}
+          {{ only_image | image_url: width: 2000 | image_tag: class: 'sn-pb__image', widths: pb_widths, sizes: pb_sizes, alt: pb_alt }}
         {%- else -%}
           {%- comment -%} Theme Editor only: no bundle image and no bundle product image yet {%- endcomment -%}
           {{ 'product-apparel-1' | placeholder_svg_tag: 'sn-pb__image sn-pb__image--placeholder' }}
