@@ -198,6 +198,8 @@
               "settings": {
                 "show_date": true,
                 "show_author": false,
+                "sn_show_updated": false,
+                "sn_updated_label": "آخر تحديث:",
                 "type_preset": "",
                 "alignment": "left",
                 "text_color": "#176bb0",
@@ -225,7 +227,7 @@
                 "read_only": true,
                 "alignment": "left",
                 "show_alignment": false,
-                "text_color": "#12568D",
+                "text_color": "#12568d",
                 "padding-block-start": 0,
                 "padding-block-end": 0,
                 "padding-inline-start": 0,
@@ -244,7 +246,7 @@
                 "letter_spacing": "normal",
                 "case": "none",
                 "wrap": "pretty",
-                "text_color": "#5A5A59",
+                "text_color": "#5a5a59",
                 "padding-block-start": 16,
                 "padding-block-end": 0,
                 "padding-inline-start": 0,
@@ -261,6 +263,7 @@
         "padding-block-start": 48,
         "padding-block-end": 60,
         "sn_equal_columns": true,
+        "sn_posts_per_page": 24,
         "custom_class": "sn-blog-main"
       }
     }

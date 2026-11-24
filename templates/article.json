@@ -6,98 +6,36 @@
  * or related systems. Please exercise caution as any changes
  * made to this file may be overwritten.
  * ------------------------------------------------------------
- */{
+ */
+{
   "sections": {
     "section": {
       "type": "main-blog-post",
       "blocks": {
-        "blog-post-title": {
-          "type": "text",
-          "name": "t:names.title",
-          "settings": {
-            "text": "<h1>{{ article.title }}</h1>",
-            "width": "100%",
-            "max_width": "normal",
-            "alignment": "center",
-            "type_preset": "h2",
-            "font": "var(--font-body--family)",
-            "line_height": "normal",
-            "letter_spacing": "normal",
-            "case": "none",
-            "wrap": "pretty",
-            "background": false,
-            "background_color": "#00000026",
-            "corner_radius": 0,
-            "padding-block-start": 0,
-            "padding-block-end": 0,
-            "padding-inline-start": 0,
-            "padding-inline-end": 0
-          },
-          "blocks": {}
-        },
-        "blog-post-details": {
-          "type": "_blog-post-info-text",
-          "name": "t:names.details",
-          "settings": {
-            "show_date": true,
-            "show_author": true,
-            "alignment": "center",
-            "show_alignment": true,
-            "padding-block-start": 0,
-            "padding-block-end": 0,
-            "sn_show_updated": true,
-            "sn_date_prefix": "في",
-            "sn_updated_label": "آخر تحديث في"
-          },
-          "blocks": {}
-        },
         "blog-post-image": {
           "type": "image",
           "name": "t:names.featured_image",
           "settings": {
             "image": "{{ article.image }}",
+            "image_fit": "native",
+            "link": "",
+            "image_ratio": "adapt",
             "width": "fill",
             "custom_width": 100,
             "width_mobile": "fill",
             "custom_width_mobile": 100,
+            "fixed_width": 0,
+            "fixed_width_mobile": 0,
             "height": "fit",
             "border": "none",
             "border_width": 1,
             "border_opacity": 100,
+            "border_color": "",
             "border_radius": 0,
             "padding-block-start": 0,
             "padding-block-end": 0,
             "padding-inline-start": 0,
             "padding-inline-end": 0
-          },
-          "blocks": {}
-        },
-        "blog-post-content": {
-          "type": "_blog-post-content",
-          "settings": {},
-          "blocks": {}
-        },
-        "sn_article_toc": {
-          "type": "sn-article-toc",
-          "settings": {
-            "title": "محتويات المقال",
-            "include_h3": true,
-            "min_headings": 2
-          },
-          "blocks": {}
-        },
-        "sn_article_seo_check": {
-          "type": "sn-article-seo-check",
-          "settings": {},
-          "blocks": {}
-        },
-        "sn_article_related": {
-          "type": "sn-article-related",
-          "settings": {
-            "heading": "روابط ذات صلة",
-            "product_count": 3,
-            "collection_label": "تصفّحي المزيد في",
-            "fallback_collection": "الأكثر-مبيعًا"
           },
           "blocks": {}
         },
@@ -110,6 +48,71 @@
           },
           "blocks": {}
         },
+        "blog-post-title": {
+          "type": "text",
+          "name": "t:names.title",
+          "settings": {
+            "text": "<h1>{{ article.title }}</h1>",
+            "mobile_text": "",
+            "width": "100%",
+            "max_width": "normal",
+            "alignment": "center",
+            "mobile_alignment": "same",
+            "type_preset": "h2",
+            "font": "var(--font-body--family)",
+            "font_size": "1rem",
+            "mobile_font_size": 24,
+            "font_weight": "",
+            "line_height": "normal",
+            "line_height_exact": 140,
+            "line_height_exact_mobile": 0,
+            "alignment_mobile": "",
+            "letter_spacing": "normal",
+            "case": "none",
+            "wrap": "pretty",
+            "max_lines": 0,
+            "max_lines_mobile": 0,
+            "font_size_mobile": 0,
+            "line_height_mobile": 0,
+            "text_color": "",
+            "background": false,
+            "background_color": "#00000026",
+            "corner_radius": 0,
+            "padding-block-start": 0,
+            "padding-block-end": 0,
+            "padding-inline-start": 0,
+            "padding-inline-end": 0,
+            "custom_class": ""
+          },
+          "blocks": {}
+        },
+        "blog-post-details": {
+          "type": "_blog-post-info-text",
+          "name": "t:names.details",
+          "settings": {
+            "show_date": true,
+            "show_author": true,
+            "sn_date_prefix": "في",
+            "sn_show_updated": true,
+            "sn_updated_label": "آخر تحديث في",
+            "type_preset": "",
+            "alignment": "center",
+            "text_color": "",
+            "show_alignment": true,
+            "padding-block-start": 0,
+            "padding-block-end": 0,
+            "padding-inline-start": 0,
+            "padding-inline-end": 0
+          },
+          "blocks": {}
+        },
+        "blog-post-content": {
+          "type": "_blog-post-content",
+          "settings": {
+            "text_color": ""
+          },
+          "blocks": {}
+        },
         "sn_article_share": {
           "type": "sn-article-share",
           "settings": {
@@ -118,9 +121,14 @@
           },
           "blocks": {}
         },
-        "sn_article_progress": {
-          "type": "sn-article-progress",
-          "settings": {},
+        "sn_article_related": {
+          "type": "sn-article-related",
+          "settings": {
+            "heading": "روابط ذات صلة",
+            "product_count": 3,
+            "collection_label": "تصفّحي المزيد في",
+            "fallback_collection": "الأكثر-مبيعًا"
+          },
           "blocks": {}
         }
       },
@@ -129,12 +137,9 @@
         "sn_article_crumbs",
         "blog-post-title",
         "blog-post-details",
-        "sn_article_toc",
         "blog-post-content",
         "sn_article_share",
-        "sn_article_related",
-        "sn_article_seo_check",
-        "sn_article_progress"
+        "sn_article_related"
       ],
       "settings": {
         "content_direction": "column",
