@@ -29,6 +29,13 @@
     assign ratio = 1
   endif
 
+  # Snosha: image_tag drops the alt attribute when the image has no alt text (Lighthouse image-alt fail).
+  # Use the image's own alt, else the visible Before/After label, else an empty (decorative) alt.
+  assign sn_before_label = block.settings.before_text | strip_html | strip
+  assign sn_after_label = block.settings.after_text | strip_html | strip
+  assign sn_before_alt = block.settings.before_image.alt | default: block.settings.before_image_mobile.alt | default: sn_before_label | default: ''
+  assign sn_after_alt = block.settings.after_image.alt | default: block.settings.after_image_mobile.alt | default: sn_after_label | default: ''
+
   render 'contrast-override', background_color: block.settings.slider_bg_color, section_id: block.id
 %}
 
@@ -94,7 +101,7 @@
             | image_tag:
               loading: 'lazy',
               class: 'before-image',
-              alt: block.settings.before_image.alt,
+              alt: sn_before_alt,
               sizes: 'auto, 100vw',
               width: block.settings.before_image.width,
               height: block.settings.before_image.height,
@@ -108,7 +115,7 @@
             | image_tag:
               loading: 'lazy',
               class: 'before-image',
-              alt: block.settings.before_image.alt,
+              alt: sn_before_alt,
               sizes: 'auto, 100vw',
               width: block.settings.before_image.width,
               height: block.settings.before_image.height,
@@ -121,7 +128,7 @@
             | image_tag:
               loading: 'lazy',
               class: 'before-image',
-              alt: block.settings.before_image_mobile.alt,
+              alt: sn_before_alt,
               sizes: 'auto, 100vw',
               width: block.settings.before_image_mobile.width,
               height: block.settings.before_image_mobile.height,
@@ -164,7 +171,7 @@
             | image_tag:
               loading: 'lazy',
               class: 'after-image',
-              alt: block.settings.after_image.alt,
+              alt: sn_after_alt,
               sizes: 'auto, 100vw',
               width: block.settings.after_image.width,
               height: block.settings.after_image.height,
@@ -178,7 +185,7 @@
             | image_tag:
               loading: 'lazy',
               class: 'after-image',
-              alt: block.settings.after_image.alt,
+              alt: sn_after_alt,
               sizes: 'auto, 100vw',
               width: block.settings.after_image.width,
               height: block.settings.after_image.height,
@@ -191,7 +198,7 @@
             | image_tag:
               loading: 'lazy',
               class: 'after-image',
-              alt: block.settings.after_image_mobile.alt,
+              alt: sn_after_alt,
               sizes: 'auto, 100vw',
               width: block.settings.after_image_mobile.width,
               height: block.settings.after_image_mobile.height,

@@ -72,9 +72,10 @@ class CarouselProgress extends HTMLElement {
       return;
     }
 
-    this.hidden = false;
+    // Snosha perf: read geometry before un-hiding the bar (a write before reads forced an extra layout)
     const thumb = Math.min(1, scroller.clientWidth / scroller.scrollWidth);
     const progress = Math.min(1, Math.max(0, Math.abs(scroller.scrollLeft) / max));
+    this.hidden = false;
     this.style.setProperty('--carousel-thumb-size', thumb.toFixed(4));
     this.style.setProperty('--carousel-progress', progress.toFixed(4));
   }

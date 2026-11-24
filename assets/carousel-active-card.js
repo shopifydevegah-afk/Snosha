@@ -126,14 +126,16 @@ class CarouselActiveCard extends HTMLElement {
       }
     }
 
+    // Snosha perf: read all geometry before any class/style write, so the frame needs one layout, not two
+    const max = scroller.scrollWidth - scroller.clientWidth;
+    const progress = max > 1 ? Math.min(1, Math.max(0, Math.abs(scroller.scrollLeft) / max)) : 1;
+
     for (const card of Array.from(scroller.children)) {
       if (card instanceof HTMLElement && card.classList.contains('card')) {
         card.classList.toggle('is-active-card', card === active);
       }
     }
 
-    const max = scroller.scrollWidth - scroller.clientWidth;
-    const progress = max > 1 ? Math.min(1, Math.max(0, Math.abs(scroller.scrollLeft) / max)) : 1;
     section.style.setProperty('--carousel-progress', progress.toFixed(4));
     section.classList.toggle('carousel--scrollable', scrollable);
   }
