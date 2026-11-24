@@ -13,7 +13,24 @@
 {% assign display_author = author | default: article.author %}
 {% assign display_date = date | default: article.published_at %}
 
-{%- if block_settings.show_date or block_settings.show_author -%}
+{%- liquid
+  # Snosha (opt-in): updated date, only when the article was saved on a later calendar day than it was
+  # published. Shopify's updated_at changes on any save, so this is the last edit date, not an editorial claim.
+  assign sn_show_updated = false
+  if block_settings.sn_show_updated and article.updated_at != blank and article.published_at != blank
+    assign sn_published_day = article.published_at | date: '%Y-%m-%d'
+    assign sn_updated_day = article.updated_at | date: '%Y-%m-%d'
+    if sn_updated_day > sn_published_day
+      assign sn_show_updated = true
+    endif
+  endif
+  assign sn_has_dates = false
+  if block_settings.show_date or sn_show_updated
+    assign sn_has_dates = true
+  endif
+-%}
+
+{%- if block_settings.show_date or block_settings.show_author or sn_show_updated -%}
   <div
     class="
       blog-post-details
@@ -32,7 +49,17 @@
       <span>{{- display_date | time_tag: format: 'date' -}}</span>
     {%- endif -%}
 
-    {%- if block_settings.show_date and block_settings.show_author -%}
+    {%- if sn_show_updated -%}
+      {%- if block_settings.show_date -%}
+        <span>{{ 'content.blog_details_separator' | t }}</span>
+      {%- endif -%}
+      <span>
+        {%- if block_settings.sn_updated_label != blank -%}{{ block_settings.sn_updated_label | escape }} {% endif -%}
+        {{- article.updated_at | time_tag: format: 'date' -}}
+      </span>
+    {%- endif -%}
+
+    {%- if sn_has_dates and block_settings.show_author -%}
       <span>{{ 'content.blog_details_separator' | t }}</span>
     {%- endif -%}
 
@@ -73,6 +100,20 @@
       "id": "show_author",
       "label": "t:settings.show_author",
       "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "sn_show_updated",
+      "label": "Show updated date",
+      "info": "Snosha. Shown only when the article was last saved on a later day than it was published.",
+      "default": false
+    },
+    {
+      "type": "text",
+      "id": "sn_updated_label",
+      "label": "Updated date label",
+      "default": "آخر تحديث:",
+      "visible_if": "{{ block.settings.sn_show_updated }}"
     },
     {
       "type": "header",

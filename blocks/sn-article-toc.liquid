@@ -1,0 +1,78 @@
+{%- comment -%}
+  Snosha: optional article table of contents (theme block, article template).
+  The links are built in the browser from the headings Shopify already rendered in the article body,
+  so stored content is never changed or parsed. Liquid only counts headings to decide whether to render.
+  It is a closed <details>, so filling the list never moves the page. It starts as data-pending (invisible,
+  space kept, not focusable or announced); the script reveals it only after the links exist, or removes it.
+{%- endcomment -%}
+{%- liquid
+  assign sn_toc_count = 0
+  if article != blank and article.content != blank
+    assign sn_toc_h2 = article.content | split: '<h2' | size | minus: 1
+    assign sn_toc_count = sn_toc_h2
+    if block.settings.include_h3
+      assign sn_toc_h3 = article.content | split: '<h3' | size | minus: 1
+      assign sn_toc_count = sn_toc_count | plus: sn_toc_h3
+    endif
+  endif
+-%}
+
+{%- if sn_toc_count >= block.settings.min_headings -%}
+  <sn-article-toc
+    class="sn-article-toc"
+    data-pending
+    data-levels="{% if block.settings.include_h3 %}h2,h3{% else %}h2{% endif %}"
+    data-min="{{ block.settings.min_headings }}"
+    {{ block.shopify_attributes }}
+  >
+    <details class="sn-article-toc__details">
+      <summary class="sn-article-toc__summary">{{ block.settings.title | escape }}</summary>
+      <nav class="sn-article-toc__nav" aria-label="{{ block.settings.title | escape }}">
+        <ol class="sn-article-toc__list" ref="list"></ol>
+      </nav>
+    </details>
+  </sn-article-toc>
+  <script src="{{ 'sn-article-toc.js' | asset_url }}" type="module"></script>
+{%- elsif request.design_mode -%}
+  <p class="sn-article-toc__editor-note" {{ block.shopify_attributes }}>
+    Table of contents: shown when the article has at least {{ block.settings.min_headings }} headings.
+  </p>
+{%- endif -%}
+
+{% schema %}
+{
+  "name": "Article table of contents",
+  "settings": [
+    {
+      "type": "paragraph",
+      "content": "Snosha. Lists the article's own H2 (and H3) headings as links. Use it in the blog post template."
+    },
+    {
+      "type": "text",
+      "id": "title",
+      "label": "Title",
+      "default": "محتويات المقال"
+    },
+    {
+      "type": "checkbox",
+      "id": "include_h3",
+      "label": "Include H3 headings",
+      "default": true
+    },
+    {
+      "type": "range",
+      "id": "min_headings",
+      "label": "Minimum headings",
+      "min": 2,
+      "max": 6,
+      "step": 1,
+      "default": 2
+    }
+  ],
+  "presets": [
+    {
+      "name": "Article table of contents"
+    }
+  ]
+}
+{% endschema %}

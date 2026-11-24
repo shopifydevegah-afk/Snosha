@@ -30,6 +30,9 @@
   >
     {% content_for 'blocks' %}
 
+    {%- comment -%} Snosha: native pagination, so every article is reachable through crawlable page links {%- endcomment -%}
+    {%- assign sn_posts_per_page = section.settings.sn_posts_per_page | default: 24 -%}
+    {% paginate blog.articles by sn_posts_per_page %}
     <div
       ref="grid"
       class="blog-posts-container"
@@ -174,6 +177,9 @@
         </div>
       {% endfor %}
     </div>
+
+    {% render 'pagination-controls', paginate: paginate %}
+    {% endpaginate %}
   </div>
 </blog-posts-list>
 
@@ -302,6 +308,16 @@
       "label": "Equal columns",
       "info": "Shows every post as the same card, three per row on desktop.",
       "default": false
+    },
+    {
+      "type": "range",
+      "id": "sn_posts_per_page",
+      "label": "Posts per page",
+      "info": "More posts continue on numbered pages with normal links.",
+      "min": 6,
+      "max": 48,
+      "step": 6,
+      "default": 24
     },
     {
       "type": "text",

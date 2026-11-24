@@ -2391,3 +2391,64 @@ html:has(#header-component.sn-header-main) .search-modal {
     transform: none;
   }
 }
+
+/* ==========================================================================
+   B02 Article table of contents | owner: Main | blocks/sn-article-toc.liquid
+   Closed by default, so the list never shifts the article. Links jump below the sticky header.
+   ========================================================================== */
+.sn-article-toc {
+  display: block;
+  inline-size: 100%;
+  max-inline-size: var(--normal-content-width);
+  margin-inline: auto;
+
+  /* Until the script has built the links: invisible, not focusable or announced, space kept (no shift) */
+  &[data-pending] {
+    visibility: hidden;
+  }
+
+  &[hidden] {
+    display: none;
+  }
+}
+
+.sn-article-toc__details {
+  border: 1px solid #ececec;
+  border-radius: 12px;
+  padding: 12px 16px;
+}
+
+.sn-article-toc__summary {
+  cursor: pointer;
+  font-weight: 700;
+}
+
+.sn-article-toc__list,
+.sn-article-toc__list ol {
+  margin: 12px 0 0;
+  padding-inline-start: 20px;
+}
+
+.sn-article-toc__list ol {
+  margin-block-start: 4px;
+}
+
+.sn-article-toc__list li + li {
+  margin-block-start: 4px;
+}
+
+.sn-article-toc__list a {
+  color: #12568d;
+  text-decoration: underline;
+  text-underline-offset: 0.15em;
+}
+
+.sn-article-toc__editor-note {
+  margin: 0;
+  opacity: 0.6;
+}
+
+.blog-post-content :is(h2, h3)[id] {
+  scroll-margin-block-start: calc(var(--header-height, 0px) + 16px);
+}
+
