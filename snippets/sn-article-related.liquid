@@ -1,0 +1,83 @@
+{%- doc -%}
+  Snosha: related products and collection for an article, chosen from the store's own data.
+  Collection = the first article tag that matches a collection handle (tag "منتجات العناية بالفم" or
+  "منتجات-العناية-بالفم" → that collection); otherwise the fallback collection. Products = the first available
+  products of that collection, topped up from the fallback. No hardcoded handles or URLs.
+
+  @param {object} article - The article
+  @param {object} [fallback] - Fallback collection
+  @param {number} [count] - Number of products, default 2
+  @param {string} [mode] - 'count' outputs "products|collection" counts only; otherwise HTML list items
+  @param {string} [collection_label] - Text before the collection title
+{%- enddoc -%}
+{%- liquid
+  assign sn_count = count | default: 2
+  assign sn_collection = blank
+  for sn_tag in article.tags
+    assign sn_handle = sn_tag | handleize
+    assign sn_candidate = collections[sn_handle]
+    if sn_candidate != blank and sn_candidate.products_count > 0
+      assign sn_collection = sn_candidate
+      break
+    endif
+  endfor
+  if sn_collection == blank and fallback != blank and fallback.products_count > 0
+    assign sn_collection = fallback
+  endif
+
+  assign sn_picked = ','
+  assign sn_found = 0
+  capture sn_items
+    if sn_collection != blank
+      for sn_product in sn_collection.products limit: 24
+        if sn_found >= sn_count
+          break
+        endif
+        assign sn_key = ',' | append: sn_product.id | append: ','
+        unless sn_picked contains sn_key
+          if sn_product.available
+            assign sn_picked = sn_picked | append: sn_product.id | append: ','
+            assign sn_found = sn_found | plus: 1
+            assign sn_title = sn_product.title | escape
+            assign sn_image = ''
+            if sn_product.featured_image != blank
+              assign sn_image = sn_product.featured_image | image_url: width: 160 | image_tag: loading: 'lazy', widths: '80, 120, 160', sizes: '56px', class: 'sn-article-related__image', alt: ''
+            endif
+            echo '<li class="sn-article-related__item"><a class="sn-article-related__card" href="' | append: sn_product.url | append: '">' | append: sn_image | append: '<span class="sn-article-related__title">' | append: sn_title | append: '</span></a></li>'
+          endif
+        endunless
+      endfor
+    endif
+    if sn_found < sn_count and fallback != blank and fallback.id != sn_collection.id
+      for sn_product in fallback.products limit: 24
+        if sn_found >= sn_count
+          break
+        endif
+        assign sn_key = ',' | append: sn_product.id | append: ','
+        unless sn_picked contains sn_key
+          if sn_product.available
+            assign sn_picked = sn_picked | append: sn_product.id | append: ','
+            assign sn_found = sn_found | plus: 1
+            assign sn_title = sn_product.title | escape
+            assign sn_image = ''
+            if sn_product.featured_image != blank
+              assign sn_image = sn_product.featured_image | image_url: width: 160 | image_tag: loading: 'lazy', widths: '80, 120, 160', sizes: '56px', class: 'sn-article-related__image', alt: ''
+            endif
+            echo '<li class="sn-article-related__item"><a class="sn-article-related__card" href="' | append: sn_product.url | append: '">' | append: sn_image | append: '<span class="sn-article-related__title">' | append: sn_title | append: '</span></a></li>'
+          endif
+        endunless
+      endfor
+    endif
+  endcapture
+-%}
+{%- if mode == 'count' -%}
+  {{- sn_found }}|{% if sn_collection != blank %}1{% else %}0{% endif -%}
+{%- else -%}
+  {{- sn_items -}}
+  {%- if sn_collection != blank -%}
+    <li class="sn-article-related__item sn-article-related__item--collection">
+      {%- if collection_label != blank %}{{ collection_label | escape }} {% endif -%}
+      <a href="{{ sn_collection.url }}">{{ sn_collection.title | escape }}</a>
+    </li>
+  {%- endif -%}
+{%- endif -%}

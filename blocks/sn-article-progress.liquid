@@ -1,0 +1,28 @@
+{%- comment -%}
+  Snosha: reading progress bar for the article page. Fixed under the sticky header, so it takes no layout
+  space; it fills from the start edge (right in Arabic) as the article text is read and empties when
+  scrolling back up. Decorative (aria-hidden); the script only loads where this block is placed.
+{%- endcomment -%}
+{%- if article != blank -%}
+  <sn-reading-progress class="sn-reading-progress" aria-hidden="true" {{ block.shopify_attributes }}>
+    <span class="sn-reading-progress__bar"></span>
+  </sn-reading-progress>
+  <script src="{{ 'sn-reading-progress.js' | asset_url }}" type="module"></script>
+{%- endif -%}
+
+{% schema %}
+{
+  "name": "Article reading progress",
+  "settings": [
+    {
+      "type": "paragraph",
+      "content": "Snosha. A thin bar under the header that fills while the article is read."
+    }
+  ],
+  "presets": [
+    {
+      "name": "Article reading progress"
+    }
+  ]
+}
+{% endschema %}

@@ -51,6 +51,8 @@ class SnArticleToc extends HTMLElement {
       }
     }
     this.dataset.ready = 'true';
+    const details = this.querySelector('details');
+    if (details && window.matchMedia('(min-width: 990px)').matches) details.open = true;
     this.removeAttribute('data-pending');
   }
 }

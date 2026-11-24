@@ -46,7 +46,10 @@
     "
   >
     {%- if block_settings.show_date -%}
-      <span>{{- display_date | time_tag: format: 'date' -}}</span>
+      <span>
+        {%- if block_settings.sn_date_prefix != blank -%}{{ block_settings.sn_date_prefix | escape }} {% endif -%}
+        {{- display_date | time_tag: format: 'date' -}}
+      </span>
     {%- endif -%}
 
     {%- if sn_show_updated -%}
@@ -100,6 +103,12 @@
       "id": "show_author",
       "label": "t:settings.show_author",
       "default": true
+    },
+    {
+      "type": "text",
+      "id": "sn_date_prefix",
+      "label": "Text before the date",
+      "info": "Snosha. Optional, for example \"في\"."
     },
     {
       "type": "checkbox",

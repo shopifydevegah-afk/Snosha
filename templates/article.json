@@ -40,11 +40,14 @@
           "name": "t:names.details",
           "settings": {
             "show_date": true,
-            "show_author": false,
+            "show_author": true,
             "alignment": "center",
             "show_alignment": true,
             "padding-block-start": 0,
-            "padding-block-end": 0
+            "padding-block-end": 0,
+            "sn_show_updated": true,
+            "sn_date_prefix": "في",
+            "sn_updated_label": "آخر تحديث في"
           },
           "blocks": {}
         },
@@ -73,20 +76,73 @@
           "type": "_blog-post-content",
           "settings": {},
           "blocks": {}
+        },
+        "sn_article_toc": {
+          "type": "sn-article-toc",
+          "settings": {
+            "title": "محتويات المقال",
+            "include_h3": true,
+            "min_headings": 2
+          },
+          "blocks": {}
+        },
+        "sn_article_seo_check": {
+          "type": "sn-article-seo-check",
+          "settings": {},
+          "blocks": {}
+        },
+        "sn_article_related": {
+          "type": "sn-article-related",
+          "settings": {
+            "heading": "روابط ذات صلة",
+            "product_count": 3,
+            "collection_label": "تصفّحي المزيد في",
+            "fallback_collection": "الأكثر-مبيعًا"
+          },
+          "blocks": {}
+        },
+        "sn_article_crumbs": {
+          "type": "breadcrumbs",
+          "settings": {
+            "home_label": "الرئيسية",
+            "show_collection": false,
+            "aria_label": "مسار التنقل"
+          },
+          "blocks": {}
+        },
+        "sn_article_share": {
+          "type": "sn-article-share",
+          "settings": {
+            "back_label": "العودة إلى المدونة",
+            "share_label": "مشاركة"
+          },
+          "blocks": {}
+        },
+        "sn_article_progress": {
+          "type": "sn-article-progress",
+          "settings": {},
+          "blocks": {}
         }
       },
       "block_order": [
+        "blog-post-image",
+        "sn_article_crumbs",
         "blog-post-title",
         "blog-post-details",
-        "blog-post-image",
-        "blog-post-content"
+        "sn_article_toc",
+        "blog-post-content",
+        "sn_article_share",
+        "sn_article_related",
+        "sn_article_seo_check",
+        "sn_article_progress"
       ],
       "settings": {
         "content_direction": "column",
         "gap": 32,
         "background_color": "{{ settings.color_palette.background }}",
-        "padding-block-start": 40,
-        "padding-block-end": 80
+        "padding-block-start": 0,
+        "padding-block-end": 80,
+        "custom_class": "sn-article"
       }
     }
   },

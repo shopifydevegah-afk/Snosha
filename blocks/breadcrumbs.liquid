@@ -19,6 +19,8 @@
 
   assign bc_current = ''
   assign bc_show_collection = false
+  assign bc_parent_title = ''
+  assign bc_parent_url = ''
   if bc_product != blank
     assign bc_current = bc_product.title
     if block.settings.show_collection and collection != blank and collection.handle != blank
@@ -26,6 +28,11 @@
     endif
   elsif collection != blank
     assign bc_current = collection.title
+  elsif article != blank and blog != blank
+    # Snosha: article page = Home / blog / article
+    assign bc_current = article.title
+    assign bc_parent_title = blog.title
+    assign bc_parent_url = blog.url
   elsif page != blank
     assign bc_current = page.title
   elsif blog != blank
@@ -46,6 +53,11 @@
       {%- if bc_show_collection -%}
         <li class="breadcrumbs__item">
           <a class="breadcrumbs__link" href="{{ collection.url }}">{{ collection.title | escape }}</a>
+        </li>
+      {%- endif -%}
+      {%- if bc_parent_url != blank -%}
+        <li class="breadcrumbs__item">
+          <a class="breadcrumbs__link" href="{{ bc_parent_url }}">{{ bc_parent_title | escape }}</a>
         </li>
       {%- endif -%}
       <li class="breadcrumbs__item breadcrumbs__item--current">

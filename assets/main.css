@@ -2392,15 +2392,138 @@ html:has(#header-component.sn-header-main) .search-modal {
   }
 }
 
-/* ==========================================================================
-   B02 Article table of contents | owner: Main | blocks/sn-article-toc.liquid
-   Closed by default, so the list never shifts the article. Links jump below the sticky header.
-   ========================================================================== */
-.sn-article-toc {
-  display: block;
+/* B03 Article SEO checklist | owner: Main | editor only (blocks/sn-article-seo-check.liquid) */
+.sn-article-check {
   inline-size: 100%;
   max-inline-size: var(--normal-content-width);
   margin-inline: auto;
+  padding: 12px 16px;
+  border: 1px dashed #979897;
+  border-radius: 12px;
+  font-size: 14px;
+}
+
+.sn-article-check__title {
+  margin: 0 0 8px;
+  font-weight: 700;
+}
+
+.sn-article-check__list {
+  margin: 0;
+  padding-inline-start: 20px;
+
+  li[data-ok='true']::marker {
+    content: '✓  ';
+    color: #1a7f37;
+  }
+
+  li[data-ok='false']::marker {
+    content: '✗  ';
+    color: #c62828;
+  }
+
+  small {
+    display: block;
+    opacity: 0.7;
+  }
+}
+
+/* ==========================================================================
+   B02 / B04 / B05 Article page | owner: Main | reference: user screenshot 2026-11-24 (125% display scale)
+   Article section with the class sn-article: full-width image, breadcrumbs, title + dates, contents
+   sidebar beside the text from 990px, share row, related product cards. Only the article template.
+   ========================================================================== */
+.shopify-section:has(.section.sn-article) {
+  /* the full-width image may be a scrollbar wider than the page */
+  overflow-x: clip;
+}
+
+.section.sn-article {
+  > .section-content-wrapper > .image-block:first-child {
+    inline-size: 100vw;
+    max-inline-size: none;
+    margin-inline: calc(50% - 50vw);
+
+    .image-block__image {
+      inline-size: 100%;
+      block-size: auto;
+      aspect-ratio: 16 / 10;
+      object-fit: cover;
+      border-radius: 0;
+
+      @media screen and (min-width: 750px) {
+        aspect-ratio: 12 / 5;
+      }
+    }
+  }
+
+  .breadcrumbs {
+    font-size: 13px;
+    color: #6b6b6b;
+
+    .breadcrumbs__link {
+      color: inherit;
+    }
+  }
+
+  .text-block:has(> h1) {
+    text-align: start;
+
+    > h1 {
+      margin: 0;
+      font-size: 26px;
+      line-height: 1.35;
+
+      @media screen and (min-width: 750px) {
+        font-size: 34px;
+      }
+    }
+  }
+
+  .blog-post-details {
+    justify-content: flex-start;
+    font-size: 14px;
+    color: #6b6b6b;
+  }
+
+  /* Text column beside a contents sidebar (start side: right in Arabic) */
+  @media screen and (min-width: 990px) {
+    > .section-content-wrapper {
+      display: grid;
+      grid-template-columns: 300px minmax(0, 1fr);
+      column-gap: 40px;
+      align-items: start;
+
+      > * {
+        grid-column: 1 / -1;
+      }
+
+      > .sn-article-toc {
+        grid-column: 1;
+        position: sticky;
+        inset-block-start: calc(var(--header-height, 0px) + 24px);
+      }
+
+      > .blog-post-content {
+        grid-column: 2;
+      }
+
+      &:not(:has(> .sn-article-toc:not([hidden]))) > .blog-post-content {
+        grid-column: 1 / -1;
+      }
+    }
+  }
+
+  .blog-post-content {
+    max-inline-size: none;
+    margin: 0;
+  }
+}
+
+/* Contents box */
+.sn-article-toc {
+  display: block;
+  inline-size: 100%;
 
   /* Until the script has built the links: invisible, not focusable or announced, space kept (no shift) */
   &[data-pending] {
@@ -2413,34 +2536,68 @@ html:has(#header-component.sn-header-main) .search-modal {
 }
 
 .sn-article-toc__details {
-  border: 1px solid #ececec;
-  border-radius: 12px;
-  padding: 12px 16px;
+  padding: 16px 20px;
+  border-radius: 8px;
+  background-color: #f6f7f6;
 }
 
 .sn-article-toc__summary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  list-style: none;
   cursor: pointer;
+  font-size: 16px;
   font-weight: 700;
+
+  &::-webkit-details-marker {
+    display: none;
+  }
+
+  &::after {
+    content: '';
+    inline-size: 8px;
+    block-size: 8px;
+    border-inline-end: 1.5px solid currentcolor;
+    border-block-end: 1.5px solid currentcolor;
+    rotate: 45deg;
+    translate: 0 -2px;
+    transition: rotate var(--animation-speed, 0.2s) ease;
+  }
+
+  details[open] > &::after {
+    rotate: -135deg;
+    translate: 0 2px;
+  }
 }
 
 .sn-article-toc__list,
 .sn-article-toc__list ol {
   margin: 12px 0 0;
-  padding-inline-start: 20px;
+  padding: 0;
+  list-style: none;
 }
 
 .sn-article-toc__list ol {
-  margin-block-start: 4px;
+  margin-block-start: 6px;
+  padding-inline-start: 12px;
 }
 
 .sn-article-toc__list li + li {
-  margin-block-start: 4px;
+  margin-block-start: 8px;
 }
 
 .sn-article-toc__list a {
   color: #12568d;
-  text-decoration: underline;
-  text-underline-offset: 0.15em;
+  font-size: 14px;
+  line-height: 1.5;
+  text-decoration: none;
+
+  &:hover,
+  &:focus-visible {
+    text-decoration: underline;
+  }
 }
 
 .sn-article-toc__editor-note {
@@ -2450,5 +2607,151 @@ html:has(#header-component.sn-header-main) .search-modal {
 
 .blog-post-content :is(h2, h3)[id] {
   scroll-margin-block-start: calc(var(--header-height, 0px) + 16px);
+}
+
+/* Share row */
+.sn-article-share {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding-block: 16px;
+  border-block-start: 1px solid #ececec;
+  font-size: 14px;
+}
+
+.sn-article-share__back {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: #12568d;
+  text-decoration: none;
+
+  &:hover {
+    text-decoration: underline;
+  }
+}
+
+.sn-article-share__back-icon {
+  display: inline-flex;
+  inline-size: 18px;
+  block-size: 18px;
+
+  [dir='ltr'] & {
+    scale: -1 1;
+  }
+}
+
+.sn-article-share__links {
+  display: inline-flex;
+  align-items: center;
+  gap: 14px;
+  color: #5a5a59;
+}
+
+.sn-article-share__link {
+  display: inline-flex;
+  inline-size: 18px;
+  block-size: 18px;
+  color: inherit;
+
+  &:hover {
+    color: #12568d;
+  }
+
+  svg {
+    inline-size: 100%;
+    block-size: 100%;
+  }
+}
+
+/* Related links: small product cards */
+.sn-article-related__heading {
+  margin: 0 0 16px;
+  font-size: 20px;
+  line-height: 1.4;
+}
+
+.sn-article-related__list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 260px));
+  gap: 12px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.sn-article-related__card {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  block-size: 100%;
+  padding: 10px 12px;
+  border: 1px solid #ececec;
+  border-radius: 8px;
+  color: #222222;
+  text-decoration: none;
+
+  &:hover {
+    border-color: #979897;
+  }
+}
+
+.sn-article-related__image {
+  flex: none;
+  inline-size: 56px;
+  block-size: 56px;
+  border-radius: 6px;
+  background-color: #f7f7f7;
+  object-fit: contain;
+}
+
+.sn-article-related__title {
+  display: -webkit-box;
+  overflow: hidden;
+  font-size: 14px;
+  line-height: 1.4;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+}
+
+.sn-article-related__item--collection {
+  grid-column: 1 / -1;
+  font-size: 14px;
+
+  a {
+    color: #12568d;
+  }
+}
+
+/* Reading progress: fixed under the sticky header, no layout space; fills from the start edge */
+.sn-reading-progress {
+  position: fixed;
+  z-index: var(--layer-sticky, 8);
+  inset-inline: 0;
+  inset-block-start: var(--header-height, 0px);
+  block-size: 3px;
+  pointer-events: none;
+
+  &[hidden] {
+    display: none;
+  }
+
+  @media print {
+    display: none;
+  }
+}
+
+.sn-reading-progress__bar {
+  display: block;
+  block-size: 100%;
+  background-color: #176bb0;
+  transform: scaleX(0);
+  transform-origin: left center;
+
+  [dir='rtl'] & {
+    transform-origin: right center;
+  }
 }
 

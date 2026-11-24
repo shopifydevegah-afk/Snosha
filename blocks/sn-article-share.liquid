@@ -1,0 +1,59 @@
+{%- comment -%}
+  Snosha: article footer row — "back to blog" link and share links (Facebook, X, Pinterest).
+  Plain links that open the networks' own share pages; no scripts or tracking.
+{%- endcomment -%}
+{%- if article != blank -%}
+  {%- liquid
+    assign sn_share_url = request.origin | append: article.url | url_encode
+    assign sn_share_title = article.title | url_encode
+    assign sn_share_image = ''
+    if article.image != blank
+      assign sn_share_image = article.image | image_url: width: 1200 | prepend: 'https:' | url_encode
+    endif
+  -%}
+  <div class="sn-article-share" {{ block.shopify_attributes }}>
+    {%- if blog != blank -%}
+      <a class="sn-article-share__back" href="{{ blog.url }}">
+        <span class="sn-article-share__back-icon" aria-hidden="true">{% render 'icon', icon: 'arrow' %}</span>
+        {{- block.settings.back_label | escape -}}
+      </a>
+    {%- endif -%}
+    <div class="sn-article-share__links">
+      <span class="sn-article-share__label">{{ block.settings.share_label | escape }}</span>
+      <a class="sn-article-share__link" href="https://www.facebook.com/sharer/sharer.php?u={{ sn_share_url }}" target="_blank" rel="noopener" aria-label="Facebook">
+        {%- render 'icon', icon: 'facebook' -%}
+      </a>
+      <a class="sn-article-share__link" href="https://x.com/intent/post?url={{ sn_share_url }}&text={{ sn_share_title }}" target="_blank" rel="noopener" aria-label="X">
+        {%- render 'icon', icon: 'x' -%}
+      </a>
+      <a class="sn-article-share__link" href="https://pinterest.com/pin/create/button/?url={{ sn_share_url }}&media={{ sn_share_image }}&description={{ sn_share_title }}" target="_blank" rel="noopener" aria-label="Pinterest">
+        {%- render 'icon', icon: 'pinterest' -%}
+      </a>
+    </div>
+  </div>
+{%- endif -%}
+
+{% schema %}
+{
+  "name": "Article share",
+  "settings": [
+    {
+      "type": "text",
+      "id": "back_label",
+      "label": "Back link",
+      "default": "العودة إلى المدونة"
+    },
+    {
+      "type": "text",
+      "id": "share_label",
+      "label": "Share label",
+      "default": "مشاركة"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Article share"
+    }
+  ]
+}
+{% endschema %}

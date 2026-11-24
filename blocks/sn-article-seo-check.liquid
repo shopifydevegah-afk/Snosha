@@ -1,0 +1,85 @@
+{%- comment -%}
+  Snosha: editor-only checklist for the blog template rules. Renders only inside the Theme Editor
+  (request.design_mode); visitors and search engines get nothing. It reads the article as saved in the
+  admin and does not change it. Links count when their href points to this store (relative or own domain).
+{%- endcomment -%}
+{%- if request.design_mode and article != blank -%}
+  {%- liquid
+    assign sn_hosts = request.host | append: ',' | append: shop.domain | append: ',' | append: shop.permanent_domain | split: ','
+    assign sn_products = 0
+    assign sn_collections = 0
+    assign sn_parts = article.content | split: 'href="'
+    for sn_part in sn_parts offset: 1
+      assign sn_href = sn_part | split: '"' | first
+      assign sn_first = sn_href | slice: 0
+      assign sn_internal = false
+      if sn_first == '/'
+        assign sn_internal = true
+      else
+        for sn_host in sn_hosts
+          if sn_host != blank and sn_href contains sn_host
+            assign sn_internal = true
+          endif
+        endfor
+      endif
+      if sn_internal
+        if sn_href contains '/products/'
+          assign sn_products = sn_products | plus: 1
+        elsif sn_href contains '/collections/'
+          assign sn_collections = sn_collections | plus: 1
+        endif
+      endif
+    endfor
+
+    # Links added by the "Article related links" block in the same section also count
+    assign sn_block_products = 0
+    assign sn_block_collections = 0
+    for sn_block in section.blocks
+      if sn_block.type == 'sn-article-related'
+        capture sn_related_counts
+          render 'sn-article-related', article: article, fallback: sn_block.settings.fallback_collection, count: sn_block.settings.product_count, mode: 'count'
+        endcapture
+        assign sn_related_counts = sn_related_counts | strip | split: '|'
+        assign sn_block_products = sn_related_counts[0] | plus: 0
+        assign sn_block_collections = sn_related_counts[1] | plus: 0
+      endif
+    endfor
+    assign sn_products_total = sn_products | plus: sn_block_products
+    assign sn_collections_total = sn_collections | plus: sn_block_collections
+
+    assign sn_headings = article.content | split: '<h2' | size | minus: 1
+    assign sn_h3 = article.content | split: '<h3' | size | minus: 1
+    assign sn_headings = sn_headings | plus: sn_h3
+  -%}
+  <div class="sn-article-check" {{ block.shopify_attributes }}>
+    <p class="sn-article-check__title">مراجعة قواعد المقال (تظهر في المحرر فقط)</p>
+    <ul class="sn-article-check__list">
+      <li data-ok="{% if article.author != blank %}true{% else %}false{% endif %}">
+        اسم الكاتب: {{ article.author | default: '—' | escape }}
+        <small>تأكدي أنه اسم عام حقيقي وليس اسم حساب الموظف.</small>
+      </li>
+      <li data-ok="{% if article.published_at != blank %}true{% else %}false{% endif %}">تاريخ النشر</li>
+      <li data-ok="{% if article.image != blank %}true{% else %}false{% endif %}">الصورة المميزة</li>
+      <li data-ok="{% if sn_headings >= 2 %}true{% else %}false{% endif %}">عناوين H2 / H3 لجدول المحتويات: {{ sn_headings }} (المطلوب 2 على الأقل)</li>
+      <li data-ok="{% if sn_products_total >= 2 %}true{% else %}false{% endif %}">روابط منتجات: {{ sn_products_total }} (في النص {{ sn_products }} + روابط ذات صلة {{ sn_block_products }}، المطلوب 2 على الأقل)</li>
+      <li data-ok="{% if sn_collections_total >= 1 %}true{% else %}false{% endif %}">روابط كوليكشن: {{ sn_collections_total }} (في النص {{ sn_collections }} + روابط ذات صلة {{ sn_block_collections }}، المطلوب 1 على الأقل)</li>
+    </ul>
+  </div>
+{%- endif -%}
+
+{% schema %}
+{
+  "name": "Article SEO checklist",
+  "settings": [
+    {
+      "type": "paragraph",
+      "content": "Snosha. Shows only in the Theme Editor: author, publish date, featured image, headings for the table of contents, and internal product / collection links (article text plus the Article related links block). Visitors never see it."
+    }
+  ],
+  "presets": [
+    {
+      "name": "Article SEO checklist"
+    }
+  ]
+}
+{% endschema %}

@@ -1,0 +1,77 @@
+{%- comment -%}
+  Snosha: related product and collection links under an article (blog post template).
+  Server-rendered <a href> links with the product and collection names as anchor text, from the article's
+  tags (tag = collection name or handle) or the fallback collection. Renders nothing when nothing matches.
+{%- endcomment -%}
+{%- if article != blank -%}
+  {%- capture sn_related_items -%}
+    {%- render 'sn-article-related',
+      article: article,
+      fallback: block.settings.fallback_collection,
+      count: block.settings.product_count,
+      collection_label: block.settings.collection_label
+    -%}
+  {%- endcapture -%}
+  {%- if sn_related_items != blank -%}
+    <aside
+      class="sn-article-related"
+      aria-labelledby="SnArticleRelated-{{ block.id }}"
+      {{ block.shopify_attributes }}
+    >
+      <h2 id="SnArticleRelated-{{ block.id }}" class="sn-article-related__heading">
+        {{- block.settings.heading | escape -}}
+      </h2>
+      <ul class="sn-article-related__list">
+        {{ sn_related_items }}
+      </ul>
+    </aside>
+  {%- elsif request.design_mode -%}
+    <p class="sn-article-toc__editor-note" {{ block.shopify_attributes }}>
+      Related links: add an article tag that matches a collection, or choose a fallback collection.
+    </p>
+  {%- endif -%}
+{%- endif -%}
+
+{% schema %}
+{
+  "name": "Article related links",
+  "settings": [
+    {
+      "type": "paragraph",
+      "content": "Snosha. Links to products and a collection related to the article. Tag the article with a collection name (for example \"منتجات العناية بالفم\") to pick that collection; otherwise the fallback is used."
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "منتجات ذات صلة"
+    },
+    {
+      "type": "range",
+      "id": "product_count",
+      "label": "Products",
+      "min": 2,
+      "max": 4,
+      "step": 1,
+      "default": 2
+    },
+    {
+      "type": "text",
+      "id": "collection_label",
+      "label": "Collection link label",
+      "default": "تصفّحي المزيد في"
+    },
+    {
+      "type": "collection",
+      "id": "fallback_collection",
+      "label": "Fallback collection",
+      "info": "Used when no article tag matches a collection."
+    }
+  ],
+  "presets": [
+    {
+      "name": "Article related links"
+    }
+  ]
+}
+{% endschema %}
