@@ -84,6 +84,8 @@
   assign sn_section_classes = section.settings.custom_class | split: ' '
   if sn_section_classes contains 'sn-home-hero'
     assign sizes = 'auto, (min-width: 990px) min(56.06vw, 772px), min(100vw, 480px)'
+    # Snosha perf: 480 / 640 steps so phones (≈360px × 1.75–2 DPR) don't jump from 352 straight to 832
+    assign widths = '240, 352, 480, 640, 832, 1200, 1600, 1920, 2560, 3840'
     assign sn_fetchpriority = 'high'
   endif
 %}

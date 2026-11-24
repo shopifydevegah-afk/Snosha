@@ -58,7 +58,8 @@ class CarouselActiveCard extends HTMLElement {
       requestAnimationFrame(() => {
         if (!this.isConnected) return;
         this.#centerFeatured();
-        this.#update();
+        // Snosha perf: measure on the next frame, not right after scrollBy (that forced a synchronous layout)
+        this.#schedule();
       })
     );
   }
