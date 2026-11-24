@@ -7,7 +7,7 @@
   case block.settings.contact_type
     when 'whatsapp'
       assign sn_wa_digits = ''
-      assign sn_wa_chars = block.settings.whatsapp_number | default: '' | split: ''
+      assign sn_wa_chars = block.settings.whatsapp_number | default: settings.sn_whatsapp_number | default: '' | split: ''
       for sn_char in sn_wa_chars
         if '0123456789' contains sn_char
           assign sn_wa_digits = sn_wa_digits | append: sn_char

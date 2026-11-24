@@ -1,0 +1,26 @@
+{%- doc -%}
+  Snosha: outputs a WhatsApp number in the international digits-only format wa.me expects
+  (no spaces, no plus sign, no leading "00"), or nothing when the value is not a usable number.
+
+  @param {string} number - Raw phone number, for example "+20 111 626 3080" or "00201116263080"
+
+  @example
+  {%- capture digits -%}{% render 'sn-whatsapp-digits', number: settings.sn_whatsapp_number %}{%- endcapture -%}
+{%- enddoc -%}
+{%- liquid
+  assign sn_digits = ''
+  assign sn_chars = number | default: '' | split: ''
+  for sn_char in sn_chars
+    if '0123456789' contains sn_char
+      assign sn_digits = sn_digits | append: sn_char
+    endif
+  endfor
+  assign sn_start = sn_digits | slice: 0, 2
+  if sn_start == '00'
+    assign sn_digits = sn_digits | slice: 2, 20
+  endif
+  # International numbers (E.164) have 8 to 15 digits
+  if sn_digits.size >= 8 and sn_digits.size <= 15
+    echo sn_digits
+  endif
+-%}

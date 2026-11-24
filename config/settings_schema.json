@@ -2165,5 +2165,17 @@
         "default": "equal-width-buttons"
       }
     ]
+  },
+  {
+    "name": "Snosha contact",
+    "settings": [
+      {
+        "type": "text",
+        "id": "sn_whatsapp_number",
+        "label": "WhatsApp number",
+        "info": "International format, for example 201116263080 or +20 111 626 3080. Used by the floating WhatsApp button and by WhatsApp buttons without their own number. Empty = no WhatsApp link.",
+        "default": "201116263080"
+      }
+    ]
   }
 ]
