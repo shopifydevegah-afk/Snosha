@@ -21,7 +21,18 @@ function setup(carousel) {
   const arrows = () => carousel.querySelectorAll('.jdgm-content > .jdgm-arrow');
   const isRtl = () => getComputedStyle(wrapper).direction === 'rtl';
 
+  // Snosha perf: measure once per frame. Called straight from the MutationObserver while Judge.me was still
+  // inserting cards, this forced a synchronous layout per mutation (Lighthouse forced reflow ≈ 140 ms).
+  let frame = 0;
   const update = () => {
+    if (frame) return;
+    frame = requestAnimationFrame(() => {
+      frame = 0;
+      measure();
+    });
+  };
+
+  const measure = () => {
     const max = wrapper.scrollWidth - wrapper.clientWidth;
     const position = Math.abs(wrapper.scrollLeft);
     const scrollable = max > 1;

@@ -203,11 +203,15 @@
         </div>
       {% endif %}
     {%- else -%}
-      <div class="resource-list resource-list--grid">
+      {%- comment -%} Snosha a11y: one labelled status region instead of aria-label on role-less divs (axe aria-prohibited-attr) {%- endcomment -%}
+      <div
+        class="resource-list resource-list--grid"
+        role="status"
+        aria-label="{{ 'accessibility.loading_product_recommendations' | t }}"
+      >
         {% for i in (1..block_settings.max_products) %}
           <div
             class="resource-list__item product-recommendations__skeleton-item"
-            aria-label="{{ 'accessibility.loading_product_recommendations' | t }}"
           ></div>
         {% endfor %}
       </div>
