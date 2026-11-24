@@ -18,6 +18,9 @@
     {%- render 'view-transition-opt-in' -%}
 
     {%- render 'meta-tags' -%}
+    {%- comment -%} Snosha: early connection to Shopify's CDN (Shopify scripts such as standard-events) and the site-wide Cairo font, so text renders in its final font sooner {%- endcomment -%}
+    <link rel="preconnect" href="https://cdn.shopify.com" crossorigin>
+    {{ 'cairo-variable.woff2' | asset_url | preload_tag: as: 'font', type: 'font/woff2', crossorigin: 'anonymous' }}
     {%- render 'stylesheets' -%}
     {%- render 'card-hover-effect-styles' -%}
     {%- render 'scripts' -%}

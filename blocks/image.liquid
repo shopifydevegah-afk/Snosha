@@ -79,9 +79,12 @@
   # eagerly and the browser ignores `auto`, falling back to 100vw. Upper bound of its rendered width
   # from dev1.css (.sn-home-hero-stage): stage 56.06% of a 1376px row from 990px, 480px max below;
   # the image is 94.47% / 98.9% of the stage. Update together with that CSS.
+  # Its image was measured as the home page LCP element (DevTools, 2026-11-24), so it alone gets high priority.
+  assign sn_fetchpriority = 'auto'
   assign sn_section_classes = section.settings.custom_class | split: ' '
   if sn_section_classes contains 'sn-home-hero'
     assign sizes = 'auto, (min-width: 990px) min(56.06vw, 772px), min(100vw, 480px)'
+    assign sn_fetchpriority = 'high'
   endif
 %}
 
@@ -106,7 +109,8 @@
         height: block_settings.image.height,
         class: 'image-block__image border-style',
         style: image_border_style,
-        sizes: sizes
+        sizes: sizes,
+        fetchpriority: sn_fetchpriority
     }}
     {%- if sn_mobile_image != blank -%}
       </picture>

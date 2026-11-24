@@ -99,7 +99,8 @@
 
         assign featured_media_loading = 'lazy'
         assign featured_media_sizes = 'auto, ' | append: image_sizes
-        if section.index == null or section.index < 5
+        # Snosha: eager only in the first three sections (was < 5; the home page's 4th section is below the fold)
+        if section.index == null or section.index < 4
           assign featured_media_loading = 'eager'
           assign featured_media_sizes = image_sizes
         endif

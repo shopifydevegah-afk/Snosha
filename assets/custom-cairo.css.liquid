@@ -7,9 +7,19 @@
   font-display: swap;
 }
 
+/* Snosha: system font used only until Cairo loads, sized to Cairo's line metrics
+   (ascender 1303, descender 571, line gap 0 per 1000 units), so text does not reflow when Cairo arrives */
+@font-face {
+  font-family: "Cairo Fallback";
+  src: local("Segoe UI"), local("Tahoma"), local("Geeza Pro"), local("Noto Sans Arabic"), local("Roboto"), local("Arial");
+  ascent-override: 130.3%;
+  descent-override: 57.1%;
+  line-gap-override: 0%;
+}
+
 :root {
-  --font-body--family: "Cairo Custom", sans-serif;
-  --font-heading--family: "Cairo Custom", sans-serif;
-  --font-subheading--family: "Cairo Custom", sans-serif;
-  --font-accent--family: "Cairo Custom", sans-serif;
+  --font-body--family: "Cairo Custom", "Cairo Fallback", sans-serif;
+  --font-heading--family: "Cairo Custom", "Cairo Fallback", sans-serif;
+  --font-subheading--family: "Cairo Custom", "Cairo Fallback", sans-serif;
+  --font-accent--family: "Cairo Custom", "Cairo Fallback", sans-serif;
 }
