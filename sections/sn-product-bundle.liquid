@@ -294,6 +294,17 @@
         </div>
         {%- endif -%}
 
+        {%- comment -%}
+          A bundle with options (e.g. colour choices) can't be bought from here without a choice,
+          so the button links to its product page instead of adding the first variant.
+        {%- endcomment -%}
+        {%- if parent.has_only_default_variant == false -%}
+          <div class="sn-pb__cart">
+            <a class="sn-pb__button" href="{{ parent.url }}">
+              {{- section.settings.button_label | escape -}}
+            </a>
+          </div>
+        {%- else -%}
         <sn-bundle-cart class="sn-pb__cart" data-error-text="{{ 'content.unavailable' | t | escape }}">
           <script type="application/json" ref="data">[{"id":{{ pv.id }},"quantity":1}]</script>
           <button
@@ -313,6 +324,7 @@
             {%- endunless -%}
           </p>
         </sn-bundle-cart>
+        {%- endif -%}
       {%- endif -%}
     </div>
   </div>
@@ -490,6 +502,13 @@
 
   .sn-pb__button {
     width: 100%;
+  }
+
+  a.sn-pb__button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-decoration: none;
   }
 
   .sn-pb__status:empty {
