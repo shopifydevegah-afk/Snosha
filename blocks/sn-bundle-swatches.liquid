@@ -1,0 +1,235 @@
+{%- comment -%}
+  Snosha — colour swatches for Simple Bundles "Infinite Options" (progressive enhancement over the app widget).
+  Verified app DOM (2026-11-25): container #simple-bundles-io-options inside the product form, one
+  <label for> + native <select name="properties[…]" required> per bundle piece, options carrying the colour name.
+  assets/sn-bundle-swatches.js adds a swatch radiogroup after each select. The app's select stays in the form and
+  is the only value that is submitted; a swatch sets select.value and fires the select's own input/change events.
+  Values without a colour in the list render as text pills, so no value is ever unreachable.
+  The block renders nothing visible (hidden host); it does nothing on pages without the app container.
+{%- endcomment -%}
+
+{%- liquid
+  assign sn_lines = block.settings.color_map | newline_to_br | split: '<br />'
+  assign sn_first = true
+-%}
+<script src="{{ 'sn-bundle-swatches.js' | asset_url }}" type="module"></script>
+<sn-bundle-swatches
+  hidden
+  data-target="{{ block.settings.target | default: '#simple-bundles-io-options' | escape }}"
+  data-show-value="{{ block.settings.show_selected_value }}"
+  data-required-mark="{{ block.settings.required_mark }}"
+  data-style-id="{{ block.id }}"
+  {{ block.shopify_attributes }}
+>
+  <script type="application/json" data-colors>
+    {
+    {%- for sn_line in sn_lines -%}
+      {%- unless sn_line contains '=' -%}{%- continue -%}{%- endunless -%}
+      {%- assign sn_key = sn_line | split: '=' | first | strip | downcase -%}
+      {%- assign sn_value = sn_line | split: '=' | last | strip -%}
+      {%- if sn_key == blank or sn_value == blank -%}{%- continue -%}{%- endif -%}
+      {%- unless sn_first -%},{%- endunless -%}
+      {{- sn_key | json -}}:{{- sn_value | json -}}
+      {%- assign sn_first = false -%}
+    {%- endfor -%}
+    }
+  </script>
+</sn-bundle-swatches>
+
+{%- style -%}
+  .sn-sb-scope-{{ block.id }} {
+    --sn-sb-size: {{ block.settings.swatch_size }}px;
+    --sn-sb-gap: {{ block.settings.swatch_gap }}px;
+    --sn-sb-ring: {{ block.settings.ring_color }};
+    --sn-sb-label: {{ block.settings.label_color }};
+    --sn-sb-mark: {{ block.settings.mark_color }};
+  }
+{%- endstyle -%}
+
+{% stylesheet %}
+  /* Native select kept in the form (submitted value, required validation, app events), visually hidden.
+     Doubled class beats the app's own "[data-simple-bundles-options] select" rule without !important. */
+  select.sn-sb-native.sn-sb-native {
+    position: absolute;
+    inline-size: 1px;
+    block-size: 1px;
+    margin: -1px;
+    padding: 0;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+    border: 0;
+  }
+
+  .sn-sb-label.sn-sb-label {
+    display: block;
+    inline-size: 100%;
+    text-align: start;
+    margin: 0 0 12px;
+    font-size: 18px;
+    font-weight: 700;
+    line-height: 28px;
+    color: var(--sn-sb-label, #131311);
+  }
+
+  .sn-sb-label--required::after {
+    content: ' *';
+    color: var(--sn-sb-mark, #e02424);
+    white-space: pre;
+  }
+
+  .sn-sb-value {
+    font-weight: 400;
+
+    &::before {
+      content: ': ';
+      white-space: pre;
+    }
+
+    &:empty {
+      display: none;
+    }
+  }
+
+  .sn-sb-swatches {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--sn-sb-gap, 14px);
+    margin-block-end: 28px;
+  }
+
+  .sn-sb-swatch {
+    flex: 0 0 auto;
+    inline-size: var(--sn-sb-size, 40px);
+    block-size: var(--sn-sb-size, 40px);
+    margin: 4px;
+    padding: 0;
+    border: 0;
+    border-radius: 50%;
+    background: var(--sn-sb-color, #fff);
+    box-shadow: inset 0 0 0 1px rgb(0 0 0 / 0.12);
+    cursor: pointer;
+    transition: box-shadow 0.2s ease;
+
+    &[aria-checked='true'] {
+      box-shadow:
+        inset 0 0 0 1px rgb(0 0 0 / 0.12),
+        0 0 0 2px var(--color-background, #fff),
+        0 0 0 4px var(--sn-sb-ring, #131311);
+    }
+
+    &:focus-visible {
+      outline: 2px solid var(--sn-sb-ring, #131311);
+      outline-offset: 6px;
+    }
+
+    &[aria-disabled='true'] {
+      cursor: not-allowed;
+      opacity: 0.35;
+      background-image: linear-gradient(
+        to top right,
+        transparent calc(50% - 1px),
+        currentcolor calc(50% - 1px) calc(50% + 1px),
+        transparent calc(50% + 1px)
+      );
+    }
+  }
+
+  /* Value with no colour in the list: text pill */
+  .sn-sb-swatch--text {
+    inline-size: auto;
+    min-inline-size: var(--sn-sb-size, 40px);
+    padding-inline: 14px;
+    border-radius: 999px;
+    font: inherit;
+    font-size: 14px;
+    color: #131311;
+  }
+
+  .sn-sb-swatches--invalid .sn-sb-swatch {
+    box-shadow: inset 0 0 0 1px var(--sn-sb-mark, #e02424);
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "Bundle colour swatches",
+  "tag": null,
+  "settings": [
+    {
+      "type": "paragraph",
+      "content": "Shows the Simple Bundles option dropdowns as colour circles. The app's selects stay in the form and keep the selection; this block only adds the circles."
+    },
+    {
+      "type": "textarea",
+      "id": "color_map",
+      "label": "Colours",
+      "info": "One per line: value name = colour, e.g. وردي = #f2bfc9. Values not listed show as text.",
+      "default": "وردي = #f2bfc9\nازرق = #176bb0\nأزرق = #176bb0\nابيض = #ffffff\nأبيض = #ffffff\nاسود = #131311\nأسود = #131311\nبرتقالي = #ff8a2b\nاخضر = #1ed14b\nأخضر = #1ed14b\nPink = #f2bfc9\nBlue = #176bb0\nWhite = #ffffff\nBlack = #131311\nOrange = #ff8a2b\nGreen = #1ed14b"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_selected_value",
+      "label": "Show selected colour next to the label",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "required_mark",
+      "label": "Mark required options with *",
+      "default": true
+    },
+    {
+      "type": "range",
+      "id": "swatch_size",
+      "label": "Circle size",
+      "min": 24,
+      "max": 56,
+      "step": 2,
+      "unit": "px",
+      "default": 40
+    },
+    {
+      "type": "range",
+      "id": "swatch_gap",
+      "label": "Gap between circles",
+      "min": 4,
+      "max": 24,
+      "step": 1,
+      "unit": "px",
+      "default": 14
+    },
+    {
+      "type": "color",
+      "id": "ring_color",
+      "label": "Selected ring colour",
+      "default": "#131311"
+    },
+    {
+      "type": "color",
+      "id": "label_color",
+      "label": "Label colour",
+      "default": "#131311"
+    },
+    {
+      "type": "color",
+      "id": "mark_color",
+      "label": "Required mark colour",
+      "default": "#e02424"
+    },
+    {
+      "type": "text",
+      "id": "target",
+      "label": "App container selector",
+      "info": "Advanced. The Simple Bundles options container.",
+      "default": "#simple-bundles-io-options"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Bundle colour swatches"
+    }
+  ]
+}
+{% endschema %}
