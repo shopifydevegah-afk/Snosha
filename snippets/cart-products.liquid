@@ -253,9 +253,25 @@
                       {%- endif -%}
 
                       {%- liquid
+                        # Snosha: a bundle line that lists its components (e.g. Simple Bundles Infinite Options) also
+                        # carries each choice as a property ("لون الفرشاة الأولى: وردي"). A property whose value equals one of
+                        # the listed components' variant titles is not shown again; it stays in the cart data unchanged.
+                        # Lines without components, and properties that match no component, render as before.
+                        assign sn_component_values = '|'
+                        for component in item.item_components
+                          assign sn_component_value = component.variant.title | append: '' | strip | downcase
+                          if sn_component_value != blank
+                            assign sn_component_values = sn_component_values | append: sn_component_value | append: '|'
+                          endif
+                        endfor
+
                         assign has_visible_properties = false
                         for property in item.properties
                           assign property_first_char = property.first | slice: 0
+                          assign sn_property_key = property.last | append: '' | strip | downcase | prepend: '|' | append: '|'
+                          if property.last != blank and property_first_char != '_' and sn_component_values contains sn_property_key
+                            continue
+                          endif
                           if property.last != blank and property_first_char != '_'
                             assign has_visible_properties = true
                             break
@@ -266,6 +282,10 @@
                         <dl class="cart-items__properties">
                           {%- for property in item.properties -%}
                             {%- assign property_first_char = property.first | slice: 0 -%}
+                            {%- assign sn_property_key = property.last | append: '' | strip | downcase | prepend: '|' | append: '|' -%}
+                            {%- if property.last != blank and property_first_char != '_' and sn_component_values contains sn_property_key -%}
+                              {%- continue -%}
+                            {%- endif -%}
                             {%- if property.last != blank and property_first_char != '_' -%}
                               <div class="cart-items__property">
                                 <dt>{{ property.first }}:</dt>

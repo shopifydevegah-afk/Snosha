@@ -2089,6 +2089,25 @@
    Global drawer (layout); scoped to the SNOSHA header class, so removing sn-header-main turns it off.
    Free shipping bar / savings line = opt-in theme settings (snippets/sn-cart-free-shipping, sn-cart-savings).
    ========================================================================== */
+/* Cart drawer opens OVER the page on wide screens (user request 2026-11-25). Horizon squeezes the page for any
+   open drawer from 990px (base.css .page-wrapper--drawer-open margin); only the cart drawer opts out here.
+   Narrow screens already open it as a modal overlay. */
+@media screen and (min-width: 990px) {
+  html:has(#header-component.sn-header-main):has(#cart-drawer[open]) .page-wrapper--drawer-open {
+    margin-inline-end: 0;
+  }
+
+  html:has(#header-component.sn-header-main):has(#cart-drawer[open]) .page-wrapper--drawer-open shopify-account::part(dialog) {
+    translate: none;
+  }
+
+  /* Above the sticky header and its menus (the drawer's own layer is --layer-sticky, made for squeeze mode) */
+  html:has(#header-component.sn-header-main) #cart-drawer .theme-drawer__dialog {
+    z-index: calc(var(--layer-temporary) + var(--drawer-stack-order, 0));
+    box-shadow: 0 24px 64px rgb(8 46 102 / 0.18);
+  }
+}
+
 html:has(#header-component.sn-header-main) #cart-drawer {
   --theme-drawer-width: 32rem;
   --sn-cart-blue: #176bb0; /* brand / primary button */
