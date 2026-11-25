@@ -34,6 +34,28 @@ const BASE_COLORS = {
 };
 
 /**
+ * Built-in display translations for non-Arabic storefronts (the app shows its Arabic texts in every language).
+ * Display only: select values, cart and order properties are never changed. The block's "Translations" setting
+ * adds to / overrides these.
+ */
+const BASE_TEXTS = {
+  'لون الفرشاة الأولى': 'First brush colour',
+  'لون الفرشاة الثانية': 'Second brush colour',
+  'لون الفرشاة التانية': 'Second brush colour',
+  'لون منظف اللسان الأول': 'First tongue scraper colour',
+  'لون منظف اللسان الثاني': 'Second tongue scraper colour',
+  'لون منظف اللسان التاني': 'Second tongue scraper colour',
+  'لون الفرشاة': 'Brush colour',
+  'لون منظف اللسان': 'Tongue scraper colour',
+  وردي: 'Pink',
+  ازرق: 'Blue',
+  ابيض: 'White',
+  اسود: 'Black',
+  برتقالي: 'Orange',
+  اخضر: 'Green',
+};
+
+/**
  * Lowercase, trims and unifies common Arabic spelling variants (أ/إ/آ → ا, ى → ي, ة → ه, no tatweel / diacritics),
  * so "أزرق" and "ازرق" are the same key.
  * @param {string} name
@@ -51,6 +73,8 @@ function normalizeName(name) {
 class SnBundleSwatches extends HTMLElement {
   /** @type {Record<string, string>} */
   #colors = {};
+  /** @type {Record<string, string>} display translations (normalized original → shown) */
+  #texts = {};
   /** @type {MutationObserver | undefined} */
   #pageObserver;
   /** @type {WeakMap<HTMLSelectElement, { group: HTMLElement, sync: () => void, observer: MutationObserver }>} */
@@ -69,6 +93,22 @@ class SnBundleSwatches extends HTMLElement {
     this.#colors = {};
     for (const [name, color] of Object.entries({ ...BASE_COLORS, ...fromSetting })) {
       if (typeof color === 'string' && color) this.#colors[normalizeName(name)] = color;
+    }
+
+    // Display translations only off the Arabic storefront
+    const locale = (this.dataset.locale || document.documentElement.lang || '').toLowerCase();
+    this.#texts = {};
+    if (locale && !locale.startsWith('ar')) {
+      /** @type {Record<string, string>} */
+      let textsFromSetting = {};
+      try {
+        textsFromSetting = JSON.parse(this.querySelector('script[data-texts]')?.textContent || '{}');
+      } catch {
+        textsFromSetting = {};
+      }
+      for (const [original, shown] of Object.entries({ ...BASE_TEXTS, ...textsFromSetting })) {
+        if (typeof shown === 'string' && shown) this.#texts[normalizeName(original)] = shown;
+      }
     }
 
     this.#scan();
@@ -111,6 +151,23 @@ class SnBundleSwatches extends HTMLElement {
     });
   }
 
+  /** @param {string} text */
+  #translate(text) {
+    return this.#texts[normalizeName(text)] || text;
+  }
+
+  /**
+   * Translates the label's own text (not the selected-value span); the app's label element is kept.
+   * @param {HTMLElement} label
+   */
+  #translateLabel(label) {
+    for (const node of label.childNodes) {
+      if (node.nodeType !== Node.TEXT_NODE || !node.nodeValue?.trim()) continue;
+      const shown = this.#translate(node.nodeValue.trim());
+      if (shown !== node.nodeValue.trim()) node.nodeValue = shown;
+    }
+  }
+
   /** @param {string} name */
   #colorFor(name) {
     return this.#colors[normalizeName(name)] || '';
@@ -140,6 +197,7 @@ class SnBundleSwatches extends HTMLElement {
     if (label instanceof HTMLElement) {
       if (!label.id) label.id = `sn-sb-label-${++this.#uid}-${Date.now().toString(36)}`;
       label.classList.add('sn-sb-label');
+      this.#translateLabel(label);
       if (select.required && this.dataset.requiredMark === 'true') label.classList.add('sn-sb-label--required');
       group.setAttribute('aria-labelledby', label.id);
       if (showValue) {
@@ -164,10 +222,11 @@ class SnBundleSwatches extends HTMLElement {
         button.className = 'sn-sb-swatch';
         button.setAttribute('role', 'radio');
         button.dataset.value = option.value;
-        const name = option.textContent?.trim() || option.value;
+        const original = option.textContent?.trim() || option.value;
+        const name = this.#translate(original);
         button.setAttribute('aria-label', name);
         button.title = name;
-        const color = this.#colorFor(option.value) || this.#colorFor(name);
+        const color = this.#colorFor(option.value) || this.#colorFor(original) || this.#colorFor(name);
         if (color) {
           button.style.setProperty('--sn-sb-color', color);
         } else {
@@ -202,7 +261,8 @@ class SnBundleSwatches extends HTMLElement {
       if (focusable) focusable.tabIndex = 0;
       if (valueEl) {
         const selected = select.selectedOptions[0];
-        valueEl.textContent = selected && selected.value !== '' ? selected.textContent?.trim() || selected.value : '';
+        valueEl.textContent =
+          selected && selected.value !== '' ? this.#translate(selected.textContent?.trim() || selected.value) : '';
       }
       if (select.value !== '') group.classList.remove('sn-sb-swatches--invalid');
     };

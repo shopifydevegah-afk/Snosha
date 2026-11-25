@@ -19,8 +19,28 @@
   data-show-value="{{ block.settings.show_selected_value }}"
   data-required-mark="{{ block.settings.required_mark }}"
   data-style-id="{{ block.id }}"
+  data-locale="{{ request.locale.iso_code }}"
   {{ block.shopify_attributes }}
 >
+  {%- comment -%}
+    Display-only translations for non-Arabic storefronts ("original = shown"): the app's labels and colour names
+    are shown translated next to the swatches; the select values (= cart / order properties) are never changed.
+  {%- endcomment -%}
+  {%- assign sn_text_lines = block.settings.display_translations | newline_to_br | split: '<br />' -%}
+  {%- assign sn_first_text = true -%}
+  <script type="application/json" data-texts>
+    {
+    {%- for sn_line in sn_text_lines -%}
+      {%- unless sn_line contains '=' -%}{%- continue -%}{%- endunless -%}
+      {%- assign sn_key = sn_line | split: '=' | first | strip -%}
+      {%- assign sn_value = sn_line | split: '=' | last | strip -%}
+      {%- if sn_key == blank or sn_value == blank -%}{%- continue -%}{%- endif -%}
+      {%- unless sn_first_text -%},{%- endunless -%}
+      {{- sn_key | json -}}:{{- sn_value | json -}}
+      {%- assign sn_first_text = false -%}
+    {%- endfor -%}
+    }
+  </script>
   <script type="application/json" data-colors>
     {
     {%- for sn_line in sn_lines -%}
@@ -167,6 +187,12 @@
       "label": "Colours",
       "info": "One per line: value name = colour, e.g. وردي = #f2bfc9. Values not listed show as text.",
       "default": "وردي = #f2bfc9\nازرق = #176bb0\nأزرق = #176bb0\nابيض = #ffffff\nأبيض = #ffffff\nاسود = #131311\nأسود = #131311\nبرتقالي = #ff8a2b\nاخضر = #1ed14b\nأخضر = #1ed14b\nPink = #f2bfc9\nBlue = #176bb0\nWhite = #ffffff\nBlack = #131311\nOrange = #ff8a2b\nGreen = #1ed14b"
+    },
+    {
+      "type": "textarea",
+      "id": "display_translations",
+      "label": "Translations on non-Arabic pages",
+      "info": "One per line: app text = text shown, e.g. وردي = Pink. Display only: the cart and order keep the app's values. Common labels and colours are built in."
     },
     {
       "type": "checkbox",
