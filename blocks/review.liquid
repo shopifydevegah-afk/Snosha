@@ -56,6 +56,9 @@
     if block_settings.count_color != blank
       echo '--sn-count-color: ' | append: block_settings.count_color | append: ';'
     endif
+    if block_settings.label_color != blank
+      echo '--sn-label-color: ' | append: block_settings.label_color | append: ';'
+    endif
   endcapture
 -%}
 
@@ -299,6 +302,11 @@
     color: var(--sn-count-color, var(--star-fill-color));
   }
 
+  /* Snosha (opt-in "Label color"): label colour independent of the stars; unset = inherited (native) */
+  .rating-wrapper .rating-label {
+    color: var(--sn-label-color, inherit);
+  }
+
   .rating-wrapper .rating-score {
     margin: 0;
     white-space: nowrap;
@@ -417,6 +425,13 @@
       "type": "color",
       "id": "text_color",
       "label": "t:settings.text_color",
+      "placeholder": "t:settings.default"
+    },
+    {
+      "type": "color",
+      "id": "label_color",
+      "label": "Label color",
+      "info": "Colour of the label beside the stars. Default = the text colour above.",
       "placeholder": "t:settings.default"
     },
     {
