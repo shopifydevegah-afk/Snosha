@@ -13,6 +13,41 @@
 
 const OBSERVED_ATTRIBUTES = ['disabled', 'selected', 'value'];
 
+/**
+ * Base colours, the same in every storefront language. The block's "Colours" setting is a translatable text field,
+ * so a translated copy (e.g. English via Translate & Adapt) can lose the Arabic names that the app still uses as
+ * option values. Entries from the setting are added on top and win.
+ */
+const BASE_COLORS = {
+  وردي: '#f2bfc9',
+  ازرق: '#176bb0',
+  ابيض: '#ffffff',
+  اسود: '#131311',
+  برتقالي: '#ff8a2b',
+  اخضر: '#1ed14b',
+  pink: '#f2bfc9',
+  blue: '#176bb0',
+  white: '#ffffff',
+  black: '#131311',
+  orange: '#ff8a2b',
+  green: '#1ed14b',
+};
+
+/**
+ * Lowercase, trims and unifies common Arabic spelling variants (أ/إ/آ → ا, ى → ي, ة → ه, no tatweel / diacritics),
+ * so "أزرق" and "ازرق" are the same key.
+ * @param {string} name
+ */
+function normalizeName(name) {
+  return name
+    .trim()
+    .toLowerCase()
+    .replace(/[ً-ْـ]/g, '')
+    .replace(/[أإآ]/g, 'ا')
+    .replace(/ى/g, 'ي')
+    .replace(/ة/g, 'ه');
+}
+
 class SnBundleSwatches extends HTMLElement {
   /** @type {Record<string, string>} */
   #colors = {};
@@ -24,11 +59,16 @@ class SnBundleSwatches extends HTMLElement {
   #uid = 0;
 
   connectedCallback() {
+    /** @type {Record<string, string>} */
+    let fromSetting = {};
     try {
-      const json = this.querySelector('script[data-colors]')?.textContent || '{}';
-      this.#colors = JSON.parse(json);
+      fromSetting = JSON.parse(this.querySelector('script[data-colors]')?.textContent || '{}');
     } catch {
-      this.#colors = {};
+      fromSetting = {};
+    }
+    this.#colors = {};
+    for (const [name, color] of Object.entries({ ...BASE_COLORS, ...fromSetting })) {
+      if (typeof color === 'string' && color) this.#colors[normalizeName(name)] = color;
     }
 
     this.#scan();
@@ -73,7 +113,7 @@ class SnBundleSwatches extends HTMLElement {
 
   /** @param {string} name */
   #colorFor(name) {
-    return this.#colors[name.trim().toLowerCase()] || '';
+    return this.#colors[normalizeName(name)] || '';
   }
 
   /**
