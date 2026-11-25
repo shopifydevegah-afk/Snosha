@@ -86,11 +86,13 @@
     {%- if discount_percent >= 1 -%}
       {%- liquid
         assign discount_label_format = block_settings.discount_badge_label | default: '-[percent]%'
-        unless discount_label_format contains '[percent]'
+        unless discount_label_format contains '[percent]' or discount_label_format contains '[amount]'
           assign discount_label_format = discount_label_format | append: ' [percent]%'
         endunless
         assign discount_percent_text = discount_percent | append: ''
-        assign discount_label = discount_label_format | escape | replace: '[percent]', discount_percent_text
+        # Snosha: [amount] = saved amount without currency or trailing zeros (e.g. 1,601), for labels like "وفّر [amount] جنيه"
+        assign discount_amount_text = variant_compare_at | minus: variant_price | money_without_currency | remove: '.00'
+        assign discount_label = discount_label_format | escape | replace: '[percent]', discount_percent_text | replace: '[amount]', discount_amount_text
       -%}
       <span
         class="price-discount-badge"
@@ -236,7 +238,7 @@
       "type": "text",
       "id": "discount_badge_label",
       "label": "Discount badge text",
-      "info": "[percent] is replaced with the discount, for example: Save [percent]%",
+      "info": "[percent] is replaced with the discount, for example: Save [percent]%. [amount] is replaced with the saved amount, for example: Save [amount] EGP",
       "default": "-[percent]%",
       "visible_if": "{{ block.settings.show_discount_badge }}"
     },

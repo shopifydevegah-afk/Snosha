@@ -2824,3 +2824,315 @@ html:has(#header-component.sn-header-main) .search-modal {
   }
 }
 
+
+/* ==========================================================================
+   Couple Complete Care Kit — templates/product.couple-care-kit.json (Main, 2026-11-25)
+   Layout from the merchant's reference screenshot (1920 desktop); content from the bundle specs.
+   Native sections and blocks only; every class below is a custom_class set in that template.
+   - sn-product-hero: subtitle under the title; selected value beside button options.
+   - sn-ld-media (why / brush / scraper): copy + rows on the right, rounded photo on the left (RTL),
+     two equal columns 96px apart, text vertically centred on the photo.
+   - sn-bundle-table-section (contents / value): centred heading, white table card, header row,
+     quantity / saving pills, highlighted bundle-price row.
+   - sn-bundle-terms: terms of use in the FAQ structure; sn-product-reviews-subtitle: line under the heading.
+   ========================================================================== */
+.sn-product-hero {
+  .sn-product-subtitle:not(.custom-typography) > * {
+    margin: 0;
+    font-size: 20px;
+    line-height: 32px;
+    color: #131311;
+
+    @media screen and (max-width: 749px) {
+      font-size: 15px;
+      line-height: 26px;
+    }
+  }
+
+  .variant-option--buttons:not(.variant-option--swatches) legend {
+    font-size: 16px;
+    font-weight: 600;
+    line-height: 27px;
+    color: #12568d;
+  }
+
+  .variant-option__selected-value {
+    padding-inline-start: 0;
+    color: inherit;
+
+    &::before {
+      content: ': ';
+      white-space: pre;
+    }
+  }
+}
+
+/* ---------- Image + text groups (sn-ld system) ---------- */
+.sn-ld .sn-ld-group.sn-ld-media {
+  .sn-ld-title:not(.custom-typography) > * {
+    font-size: 40px;
+    font-weight: 500;
+    line-height: 60px;
+    color: #12568d;
+
+    @media screen and (max-width: 749px) {
+      font-size: 28px;
+      line-height: 42px;
+    }
+  }
+
+  .sn-ld-subtitle:not(.custom-typography) > * {
+    margin: 0;
+    font-size: 22px;
+    font-weight: 400;
+    line-height: 36px;
+    color: #176bb0;
+
+    @media screen and (max-width: 749px) {
+      font-size: 17px;
+      line-height: 28px;
+    }
+  }
+
+  .sn-ld-copy .sn-ld-body {
+    max-inline-size: none;
+  }
+
+  .sn-ld-body:not(.custom-typography) > * {
+    font-size: 19px;
+    line-height: 32px;
+    color: #5a5a59;
+
+    @media screen and (max-width: 749px) {
+      font-size: 15px;
+      line-height: 26px;
+    }
+  }
+
+  .sn-ld-copy > .group-block-content {
+    gap: 8px;
+  }
+
+  .sn-ld-copy .sn-ld-body {
+    margin-block-start: 22px;
+  }
+
+  .image-block__image {
+    border-radius: 24px;
+  }
+
+  /* Feature rows: 64px light tiles, title 20 SemiBold, body 17 grey (reference) */
+  .sn-ld-list > .group-block-content {
+    gap: 28px;
+  }
+
+  .sn-ld-item > .group-block-content {
+    column-gap: 20px;
+    align-items: center;
+
+    > .icon-block {
+      inline-size: 64px;
+      block-size: 64px;
+      background-color: #f0fafe;
+      box-shadow: none;
+    }
+  }
+
+  .sn-ld-item-title:not(.custom-typography) > * {
+    font-size: 20px;
+    font-weight: 700;
+    line-height: 32px;
+    color: #12568d;
+  }
+
+  .sn-ld-item-body:not(.custom-typography) > * {
+    font-size: 17px;
+    line-height: 28px;
+    color: #5a5a59;
+  }
+
+  /* N2 link button under the rows */
+  .sn-ld-list > .group-block-content > :not(.sn-ld-item) {
+    align-self: flex-start;
+    justify-self: start;
+    margin-block-start: 8px;
+  }
+
+  @media screen and (min-width: 990px) {
+    > .group-block-content {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      grid-template-rows: 1fr auto auto 1fr;
+      grid-template-areas:
+        '. image'
+        'copy image'
+        'list image'
+        '. image';
+      column-gap: 96px;
+      row-gap: 40px;
+      align-items: start;
+
+      > .image-block {
+        align-self: center;
+        justify-self: stretch;
+        inline-size: 100%;
+        max-inline-size: none;
+        margin: 0;
+      }
+    }
+  }
+}
+
+/* ---------- Tables: bundle contents · value ---------- */
+.sn-bundle-table-section {
+  --sn-bt-border: #dcf2fb;
+  --sn-bt-brand: #176bb0;
+
+  .sn-bundle-table-subtitle:not(.custom-typography) > * {
+    margin: 0;
+    margin-block-start: -24px;
+    font-size: 20px;
+    line-height: 32px;
+    color: #5a5a59;
+
+    @media screen and (max-width: 749px) {
+      margin-block-start: -8px;
+      font-size: 15px;
+      line-height: 26px;
+    }
+  }
+
+  .sn-bundle-table {
+    inline-size: min(100%, 1100px);
+    margin-inline: auto;
+    overflow: hidden;
+    background: #fff;
+    border: 1px solid var(--sn-bt-border);
+    border-radius: 20px;
+  }
+
+  .sn-bundle-table-row > .group-block-content {
+    flex-wrap: nowrap;
+    align-items: center;
+    justify-content: space-between;
+    min-block-size: 76px;
+    padding: 14px 35px;
+    border-block-end: 1px solid var(--sn-bt-border);
+
+    @media screen and (max-width: 749px) {
+      min-block-size: 60px;
+      padding: 10px 16px;
+    }
+
+    > :is(.text-block, .group-block) {
+      inline-size: auto;
+      flex: 1 1 auto;
+      min-inline-size: 0;
+    }
+
+    > :last-child {
+      flex: 0 0 auto;
+      white-space: nowrap;
+    }
+
+    .text-block:not(.custom-typography) > * {
+      margin: 0;
+      font-size: 18px;
+      line-height: 30px;
+      color: #131311;
+
+      @media screen and (max-width: 749px) {
+        font-size: 14px;
+        line-height: 24px;
+      }
+    }
+  }
+
+  .sn-bundle-table-row:last-child > .group-block-content {
+    border-block-end: 0;
+  }
+
+  .sn-bundle-table-head > .group-block-content {
+    min-block-size: 58px;
+    background: #f5fbff;
+
+    > .text-block:not(.custom-typography) > * {
+      font-size: 16px;
+      color: #5a5a59;
+    }
+  }
+
+  /* Icon tile + item name */
+  .sn-bundle-table-item > .group-block-content {
+    flex-wrap: nowrap;
+    align-items: center;
+
+    > .icon-block {
+      flex: 0 0 auto;
+      align-items: center;
+      justify-content: center;
+      inline-size: 60px;
+      block-size: 60px;
+      background-color: #f0fafe;
+      border-radius: 14px;
+
+      @media screen and (max-width: 749px) {
+        inline-size: 44px;
+        block-size: 44px;
+        border-radius: 10px;
+      }
+    }
+  }
+
+  /* Pills: quantity (soft) and saving (brand) */
+  .sn-bundle-pill > * {
+    display: inline-block;
+    padding: 4px 22px;
+    border-radius: 999px;
+    font-weight: 700;
+    background: var(--sn-bt-brand);
+  }
+
+  .sn-bundle-table-row .sn-bundle-pill.sn-bundle-pill--soft:not(.custom-typography) > * {
+    color: var(--sn-bt-brand);
+    background: #f0fafe;
+  }
+
+  .sn-bundle-table-row .sn-bundle-pill:not(.sn-bundle-pill--soft):not(.custom-typography) > * {
+    color: #fff;
+  }
+
+  /* Before-bundle total struck through, bundle price row highlighted (spec 4.4) */
+  .sn-bundle-table-total > .group-block-content > .text-block:last-child > * {
+    color: #5a5a59;
+    text-decoration: line-through;
+  }
+
+  .sn-bundle-table-highlight > .group-block-content {
+    min-block-size: 86px;
+    background: #f0fafe;
+
+    > .text-block:not(.custom-typography) > * {
+      font-size: 22px;
+      font-weight: 700;
+      color: var(--sn-bt-brand);
+    }
+
+    > .text-block:last-child > * {
+      font-size: 30px;
+      line-height: 40px;
+
+      @media screen and (max-width: 749px) {
+        font-size: 22px;
+        line-height: 32px;
+      }
+    }
+  }
+}
+
+.sn-product-reviews .sn-product-reviews-subtitle:not(.custom-typography) > * {
+  margin: 0;
+  font-size: 16px;
+  line-height: 28px;
+  color: #5a5a59;
+  text-align: center;
+}

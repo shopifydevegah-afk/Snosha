@@ -209,6 +209,25 @@
       "visible_if": "{{ block.settings.show_swatches }}"
     },
     {
+      "type": "textarea",
+      "id": "sn_option_labels",
+      "label": "Option labels (by position)",
+      "info": "One label per line, in the product's option order (line 1 = first option). Empty = the option name from Product Admin."
+    },
+    {
+      "type": "textarea",
+      "id": "sn_color_map",
+      "label": "Colour circles",
+      "info": "One per line: value name = colour, e.g. وردي = #f2bfc9. Button options with these values show colour circles. Values with an Admin swatch keep it."
+    },
+    {
+      "type": "checkbox",
+      "id": "show_selected_value",
+      "label": "Show selected value next to button options",
+      "info": "E.g. «لون الفرشاة الأولى: وردي». Swatch options always show it.",
+      "default": false
+    },
+    {
       "type": "text",
       "id": "option_label",
       "label": "Option label on the storefront",

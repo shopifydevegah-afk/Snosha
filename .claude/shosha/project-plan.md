@@ -2662,3 +2662,14 @@ One QA row per S-ID, plus unique product workstream IDs (Main M01–M03, Dev1 P0
 - Changed only the three Main detail headings and QA row IDs to match that mapping. Dev1 P01/P02/P03, Dev2 PDP-01 and Dev3 product-page IDs are unchanged.
 - Preserved all 109 date-stamped H change-log rows, detailed decisions, status statements and superseded history. Original dated IDs remain as written and are explained by the alias note.
 - No code, Git, Shopify, merchant configuration or visual QA was validated by this documentation merge.
+
+### M04 — Couple Complete Care Kit template (Main, 2026-11-25) — IMPLEMENTED LOCALLY, PENDING THEME EDITOR + STOREFRONT QA
+
+- Template `templates/product.couple-care-kit.json` (merchant-created "Based on: Default product", pulled, committed `ed6721e`). Rebuilt from that copy, stored minified (229 KB; the pulled pretty-printed copy was 688 KB > 512 KB limit). `templates/product.json` untouched.
+- Sources: the two spec docx files + "تعديلات صفحة باقة العناية الكاملة للكابلز.docx" (amendments win).
+- Order: breadcrumbs · hero · sn_bundle_why (sn-ld: why + kit contents) · sn_bundle_value (value table) · steps section (routine, 3 steps) · sn_bundle_products (sn-ld: N2 brush + 5 modes unchanged + tongue scraper) · sn_bundle_gift (homepage F1-banner structure) · reviews (+ subtitle) · FAQ (11 Q) · sn_bundle_terms (closed accordion) · related section → «كمّل روتينك» (complementary, hidden when empty) · contact.
+- Removed from this template only: N2 comparison, how-to video, long description (N2 groups), before/after, reels, storage & care, review screenshots, «قد يعجبك أيضًا», hero promo «وفّر 10%», hero cross-sell, linked N2 colour products, empty suitable/not-suitable rows, online-payment shipping pill.
+- Code: `blocks/price.liquid` badge `[amount]` placeholder; `blocks/variant-picker.liquid` + `snippets/variant-main-picker.liquid` opt-in `show_selected_value`; `assets/main.css` bundle block (scoped classes). Both Liquid additions are opt-in / backward compatible.
+- Not implemented: 4th colour selector (Shopify Bundles max 3 options) — documented limitation. FAQ «التقويم/الحشو/الزرعات» omitted (N2 answer not in repo).
+- Pending assets: lifestyle image, kit flat-lay, gift image, savings infographic, gallery media (Admin). Doc-named images referenced by filename and must exist in Files.
+- Update 2026-11-25 (merchant reference screenshot): layout redone to match it — why / brush / scraper as photo-left + copy-right groups (`sn-ld-media`), contents + value as table cards (`sn-bundle-table-section`), modes in its own gradient section, terms (5 rows, 2 columns) before FAQ, hero description row removed, swatch names off. Template 252 KB. Merchant photos must be uploaded to Files with the names used in the template (folder `D:/Shopify/Snosha/couple-kit-images-upload`, outside the repo). PENDING THEME EDITOR + STOREFRONT QA.

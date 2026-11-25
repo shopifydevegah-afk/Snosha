@@ -68,6 +68,22 @@
             endif
           endif
 
+          # Project extension (Snosha, opt-in "Colour circles"): button options whose value names are listed
+          # ("name = #hex", one per line) render as colour circles, e.g. bundle options with no Admin swatches.
+          assign sn_color_lines = block_settings.sn_color_map | newline_to_br | split: '<br />'
+          if block_settings.sn_color_map != blank and variant_style == 'buttons'
+            for sn_value in product_option.values
+              assign sn_value_key = sn_value.name | downcase | strip
+              for sn_line in sn_color_lines
+                assign sn_line_key = sn_line | split: '=' | first | downcase | strip
+                if sn_line_key == sn_value_key
+                  assign variant_style = 'swatch'
+                  break
+                endif
+              endfor
+            endfor
+          endif
+
           if variant_style == 'buttons' and settings.variant_button_width == 'equal-width-buttons'
             assign fieldset_id = section.id | append: '-' | append: product_resource.id | append: '-' | append: product_option.name | handleize
             assign option_id_attribute = 'data-option-id="' | append: fieldset_id | append: '"'
@@ -86,6 +102,17 @@
                 assign option_label = block_settings.option_label
               endif
             endfor
+          endif
+
+          # Project extension (Snosha, opt-in "Option labels"): storefront label per option position, one per line
+          # (line 1 = first option). Empty line = the Admin name. Visible label only; option data is untouched.
+          if block_settings.sn_option_labels != blank
+            assign sn_label_lines = block_settings.sn_option_labels | newline_to_br | split: '<br />'
+            assign sn_label_index = product_option.position | minus: 1
+            assign sn_position_label = sn_label_lines[sn_label_index] | strip
+            if sn_position_label != blank
+              assign option_label = sn_position_label
+            endif
           endif
 
           # Project extension (Snosha): linked colour products replace this option visually
@@ -124,6 +151,11 @@
               {{ option_label | escape -}}
               {%- if variant_style == 'swatch' -%}
                 <span class="variant-option__swatch-value">{{ product_option.selected_value }}</span>
+              {%- elsif block_settings.show_selected_value -%}
+                {%- comment -%} Snosha (opt-in): selected value next to a button option's label {%- endcomment -%}
+                <span class="variant-option__swatch-value variant-option__selected-value">
+                  {{- product_option.selected_value -}}
+                </span>
               {%- endif %}
             </legend>
             {%- for product_option_value in product_option.values -%}
@@ -170,11 +202,31 @@
                     endif
                   %}
 
-                  {% render 'swatch',
-                    swatch: product_option_value.swatch,
-                    variant_image: featured_media,
-                    mode: 'unscaled'
-                  %}
+                  {%- liquid
+                    assign sn_value_color = ''
+                    if block_settings.sn_color_map != blank
+                      assign sn_value_key = product_option_value.name | downcase | strip
+                      for sn_line in sn_color_lines
+                        assign sn_line_key = sn_line | split: '=' | first | downcase | strip
+                        if sn_line_key == sn_value_key and sn_line contains '='
+                          assign sn_value_color = sn_line | split: '=' | last | strip
+                          break
+                        endif
+                      endfor
+                    endif
+                  -%}
+                  {%- if sn_value_color != blank -%}
+                    <span
+                      class="swatch swatch--unscaled"
+                      style="--swatch-background: {{ sn_value_color | escape }};"
+                    ></span>
+                  {%- else -%}
+                    {% render 'swatch',
+                      swatch: product_option_value.swatch,
+                      variant_image: featured_media,
+                      mode: 'unscaled'
+                    %}
+                  {%- endif -%}
                   {%- comment -%} Project extension (Snosha, opt-in): visible value name under the swatch {%- endcomment -%}
                   {%- if block_settings.show_swatch_names -%}
                     <span class="variant-option__swatch-name" aria-hidden="true">
