@@ -2867,6 +2867,52 @@ html:has(#header-component.sn-header-main) .search-modal {
   }
 }
 
+/* ---------- Bundle colour picker (merchant reference): label on its own line, black 18/700 with a red
+   asterisk, no selected-value text; 40px colour circles with a light outline; selected = 2px white gap +
+   2px black ring. Circle sizes / gap = hero section settings (Swatch size 48, dot 40, gap 14). ---------- */
+.sn-product-hero.sn-bundle-hero {
+  .variant-picker__form {
+    row-gap: 28px;
+  }
+
+  .variant-option--swatches {
+    row-gap: 12px;
+
+    legend {
+      float: none;
+      display: block;
+      inline-size: 100%;
+      margin: 0 0 12px;
+      padding: 0;
+      font-size: 18px;
+      font-weight: 700;
+      line-height: 28px;
+      color: #131311;
+
+      &::after {
+        content: ' *';
+        color: #e02424;
+        white-space: pre;
+      }
+    }
+
+    .variant-option__swatch-value {
+      display: none;
+    }
+
+    .swatch {
+      box-shadow: inset 0 0 0 1px rgb(0 0 0 / 0.12);
+    }
+
+    .variant-option__button-label--has-swatch:has(:checked) .swatch {
+      box-shadow:
+        inset 0 0 0 1px rgb(0 0 0 / 0.12),
+        0 0 0 calc(var(--sn-swatch-ring) - 2px) var(--color-background, #fff),
+        0 0 0 var(--sn-swatch-ring) #131311;
+    }
+  }
+}
+
 /* ---------- Image + text groups (sn-ld system) ---------- */
 .sn-ld .sn-ld-group.sn-ld-media {
   .sn-ld-title:not(.custom-typography) > * {
