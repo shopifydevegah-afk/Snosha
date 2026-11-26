@@ -3243,12 +3243,18 @@ html:has(#header-component.sn-header-main) .search-modal {
 
   /* Image slides: height = image ratio (desktop / mobile image), so the whole picture shows, never zoomed.
      Ratio variables come from blocks/_slide.liquid (.slide__content--ratio). */
+  /* The image ends where the overlapping Trust card starts, so no part of it hides behind the card: the
+     slide is the image height + the overlap, and the image fills only the top part. */
   .slide__content--ratio {
-    min-height: var(--sn-slide-min);
+    min-height: calc(var(--sn-slide-min) + var(--next-section-overlap, 0px));
 
     @media screen and (max-width: 749px) {
-      min-height: var(--sn-slide-min-mobile, var(--sn-slide-min));
+      min-height: calc(var(--sn-slide-min-mobile, var(--sn-slide-min)) + var(--next-section-overlap, 0px));
     }
+  }
+
+  slideshow-slide:has(> .slide__content--ratio) > .slide__image-container {
+    block-size: calc(100% - var(--next-section-overlap, 0px));
   }
 
   /* Text slide (no image, no product stage): keep the hero height (500px) on desktop */
@@ -3287,6 +3293,18 @@ html:has(#header-component.sn-header-main) .search-modal {
       inline-size: 40px;
       block-size: 40px;
     }
+  }
+
+  /* No arrows on mobile (swipe + dots) */
+  @media screen and (max-width: 749px) {
+    slideshow-arrows {
+      display: none;
+    }
+  }
+
+  /* No play / pause button; autoplay keeps running */
+  slideshow-controls .slideshow-control:is(.icon-play, .icon-pause) {
+    display: none;
   }
 
   /* Dots (shown with 2+ slides): white, above the overlapping Trust card */
