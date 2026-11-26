@@ -1,0 +1,216 @@
+{%- comment -%}
+  Snosha — collection banner (collection templates). Reference: live snosha.com collection page, 2026-11-26.
+  Image per collection, from collection metafields (Admin → Collections → the collection → Metafields):
+    custom.banner_image         (File → Image)  desktop banner
+    custom.banner_image_mobile  (File → Image)  optional phone banner
+  Fallback: the section's own images (Theme Editor; can also be connected to a dynamic source).
+  The collection title (h1) sits on the image; without any image the section renders the title alone.
+  Banner height follows the image ratio (desktop / phone image), so the picture is never cropped.
+  Styles: assets/main.css (.sn-col-banner).
+{%- endcomment -%}
+
+{%- liquid
+  assign sn_collection = collection
+  # A File (image) metafield returns a media object; its preview_image is a plain image (ratio, width, height).
+  assign sn_mf_image = sn_collection.metafields.custom.banner_image.value
+  if sn_mf_image.preview_image
+    assign sn_mf_image = sn_mf_image.preview_image
+  endif
+  assign sn_mf_image_mobile = sn_collection.metafields.custom.banner_image_mobile.value
+  if sn_mf_image_mobile.preview_image
+    assign sn_mf_image_mobile = sn_mf_image_mobile.preview_image
+  endif
+  assign sn_image = sn_mf_image | default: section.settings.image
+  assign sn_image_mobile = sn_mf_image_mobile | default: section.settings.image_mobile
+
+  assign sn_ratio = ''
+  assign sn_ratio_mobile = ''
+  if sn_image != blank
+    assign sn_ratio = sn_image.aspect_ratio
+    assign sn_ratio_mobile = sn_image.aspect_ratio
+    if sn_image_mobile != blank
+      assign sn_ratio_mobile = sn_image_mobile.aspect_ratio
+    endif
+  endif
+-%}
+
+<div
+  class="sn-col-banner sn-col-banner--title-{{ section.settings.title_position }}{% if sn_image == blank %} sn-col-banner--no-image{% endif %}"
+  style="
+    {%- if sn_image != blank -%}--sn-cb-ratio: {{ sn_ratio }}; --sn-cb-ratio-mobile: {{ sn_ratio_mobile }};{%- endif -%}
+    --sn-cb-title-color: {{ section.settings.title_color }};
+    --sn-cb-plain-title-color: {{ section.settings.plain_title_color }};
+    --sn-cb-title-size: {{ section.settings.title_size }}px;
+    --sn-cb-title-size-mobile: {{ section.settings.title_size_mobile }}px;
+    --sn-cb-overlay: {{ section.settings.overlay_opacity | divided_by: 100.0 }};
+    --sn-cb-pad-start: {{ section.settings.padding_top }}px;
+    --sn-cb-pad-end: {{ section.settings.padding_bottom }}px;
+  "
+>
+  {%- if sn_image != blank -%}
+    <picture class="sn-col-banner__media">
+      {%- if sn_image_mobile != blank -%}
+        <source
+          media="(max-width: 749px)"
+          srcset="
+            {%- for w in (1..5) -%}
+              {%- assign sn_w = 375 | times: w -%}
+              {{- sn_image_mobile | image_url: width: sn_w }} {{ sn_w }}w{% unless forloop.last %}, {% endunless -%}
+            {%- endfor -%}
+          "
+          sizes="100vw"
+          width="{{ sn_image_mobile.width }}"
+          height="{{ sn_image_mobile.height }}"
+        >
+      {%- endif -%}
+      {{
+        sn_image
+        | image_url: width: 3840
+        | image_tag:
+          widths: '750, 1100, 1500, 1920, 2560, 3840',
+          sizes: '100vw',
+          loading: 'eager',
+          fetchpriority: 'high',
+          class: 'sn-col-banner__image',
+          alt: sn_collection.title
+      }}
+    </picture>
+    {%- if section.settings.overlay_opacity > 0 -%}
+      <span class="sn-col-banner__overlay" aria-hidden="true"></span>
+    {%- endif -%}
+  {%- endif -%}
+
+  {%- if section.settings.show_title -%}
+    <div class="sn-col-banner__content">
+      <h1 class="sn-col-banner__title{% if section.settings.title_shadow %} sn-col-banner__title--shadow{% endif %}">
+        {{- sn_collection.title | escape -}}
+      </h1>
+    </div>
+  {%- endif -%}
+</div>
+
+{% schema %}
+{
+  "name": "Collection banner",
+  "tag": "section",
+  "class": "sn-col-banner-section",
+  "enabled_on": {
+    "templates": ["collection"]
+  },
+  "settings": [
+    {
+      "type": "paragraph",
+      "content": "Each collection uses its own banner from its metafields: custom.banner_image (desktop) and custom.banner_image_mobile (phone). The images below are used when a collection has none."
+    },
+    {
+      "type": "image_picker",
+      "id": "image",
+      "label": "Default banner image"
+    },
+    {
+      "type": "image_picker",
+      "id": "image_mobile",
+      "label": "Default banner image — mobile",
+      "info": "Optional."
+    },
+    {
+      "type": "range",
+      "id": "overlay_opacity",
+      "label": "Image darkening",
+      "min": 0,
+      "max": 60,
+      "step": 5,
+      "unit": "%",
+      "default": 0
+    },
+    {
+      "type": "header",
+      "content": "Title"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_title",
+      "label": "Show collection title",
+      "default": true
+    },
+    {
+      "type": "select",
+      "id": "title_position",
+      "label": "Title position on the image",
+      "options": [
+        { "value": "bottom", "label": "Bottom" },
+        { "value": "center", "label": "Center" },
+        { "value": "top", "label": "Top" }
+      ],
+      "default": "bottom"
+    },
+    {
+      "type": "color",
+      "id": "title_color",
+      "label": "Title colour on the image",
+      "default": "#ffffff"
+    },
+    {
+      "type": "checkbox",
+      "id": "title_shadow",
+      "label": "Title shadow on the image",
+      "default": true
+    },
+    {
+      "type": "range",
+      "id": "title_size",
+      "label": "Title size — desktop",
+      "min": 20,
+      "max": 72,
+      "step": 2,
+      "unit": "px",
+      "default": 40
+    },
+    {
+      "type": "range",
+      "id": "title_size_mobile",
+      "label": "Title size — mobile",
+      "min": 18,
+      "max": 48,
+      "step": 2,
+      "unit": "px",
+      "default": 26
+    },
+    {
+      "type": "color",
+      "id": "plain_title_color",
+      "label": "Title colour without an image",
+      "default": "#12568d"
+    },
+    {
+      "type": "header",
+      "content": "Without an image"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "label": "Top padding",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "default": 40
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "label": "Bottom padding",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "default": 20
+    }
+  ],
+  "presets": [
+    {
+      "name": "Collection banner"
+    }
+  ]
+}
+{% endschema %}

@@ -106,7 +106,8 @@
         "gap_mobile": 8,
         "mobile_reverse_order": false,
         "custom_class": "sn-collection-head"
-      }
+      },
+      "disabled": true
     },
     "sn_collection_breadcrumbs": {
       "type": "section",
@@ -559,11 +560,65 @@
         "padding-block-end": 60,
         "custom_class": "sn-home-bestsellers sn-collection-main"
       }
+    },
+    "sn_collection_banner": {
+      "type": "sn-collection-banner",
+      "settings": {
+        "overlay_opacity": 0,
+        "show_title": true,
+        "title_position": "bottom",
+        "title_color": "#ffffff",
+        "title_shadow": true,
+        "title_size": 40,
+        "title_size_mobile": 26,
+        "plain_title_color": "#12568d",
+        "padding_top": 40,
+        "padding_bottom": 20,
+        "image": "shopify://shop_images/SNOSHA_N2_Desktop.jpg",
+        "image_mobile": "shopify://shop_images/SNOSHA_N2_Mobile_v2.jpg"
+      }
+    },
+    "sn_collection_top_text": {
+      "type": "sn-collection-text",
+      "settings": {
+        "source": "description",
+        "default_text": "<p>اكتشف مجموعة متنوعة من منتجات سنوشا (SNOSHA) للعناية بالفم والأسنان، المصممة لتجمع بين الجودة وسهولة الاستخدام والراحة اليومية. تصفح مجموعتنا من المنتجات والإكسسوارات، واختر ما يناسب احتياجاتك لتستمتع بتجربة عناية أفضل وابتسامة أكثر ثقة.</p>",
+        "text_color": "#176bb0",
+        "background_color": "",
+        "alignment": "center",
+        "font_size": 18,
+        "font_size_mobile": 15,
+        "max_width": 1100,
+        "padding_top": 32,
+        "padding_bottom": 8,
+        "padding_top_mobile": 24,
+        "padding_bottom_mobile": 0
+      }
+    },
+    "sn_collection_bottom_text": {
+      "type": "sn-collection-text",
+      "settings": {
+        "source": "bottom",
+        "default_text": "<p>نؤمن بأن الاهتمام بصحة الفم والأسنان يبدأ من اختيار المنتجات المناسبة لاحتياجاتك اليومية. لذلك نقدم مجموعة متنوعة من منتجات العناية بالفم والأسنان والإكسسوارات، مع التركيز على الجودة والتصميم العملي وسهولة الاستخدام. سواء كنت تبحث عن فرشاة أسنان كهربائية، أو رؤوس فرش بديلة، أو إكسسوارات تساعدك على استكمال روتين العناية اليومي، ستجد في سنوشا خيارات تناسب احتياجاتك المختلفة. اكتشف منتجات سنوشا واختر ما يناسبك لتجعل العناية بفمك وأسنانك عادة يومية سهلة ومريحة.</p>",
+        "text_color": "#176bb0",
+        "background_color": "",
+        "alignment": "center",
+        "font_size": 18,
+        "font_size_mobile": 15,
+        "max_width": 1100,
+        "padding_top": 24,
+        "padding_bottom": 64,
+        "padding_top_mobile": 16,
+        "padding_bottom_mobile": 40
+      }
     }
   },
   "order": [
+    "sn_collection_banner",
     "section",
     "sn_collection_breadcrumbs",
-    "main"
+    "sn_collection_top_text",
+    "main",
+    "sn_collection_bottom_text"
   ]
 }

@@ -3342,3 +3342,143 @@ html:has(#header-component.sn-header-main) .search-modal {
     }
   }
 }
+
+/* ==========================================================================
+   C01b Collection banner + collection texts | owner: Main | reference: live snosha.com collection, 2026-11-26
+   sections/sn-collection-banner.liquid (.sn-col-banner) and sections/sn-collection-text.liquid (.sn-col-text).
+   Values come from each section's Theme Editor settings (CSS variables); images / texts per collection come
+   from the collection (metafields custom.banner_image, custom.banner_image_mobile, custom.bottom_text; description).
+   ========================================================================== */
+.sn-col-banner {
+  position: relative;
+  display: flex;
+  overflow: hidden;
+  inline-size: 100%;
+
+  /* Banner height = image ratio, so the whole picture shows */
+  &:not(.sn-col-banner--no-image) {
+    aspect-ratio: var(--sn-cb-ratio);
+
+    @media screen and (max-width: 749px) {
+      aspect-ratio: var(--sn-cb-ratio-mobile, var(--sn-cb-ratio));
+    }
+  }
+
+  .sn-col-banner__media,
+  .sn-col-banner__overlay {
+    position: absolute;
+    inset: 0;
+  }
+
+  .sn-col-banner__image {
+    display: block;
+    inline-size: 100%;
+    block-size: 100%;
+    object-fit: cover;
+    object-position: center;
+  }
+
+  .sn-col-banner__overlay {
+    background: rgb(0 0 0 / var(--sn-cb-overlay, 0));
+  }
+
+  .sn-col-banner__content {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    justify-content: center;
+    box-sizing: border-box;
+    inline-size: 100%;
+    max-inline-size: calc(1336px + var(--page-margin) * 2);
+    margin-inline: auto;
+    padding-inline: var(--page-margin);
+  }
+
+  .sn-col-banner__title {
+    margin: 0;
+    font-family: var(--font-heading--family);
+    font-size: var(--sn-cb-title-size, 40px);
+    font-weight: 600;
+    line-height: 1.4;
+    text-align: center;
+    color: var(--sn-cb-title-color, #fff);
+
+    @media screen and (max-width: 749px) {
+      font-size: var(--sn-cb-title-size-mobile, 26px);
+    }
+  }
+
+  .sn-col-banner__title--shadow {
+    text-shadow: 0 2px 12px rgb(0 0 0 / 0.35);
+  }
+
+  /* Title on the image: bottom (reference) / center / top */
+  &:not(.sn-col-banner--no-image) .sn-col-banner__content {
+    padding-block: 24px;
+
+    @media screen and (min-width: 750px) {
+      padding-block: 48px;
+    }
+  }
+
+  &.sn-col-banner--title-bottom:not(.sn-col-banner--no-image) .sn-col-banner__content {
+    align-self: flex-end;
+  }
+
+  &.sn-col-banner--title-center:not(.sn-col-banner--no-image) .sn-col-banner__content {
+    align-self: center;
+  }
+
+  &.sn-col-banner--title-top:not(.sn-col-banner--no-image) .sn-col-banner__content {
+    align-self: flex-start;
+  }
+
+  /* No image: plain title header (the former collection title look) */
+  &.sn-col-banner--no-image {
+    padding-block: var(--sn-cb-pad-start, 40px) var(--sn-cb-pad-end, 20px);
+
+    .sn-col-banner__title {
+      font-size: 2rem;
+      line-height: 1.5;
+      text-shadow: none;
+      color: var(--sn-cb-plain-title-color, #12568d);
+
+      @media screen and (max-width: 749px) {
+        font-size: 26px;
+        line-height: 40px;
+      }
+    }
+  }
+}
+
+.sn-col-text {
+  padding-block: var(--sn-ct-pad-start, 32px) var(--sn-ct-pad-end, 16px);
+  padding-inline: var(--page-margin);
+  background: var(--sn-ct-bg, transparent);
+
+  @media screen and (max-width: 749px) {
+    padding-block: var(--sn-ct-pad-start-mobile, 24px) var(--sn-ct-pad-end-mobile, 8px);
+  }
+
+  .sn-col-text__inner {
+    max-inline-size: var(--sn-ct-max, 1100px);
+    margin-inline: auto;
+    font-size: var(--sn-ct-size, 18px);
+    line-height: 1.6;
+    text-align: var(--sn-ct-align, center);
+    color: var(--sn-ct-color, #176bb0);
+
+    @media screen and (max-width: 749px) {
+      font-size: var(--sn-ct-size-mobile, 15px);
+    }
+
+    > * {
+      margin-block: 0;
+      color: inherit;
+    }
+
+    > * + * {
+      margin-block-start: 0.75em;
+    }
+  }
+}
