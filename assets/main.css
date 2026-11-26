@@ -3241,10 +3241,19 @@ html:has(#header-component.sn-header-main) .search-modal {
     }
   }
 
-  /* Text slide without an image and without the product stage: keep the hero height on desktop.
-     Slides with an image follow the slideshow height setting ("Adapt to image" shows the whole picture). */
+  /* Image slides: height = image ratio (desktop / mobile image), so the whole picture shows, never zoomed.
+     Ratio variables come from blocks/_slide.liquid (.slide__content--ratio). */
+  .slide__content--ratio {
+    min-height: var(--sn-slide-min);
+
+    @media screen and (max-width: 749px) {
+      min-height: var(--sn-slide-min-mobile, var(--sn-slide-min));
+    }
+  }
+
+  /* Text slide (no image, no product stage): keep the hero height (500px) on desktop */
   @media screen and (min-width: 990px) {
-    slideshow-slide:not(:has(img.slide__image)) .slide__content > .group-block-content:not(:has(> .sn-home-hero-stage)) {
+    slideshow-slide:not(:has(.slide__content--ratio)) .slide__content > .group-block-content:not(:has(> .sn-home-hero-stage)) {
       min-block-size: 500px;
       padding-block-end: var(--next-section-overlap, 0px);
     }
