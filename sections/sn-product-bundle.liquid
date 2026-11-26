@@ -1,13 +1,13 @@
 {%- comment -%}
   Snosha S11 — Product bundle (category E, approved by the merchant 2026-11-11).
-  Bundle product (section setting) = what the button buys, at its own Shopify price.
+  Bundle product (section setting) = the product the button opens, shown at its own Shopify price.
+  Since task 12 (2026-11-26) the button links to the bundle product page ("اكتشف الباندل"); an empty Heading
+  shows the bundle product's title. assets/sn-bundle.js (add-to-cart element) is no longer loaded here.
   Component blocks = the products inside it. Each block drives its list row, its image hotspot and its popup.
   Reuses Horizon: page-width grid, `image` snippet, `anchored-popover-component` (native popover, top layer, light
-  dismiss, Escape), the cart event used by the product form (via assets/sn-bundle.js), translations.
+  dismiss, Escape), translations.
   Brand look: assets/dev2.css under the section's custom class. Structure: this file's stylesheet.
 {%- endcomment -%}
-
-<script src="{{ 'sn-bundle.js' | asset_url }}" type="module" fetchpriority="low"></script>
 
 {%- liquid
   assign parent = section.settings.bundle_product
@@ -214,8 +214,10 @@
     {%- endif -%}
 
     <div class="sn-pb__content">
-      {%- if section.settings.heading != blank -%}
-        <h2 class="sn-pb__heading">{{ section.settings.heading | escape }}</h2>
+      {%- comment -%} Empty heading = the bundle product's title {%- endcomment -%}
+      {%- assign sn_heading = section.settings.heading | default: parent.title -%}
+      {%- if sn_heading != blank -%}
+        <h2 class="sn-pb__heading">{{ sn_heading | escape }}</h2>
       {%- endif -%}
       {%- if section.settings.description != blank -%}
         <p class="sn-pb__description">{{ section.settings.description | escape }}</p>
@@ -295,36 +297,14 @@
         {%- endif -%}
 
         {%- comment -%}
-          A bundle with options (e.g. colour choices) can't be bought from here without a choice,
-          so the button links to its product page instead of adding the first variant.
+          Client task 12 (2026-11-26): the button opens the bundle product page ("اكتشف الباندل") instead of
+          adding the bundle to the cart. Add-to-cart version: git history of this file.
         {%- endcomment -%}
-        {%- if parent.has_only_default_variant == false -%}
-          <div class="sn-pb__cart">
-            <a class="sn-pb__button" href="{{ parent.url }}">
-              {{- section.settings.button_label | escape -}}
-            </a>
-          </div>
-        {%- else -%}
-        <sn-bundle-cart class="sn-pb__cart" data-error-text="{{ 'content.unavailable' | t | escape }}">
-          <script type="application/json" ref="data">[{"id":{{ pv.id }},"quantity":1}]</script>
-          <button
-            type="button"
-            class="sn-pb__button"
-            ref="button"
-            on:click="/addBundle"
-            {% unless pv.available %}
-              disabled
-            {% endunless %}
-          >
-            {{ section.settings.button_label | escape }}
-          </button>
-          <p class="sn-pb__status" ref="status" role="status" aria-live="polite">
-            {%- unless pv.available -%}
-              {{ 'content.product_badge_sold_out' | t }}
-            {%- endunless -%}
-          </p>
-        </sn-bundle-cart>
-        {%- endif -%}
+        <div class="sn-pb__cart">
+          <a class="sn-pb__button" href="{{ parent.url }}">
+            {{- section.settings.button_label | escape -}}
+          </a>
+        </div>
       {%- endif -%}
     </div>
   </div>
@@ -727,6 +707,7 @@
       "type": "text",
       "id": "heading",
       "label": "Heading",
+      "info": "Leave empty to show the bundle product's title.",
       "default": "باقات العناية المناسبة لروتينك"
     },
     {
@@ -880,7 +861,8 @@
       "type": "text",
       "id": "button_label",
       "label": "Button label",
-      "default": "أضف الباندل للسلة"
+      "info": "The button opens the bundle product page.",
+      "default": "اكتشف الباندل"
     },
     {
       "type": "range",
