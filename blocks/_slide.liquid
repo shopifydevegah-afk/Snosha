@@ -145,9 +145,25 @@
       }}
     {%- endif -%}
   </div>
+  {%- comment -%}
+    Snosha: "Adapt to image" height per slide, so the whole picture shows (desktop and mobile image ratios).
+    Slides share the tallest height, as in any slideshow.
+  {%- endcomment -%}
+  {%- liquid
+    assign sn_adapt_style = ''
+    if section.settings.slide_height == 'adapt_image' and block_settings.media_type_1 == 'image'
+      assign sn_desktop_image = block_settings.image_1 | default: block_settings.image_1_mobile
+      assign sn_mobile_image = block_settings.image_1_mobile | default: block_settings.image_1
+      if sn_desktop_image != blank
+        assign sn_adapt_desktop = 100 | divided_by: sn_desktop_image.aspect_ratio
+        assign sn_adapt_mobile = 100 | divided_by: sn_mobile_image.aspect_ratio
+        assign sn_adapt_style = ' --sn-slide-min: ' | append: sn_adapt_desktop | append: 'vw; --sn-slide-min-mobile: ' | append: sn_adapt_mobile | append: 'vw;'
+      endif
+    endif
+  -%}
   <div
-    class="spacing-style slide__content {{ class }}{% if preview_image or block_settings.toggle_overlay or block_settings.image_1_mobile != blank %} background-transparent{% endif %}"
-    style="{% render 'spacing-style', settings: block_settings %}"
+    class="spacing-style slide__content {{ class }}{% if preview_image or block_settings.toggle_overlay or block_settings.image_1_mobile != blank %} background-transparent{% endif %}{% if sn_adapt_style != blank %} slide__content--adapt{% endif %}"
+    style="{% render 'spacing-style', settings: block_settings %}{{ sn_adapt_style }}"
     {{ block.shopify_attributes }}
   >
     <div
@@ -245,6 +261,15 @@
 
     @media screen and (min-width: 750px) {
       display: none;
+    }
+  }
+
+  /* Snosha: "Adapt to image" slide height (opt-in, slideshow Media height setting) */
+  .slide__content--adapt {
+    min-height: var(--sn-slide-min);
+
+    @media screen and (max-width: 749px) {
+      min-height: var(--sn-slide-min-mobile, var(--sn-slide-min));
     }
   }
 

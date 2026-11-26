@@ -3241,9 +3241,10 @@ html:has(#header-component.sn-header-main) .search-modal {
     }
   }
 
-  /* Slide without the product stage (image + text slides): keep the hero height on desktop */
+  /* Text slide without an image and without the product stage: keep the hero height on desktop.
+     Slides with an image follow the slideshow height setting ("Adapt to image" shows the whole picture). */
   @media screen and (min-width: 990px) {
-    .slide__content > .group-block-content:not(:has(> .sn-home-hero-stage)) {
+    slideshow-slide:not(:has(img.slide__image)) .slide__content > .group-block-content:not(:has(> .sn-home-hero-stage)) {
       min-block-size: 500px;
       padding-block-end: var(--next-section-overlap, 0px);
     }
@@ -3285,9 +3286,31 @@ html:has(#header-component.sn-header-main) .search-modal {
     mix-blend-mode: normal;
   }
 
-  .slideshow-controls__dots button {
-    --color: rgb(255 255 255 / 0.5);
-    --color-hover: rgb(255 255 255 / 0.75);
-    --color-active: #fff;
+  /* Dots like the live site: small white dots, the active one a wide white pill */
+  .slideshow-controls__dots {
+    gap: 10px;
+
+    button {
+      --color: rgb(255 255 255 / 0.5);
+      --color-hover: rgb(255 255 255 / 0.75);
+      --color-active: #fff;
+
+      inline-size: auto;
+      min-inline-size: 16px;
+      margin: 0;
+
+      &::after {
+        inline-size: 10px;
+        block-size: 10px;
+        border-radius: 999px;
+        box-shadow: none;
+        transition: inline-size 0.3s ease, background-color 0.3s ease;
+      }
+
+      &[aria-selected='true']::after {
+        inline-size: 30px;
+        background-color: var(--color-active);
+      }
+    }
   }
 }
