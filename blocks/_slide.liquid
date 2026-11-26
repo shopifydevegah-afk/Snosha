@@ -38,7 +38,20 @@
     {% endstyle %}
   {% endif %}
 
-  <div class="slide__image-container{% if rounded_image_corners %} slide__image-container--rounded{% endif %}">
+  {%- comment -%}
+    Snosha (opt-in): background gradient behind the slide image. Empty settings = stock behaviour.
+    An uploaded slide image covers it; without an image it replaces the placeholder illustration.
+  {%- endcomment -%}
+  {%- liquid
+    assign sn_slide_gradient = block_settings.background_gradient
+    assign sn_slide_gradient_mobile = block_settings.background_gradient_mobile | default: sn_slide_gradient
+  -%}
+  <div
+    class="slide__image-container{% if rounded_image_corners %} slide__image-container--rounded{% endif %}{% if sn_slide_gradient != blank %} slide__image-container--gradient{% endif %}"
+    {% if sn_slide_gradient != blank %}
+      style="--slide-gradient: {{ sn_slide_gradient }}; --slide-gradient-mobile: {{ sn_slide_gradient_mobile }};"
+    {% endif %}
+  >
     {%- if block_settings.toggle_overlay -%}
       {% render 'overlay', settings: block_settings %}
     {%- endif -%}
@@ -68,11 +81,29 @@
       -%}
 
       {%- if block_settings.media_type_1 == 'image' -%}
-        {{
-          block_settings.image_1
-          | image_url: width: 3840
-          | image_tag: height: height, sizes: sizes, widths: widths, class: 'slide__image', loading: loading, fetchpriority: fetchpriority
-        }}
+        {%- comment -%} Snosha (opt-in): separate mobile image via <picture>; only one image is downloaded {%- endcomment -%}
+        {%- if block_settings.image_1_mobile != blank -%}
+          <picture class="slide__picture">
+            <source
+              media="(max-width: 749px)"
+              srcset="{%- for w in (1..5) -%}{%- assign mw = 375 | times: w | at_most: 1875 -%}{{ block_settings.image_1_mobile | image_url: width: mw }} {{ mw }}w{%- unless forloop.last -%}, {% endunless -%}{%- endfor -%}"
+              sizes="100vw"
+              width="{{ block_settings.image_1_mobile.width }}"
+              height="{{ block_settings.image_1_mobile.height }}"
+            >
+            {{
+              block_settings.image_1
+              | image_url: width: 3840
+              | image_tag: height: height, sizes: sizes, widths: widths, class: 'slide__image', loading: loading, fetchpriority: fetchpriority
+            }}
+          </picture>
+        {%- else -%}
+          {{
+            block_settings.image_1
+            | image_url: width: 3840
+            | image_tag: height: height, sizes: sizes, widths: widths, class: 'slide__image', loading: loading, fetchpriority: fetchpriority
+          }}
+        {%- endif -%}
       {%- else -%}
         {%- if block_settings.video_1.preview_image -%}
 
@@ -101,9 +132,21 @@
       -%}
       {{ placeholder_name | placeholder_svg_tag: 'slide__image' }}
     {%- endif -%}
+    {%- comment -%} Snosha: mobile image without a desktop image (desktop keeps the gradient / placeholder) {%- endcomment -%}
+    {%- if preview_image == blank and block_settings.media_type_1 == 'image' and block_settings.image_1_mobile != blank -%}
+      {{
+        block_settings.image_1_mobile
+        | image_url: width: 1875
+        | image_tag:
+          widths: '375, 750, 1100, 1500, 1875',
+          sizes: '100vw',
+          class: 'slide__image slide__image--mobile-only',
+          loading: 'lazy'
+      }}
+    {%- endif -%}
   </div>
   <div
-    class="spacing-style slide__content {{ class }}{% if preview_image or block_settings.toggle_overlay %} background-transparent{% endif %}"
+    class="spacing-style slide__content {{ class }}{% if preview_image or block_settings.toggle_overlay or block_settings.image_1_mobile != blank %} background-transparent{% endif %}"
     style="{% render 'spacing-style', settings: block_settings %}"
     {{ block.shopify_attributes }}
   >
@@ -183,6 +226,41 @@
     animation: none;
   }
 
+  /* Snosha: mobile image (opt-in). The <picture> wrapper must not break the image's full-cover sizing. */
+  .slide__image-container > .slide__picture {
+    display: contents;
+
+    > .slide__image {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: center center;
+    }
+  }
+
+  .slide__image-container > .slide__image--mobile-only {
+    position: absolute;
+    inset: 0;
+
+    @media screen and (min-width: 750px) {
+      display: none;
+    }
+  }
+
+  /* Snosha: background gradient setting (opt-in) */
+  .slide__image-container--gradient {
+    background: var(--slide-gradient);
+
+    > svg.slide__image {
+      display: none;
+    }
+
+    @media screen and (max-width: 749px) {
+      background: var(--slide-gradient-mobile, var(--slide-gradient));
+    }
+  }
+
   slideshow-slide .slide__image-container--rounded {
     border-radius: var(--corner-radius, 0);
   }
@@ -245,6 +323,13 @@
       "type": "image_picker",
       "id": "image_1",
       "label": "t:settings.image",
+      "visible_if": "{{ block.settings.media_type_1 == 'image' }}"
+    },
+    {
+      "type": "image_picker",
+      "id": "image_1_mobile",
+      "label": "Mobile image",
+      "info": "Optional. Shown on phones instead of the image above.",
       "visible_if": "{{ block.settings.media_type_1 == 'image' }}"
     },
     {
@@ -398,6 +483,18 @@
       "id": "background_color",
       "label": "t:settings.background_color",
       "placeholder": "t:settings.default"
+    },
+    {
+      "type": "color_background",
+      "id": "background_gradient",
+      "label": "Background gradient",
+      "info": "Shown behind the slide when it has no image."
+    },
+    {
+      "type": "color_background",
+      "id": "background_gradient_mobile",
+      "label": "Background gradient — mobile",
+      "info": "Optional. Leave empty to use the gradient above."
     },
     {
       "type": "checkbox",

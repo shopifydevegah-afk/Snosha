@@ -3201,3 +3201,93 @@ html:has(#header-component.sn-header-main) .search-modal {
   color: #5a5a59;
   text-align: center;
 }
+
+/* ==========================================================================
+   Home slideshow — .sn-home-slider (native `slideshow` section, custom_class) | owner: Main
+   Replaces the home hero. Each slide = its own image (slide "Image") + its own blocks, editable/hideable
+   in the Theme Editor. Slide 1 holds the former hero blocks; they keep their classes
+   (.sn-home-hero-content / -stage / -chip, styled in dev1.css). This file only re-creates the hero ROOT
+   rules for the slide DOM (container width, row layout) plus the arrows and dots. The blue gradient is
+   the slide's "Background gradient" setting (blocks/_slide.liquid).
+   ========================================================================== */
+.sn-home-slider {
+  --page-content-width: 1376px;
+  --page-width: calc(var(--page-content-width) + var(--page-margin) * 2);
+
+  @media screen and (max-width: 749px) {
+    --page-margin: max(24px, var(--safe-area-inset-left, 0px), var(--safe-area-inset-right, 0px));
+  }
+
+  /* Slide content sits in the page container (hero layout) */
+  .slide__content > .group-block-content {
+    box-sizing: border-box;
+    inline-size: 100%;
+    max-inline-size: var(--page-width);
+    padding-inline: var(--page-margin);
+
+    @media screen and (min-width: 990px) {
+      padding-inline: calc(var(--page-margin) + 20px);
+      flex-wrap: nowrap;
+    }
+
+    @media screen and (max-width: 989px) {
+      flex-direction: column;
+      flex-wrap: nowrap;
+      align-items: center;
+      justify-content: flex-start;
+      gap: 12px;
+      /* Room for the dots and the Trust card that overlaps the slideshow bottom */
+      padding-block: 6px calc(38px + var(--next-section-overlap, 0px));
+    }
+  }
+
+  /* Slide without the product stage (image + text slides): keep the hero height on desktop */
+  @media screen and (min-width: 990px) {
+    .slide__content > .group-block-content:not(:has(> .sn-home-hero-stage)) {
+      min-block-size: 500px;
+      padding-block-end: var(--next-section-overlap, 0px);
+    }
+  }
+
+  /* Arrows (shown with 2+ slides): always visible white circles, brand-blue arrow */
+  slideshow-arrows {
+    padding-inline: clamp(12px, 1.5vw, 28px);
+  }
+
+  /* Doubled class outranks base.css "slideshow-container[animate-arrows]:hover > slideshow-arrows .slideshow-control" */
+  slideshow-arrows .slideshow-control.slideshow-control--shape-circle.slideshow-control--shape-circle {
+    opacity: 1;
+    /* Always shown, so no hover slide-in (base.css arrowsSlideIn would flash them from 0) */
+    animation: none;
+    inline-size: 60px;
+    block-size: 60px;
+    min-inline-size: 0;
+    min-block-size: 0;
+    padding: 0;
+    background-color: rgb(255 255 255 / 0.92);
+    color: #176bb0;
+    box-shadow: 0 8px 24px rgb(8 46 102 / 0.18);
+    transition: background-color 0.2s ease;
+
+    &:hover {
+      background-color: #fff;
+    }
+
+    @media screen and (max-width: 749px) {
+      inline-size: 40px;
+      block-size: 40px;
+    }
+  }
+
+  /* Dots (shown with 2+ slides): white, above the overlapping Trust card */
+  slideshow-controls[controls-on-media] {
+    bottom: calc(var(--next-section-overlap, 0px) + 8px);
+    mix-blend-mode: normal;
+  }
+
+  .slideshow-controls__dots button {
+    --color: rgb(255 255 255 / 0.5);
+    --color-hover: rgb(255 255 255 / 0.75);
+    --color-active: #fff;
+  }
+}
