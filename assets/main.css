@@ -3482,3 +3482,34 @@ html:has(#header-component.sn-header-main) .search-modal {
     }
   }
 }
+
+/* ==========================================================================
+   Buy now (accelerated checkout) under Add to cart, full width — all product forms | owner: Main
+   Client request 2026-11-26. Native order is quantity → Add to cart → Buy now; the Buy now block takes a
+   full row, so it wraps under the Add to cart row. In the Snosha product hero it also matches the Add to
+   cart button height and corners (--sn-button-height from the product section settings).
+   ========================================================================== */
+.buy-buttons-block .product-form-buttons > .accelerated-checkout-block {
+  flex: 1 0 100%;
+  inline-size: 100%;
+}
+
+.sn-product-hero .buy-buttons-block .accelerated-checkout-block shopify-accelerated-checkout {
+  --shopify-accelerated-checkout-button-block-size: var(--sn-button-height, 58px);
+  --shopify-accelerated-checkout-button-border-radius: 12px;
+
+  @media screen and (max-width: 749px) {
+    --shopify-accelerated-checkout-button-block-size: var(--sn-button-height-mobile, 58px);
+  }
+}
+
+.sn-product-hero .buy-buttons-block .accelerated-checkout-block button.shopify-payment-button__button--unbranded {
+  min-block-size: var(--sn-button-height, 58px);
+  border-radius: 12px;
+  font-size: 16px;
+  font-weight: 600;
+
+  @media screen and (max-width: 749px) {
+    min-block-size: var(--sn-button-height-mobile, 58px);
+  }
+}
